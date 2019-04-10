@@ -2,10 +2,10 @@ package com.irware.remote
 
 import android.app.Dialog
 import android.content.Intent
+import android.graphics.Point
 import android.net.Uri
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
-import android.support.design.widget.Snackbar
 import android.support.design.widget.NavigationView
 import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
@@ -16,21 +16,20 @@ import android.view.MenuItem
 import android.widget.Button
 import android.widget.EditText
 import com.irware.remote.ui.fragments.AboutFragment
-import com.irware.remote.ui.fragments.CreateRemoteFragment
 import com.irware.remote.ui.fragments.HomeFragment
 import com.irware.remote.ui.fragments.ManageRemoteFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 
+import com.irware.remote.ui.fragments.OnFragmentInteractionListener
+
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
-    HomeFragment.OnFragmentInteractionListener,AboutFragment.OnFragmentInteractionListener,
-    CreateRemoteFragment.OnFragmentInteractionListener,ManageRemoteFragment.OnFragmentInteractionListener {
+    OnFragmentInteractionListener {
     override fun onFragmentInteraction(uri: Uri) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     private var homeFragment:HomeFragment?=null
-    private var createRemoteFragment : CreateRemoteFragment?=null
     private var manageRemoteFragment : ManageRemoteFragment?=null
     private var aboutFragment: AboutFragment?=null
 
@@ -39,18 +38,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        val empty_overlay= Dialog(this,R.style.AppTheme_NoActionBar);
-        empty_overlay.setCancelable(false)
-        empty_overlay.show()
+        getWindowManager().getDefaultDisplay().getSize(size)
+        if(!authenticated) {
+            val empty_overlay = Dialog(this, R.style.AppTheme_NoActionBar);
+            empty_overlay.setCancelable(false)
+            empty_overlay.show()
 
-        if(validate())
-            empty_overlay.dismiss()
-
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
+            if (validate()) {
+                empty_overlay.dismiss()
+            }
         }
-
         val toggle = ActionBarDrawerToggle(
             this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close
         )
@@ -80,7 +77,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         submit.setOnClickListener {
             login_dialog.dismiss()
         }
-
+        authenticated=true
         return true
     }
 
@@ -118,22 +115,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         when (item.itemId) {
             R.id.home_drawer -> {
                 if(homeFragment==null)
-                    homeFragment=HomeFragment.newInstance()
+                    homeFragment=HomeFragment()
                 replaceFragment(homeFragment as Fragment)
-            }
-            R.id.create_remote_drawer -> {
-                if(createRemoteFragment==null)
-                    createRemoteFragment=CreateRemoteFragment.newInstance()
-                replaceFragment(createRemoteFragment as Fragment)
             }
             R.id.manage_remote_drawer -> {
                 if(manageRemoteFragment==null)
-                    manageRemoteFragment=ManageRemoteFragment.newInstance()
+                    manageRemoteFragment=ManageRemoteFragment()
                 replaceFragment(manageRemoteFragment as Fragment)
             }
             R.id.info_drawer -> {
                 if(aboutFragment==null)
-                    aboutFragment=AboutFragment.newInstance()
+                    aboutFragment=AboutFragment()
                 replaceFragment(aboutFragment as Fragment)
             }
             R.id.share_drawer -> {
@@ -147,5 +139,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     fun replaceFragment(fragment:Fragment){
         getSupportFragmentManager().beginTransaction().replace(R.id.include_content,fragment).commit()
+    }
+
+    companion object {
+        val size:Point=Point();
+        private var authenticated=false
     }
 }

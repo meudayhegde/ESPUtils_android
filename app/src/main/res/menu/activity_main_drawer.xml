@@ -9,10 +9,6 @@
                 android:icon="@drawable/ic_home_drawer"
                 android:title="Home"/>
         <item
-                android:id="@+id/create_remote_drawer"
-                android:icon="@drawable/ic_add_remote_drawer"
-                android:title="Create"/>
-        <item
                 android:id="@+id/manage_remote_drawer"
                 android:icon="@drawable/ic_menu_manage"
                 android:title="Manage"/>

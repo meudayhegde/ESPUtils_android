@@ -1,14 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
              xmlns:tools="http://schemas.android.com/tools"
+             xmlns:fab="http://schemas.android.com/apk/res-auto"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
              tools:context=".ui.fragments.ManageRemoteFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <com.github.clans.fab.FloatingActionMenu
+            android:id="@+id/fam_manage_remotes"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="@string/hello_blank_fragment"/>
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:paddingRight="30dp"
+            android:paddingBottom="30dp"
+            fab:menu_labels_showAnimation="@anim/fab_slide_in_from_right"
+            fab:menu_labels_hideAnimation="@anim/fab_slide_out_to_right"
+            fab:menu_shadowColor="#444"
+            fab:menu_backgroundColor="#44000000"
+            fab:menu_buttonSpacing="5dp"
+            fab:menu_fab_label="Actions "
+            fab:menu_colorNormal="@color/blue_fab_normal"
+            fab:menu_colorPressed="@color/blue_fab_pressed"
+            fab:menu_colorRipple="@color/blue_fab_ripple">
 
-</FrameLayout>
+        <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/fab_new_remote"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                fab:fab_label="New Remote"
+                fab:fab_size="mini"
+                fab:fab_colorNormal="@color/blue_fab_normal"
+                fab:fab_colorPressed="@color/blue_fab_pressed"
+                fab:fab_colorRipple="@color/blue_fab_ripple"
+                android:src="@drawable/fab_add"/>
+
+        <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/fab_import_remote"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                fab:fab_label="New Remote"
+                fab:fab_size="mini"
+                fab:fab_colorNormal="@color/blue_fab_normal"
+                fab:fab_colorPressed="@color/blue_fab_pressed"
+                fab:fab_colorRipple="@color/blue_fab_ripple"
+                android:src="@drawable/ic_fab_import"/>
+
+    </com.github.clans.fab.FloatingActionMenu>
+
+</LinearLayout>

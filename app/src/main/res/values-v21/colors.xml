@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
     <color name="bg_colr_btn_red">#ff0000</color>
-    <color name="btn_border_dark">#000000</color>
     <color name="bg_color_btn_red_pressed">#ff5100</color>
-    <color name="color_fab">#00adfd</color>
-    <color name="color_fab_ripple">#35d0ff</color>
     <color name="bg_color_btn_green">#10c100</color>
     <color name="bg_color_btn_green_pressed">#1cf100</color>
     <color name="bg_color_btn_blue">#0059ff</color>

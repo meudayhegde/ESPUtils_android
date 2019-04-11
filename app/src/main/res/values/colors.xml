@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="colorPrimary">#0080ff</color>
+    <color name="colorPrimaryDark">#005eff</color>
+    <color name="colorAccent">#2ccff9</color>
     <color name="bg_colr_btn_red">#ff0000</color>
     <color name="btn_border_dark">#000000</color>
     <color name="bg_color_btn_red_pressed">#ff5100</color>
@@ -14,7 +14,9 @@
     <color name="bg_color_btn_blue_pressed">#00aaff</color>
     <color name="bg_color_btn_yellow">#ffff00</color>
     <color name="bg_color_btn_yellow_pressed">#f4ff56</color>
-    <color name="bg_color_btn_grey">#bfbfbf</color>
+    <color name="bg_color_btn_grey">#636363</color>
+    <color name="bg_color_btn_grey_pressed">#919191</color>
+    <color name="bg_color_btn_disabled">#8F8F8F</color>
     <color name="blue_fab_pressed">#0066FF</color>
     <color name="blue_fab_normal">#0096FF</color>
     <color name="blue_fab_ripple">#01D3FF</color>

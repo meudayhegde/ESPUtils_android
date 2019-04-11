@@ -27,8 +27,6 @@ class ManageRemoteFragment : Fragment() {
             rootView.findViewById<FloatingActionButton>(R.id.fab_new_remote).setOnClickListener {
                 CreateRemoteDialog(context).show()
             }
-        val table=rootView.findViewById<TableLayout>(R.id.remote_table)
-
 
         return rootView
     }

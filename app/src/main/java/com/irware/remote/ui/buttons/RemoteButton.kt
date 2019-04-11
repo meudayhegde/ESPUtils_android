@@ -1,24 +1,45 @@
 package com.irware.remote.ui.buttons
 
-import android.annotation.TargetApi
+import android.annotation.SuppressLint
 import android.content.Context
-import android.os.Build
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.ImageButton
 import com.irware.remote.MainActivity
 import com.irware.remote.R
+import com.irware.remote.holders.ButtonProperties
+import com.irware.remote.holders.OnModificationListener
 
-class RemoteButton : Button {
-    private var irCode:String?=null
-    private var type=TYPE_RECT_HOR
-    constructor(context: Context?,type:Int,bg_res:Int) : super(context){
-        this.type=type
-        setColorResource(bg_res)
-        setType(type)
+@SuppressLint("ViewConstructor")
+class RemoteButton(context: Context?, properties:ButtonProperties) : Button(context) {
+
+    private var properties:ButtonProperties?=null
+    init {
+        this.properties=properties
+        setButtonProperties()
+        properties.setOnModificationListener({
+            setButtonProperties()
+        } as OnModificationListener)
     }
 
-    fun setColorResource(bg_res:Int){
+    fun setButtonProperties(){
+        setColorMode(properties?.getColorMode()!!)
+        setType(properties?.getIconType()!!)
+        setText(properties?.getText()!!)
+    }
+
+    fun getProperties():ButtonProperties{
+        return properties!!
+    }
+
+    fun setColorMode(bg_type:Int){
+        var bg_res=0
+        when(bg_type){
+            COLOR_GREY->bg_res = R.drawable.round_btn_bg_grey
+            COLOR_RED->bg_res=R.drawable.round_btn_bg_red
+            COLOR_GREEN->bg_res=R.drawable.round_btn_bg_green
+            COLOR_BLUE->bg_res=R.drawable.round_btn_bg_blue
+            COLOR_YELLOW->bg_res=R.drawable.round_btn_bg_yellow
+        }
         setBackgroundResource(bg_res)
     }
 
@@ -37,19 +58,18 @@ class RemoteButton : Button {
             TYPE_RECT_VER -> {
                 layoutParams= ViewGroup.LayoutParams(MainActivity.size.x/12,MainActivity.size.x/7)
             }
-
         }
     }
 
     companion object{
-        val COLOR_GREY=R.drawable.round_btn_bg_grey
-        val COLOR_RED=R.drawable.round_btn_bg_red
-        val COLOR_GREEN=R.drawable.round_btn_bg_green
-        val COLOR_BLUE=R.drawable.round_btn_bg_blue
-        val COLOR_YELLOW=R.drawable.round_btn_bg_yellow
+        const val COLOR_GREY=0
+        const val COLOR_RED=1
+        const val COLOR_GREEN=2
+        const val COLOR_BLUE=3
+        const val COLOR_YELLOW=4
 
-        val TYPE_ROUND=0
-        val TYPE_RECT_HOR=1
-        val TYPE_RECT_VER=2
+        const val TYPE_ROUND=0
+        const val TYPE_RECT_HOR=1
+        const val TYPE_RECT_VER=2
     }
 }

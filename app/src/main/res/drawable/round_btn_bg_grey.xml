@@ -13,7 +13,7 @@
             <corners android:radius="100dp"/>
             <stroke android:color="@color/btn_border_dark"
                     android:width="1dp"/>
-            <solid android:color="#dfdfdf"/>
+            <solid android:color="@color/bg_color_btn_grey_pressed"/>
         </shape>
     </item>
     <item android:state_enabled="false">
@@ -21,7 +21,7 @@
             <corners android:radius="100dp"/>
             <stroke android:color="@color/btn_border_dark"
                     android:width="1dp"/>
-            <solid android:color="#8F8F8F"/>
+            <solid android:color="@color/bg_color_btn_disabled"/>
         </shape>
 
     </item>

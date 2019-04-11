@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.widget.LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                              android:layout_width="match_parent"
-                             android:layout_height="match_parent">
-    <ScrollView android:layout_width="match_parent" android:layout_height="match_parent">
-        <TableLayout
+                             android:layout_height="match_parent" android:gravity="center">
+
+        <GridView
+                android:id="@+id/gridview_remote"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="20dp"
-                android:id="@+id/remote_table">
-        </TableLayout>
-    </ScrollView>
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:numColumns="auto_fit"
+                android:verticalSpacing="10dp"
+                android:horizontalSpacing="24dp"
+                android:stretchMode="spacingWidthUniform" android:layout_margin="10dp"/>
 
 </android.widget.LinearLayout>

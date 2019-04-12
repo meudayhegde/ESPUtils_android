@@ -16,9 +16,11 @@ class RemoteButton(context: Context?, properties:ButtonProperties) : Button(cont
     init {
         this.properties=properties
         setButtonProperties()
-        properties.setOnModificationListener({
-            setButtonProperties()
-        } as OnModificationListener)
+        properties.setOnModificationListener(object:OnModificationListener{
+            override fun onModified() {
+                setButtonProperties()
+            }
+        })
     }
 
     fun setButtonProperties(){

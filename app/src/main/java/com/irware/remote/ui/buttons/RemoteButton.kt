@@ -2,8 +2,11 @@ package com.irware.remote.ui.buttons
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Color
+import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.LinearLayout
 import com.irware.remote.MainActivity
 import com.irware.remote.R
 import com.irware.remote.holders.ButtonProperties
@@ -11,22 +14,45 @@ import com.irware.remote.holders.OnModificationListener
 
 @SuppressLint("ViewConstructor")
 class RemoteButton(context: Context?, properties:ButtonProperties) : Button(context) {
-
     private var properties:ButtonProperties?=null
     init {
         this.properties=properties
+        setTextColor(Color.WHITE)
         setButtonProperties()
+        gravity= Gravity.CENTER
+        setTextSize(Button.AUTO_SIZE_TEXT_TYPE_UNIFORM, 12F)
         properties.setOnModificationListener(object:OnModificationListener{
-            override fun onModified() {
-                setButtonProperties()
+            override fun onTypeModified() {
+                setType(type = properties.getAlignType())
             }
+
+            override fun onIconModified() {
+
+            }
+
+            override fun onTextModified() {
+                text = properties.getText()
+            }
+
+            override fun onColorModified() {
+                setColorMode(bg_type = properties.getColorMode())
+            }
+
+            override fun onIrModified() {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun onPositionModified() {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
         })
     }
 
     fun setButtonProperties(){
-        setColorMode(properties?.getColorMode()!!)
-        setType(properties?.getIconType()!!)
-        setText(properties?.getText()!!)
+        setType(type = properties?.getAlignType()!!)
+        text = properties?.getText()!!
+        setColorMode(bg_type = properties?.getColorMode()!!)
     }
 
     fun getProperties():ButtonProperties{
@@ -52,13 +78,16 @@ class RemoteButton(context: Context?, properties:ButtonProperties) : Button(cont
     fun setType(type:Int){
         when(type){
             TYPE_RECT_HOR -> {
-                layoutParams= ViewGroup.LayoutParams(MainActivity.size.x/7,MainActivity.size.x/12)
+                    layoutParams= LinearLayout.LayoutParams(BTN_WIDTH-(2* BTN_PADDING), MIN_HIGHT-(2* BTN_PADDING))
             }
-            TYPE_ROUND -> {
-                layoutParams= ViewGroup.LayoutParams(MainActivity.size.x/10,MainActivity.size.x/10)
+            TYPE_ROUND_MINI -> {
+                layoutParams= LinearLayout.LayoutParams(MIN_HIGHT-(2* BTN_PADDING),MIN_HIGHT-(2* BTN_PADDING))
+            }
+            TYPE_ROUND_MEDIUM -> {
+                layoutParams= LinearLayout.LayoutParams(BTN_WIDTH-(2* BTN_PADDING),BTN_WIDTH-(2* BTN_PADDING))
             }
             TYPE_RECT_VER -> {
-                layoutParams= ViewGroup.LayoutParams(MainActivity.size.x/12,MainActivity.size.x/7)
+                layoutParams= ViewGroup.LayoutParams(MIN_HIGHT-(2* BTN_PADDING),BTN_WIDTH-(2* BTN_PADDING))
             }
         }
     }
@@ -70,8 +99,13 @@ class RemoteButton(context: Context?, properties:ButtonProperties) : Button(cont
         const val COLOR_BLUE=3
         const val COLOR_YELLOW=4
 
-        const val TYPE_ROUND=0
+        const val TYPE_ROUND_MINI=0
         const val TYPE_RECT_HOR=1
         const val TYPE_RECT_VER=2
+        const val TYPE_ROUND_MEDIUM=3
+
+        const val BTN_WIDTH=160
+        const val MIN_HIGHT=80
+        const val BTN_PADDING=10
     }
 }

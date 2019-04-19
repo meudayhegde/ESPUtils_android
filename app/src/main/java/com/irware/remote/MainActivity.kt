@@ -15,6 +15,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
 import android.widget.EditText
+import com.irware.remote.net.SocketClient
 import com.irware.remote.ui.fragments.AboutFragment
 import com.irware.remote.ui.fragments.HomeFragment
 import com.irware.remote.ui.fragments.ManageRemoteFragment
@@ -55,6 +56,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         toggle.syncState()
 
         nav_view.setNavigationItemSelectedListener(this)
+        nav_view.setCheckedItem(R.id.home_drawer)
+        if(homeFragment==null)
+            homeFragment=HomeFragment()
+        replaceFragment(homeFragment as Fragment)
     }
 
     fun validate():Boolean{
@@ -143,6 +148,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     companion object {
         val size:Point=Point();
+        val socketClient=SocketClient()
         private var authenticated=false
     }
 }

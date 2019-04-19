@@ -6,20 +6,21 @@ import android.view.ViewGroup
 import android.view.View
 import android.view.View.OnDragListener
 
-
-
 internal class ButtonDragListener : OnDragListener {
-
     override fun onDrag(v: View, event: DragEvent): Boolean {
-        val action = event.action
         when (event.action) {
             DragEvent.ACTION_DROP -> {
                 val view = event.localState as View
                 val owner = view.parent as ViewGroup
-                owner.removeView(view)
                 val container = v as LinearLayout
-                container.addView(view)
+                if(container.childCount==0) {
+                    owner.removeView(view)
+                    container.addView(view)
+                }
                 view.visibility = View.VISIBLE
+            }
+            DragEvent.ACTION_DRAG_ENDED ->{
+                (event.localState as View).visibility=View.VISIBLE
             }
         }
         return true

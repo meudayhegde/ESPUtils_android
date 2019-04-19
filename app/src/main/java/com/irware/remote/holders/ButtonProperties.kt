@@ -1,6 +1,6 @@
 package com.irware.remote.holders
 
-class ButtonProperties(ir_code:String,icon_type:Int,color_mode:Int,btn_position:Int,btn_text:String) {
+class ButtonProperties(ir_code:String,align_type:Int,color_mode:Int,btn_position:Int,btn_text:String) {
     private var IR_CODE:String?=null
     private var BTN_TEXT:String=""
     private var ICON_TYPE=0
@@ -10,7 +10,7 @@ class ButtonProperties(ir_code:String,icon_type:Int,color_mode:Int,btn_position:
 
     init{
         IR_CODE=ir_code
-        ICON_TYPE=icon_type
+        ICON_TYPE=align_type
         COLOR_MODE=color_mode
         BTN_POSITION=btn_position
         BTN_TEXT=btn_text
@@ -27,7 +27,7 @@ class ButtonProperties(ir_code:String,icon_type:Int,color_mode:Int,btn_position:
     fun getColorMode():Int{
         return COLOR_MODE
     }
-    fun getIconType():Int{
+    fun getAlignType():Int{
         return ICON_TYPE
     }
     fun getText():String{
@@ -37,25 +37,25 @@ class ButtonProperties(ir_code:String,icon_type:Int,color_mode:Int,btn_position:
 
     fun setPosition(btn_position:Int){
         BTN_POSITION=btn_position
-        listener?.onModified()
+        listener?.onPositionModified()
     }
 
     fun setIrCode(ir_code: String){
         IR_CODE=ir_code
-        listener?.onModified()
+        listener?.onIrModified()
     }
 
-    fun etColorMode(color_mode: Int){
+    fun setColorMode(color_mode: Int){
         COLOR_MODE=color_mode
-        listener?.onModified()
+        listener?.onColorModified()
     }
-    fun setIconType(icon_type: Int){
+    fun setAlignType(icon_type: Int){
         ICON_TYPE=icon_type
-        listener?.onModified()
+        listener?.onIconModified()
     }
     fun setText(btn_text:String){
         BTN_TEXT=btn_text
-        listener?.onModified()
+        listener?.onTextModified()
     }
 
     fun setOnModificationListener(listener: OnModificationListener){
@@ -64,5 +64,10 @@ class ButtonProperties(ir_code:String,icon_type:Int,color_mode:Int,btn_position:
 }
 
 interface OnModificationListener{
-    fun onModified()
+    fun onIconModified()
+    fun onTypeModified()
+    fun onTextModified()
+    fun onColorModified()
+    fun onIrModified()
+    fun onPositionModified()
 }

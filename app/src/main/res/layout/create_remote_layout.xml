@@ -1,17 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.widget.LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.widget.RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                             xmlns:fab="http://schemas.android.com/apk/res-auto"
                              android:layout_width="match_parent"
                              android:layout_height="match_parent" android:gravity="center">
 
-        <GridView
-                android:id="@+id/gridview_remote"
+        <ListView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="center"
-                android:numColumns="auto_fit"
-                android:verticalSpacing="10dp"
-                android:horizontalSpacing="10dp"
-                android:stretchMode="spacingWidthUniform"
-                android:layout_marginRight="10dp" android:layout_marginTop="10dp" android:layout_marginBottom="10dp"/>
+                android:id="@+id/btn_layout_listview"/>
 
-</android.widget.LinearLayout>
+        <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/fab_new_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                fab:fab_label="New Button"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                fab:fab_size="mini"
+                fab:fab_colorNormal="@color/blue_fab_normal"
+                fab:fab_colorPressed="@color/blue_fab_pressed"
+                fab:fab_colorRipple="@color/blue_fab_ripple"
+                android:src="@drawable/fab_add" android:layout_marginRight="20dp"
+                android:layout_marginBottom="20dp"/>
+</android.widget.RelativeLayout>

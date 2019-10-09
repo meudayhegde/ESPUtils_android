@@ -3,6 +3,7 @@ package com.irware.remote.ui.adapters
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AbsListView
 import android.widget.BaseAdapter
 import android.widget.LinearLayout
 import com.irware.remote.MainActivity
@@ -36,5 +37,31 @@ class ButtonLayoutAdapter(layoutList: ArrayList<LinearLayout>) : BaseAdapter(){
 
     override fun getCount(): Int {
         return layoutList.size
+    }
+
+    fun getGetEmptyPosition():Int{
+        for(i in 0..layoutList.size-1){
+            for(j in 0..((MainActivity.size.x/(RemoteButton.BTN_WIDTH))-1)){
+                if((layoutList[i].getChildAt(j)as LinearLayout).childCount==0)
+                    return (i*(MainActivity.size.x/(RemoteButton.BTN_WIDTH)))+j
+            }
+        }
+        var layout=LinearLayout(layoutList[0].context)
+        layout.layoutParams =
+            AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.WRAP_CONTENT)
+        layout.gravity = Gravity.CENTER
+        layout.orientation = LinearLayout.HORIZONTAL
+        for (i in 1..MainActivity.size.x / (RemoteButton.BTN_WIDTH)) {
+            var child = LinearLayout(layout.context)
+            child.gravity = Gravity.CENTER
+            child.layoutParams =
+                LinearLayout.LayoutParams(RemoteButton.BTN_WIDTH, LinearLayout.LayoutParams.MATCH_PARENT)
+            child.minimumHeight = RemoteButton.MIN_HIGHT
+            child.setBackgroundResource(R.drawable.layout_with_border_bg)
+            child.setOnDragListener(ButtonDragListener())
+            layout.addView(child)
+        }
+        layoutList.add(layout)
+        return ((layoutList.size-1)*(MainActivity.size.x/(RemoteButton.BTN_WIDTH)))
     }
 }

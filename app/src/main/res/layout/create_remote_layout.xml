@@ -17,9 +17,9 @@
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentRight="true"
                 fab:fab_size="mini"
-                fab:fab_colorNormal="@color/blue_fab_normal"
-                fab:fab_colorPressed="@color/blue_fab_pressed"
-                fab:fab_colorRipple="@color/blue_fab_ripple"
+                fab:fab_colorNormal="@color/color_fab"
+                fab:fab_colorPressed="@color/color_fab_ripple"
+                fab:fab_colorRipple="@color/color_fab_ripple"
                 android:src="@drawable/fab_add" android:layout_marginRight="20dp"
                 android:layout_marginBottom="20dp"/>
 </android.widget.RelativeLayout>

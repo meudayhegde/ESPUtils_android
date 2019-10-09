@@ -20,9 +20,9 @@
             fab:menu_backgroundColor="#44000000"
             fab:menu_buttonSpacing="5dp"
             fab:menu_fab_label="Actions "
-            fab:menu_colorNormal="@color/blue_fab_normal"
-            fab:menu_colorPressed="@color/blue_fab_pressed"
-            fab:menu_colorRipple="@color/blue_fab_ripple">
+            fab:menu_colorNormal="?attr/colorPrimary"
+            fab:menu_colorPressed="?attr/colorAccent"
+            fab:menu_colorRipple="?attr/colorAccent">
 
         <com.github.clans.fab.FloatingActionButton
                 android:id="@+id/fab_new_remote"
@@ -30,9 +30,9 @@
                 android:layout_height="wrap_content"
                 fab:fab_label="Create Remote"
                 fab:fab_size="mini"
-                fab:fab_colorNormal="@color/blue_fab_normal"
-                fab:fab_colorPressed="@color/blue_fab_pressed"
-                fab:fab_colorRipple="@color/blue_fab_ripple"
+                fab:fab_colorNormal="?attr/colorPrimary"
+                fab:fab_colorPressed="?attr/colorAccent"
+                fab:fab_colorRipple="?attr/colorAccent"
                 android:src="@drawable/fab_add"/>
 
         <com.github.clans.fab.FloatingActionButton
@@ -41,9 +41,9 @@
                 android:layout_height="wrap_content"
                 fab:fab_label="Import Remote"
                 fab:fab_size="mini"
-                fab:fab_colorNormal="@color/blue_fab_normal"
-                fab:fab_colorPressed="@color/blue_fab_pressed"
-                fab:fab_colorRipple="@color/blue_fab_ripple"
+                fab:fab_colorNormal="?attr/colorPrimary"
+                fab:fab_colorPressed="?attr/colorAccent"
+                fab:fab_colorRipple="?attr/colorAccent"
                 android:src="@drawable/ic_fab_import"/>
 
     </com.github.clans.fab.FloatingActionMenu>

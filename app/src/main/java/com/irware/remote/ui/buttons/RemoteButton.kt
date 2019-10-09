@@ -94,10 +94,10 @@ class RemoteButton(context: Context?, properties:ButtonProperties) : Button(cont
 
     companion object{
         const val COLOR_GREY=0
-        const val COLOR_RED=1
+        const val COLOR_RED=4
         const val COLOR_GREEN=2
-        const val COLOR_BLUE=3
-        const val COLOR_YELLOW=4
+        const val COLOR_BLUE=1
+        const val COLOR_YELLOW=3
 
         const val TYPE_ROUND_MINI=0
         const val TYPE_RECT_HOR=1

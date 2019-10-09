@@ -1,26 +1,35 @@
 package com.irware.remote.holders
 
-class ButtonProperties(ir_code:String,align_type:Int,color_mode:Int,btn_position:Int,btn_text:String) {
-    private var IR_CODE:String?=null
+import org.json.JSONObject
+
+class ButtonProperties {
+    private var IR_CODE:IntArray?=null
     private var BTN_TEXT:String=""
     private var ICON_TYPE=0
     private var COLOR_MODE=0
     private var BTN_POSITION=0
     private var listener:OnModificationListener?=null
 
-    init{
-        IR_CODE=ir_code
-        ICON_TYPE=align_type
-        COLOR_MODE=color_mode
-        BTN_POSITION=btn_position
-        BTN_TEXT=btn_text
+    constructor(ir_code: IntArray, align_type: Int, color_mode: Int, btn_position: Int, btn_text: String) {
+        IR_CODE = ir_code
+        ICON_TYPE = align_type
+        COLOR_MODE = color_mode
+        BTN_POSITION = btn_position
+        BTN_TEXT = btn_text
+    }
+    constructor(obj:JSONObject){
+        IR_CODE = obj.get("code") as IntArray
+        ICON_TYPE = obj.getInt("type")
+        COLOR_MODE = obj.getInt("color")
+        BTN_POSITION = obj.getInt("position")
+        BTN_TEXT = obj.getString("text")
     }
 
     fun getPosition():Int{
         return BTN_POSITION
     }
 
-    fun getIrCode():String{
+    fun getIrCode():IntArray{
         return IR_CODE!!
     }
 
@@ -40,7 +49,7 @@ class ButtonProperties(ir_code:String,align_type:Int,color_mode:Int,btn_position
         listener?.onPositionModified()
     }
 
-    fun setIrCode(ir_code: String){
+    fun setIrCode(ir_code: IntArray){
         IR_CODE=ir_code
         listener?.onIrModified()
     }

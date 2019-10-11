@@ -68,8 +68,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     fun min(x:Int,y:Int):Int{
-        if(x<y) return x
-        return y
+        return if(x<y) x else y
     }
 
     fun setNavView(){

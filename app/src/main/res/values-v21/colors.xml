@@ -16,4 +16,5 @@
     <color name="blue_fab_ripple">#01D3FF</color>
     <color name="transparent">#00ffffff</color>
     <color name="item_checked">#b56adfff</color>
+    <color name="mtrl_textinput_default_box_stroke_color">#fff</color>
 </resources>

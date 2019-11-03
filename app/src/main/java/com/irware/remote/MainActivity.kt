@@ -3,21 +3,27 @@ package com.irware.remote
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.graphics.Point
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.support.design.widget.NavigationView
+import android.support.design.widget.TextInputLayout
 import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.CardView
+import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.*
 import com.irware.remote.listeners.OnValidationListener
+import com.irware.remote.ui.BlurBuilder
 import com.irware.remote.ui.fragments.AboutFragment
 import com.irware.remote.ui.fragments.HomeFragment
 import com.irware.remote.ui.fragments.ManageRemoteFragment
@@ -25,6 +31,7 @@ import com.irware.remote.ui.fragments.OnFragmentInteractionListener
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import java.net.InetAddress
+
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
     OnFragmentInteractionListener {
@@ -40,16 +47,31 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         super.onCreate(savedInstanceState)
 
         val splash=Dialog(this,android.R.style.Theme_Material_Light_NoActionBar_Fullscreen)
-        splash.setContentView(R.layout.splash_screen)
+        val splashView=layoutInflater.inflate(R.layout.splash_screen,null)
+        splash.setContentView(splashView)
 
+        val originalBitmap = BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher_background)
+        val blurredBitmap = BlurBuilder.blur(this, originalBitmap)
+        splashView.background = BitmapDrawable(resources, blurredBitmap)
+        splash.window.attributes.windowAnimations = R.style.DialogAnimationTheme
+        splash.show()
         windowManager.defaultDisplay.getSize(size)
 
         val logo=splash.findViewById<ImageView>(R.id.splash_logo)
         logo.layoutParams=LinearLayout.LayoutParams(min(size.x,size.y)/2,min(size.x,size.y)/2)
+        val layoutLogo=splashView.findViewById<LinearLayout>(R.id.layout_logo)
+        layoutLogo.gravity= Gravity.CENTER
+
 
         Handler().postDelayed({
-            val loginCard=findViewById<CardView>(R.id.login_view)
+            val loginCard=splash.findViewById<LinearLayout>(R.id.login_view)
+
+            val cardAnim=AnimationUtils.loadAnimation(this,R.anim.expand)
+            val logoAnim=AnimationUtils.loadAnimation(this,R.anim.move)
+
             loginCard.visibility=View.VISIBLE
+            layoutLogo.startAnimation(logoAnim)
+            loginCard.startAnimation(cardAnim)
 
             if (!authenticated) {
                 validate(splash,object:OnValidationListener{
@@ -170,8 +192,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-    fun replaceFragment(fragment:Fragment){
-        getSupportFragmentManager().beginTransaction().replace(R.id.include_content,fragment).commit()
+    private fun replaceFragment(fragment:Fragment){
+        supportFragmentManager.beginTransaction().replace(R.id.include_content,fragment).commit()
     }
 
     companion object {

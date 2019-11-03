@@ -3,30 +3,27 @@ package com.irware.remote
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.graphics.Point
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
-import android.support.constraint.ConstraintLayout
 import android.support.design.widget.NavigationView
 import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.CardView
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.*
 import com.irware.remote.listeners.OnValidationListener
-import com.irware.remote.net.SocketClient
 import com.irware.remote.ui.fragments.AboutFragment
 import com.irware.remote.ui.fragments.HomeFragment
 import com.irware.remote.ui.fragments.ManageRemoteFragment
+import com.irware.remote.ui.fragments.OnFragmentInteractionListener
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
-
-import com.irware.remote.ui.fragments.OnFragmentInteractionListener
-import java.lang.Integer.min
 import java.net.InetAddress
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
@@ -41,27 +38,30 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        setSupportActionBar(toolbar)
+
+        val splash=Dialog(this,android.R.style.Theme_Material_Light_NoActionBar_Fullscreen)
+        splash.setContentView(R.layout.splash_screen)
 
         windowManager.defaultDisplay.getSize(size)
 
-        val splash = Dialog(this, android.R.style.Theme_Material_NoActionBar_Fullscreen);
-        splash.setCancelable(false)
-        splash.setContentView(R.layout.splash_screen)
         val logo=splash.findViewById<ImageView>(R.id.splash_logo)
         logo.layoutParams=LinearLayout.LayoutParams(min(size.x,size.y)/2,min(size.x,size.y)/2)
-        splash.show()
+
         Handler().postDelayed({
+            val loginCard=findViewById<CardView>(R.id.login_view)
+            loginCard.visibility=View.VISIBLE
+
             if (!authenticated) {
-                validate(object:OnValidationListener{
-                        override fun onValidated(verified: Boolean) {
-                            splash.dismiss()
-                            setNavView()
-                        }
-                    })
+                validate(splash,object:OnValidationListener{
+                    override fun onValidated(verified: Boolean) {
+                        splash.dismiss()
+                        setContentView(R.layout.activity_main)
+                        setNavView()
+                    }
+                })
             }else{
                 splash.dismiss()
+                setContentView(R.layout.activity_main)
                 setNavView()
             }
         },2000)
@@ -72,6 +72,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     fun setNavView(){
+        setSupportActionBar(toolbar)
         val toggle = ActionBarDrawerToggle(
             this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close
         )
@@ -85,22 +86,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         replaceFragment(homeFragment as Fragment)
     }
 
-    fun validate(validatedListener:OnValidationListener){
+    fun validate(splash:Dialog,validatedListener:OnValidationListener){
 
-        val login_dialog=object:Dialog(this,R.style.AppTheme){
-            override fun onBackPressed(){
-                finish()
-            }
-        }
-
-        val login_view=getLayoutInflater().inflate(R.layout.layout_login,null) as ConstraintLayout
-        login_dialog.setContentView(login_view)
-        login_dialog.setCancelable(false)
-        login_dialog.show()
-        val ipAddr= login_view.findViewById<EditText>(R.id.et_ip_addr)
-        val pass= login_view.findViewById<EditText>(R.id.et_password)
-        val uname= login_view.findViewById<EditText>(R.id.et_user_name)
-        val  submit=login_view.findViewById<Button>(R.id.btn_submit)
+        val ipAddr= splash.findViewById<EditText>(R.id.editTextIP)
+        val pass= splash.findViewById<EditText>(R.id.editTextPassword)
+        val uname= splash.findViewById<EditText>(R.id.edit_text_uname)
+        val  submit= splash.findViewById<Button>(R.id.cirLoginButton)
 
         submit.setOnClickListener {
             val prefs=getSharedPreferences("ip_config", Context.MODE_PRIVATE)
@@ -112,7 +103,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         edit.putString("mcu_ip", ipAddr.text.toString())
                         edit.commit()
                         validatedListener.onValidated(true)
-                        login_dialog.dismiss()
                     }
                 }else{
                     runOnUiThread {

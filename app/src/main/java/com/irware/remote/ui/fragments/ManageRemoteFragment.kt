@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import android.widget.TableLayout
 import com.github.clans.fab.FloatingActionButton
 
@@ -23,7 +24,7 @@ class ManageRemoteFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val rootView = inflater.inflate(R.layout.fragment_manage_remote, container, false) as LinearLayout
+        val rootView = inflater.inflate(R.layout.fragment_manage_remote, container, false) as RelativeLayout
             rootView.findViewById<FloatingActionButton>(R.id.fab_new_remote).setOnClickListener {
                 CreateRemoteDialog(context).show()
             }

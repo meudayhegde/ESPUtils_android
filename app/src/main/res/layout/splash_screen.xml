@@ -4,38 +4,25 @@
               android:theme="@style/AppTheme.NoActionBar" android:gravity="center" android:background="@mipmap/ic_launcher_background"
         android:orientation="vertical">
 
-    <LinearLayout
-            android:layout_width="match_parent"
+
+    <ImageView
+            android:id="@+id/splash_logo"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_gravity="center"
-            android:id="@+id/layout_logo">
-        <ImageView
-                android:id="@+id/splash_logo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/splash_logo_desc"
-                android:src="@drawable/logo_large" />
+            android:contentDescription="@string/splash_logo_desc"
+            android:src="@drawable/logo_large" />
 
-        <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14sp"
-                android:textSize="16sp"
-                android:text="@string/nav_header_subtitle"
-                android:textColor="@color/whiteTextColor"
-                android:gravity="center"/>
-
-    </LinearLayout>
 
     <include
             android:id="@+id/login_view"
             layout="@layout/login_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@id/splash_logo"
             android:layout_marginLeft="25sp"
-            android:layout_marginRight="25sp"
             android:layout_marginTop="75sp"
+            android:layout_marginRight="25sp"
             android:visibility="gone" />
+
 
 </LinearLayout>

@@ -31,6 +31,7 @@ import com.irware.remote.ui.fragments.OnFragmentInteractionListener
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import java.net.InetAddress
+import kotlin.math.roundToInt
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
@@ -54,14 +55,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val blurredBitmap = BlurBuilder.blur(this, originalBitmap)
         splashView.background = BitmapDrawable(resources, blurredBitmap)
         splash.window.attributes.windowAnimations = R.style.DialogAnimationTheme
+        splash.setCancelable(false)
         splash.show()
         windowManager.defaultDisplay.getSize(size)
 
         val logo=splash.findViewById<ImageView>(R.id.splash_logo)
-        logo.layoutParams=LinearLayout.LayoutParams(min(size.x,size.y)/2,min(size.x,size.y)/2)
-        val layoutLogo=splashView.findViewById<LinearLayout>(R.id.layout_logo)
-        layoutLogo.gravity= Gravity.CENTER
-
+        logo.layoutParams=LinearLayout.LayoutParams((min(size.x,size.y)*0.6F).roundToInt(),(min(size.x,size.y)*0.6F).roundToInt())
 
         Handler().postDelayed({
             val loginCard=splash.findViewById<LinearLayout>(R.id.login_view)
@@ -70,7 +69,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             val logoAnim=AnimationUtils.loadAnimation(this,R.anim.move)
 
             loginCard.visibility=View.VISIBLE
-            layoutLogo.startAnimation(logoAnim)
+            logo.startAnimation(logoAnim)
             loginCard.startAnimation(cardAnim)
 
             if (!authenticated) {
@@ -89,7 +88,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         },2000)
     }
 
-    fun min(x:Int,y:Int):Int{
+    private fun min(x:Int, y:Int):Int{
         return if(x<y) x else y
     }
 
@@ -108,7 +107,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         replaceFragment(homeFragment as Fragment)
     }
 
-    fun validate(splash:Dialog,validatedListener:OnValidationListener){
+    private fun validate(splash:Dialog, validatedListener:OnValidationListener){
 
         val ipAddr= splash.findViewById<EditText>(R.id.editTextIP)
         val pass= splash.findViewById<EditText>(R.id.editTextPassword)

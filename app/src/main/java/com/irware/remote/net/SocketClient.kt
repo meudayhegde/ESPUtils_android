@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import android.os.Handler
 import android.os.Looper
 import com.irware.remote.MainActivity
+import org.json.JSONObject
 import java.io.*
 import java.lang.Thread.sleep
 import java.net.Socket
@@ -30,23 +31,24 @@ object SocketClient{
         }
     }
 
-    fun authenticate(ipAddr:String, user_name:String, passwd:String): Boolean {
-        return true
-    }
-
-    fun readIrCode(irlistener:IrCodeListener,pref:SharedPreferences) {
+    fun readIrCode(irlistener:IrCodeListener) {
         Thread {
-            var ip = pref.getString("mcu_ip", "192.168.1.1")
-            var sock = Socket("192.168.1.1", 48321)
+            try {
+             /*   var connector = Connector(MainActivity.MCU_IP)
+                connector.sendLine(
+                    "{\"request\":\"ir_capture\",\"username\":\""
+                            + MainActivity.USERNAME + "\",\"password\":\"" + MainActivity.PASSWORD + "\"}"
+                )
 
-            var dis = DataInputStream(sock.getInputStream())
-            var dos = DataOutputStream(sock.getOutputStream())
-
-            dos.write("{\"task\":\"irrecv\"}\n".toByteArray())
-
-            var code = dis.readUTF()
-            sock.close()
-            irlistener.onIrRead(code)
+                var response: String = JSONObject(connector.readLine())["response"].toString()
+                connector.close()
+                if (response == "deny") irlistener.onDeny()
+                else if (response == "timeout") irlistener.onTimeout()
+                else irlistener.onIrRead(response)*/
+                irlistener.onIrRead("button")
+            }catch(ex:IOException){
+                irlistener.onDeny()
+            }
         }.start()
     }
 
@@ -73,5 +75,7 @@ private fun IntArray.getString(): String? {
 }
 
 interface IrCodeListener{
-    fun onIrRead(code:String)
+    fun onIrRead(result:String)
+    fun onTimeout()
+    fun onDeny()
 }

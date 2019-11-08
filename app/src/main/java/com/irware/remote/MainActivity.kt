@@ -2,30 +2,22 @@ package com.irware.remote
 
 import android.annotation.SuppressLint
 import android.app.Dialog
-import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.graphics.BitmapFactory
 import android.graphics.Point
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
-import android.support.annotation.RequiresApi
 import android.support.design.widget.NavigationView
-import android.support.design.widget.TextInputLayout
 import android.support.v4.app.Fragment
-import android.support.v4.util.ArraySet
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.text.TextUtils
-import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.*
 import com.irware.remote.listeners.OnValidationListener
@@ -40,9 +32,6 @@ import kotlinx.android.synthetic.main.app_bar_main.*
 import org.json.JSONObject
 import java.io.*
 import java.net.InetAddress
-import java.net.Socket
-import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
 
 
@@ -57,9 +46,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private var aboutFragment: AboutFragment?=null
     private var ipList=ArrayList<String>()
     private var ipConf : File? = null
+    private var authenticated=false
 
+    @SuppressLint("InflateParams")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        activity = this
         ipConf = File(filesDir.absolutePath+File.separator+"iplist.conf")
         if(!ipConf!!.exists())ipConf!!.createNewFile()
         val splash=Dialog(this,android.R.style.Theme_Light_NoTitleBar_Fullscreen)
@@ -77,30 +69,95 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val logo=splash.findViewById<ImageView>(R.id.splash_logo)
         logo.layoutParams=LinearLayout.LayoutParams((min(size.x,size.y)*0.6F).roundToInt(),(min(size.x,size.y)*0.6F).roundToInt())
 
-        Handler().postDelayed({
-            val loginCard=splash.findViewById<LinearLayout>(R.id.login_view)
+        val pref=getSharedPreferences("login",0)
+        val editor=pref.edit()
 
-            val cardAnim=AnimationUtils.loadAnimation(this,R.anim.expand)
-            val logoAnim=AnimationUtils.loadAnimation(this,R.anim.move)
+        val ipAddr= splash.findViewById<EditText>(R.id.editTextIP)
+        val pass= splash.findViewById<EditText>(R.id.editTextPassword)
+        pass.setText(pref.getString("password",""))
 
-            loginCard.visibility=View.VISIBLE
-            logo.startAnimation(logoAnim)
-            loginCard.startAnimation(cardAnim)
+        val uname= splash.findViewById<EditText>(R.id.edit_text_uname)
+        uname.setText(pref.getString("username",""))
+        val  submit= splash.findViewById<Button>(R.id.cirLoginButton)
+        val validatedListener=object:OnValidationListener{
+            override fun onValidated(verified: Boolean) {
+                if(verified){
+                    splash.dismiss()
+                    this@MainActivity.setContentView(R.layout.activity_main)
+                    setNavView()
+                }
+                else Toast.makeText(this@MainActivity,"Authentication failed",Toast.LENGTH_LONG).show()
+            }
+        }
 
-            if (!authenticated) {
-                validate(splash,object:OnValidationListener{
-                    override fun onValidated(verified: Boolean) {
-                        splash.dismiss()
-                        setContentView(R.layout.activity_main)
-                        setNavView()
+        submit.setOnClickListener {
+            val ip = ipAddr.text.toString()
+            Thread{
+                if(InetAddress.getByName(ip).isReachable(500)) {
+                    try{
+                        val connector = SocketClient.Connector(ip)
+
+                        connector.sendLine("{\"request\":\"authenticate\",\"username\":\""+uname.text.toString()+"\",\"password\":\""+pass.text.toString()+"\",\"data\":\"__\"}")
+                        val response=connector.readLine()
+                        connector.close()
+                        if(JSONObject(response)["response"]=="authenticated"){
+                            MCU_IP = ip
+                            USERNAME = uname.text.toString()
+                            PASSWORD = pass.text.toString()
+                            if(!ipList.contains(ip)) ipList.add(0,ip)
+                            else {ipList.remove(ip); ipList.add(0,ip)}
+                            runOnUiThread {
+                                authenticated=true
+                                editor.putString("username",USERNAME)
+                                editor.putString("password",PASSWORD)
+                                editor.apply()
+                                validatedListener.onValidated(true)
+                            }
+                        }else{
+                            runOnUiThread {
+                                Toast.makeText(this@MainActivity,
+                                    "Authentication failed, please check credentials",Toast.LENGTH_LONG).show()
+                            }
+                        }
+
+                    }catch(ex:IOException){
+                        runOnUiThread {
+                            Toast.makeText(this@MainActivity,"ip is not of a valid iRWaRE device",Toast.LENGTH_LONG).show()
+                        }
                     }
-                })
-            }else{
-                splash.dismiss()
-                setContentView(R.layout.activity_main)
-                setNavView()
+
+                }else{
+                    runOnUiThread {
+                        Toast.makeText(this@MainActivity,"Ip is not reachable!",Toast.LENGTH_LONG).show()
+                    }
+                }
+                val writer=OutputStreamWriter(ipConf!!.outputStream())
+                writer.write(TextUtils.join("\n",ipList))
+                writer.flush()
+                writer.close()
+            }.start()
+        }
+
+
+        Handler().postDelayed({
+            if(splash.isShowing) {
+                val loginCard = splash.findViewById<LinearLayout>(R.id.login_view)
+
+                val cardAnim = AnimationUtils.loadAnimation(this, R.anim.expand)
+                val logoAnim = AnimationUtils.loadAnimation(this, R.anim.move)
+
+                loginCard.visibility = View.VISIBLE
+                logo.startAnimation(logoAnim)
+                loginCard.startAnimation(cardAnim)
+
+                if (authenticated) {
+                    splash.dismiss()
+                    setContentView(R.layout.activity_main)
+                    setNavView()
+                }
             }
         },2000)
+
         Thread{
             ipList= BufferedReader(InputStreamReader(ipConf!!.inputStream())).readLines() as ArrayList<String>
 
@@ -113,6 +170,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         connector.close()
                         runOnUiThread {
                             splash.findViewById<EditText>(R.id.editTextIP).setText(ip)
+                            if(ipAddr.text.isNotEmpty() and uname.text.isNotEmpty() and pass.text.isNotEmpty()){
+                                submit.callOnClick()
+                            }
                         }
                         ipList.remove(ip)
                         ipList.add(0,ip)
@@ -143,66 +203,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         replaceFragment(homeFragment as Fragment)
     }
 
-    private fun validate(splash:Dialog, validatedListener:OnValidationListener){
-        val pref=getSharedPreferences("login",0)
-        val editor=pref.edit()
-
-        val ipAddr= splash.findViewById<EditText>(R.id.editTextIP)
-        val pass= splash.findViewById<EditText>(R.id.editTextPassword)
-        pass.setText(pref.getString("password",""))
-
-        val uname= splash.findViewById<EditText>(R.id.edit_text_uname)
-        uname.setText(pref.getString("username",""))
-        val  submit= splash.findViewById<Button>(R.id.cirLoginButton)
-
-        submit.setOnClickListener {
-            val ip = ipAddr.text.toString()
-            Thread{
-                if(InetAddress.getByName(ip).isReachable(500)) {
-                    try{
-                        val connector = SocketClient.Connector(ip)
-
-                        connector.sendLine("{\"request\":\"authenticate\",\"username\":\""+uname.text.toString()+"\",\"password\":\""+pass.text.toString()+"\",\"data\":\"__\"}")
-                        val response=connector.readLine()
-                        if(response=="verified"){
-                            if(!ipList.contains(ip)){
-                                ipList.add(0,ip)
-                            }
-                            runOnUiThread {
-                                authenticated=true
-                                editor.putString("username",uname.text.toString())
-                                editor.putString("password",pass.text.toString())
-                                editor.apply()
-                                validatedListener.onValidated(true)
-                            }
-                        }else{
-                            runOnUiThread {
-                                Toast.makeText(this@MainActivity,"Authentication failed, please check credentials",Toast.LENGTH_LONG).show()
-                            }
-                        }
-
-                    }catch(ex:IOException){
-                        runOnUiThread {
-                            Toast.makeText(this@MainActivity,"ip is not of a valid iRWaRE device",Toast.LENGTH_LONG).show()
-                        }
-                    }
-
-                }else{
-                    runOnUiThread {
-                        Toast.makeText(this@MainActivity,"!--Ip is not reachable--!",Toast.LENGTH_LONG).show()
-                    }
-                }
-                val writer=OutputStreamWriter(ipConf!!.outputStream())
-                writer.write(TextUtils.join("\n",ipList))
-                writer.flush()
-                writer.close()
-            }.start()
-        }
-
-        if(ipAddr.text.isNotEmpty() and uname.text.isNotEmpty() and pass.text.isNotEmpty()){
-            submit.callOnClick()
-        }
-    }
 
     override fun onBackPressed() {
         if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
@@ -265,9 +265,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     companion object {
-        val size:Point=Point();
-        private var authenticated=false
-        public val PORT=48321
-        public var MCU_MAC=""
+        val size:Point=Point()
+        const val PORT=48321
+        var MCU_MAC = ""
+        var MCU_IP = "192.168.4.1"
+        var USERNAME = ""
+        var PASSWORD = ""
+        var activity:MainActivity? = null
     }
 }

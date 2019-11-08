@@ -7,7 +7,6 @@ import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
-import com.irware.remote.MainActivity
 import com.irware.remote.R
 import com.irware.remote.holders.ButtonProperties
 import com.irware.remote.holders.OnModificationListener
@@ -20,7 +19,7 @@ class RemoteButton(context: Context?, properties:ButtonProperties) : Button(cont
         setTextColor(Color.WHITE)
         setButtonProperties()
         gravity= Gravity.CENTER
-        setTextSize(Button.AUTO_SIZE_TEXT_TYPE_UNIFORM, 12F)
+        setTextSize(AUTO_SIZE_TEXT_TYPE_UNIFORM, 12F)
         properties.setOnModificationListener(object:OnModificationListener{
             override fun onTypeModified() {
                 setType(type = properties.getAlignType())
@@ -60,15 +59,15 @@ class RemoteButton(context: Context?, properties:ButtonProperties) : Button(cont
     }
 
     fun setColorMode(bg_type:Int){
-        var bg_res=0
+        var bgRes=0
         when(bg_type){
-            COLOR_GREY->bg_res = R.drawable.round_btn_bg_grey
-            COLOR_RED->bg_res=R.drawable.round_btn_bg_red
-            COLOR_GREEN->bg_res=R.drawable.round_btn_bg_green
-            COLOR_BLUE->bg_res=R.drawable.round_btn_bg_blue
-            COLOR_YELLOW->bg_res=R.drawable.round_btn_bg_yellow
+            COLOR_GREY->bgRes = R.drawable.round_btn_bg_grey
+            COLOR_RED->bgRes=R.drawable.round_btn_bg_red
+            COLOR_GREEN->bgRes=R.drawable.round_btn_bg_green
+            COLOR_BLUE->bgRes=R.drawable.round_btn_bg_blue
+            COLOR_YELLOW->bgRes=R.drawable.round_btn_bg_yellow
         }
-        setBackgroundResource(bg_res)
+        setBackgroundResource(bgRes)
     }
 
     fun setIcon(drawable_resid:Int){

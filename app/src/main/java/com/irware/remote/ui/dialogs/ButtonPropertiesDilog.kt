@@ -2,66 +2,129 @@ package com.irware.remote.ui.dialogs
 
 import android.content.Context
 import android.content.DialogInterface
-import android.content.SharedPreferences
 import android.support.v7.app.AlertDialog
 import android.view.View
+import android.view.ViewTreeObserver
 import android.widget.*
 import com.irware.remote.MainActivity
 import com.irware.remote.R
 import com.irware.remote.net.IrCodeListener
+import com.irware.remote.net.SocketClient
 import com.irware.remote.ui.adapters.ButtonColorAdapter
 import com.irware.remote.ui.adapters.ButtonStyleAdapter
 import com.irware.remote.ui.buttons.RemoteButton
-import android.view.ViewTreeObserver
-import com.irware.remote.net.SocketClient
 import org.json.JSONObject
 
 
-class ButtonPropertiesDilog(context:Context,listener:OnSelectedListener): AlertDialog(context),IrCodeListener {
-    var listener=listener
-    var buttonPositive: Button
-    var buttonNegative:Button
-    val colorDrawableList=intArrayOf(R.drawable.round_btn_bg_grey,R.drawable.round_btn_bg_blue,
+class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedListener): AlertDialog(context),IrCodeListener {
+
+    private var buttonPositive: Button
+    private var buttonNegative: Button
+
+    private var irCapLayout:LinearLayout?
+    private var btnPropTbl:LinearLayout?
+
+    private var irProgress:ProgressBar?
+    private var irCapErrLogo:ImageView?
+    private var irCapStatus:TextView?
+    private var irCapInst:TextView?
+
+    private val colorDrawableList=intArrayOf(R.drawable.round_btn_bg_grey,R.drawable.round_btn_bg_blue,
         R.drawable.round_btn_bg_green, R.drawable.round_btn_bg_yellow,
         R.drawable.round_btn_bg_red)
-    val iconDrawableList=intArrayOf(0,android.R.drawable.ic_lock_power_off, android.R.drawable.btn_plus,
+    private val iconDrawableList=intArrayOf(0,android.R.drawable.ic_lock_power_off, android.R.drawable.btn_plus,
         android.R.drawable.btn_minus,android.R.drawable.stat_notify_call_mute,
         android.R.drawable.ic_menu_info_details,android.R.drawable.arrow_up_float,
         android.R.drawable.arrow_down_float,android.R.drawable.ic_media_play,
         android.R.drawable.ic_media_pause,android.R.drawable.ic_media_next,
         android.R.drawable.ic_media_previous,android.R.drawable.ic_input_delete)
-    val styleParamList=ArrayList<AbsListView.LayoutParams>()
+    private val styleParamList=ArrayList<AbsListView.LayoutParams>()
 
     init{
         setView(layoutInflater.inflate(R.layout.create_button_dialog_layout,null))
-        setButton(DialogInterface.BUTTON_NEGATIVE,"cancel") { dialog, which -> dialog!!.dismiss() }
-        setButton(DialogInterface.BUTTON_POSITIVE,"add"){dialog, which -> }
+        setButton(DialogInterface.BUTTON_NEGATIVE,"cancel") { dialog, _ -> dialog!!.dismiss() }
+        setButton(DialogInterface.BUTTON_POSITIVE,"add"){ _, _ -> }
         show()
         setCanceledOnTouchOutside(false)
         setTitle("Capture IR Code")
         buttonPositive=getButton(DialogInterface.BUTTON_POSITIVE)
         buttonNegative=getButton(DialogInterface.BUTTON_NEGATIVE)
+
+        irCapLayout = findViewById<LinearLayout>(R.id.ir_capture_layout)
+        btnPropTbl = findViewById<LinearLayout>(R.id.button_prop_table)
+
+        irProgress = findViewById<ProgressBar>(R.id.ir_capture_progress)
+        irCapErrLogo = findViewById<ImageView>(R.id.ir_capture_error_logo)
+        irCapStatus = findViewById<TextView>(R.id.ir_capture_status)
+        irCapInst = findViewById<TextView>(R.id.ir_capture_instruction)
+
+        captureInit()
+    }
+
+    private fun captureInit(){
+        btnPropTbl?.visibility=View.GONE
+        irCapLayout?.visibility =View.VISIBLE
         buttonPositive.visibility=View.GONE
-        findViewById<LinearLayout>(R.id.ir_capture_layout)!!.visibility =View.VISIBLE
-        findViewById<LinearLayout>(R.id.button_prop_table)!!.visibility=View.GONE
 
-        var pref=context.getSharedPreferences("ip_config",Context.MODE_PRIVATE)
-        SocketClient.readIrCode(this,pref)
+        irProgress?.visibility = View.VISIBLE
+        irCapErrLogo?.visibility = View.GONE
+
+        irCapStatus?.text = context.getString(R.string.waiting_for_ir_signal)
+        irCapInst?.visibility = View.VISIBLE
+
+        SocketClient.readIrCode(this)
     }
 
-    override fun onIrRead(code: String){
-
-        var obj=JSONObject(code)
-        var array=obj.get("code") as IntArray
-        findViewById<LinearLayout>(R.id.ir_capture_layout)!!.visibility= View.GONE
-        findViewById<LinearLayout>(R.id.button_prop_table)!!.visibility=View.VISIBLE
-        manageButtonProperties(array)
+    override fun onIrRead(result: String){
+        MainActivity.activity?.runOnUiThread {
+            irCapLayout?.visibility= View.GONE
+            btnPropTbl?.visibility=View.VISIBLE
+            buttonPositive.text = context.getString(R.string.add_btn)
+            manageButtonProperties(result)
+        }
     }
 
-    private fun manageButtonProperties(array:IntArray){
+    override fun onTimeout() {
+        MainActivity.activity?.runOnUiThread{
+            Toast.makeText(context,"TimeOut",Toast.LENGTH_LONG).show()
+            irProgress?.visibility = View.GONE
+            irCapErrLogo?.visibility = View.VISIBLE
+            irCapStatus?.text = context.getString(R.string.ir_cap_status_timeout)
+            irCapInst?.visibility = View.GONE
+
+            buttonPositive.text = context.getString(R.string.retry)
+            buttonPositive.visibility = View.VISIBLE
+            buttonPositive.setOnClickListener {
+                captureInit()
+            }
+        }
+    }
+
+    override fun onDeny() {
+        MainActivity.activity?.runOnUiThread {
+            Toast.makeText(context,"Authentication failed, please login again",Toast.LENGTH_LONG).show()
+            irProgress?.visibility = View.GONE
+            irCapErrLogo?.visibility = View.VISIBLE
+            irCapInst?.visibility = View.GONE
+
+            irCapStatus?.text = context.getString(R.string.auth_failed_login_again)
+
+            buttonNegative.text = context.getString(R.string.exit)
+            buttonNegative.setOnClickListener {
+                MainActivity.activity?.finish()
+            }
+
+            buttonPositive.visibility = View.VISIBLE
+            buttonPositive.text = context.getString(R.string.restart)
+            buttonPositive.setOnClickListener{
+                MainActivity.activity?.recreate()
+            }
+        }
+    }
+    private fun manageButtonProperties(result:String){
         setTitle("New Button")
 
-        var colorGrid=findViewById<GridView>(R.id.gridview_color)
+        val colorGrid=findViewById<GridView>(R.id.gridview_color)
         colorGrid!!.adapter=ButtonColorAdapter(colorDrawableList)
         colorGrid.setItemChecked(0,true)
         //colorGrid.getViewTreeObserver().addOnGlobalLayoutListener(GridViewProperHeight(colorGrid))
@@ -71,35 +134,36 @@ class ButtonPropertiesDilog(context:Context,listener:OnSelectedListener): AlertD
         styleParamList.add(AbsListView.LayoutParams(RemoteButton.MIN_HIGHT -(2* RemoteButton.BTN_PADDING), RemoteButton.BTN_WIDTH -(2* RemoteButton.BTN_PADDING)))
         styleParamList.add(AbsListView.LayoutParams(RemoteButton.BTN_WIDTH -(2* RemoteButton.BTN_PADDING), RemoteButton.BTN_WIDTH -(2* RemoteButton.BTN_PADDING)))
 
-        var styleGrid=findViewById<GridView>(R.id.gridview_btn_style)
+        val styleGrid=findViewById<GridView>(R.id.gridview_btn_style)
         styleGrid!!.adapter= ButtonStyleAdapter(styleParamList,colorDrawableList[0])
         styleGrid.setItemChecked(0,true)
-        styleGrid.getViewTreeObserver().addOnGlobalLayoutListener(GridViewProperHeight(styleGrid))
-        styleGrid.setOnItemClickListener { parent, view, position, id ->
+        styleGrid.viewTreeObserver.addOnGlobalLayoutListener(GridViewProperHeight(styleGrid))
+        styleGrid.setOnItemClickListener { _, _, position, _ ->
             styleGrid.setItemChecked(position,true)
         }
-        colorGrid.setOnItemClickListener { parent, view, position, id ->
+        colorGrid.setOnItemClickListener { _, _, position, _ ->
             colorGrid.setItemChecked(position,true)
             (styleGrid.adapter as ButtonStyleAdapter).setIconres(colorDrawableList[position])
             styleGrid.invalidateViews()
         }
 
-        var iconGrid=findViewById<GridView>(R.id.gridview_icons)
+        val iconGrid=findViewById<GridView>(R.id.gridview_icons)
         iconGrid!!.adapter=ButtonColorAdapter(iconDrawableList)
         iconGrid.setItemChecked(0,true)
-        iconGrid.getViewTreeObserver().addOnGlobalLayoutListener(GridViewProperHeight(iconGrid))
-        iconGrid.setOnItemClickListener { parent, view, position, id ->
+        iconGrid.viewTreeObserver.addOnGlobalLayoutListener(GridViewProperHeight(iconGrid))
+        iconGrid.setOnItemClickListener { _, _, position, _ ->
             iconGrid.setItemChecked(position,true)
         }
         buttonPositive.visibility=View.VISIBLE
         buttonPositive.setOnClickListener {
-            var obj=JSONObject()
-            obj.put("code",array)
-            obj.put("style",styleGrid.checkedItemPosition)
+            val obj=JSONObject()
+            obj.put("code",result)
+            obj.put("type",styleGrid.checkedItemPosition)
             obj.put("color",colorGrid.checkedItemPosition)
             obj.put("text",findViewById<EditText>(R.id.btn_edit_text)?.text)
             Toast.makeText(context,colorGrid.checkedItemPosition.toString()+" "+iconGrid.checkedItemPosition,Toast.LENGTH_LONG).show()
             listener.onSelected(obj)
+            dismiss()
         }
     }
 
@@ -107,16 +171,15 @@ class ButtonPropertiesDilog(context:Context,listener:OnSelectedListener): AlertD
         Toast.makeText(context,"Click on cancel to quit...",Toast.LENGTH_SHORT).show()
     }
 
-    internal inner class GridViewProperHeight(gridView: GridView) : ViewTreeObserver.OnGlobalLayoutListener {
-        val gridView=gridView
+    internal inner class GridViewProperHeight(private val gridView: GridView) : ViewTreeObserver.OnGlobalLayoutListener {
         override fun onGlobalLayout() {
             val adapter=gridView.adapter
             val numColumns=gridView.numColumns
             val numRows=adapter.count/numColumns
             var height=0
-            for(i in 0..numRows-1){
+            for(i in 0 until numRows){
                 var tmpHeight=0
-                for(j in 0..numColumns-1){
+                for(j in 0 until numColumns){
                     val ht= adapter.getView(j+(i*numColumns),null,gridView).layoutParams.height
                     if(ht>tmpHeight)
                         tmpHeight=ht
@@ -124,7 +187,7 @@ class ButtonPropertiesDilog(context:Context,listener:OnSelectedListener): AlertD
                 height+=tmpHeight
             }
             var tmpHeight = 0
-            for (i in numColumns*numRows..adapter.count-1) {
+            for (i in numColumns*numRows until adapter.count) {
                 val ht = adapter.getView(i, null, gridView).layoutParams.height
                 if (ht > tmpHeight)
                     tmpHeight = ht
@@ -135,7 +198,7 @@ class ButtonPropertiesDilog(context:Context,listener:OnSelectedListener): AlertD
                 gridView.layoutParams.height=height
         }
 
-        fun hasToAddOne():Int{
+        private fun hasToAddOne():Int{
             if(gridView.adapter.count%gridView.numColumns==0)
                 return 0
             return 1
@@ -144,14 +207,14 @@ class ButtonPropertiesDilog(context:Context,listener:OnSelectedListener): AlertD
 }
 
 private operator fun IntArray.times(count: Int): IntArray {
-    var ia=IntArray(size*count)
+    val ia=IntArray(size*count)
     for(i in 1..count)
         ia.plus(this)
     return ia
 }
 
 private operator fun <E> ArrayList<E>.times(size: Int): ArrayList<E> {
-    var al=ArrayList<E>()
+    val al=ArrayList<E>()
     for(i in 1..size)
         al.addAll(this)
     return al

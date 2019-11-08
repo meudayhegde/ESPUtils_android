@@ -3,14 +3,14 @@ package com.irware.remote.holders
 import org.json.JSONObject
 
 class ButtonProperties {
-    private var IR_CODE:IntArray?=null
+    private var IR_CODE:String?=null
     private var BTN_TEXT:String=""
     private var ICON_TYPE=0
     private var COLOR_MODE=0
     private var BTN_POSITION=0
     private var listener:OnModificationListener?=null
 
-    constructor(ir_code: IntArray, align_type: Int, color_mode: Int, btn_position: Int, btn_text: String) {
+    constructor(ir_code: String, align_type: Int, color_mode: Int, btn_position: Int, btn_text: String) {
         IR_CODE = ir_code
         ICON_TYPE = align_type
         COLOR_MODE = color_mode
@@ -18,7 +18,7 @@ class ButtonProperties {
         BTN_TEXT = btn_text
     }
     constructor(obj:JSONObject){
-        IR_CODE = obj.get("code") as IntArray
+        IR_CODE = obj.get("code") as String
         ICON_TYPE = obj.getInt("type")
         COLOR_MODE = obj.getInt("color")
         BTN_POSITION = obj.getInt("position")
@@ -29,7 +29,7 @@ class ButtonProperties {
         return BTN_POSITION
     }
 
-    fun getIrCode():IntArray{
+    fun getIrCode():String{
         return IR_CODE!!
     }
 
@@ -49,7 +49,7 @@ class ButtonProperties {
         listener?.onPositionModified()
     }
 
-    fun setIrCode(ir_code: IntArray){
+    fun setIrCode(ir_code: String){
         IR_CODE=ir_code
         listener?.onIrModified()
     }

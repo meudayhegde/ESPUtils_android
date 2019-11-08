@@ -1,21 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent">
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
     <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content">
 
         <LinearLayout android:orientation="vertical" android:layout_width="match_parent" android:id="@+id/ir_capture_layout"
                 android:layout_height="wrap_content" android:gravity="center" android:visibility="gone">
 
-            <TextView android:text="IR Capture Unit" android:layout_width="wrap_content" android:layout_height="wrap_content"
+            <TextView android:text="@string/ir_capture_unit" android:layout_width="wrap_content" android:layout_height="wrap_content"
                     android:id="@+id/textView2" android:layout_margin="20dp" android:textSize="18sp"/>
 
             <ProgressBar style="?android:attr/progressBarStyle" android:layout_width="70dp" android:layout_height="70dp"
-                    android:id="@+id/progressBar"/>
-            <TextView android:text="waiting for ir signal..." android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:id="@+id/textView4" android:gravity="center" android:layout_margin="10dp"/>
+                    android:id="@+id/ir_capture_progress"/>
+            <ImageView android:layout_width="60sp" android:layout_height="60sp"
+                    android:id="@+id/ir_capture_error_logo" android:layout_margin="20dp" app:srcCompat="@drawable/ic_error_red"
+                    android:contentDescription="@string/ir_capture_error_logo_description" android:visibility="gone"/>
 
-            <TextView android:text="Press the target button in the original remote control towards iR WaRE Remote..." android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:id="@+id/textView3" android:gravity="center" android:layout_margin="20dp"/>
+            <TextView android:text="@string/waiting_for_ir_signal" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:id="@+id/ir_capture_status" android:gravity="center" android:layout_margin="10dp"/>
+
+            <TextView android:text="@string/ir_capture_instruction" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:id="@+id/ir_capture_instruction" android:gravity="center" android:layout_margin="20dp"/>
 
         </LinearLayout>
 
@@ -23,49 +31,53 @@
                      android:layout_marginBottom="0dp" android:id="@+id/button_prop_table">
 
             <TableRow android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
-                <TextView android:text="Color " android:layout_width="wrap_content" android:layout_height="wrap_content"
+                <TextView android:text="@string/color" android:layout_width="wrap_content" android:layout_height="wrap_content"
                           android:id="@+id/textView6" android:textSize="18sp" android:layout_column="1"
                           android:layout_marginBottom="5dp" android:layout_marginLeft="10dp" android:layout_marginRight="10dp"
                           android:layout_marginTop="10dp"/>
-                <GridView android:id="@+id/gridview_color" android:layout_width="match_parent" android:layout_height="50dp"
+                <com.irware.remote.ui.MyGridView android:id="@+id/gridview_color" android:layout_width="match_parent" android:layout_height="wrap_content"
                           android:columnWidth="30dp" android:numColumns="auto_fit" android:layout_column="2"
                           android:verticalSpacing="4dp" android:horizontalSpacing="2dp" android:stretchMode="columnWidth"
                           android:layout_weight="1" android:gravity="center" android:choiceMode="singleChoice"
                           android:layout_marginBottom="5dp" android:layout_marginLeft="10dp" android:layout_marginRight="10dp"
-                          android:layout_marginTop="10dp" android:paddingTop="10dp"/>
+                          android:layout_marginTop="10dp" android:paddingTop="10dp"
+                        tools:ignore="NestedScrolling" />
             </TableRow>
 
             <TableRow android:layout_width="match_parent" android:layout_height="wrap_content">
-                <TextView android:text="Style " android:layout_width="wrap_content" android:layout_height="180dp"
+                <TextView android:text="@string/style" android:layout_width="wrap_content" android:layout_height="180dp"
                           android:id="@+id/textView7" android:textSize="18sp" android:layout_column="1"
                           android:layout_marginBottom="5dp" android:layout_marginLeft="10dp" android:layout_marginRight="10dp"
                           android:layout_marginTop="5dp"/>
-                <GridView android:id="@+id/gridview_btn_style" android:layout_width="match_parent" android:layout_height="50dp"
+                <com.irware.remote.ui.MyGridView android:id="@+id/gridview_btn_style" android:layout_width="match_parent" android:layout_height="wrap_content"
                           android:numColumns="auto_fit" android:layout_column="2"
                           android:verticalSpacing="4dp" android:horizontalSpacing="6dp" android:stretchMode="columnWidth"
                           android:layout_weight="1" android:gravity="center" android:choiceMode="singleChoice"
                           android:layout_marginBottom="5dp" android:layout_marginLeft="10dp" android:layout_marginRight="10dp"
-                          android:layout_marginTop="10dp" android:paddingTop="10dp"/>
+                          android:layout_marginTop="10dp" android:paddingTop="10dp"
+                        tools:ignore="NestedScrolling" />
             </TableRow>
 
             <TableRow android:layout_width="match_parent" android:layout_height="wrap_content" android:visibility="gone">
-                <TextView android:text="Icon" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                <TextView android:text="@string/icon" android:layout_width="wrap_content" android:layout_height="wrap_content"
                           android:id="@+id/textView8" android:textSize="18sp" android:layout_column="1"
                           android:layout_marginBottom="5dp" android:layout_marginLeft="10dp" android:layout_marginRight="10dp"
                           android:layout_marginTop="5dp"/>
-                <GridView android:id="@+id/gridview_icons" android:layout_width="match_parent" android:layout_height="wrap_content"
+                <com.irware.remote.ui.MyGridView android:id="@+id/gridview_icons" android:layout_width="match_parent" android:layout_height="wrap_content"
                           android:columnWidth="30dp" android:numColumns="auto_fit" android:layout_column="2"
                           android:verticalSpacing="4dp" android:horizontalSpacing="6dp" android:stretchMode="columnWidth"
                           android:layout_weight="1" android:gravity="center" android:choiceMode="singleChoice"
                           android:layout_marginBottom="5dp" android:layout_marginLeft="10dp" android:layout_marginRight="10dp"
-                          android:layout_marginTop="10dp" android:paddingTop="10dp"/>
+                          android:layout_marginTop="10dp" android:paddingTop="10dp"
+                        tools:ignore="NestedScrolling" />
             </TableRow>
 
             <EditText android:layout_width="111dp"
-                      android:layout_height="wrap_content" android:gravity="center" android:hint="Button Text"
+                      android:layout_height="wrap_content" android:gravity="center" android:hint="@string/button_text"
                       android:id="@+id/btn_edit_text" android:inputType="text" android:layout_marginTop="5dp"
                       android:layout_marginRight="10dp" android:layout_marginLeft="10dp"
-                      android:layout_marginBottom="10dp"/>
+                      android:layout_marginBottom="10dp"
+                    android:importantForAutofill="no" />
 
         </TableLayout>
 

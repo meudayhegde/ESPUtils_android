@@ -57,6 +57,8 @@
             android:id="@+id/textInputPassword"
             style="@style/textFieldLayout"
             android:layout_marginTop="12sp"
+            app:passwordToggleEnabled="true"
+            app:passwordToggleTint="@android:color/white"
             android:textColorHint="@color/whiteTextColor">
 
         <EditText

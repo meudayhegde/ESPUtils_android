@@ -11,15 +11,9 @@ import com.irware.remote.R
 import com.irware.remote.listeners.ButtonDragListener
 import com.irware.remote.ui.buttons.RemoteButton
 
-class ButtonLayoutAdapter(layoutList: ArrayList<LinearLayout>) : BaseAdapter(){
-
-    var layoutList: ArrayList<LinearLayout>
-    init{
-        this.layoutList=layoutList
-    }
+class ButtonLayoutAdapter(var layoutList: ArrayList<LinearLayout>) : BaseAdapter(){
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-
         return layoutList[position]
     }
 
@@ -40,19 +34,19 @@ class ButtonLayoutAdapter(layoutList: ArrayList<LinearLayout>) : BaseAdapter(){
     }
 
     fun getGetEmptyPosition():Int{
-        for(i in 0..layoutList.size-1){
-            for(j in 0..((MainActivity.size.x/(RemoteButton.BTN_WIDTH))-1)){
+        for(i in 0 until layoutList.size){
+            for(j in 0 until (MainActivity.size.x/(RemoteButton.BTN_WIDTH))){
                 if((layoutList[i].getChildAt(j)as LinearLayout).childCount==0)
                     return (i*(MainActivity.size.x/(RemoteButton.BTN_WIDTH)))+j
             }
         }
-        var layout=LinearLayout(layoutList[0].context)
+        val layout=LinearLayout(layoutList[0].context)
         layout.layoutParams =
             AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.WRAP_CONTENT)
         layout.gravity = Gravity.CENTER
         layout.orientation = LinearLayout.HORIZONTAL
         for (i in 1..MainActivity.size.x / (RemoteButton.BTN_WIDTH)) {
-            var child = LinearLayout(layout.context)
+            val child = LinearLayout(layout.context)
             child.gravity = Gravity.CENTER
             child.layoutParams =
                 LinearLayout.LayoutParams(RemoteButton.BTN_WIDTH, LinearLayout.LayoutParams.MATCH_PARENT)

@@ -1,8 +1,8 @@
 package com.irware.remote.ui.buttons
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
+import android.util.AttributeSet
 import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.Button
@@ -11,10 +11,13 @@ import com.irware.remote.R
 import com.irware.remote.holders.ButtonProperties
 import com.irware.remote.holders.OnModificationListener
 
-@SuppressLint("ViewConstructor")
-class RemoteButton(context: Context?, properties:ButtonProperties) : Button(context) {
+
+class RemoteButton : Button {
     private var properties:ButtonProperties?=null
-    init {
+    constructor(context:Context):super(context)
+    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
+    constructor(context: Context?, attrs: AttributeSet?, int:Int) : super(context, attrs,int)
+    constructor(context: Context?, properties:ButtonProperties):super(context){
         this.properties=properties
         setTextColor(Color.WHITE)
         setButtonProperties()
@@ -34,7 +37,7 @@ class RemoteButton(context: Context?, properties:ButtonProperties) : Button(cont
             }
 
             override fun onColorModified() {
-                setColorMode(bg_type = properties.getColorMode())
+                setColorMode(bg_type = properties.getColor())
             }
 
             override fun onIrModified() {
@@ -51,7 +54,7 @@ class RemoteButton(context: Context?, properties:ButtonProperties) : Button(cont
     fun setButtonProperties(){
         setType(type = properties?.getAlignType()!!)
         text = properties?.getText()!!
-        setColorMode(bg_type = properties?.getColorMode()!!)
+        setColorMode(bg_type = properties?.getColor()!!)
     }
 
     fun getProperties():ButtonProperties{

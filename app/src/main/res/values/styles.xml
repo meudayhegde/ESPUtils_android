@@ -51,6 +51,13 @@
         <item name="boxStrokeWidth">2dp</item>
     </style>
 
+    <style name="textFieldLayoutWhiteTheme" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="boxStrokeColor">@color/edit_text_bg_white</item>
+        <item name="boxStrokeWidth">2dp</item>
+    </style>
+
     <style name="viewParent">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>

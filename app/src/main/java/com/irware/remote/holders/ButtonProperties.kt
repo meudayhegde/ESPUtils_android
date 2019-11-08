@@ -1,26 +1,27 @@
 package com.irware.remote.holders
 
+import com.irware.remote.ui.buttons.RemoteButton
 import org.json.JSONObject
 
 class ButtonProperties {
     private var IR_CODE:String?=null
     private var BTN_TEXT:String=""
     private var ICON_TYPE=0
-    private var COLOR_MODE=0
+    private var COLOR=0
     private var BTN_POSITION=0
     private var listener:OnModificationListener?=null
 
-    constructor(ir_code: String, align_type: Int, color_mode: Int, btn_position: Int, btn_text: String) {
+    constructor(ir_code: String, align_type: Int, color: Int, btn_position: Int, btn_text: String) {
         IR_CODE = ir_code
         ICON_TYPE = align_type
-        COLOR_MODE = color_mode
+        COLOR = color
         BTN_POSITION = btn_position
         BTN_TEXT = btn_text
     }
     constructor(obj:JSONObject){
         IR_CODE = obj.get("code") as String
         ICON_TYPE = obj.getInt("type")
-        COLOR_MODE = obj.getInt("color")
+        COLOR = obj.getInt("color")
         BTN_POSITION = obj.getInt("position")
         BTN_TEXT = obj.getString("text")
     }
@@ -33,8 +34,8 @@ class ButtonProperties {
         return IR_CODE!!
     }
 
-    fun getColorMode():Int{
-        return COLOR_MODE
+    fun getColor():Int{
+        return COLOR
     }
     fun getAlignType():Int{
         return ICON_TYPE
@@ -54,8 +55,8 @@ class ButtonProperties {
         listener?.onIrModified()
     }
 
-    fun setColorMode(color_mode: Int){
-        COLOR_MODE=color_mode
+    fun setColor(color: Int){
+        COLOR=color
         listener?.onColorModified()
     }
     fun setAlignType(icon_type: Int){

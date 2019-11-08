@@ -7,12 +7,11 @@ import android.widget.BaseAdapter
 import com.irware.remote.R
 import com.irware.remote.ui.buttons.CheckableImageView
 
-class ButtonStyleAdapter(paramList:ArrayList<AbsListView.LayoutParams>,iconRes:Int): BaseAdapter() {
-    private var paramList=paramList
-    private var iconRes=iconRes
+class ButtonStyleAdapter(private var paramList: ArrayList<AbsListView.LayoutParams>,
+                         private var iconRes: Int): BaseAdapter() {
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val view = CheckableImageView(parent?.context)
-        view.layoutParams = paramList.get(position)
+        view.layoutParams = paramList[position]
         view.setPadding(5, 5, 5, 5)
         view.setImageResource(iconRes)
         view.setBackgroundResource(R.drawable.checkable_bg)
@@ -20,7 +19,7 @@ class ButtonStyleAdapter(paramList:ArrayList<AbsListView.LayoutParams>,iconRes:I
     }
 
     override fun getItem(position: Int): AbsListView.LayoutParams {
-        return paramList.get(position)
+        return paramList[position]
     }
 
     override fun getItemId(position: Int): Long {

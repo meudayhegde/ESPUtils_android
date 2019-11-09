@@ -35,10 +35,10 @@ class CreateRemoteDialog(context: Context?) : Dialog(context!!, R.style.AppTheme
             for (j in 1..MainActivity.size.x / (RemoteButton.BTN_WIDTH)) {
                 val child = LinearLayout(context)
                 child.gravity = Gravity.CENTER
-                child.layoutParams =
-                    LinearLayout.LayoutParams(RemoteButton.BTN_WIDTH, LinearLayout.LayoutParams.MATCH_PARENT)
+                val layoutParams =
+                    LinearLayout.LayoutParams(RemoteButton.BTN_WIDTH+20, LinearLayout.LayoutParams.MATCH_PARENT)
+                child.layoutParams = layoutParams
                 child.minimumHeight = RemoteButton.MIN_HIGHT
-                child.setBackgroundResource(R.drawable.layout_with_border_bg)
                 child.setOnDragListener(ButtonDragListener())
                 layout.addView(child)
             }

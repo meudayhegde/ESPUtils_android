@@ -4,11 +4,12 @@
                              android:layout_width="match_parent"
                              android:layout_height="match_parent" android:gravity="center">
 
-        <ListView
-                android:id="@+id/btn_layout_listview"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="14sp" />
+    <ListView
+            android:id="@+id/btn_layout_listview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="14sp"
+            android:dividerHeight="0sp" />
 
         <com.github.clans.fab.FloatingActionButton
                 android:id="@+id/fab_new_button"

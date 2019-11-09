@@ -32,5 +32,11 @@
     <string name="exit">Exit</string>
     <string name="add_btn">Add Button</string>
     <string name="add_new_button">Add New Button</string>
+    <string name="round_button_large">Round Button Large</string>
+    <string name="round_button_small">Round Button Small</string>
+    <string name="button_horizontal">Button Horizontal</string>
+    <string name="button_vertical">Button vertical</string>
+    <string name="button_text_color">Text color</string>
+    <string name="color_picker_help">Inner circle changes the color of content and outer two circle change button color</string>
 
 </resources>

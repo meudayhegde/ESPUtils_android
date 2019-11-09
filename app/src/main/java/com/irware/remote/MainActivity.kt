@@ -3,28 +3,28 @@ package com.irware.remote
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.BitmapFactory
 import android.graphics.Point
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
-import android.support.design.widget.NavigationView
-import android.support.v4.app.Fragment
-import android.support.v4.graphics.ColorUtils
-import android.support.v4.view.GravityCompat
-import android.support.v7.app.ActionBarDrawerToggle
-import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
 import android.text.TextUtils
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.*
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
+import androidx.fragment.app.Fragment
+import com.google.android.material.navigation.NavigationView
 import com.irware.remote.listeners.OnValidationListener
 import com.irware.remote.net.SocketClient
 import com.irware.remote.ui.BlurBuilder
+import com.irware.remote.ui.buttons.RemoteButton
 import com.irware.remote.ui.fragments.AboutFragment
 import com.irware.remote.ui.fragments.HomeFragment
 import com.irware.remote.ui.fragments.ManageRemoteFragment
@@ -57,6 +57,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         ipConf = File(filesDir.absolutePath+File.separator+"iplist.conf")
         if(!ipConf!!.exists())ipConf!!.createNewFile()
         val splash=Dialog(this,android.R.style.Theme_Light_NoTitleBar_Fullscreen)
+
         val splashView=layoutInflater.inflate(R.layout.splash_screen,null)
         splash.setContentView(splashView)
 
@@ -66,10 +67,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         splash.window?.attributes?.windowAnimations = R.style.DialogAnimationTheme
         splash.setCancelable(false)
         splash.show()
+        hideSystemUI(splashView)
         windowManager.defaultDisplay.getSize(size)
 
         val logo=splash.findViewById<ImageView>(R.id.splash_logo)
         logo.layoutParams=LinearLayout.LayoutParams((min(size.x,size.y)*0.6F).roundToInt(),(min(size.x,size.y)*0.6F).roundToInt())
+        RemoteButton.onActivityLoad()
 
         val pref=getSharedPreferences("login",0)
         val editor=pref.edit()
@@ -183,7 +186,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
 
         }.start()
-
     }
 
     private fun min(x:Int, y:Int):Int{
@@ -203,6 +205,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         if(homeFragment==null)
             homeFragment=HomeFragment()
         replaceFragment(homeFragment as Fragment)
+
+        val pref = getSharedPreferences("general",0)
+        NUM_COLUMNS = pref.getInt("num_columns",5)
     }
 
 
@@ -224,13 +229,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        when (item.itemId) {
+        return when (item.itemId) {
             R.id.action_settings ->{
-                val intent= Intent(this,SettingsActivity :: class.java )
+                val intent = Intent(this,SettingsActivity :: class.java )
                 startActivity(intent)
-                return true
+                true
             }
-            else -> return super.onOptionsItemSelected(item)
+            else -> super.onOptionsItemSelected(item)
         }
     }
 
@@ -262,8 +267,30 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-    private fun replaceFragment(fragment:Fragment){
+    private fun replaceFragment(fragment: Fragment){
         supportFragmentManager.beginTransaction().replace(R.id.include_content,fragment).commit()
+    }
+
+    private fun hideSystemUI(view:View) {
+ // Set the IMMERSIVE flag.
+    // Set the content to appear under the system bars so that the content
+    // doesn't resize when the system bars hide and show.
+        view.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+
+                or View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+
+                or View.SYSTEM_UI_FLAG_IMMERSIVE)
+}
+
+// This snippet shows the system bars. It does this by removing all the flags
+ // except for the ones that make the content appear under the system bars.
+    private fun showSystemUI(view: View) {
+    view.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+            or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+            or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
     }
 
     companion object {
@@ -273,6 +300,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         var MCU_IP = "192.168.4.1"
         var USERNAME = ""
         var PASSWORD = ""
+        var NUM_COLUMNS = 5
         var activity:MainActivity? = null
+        val iconDrawableList=intArrayOf(R.drawable.icon_transparent,R.drawable.icon_power, R.drawable.icon_info, R.drawable.icon_media_next,
+            R.drawable.icon_media_pause, R.drawable.icon_media_previous,R.drawable.icon_mic, R.drawable.icon_search,
+            R.drawable.icon_volume, R.drawable.icon_wifi,R.drawable.icon_bluetooth,R.drawable.icon_alert,
+            R.drawable.icon_cancel, R.drawable.icon_fast_forward,R.drawable.icon_fast_rewind,R.drawable.icon_flight_mode,
+            R.drawable.icon_home, R.drawable.icon_back,R.drawable.icon_backspace,R.drawable.icon_block)
     }
 }

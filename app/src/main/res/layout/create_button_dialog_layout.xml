@@ -27,96 +27,72 @@
         </LinearLayout>
 
         <LinearLayout
-                android:id="@+id/button_prop_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_marginBottom="14sp"
-                android:gravity="center_horizontal"
-                android:background="@drawable/edit_text_bg"
+                android:id="@+id/button_prop_layout" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:layout_alignParentBottom="true"
+                android:layout_marginBottom="14sp" android:gravity="center_horizontal"
                 android:orientation="vertical">
 
 
             <TextView
-                    android:id="@+id/add_new_button"
+                    android:id="@+id/add_new_button" android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:layout_marginTop="14sp"
+                    android:layout_marginBottom="14sp" android:gravity="center"
+                    android:text="@string/add_new_button" android:textColor="@color/btn_border_dark"
+                    android:textSize="18sp" android:textStyle="bold" />
+
+            <RelativeLayout
+                    android:id="@+id/layout_color_picker" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:gravity="center"
+                    android:layout_gravity="center" android:layout_marginTop="12sp"
+                    android:layout_marginBottom="18sp">
+
+
+                <Button
+                        android:id="@+id/remote_model_button" android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:gravity="center" android:text="" />
+
+             </RelativeLayout>
+
+            <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="14sp"
-                    android:gravity="center"
-                    android:text="@string/add_new_button"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-            <Button
-                    android:id="@+id/remote_model_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:layout_margin="14sp"
+                    android:gravity="center"
+                    android:text="@string/color_picker_help"
+                    android:textColor="@color/btn_border_dark"
+                    android:textSize="16sp" />
 
-                    android:layout_marginTop="12sp"
-                    android:layout_marginBottom="18sp"
-                    android:text="" />
+                    <LinearLayout
+                            style="?android:attr/buttonBarStyle" android:layout_width="match_parent"
+                            android:layout_height="match_parent" android:layout_marginTop="12sp"
+                            android:gravity="center_horizontal|center_vertical" android:orientation="horizontal">
 
-            <LinearLayout
-                    style="?android:attr/buttonBarStyle"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="12sp"
-                    android:gravity="center_horizontal|center_vertical"
-                    android:orientation="horizontal">
+                        <Button
+                                android:id="@+id/btn_icon" style="?android:attr/buttonBarStyle"
+                                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                android:layout_marginStart="14sp"
+                                android:layout_marginTop="2sp" android:background="@drawable/round_corner_white_bg"
+                                android:text="@string/icon" />
 
-                <Button
-                        android:id="@+id/btn_choose_color"
-                        style="?android:attr/buttonBarStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/round_corner_white_bg"
-                        android:text="@string/color" />
+                        <com.google.android.material.textfield.TextInputLayout
+                                android:id="@+id/textInputButtonName" style="@style/textFieldLayoutWhiteTheme"
+                                android:layout_marginTop="12sp" android:layout_marginLeft="10dp"
+                                android:layout_marginRight="10dp" android:layout_marginBottom="10dp"
+                                android:background="@drawable/edit_text_bg" android:textColorHint="@android:color/darker_gray">
+                            <EditText
+                                    android:id="@+id/btn_edit_text" style="@style/modifiedEditText"
+                                    android:hint="@string/button_text" android:importantForAutofill="no"
+                                    android:inputType="text" android:maxLines="1"
+                                    android:textColor="@android:color/black" android:textColorHighlight="@color/blue_fab_normal"
+                                    android:textColorHint="@android:color/primary_text_light" android:textColorLink="@color/blue_fab_ripple"/>
+                        </com.google.android.material.textfield.TextInputLayout>
 
-                <Button
-                        android:id="@+id/btn_choose_style"
-                        style="?android:attr/buttonBarStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="14sp"
-                        android:layout_marginRight="14sp"
-                        android:background="@drawable/round_corner_white_bg"
-                        android:text="@string/style" />
+                    </LinearLayout>
 
-                <Button
-                        android:id="@+id/btn_choose_icon"
-                        style="?android:attr/buttonBarStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/round_corner_white_bg"
-                        android:text="@string/icon" />
-            </LinearLayout>
-
-            <android.support.design.widget.TextInputLayout
-                    android:id="@+id/textInputButtonName"
-                    style="@style/textFieldLayoutWhiteTheme"
-                    android:layout_marginTop="12sp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_marginBottom="10dp"
-                    android:background="@drawable/edit_text_bg"
-                    android:textColorHint="@android:color/darker_gray">
-                <EditText
-                        android:id="@+id/btn_edit_text"
-                        style="@style/modifiedEditText"
-                        android:hint="@string/button_text"
-                        android:importantForAutofill="no"
-                        android:inputType="text"
-                        android:maxLines="1"
-                        android:textColor="@android:color/black"
-                        android:textColorHighlight="@color/blue_fab_normal"
-                        android:textColorHint="@android:color/primary_text_light"
-                        android:textColorLink="@color/blue_fab_ripple"/>
-            </android.support.design.widget.TextInputLayout>
-
-        </LinearLayout>
+                </LinearLayout>
 
 
-    </RelativeLayout>
+            </RelativeLayout>
 
-</ScrollView>
+        </ScrollView>

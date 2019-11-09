@@ -15,7 +15,7 @@
         android:layout_marginTop="@dimen/loginViewsMargin"
         android:layout_marginBottom="@dimen/loginViewsMargin"/>
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputIP"
             style="@style/textFieldLayout"
             android:textColorHint="@color/whiteTextColor"
@@ -32,10 +32,10 @@
                 android:textColorHighlight="@color/blue_fab_normal"
                 android:textColorHint="@color/whiteTextColor"
                 android:textColorLink="@color/blue_fab_ripple" />
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputEmail"
             style="@style/textFieldLayout"
             android:layout_marginTop="12sp"
@@ -51,9 +51,9 @@
                 android:textColorHighlight="@color/blue_fab_normal"
                 android:textColorHint="@color/whiteTextColor"
                 android:textColorLink="@color/blue_fab_ripple"/>
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputPassword"
             style="@style/textFieldLayout"
             android:layout_marginTop="12sp"
@@ -73,7 +73,7 @@
                 android:textColorHint="@color/whiteTextColor"
                 android:textColorLink="@color/blue_fab_ripple"/>
 
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
             android:id="@+id/forgot_password"

@@ -1,5 +1,6 @@
 package com.irware.remote.holders
 
+import android.graphics.Color
 import com.irware.remote.ui.buttons.RemoteButton
 import org.json.JSONObject
 
@@ -9,14 +10,18 @@ class ButtonProperties {
     private var ICON_TYPE=0
     private var COLOR=0
     private var BTN_POSITION=0
+    private var ICON = 0
+    private var TEXT_COLOR = Color.WHITE
     private var listener:OnModificationListener?=null
 
-    constructor(ir_code: String, align_type: Int, color: Int, btn_position: Int, btn_text: String) {
+    constructor(ir_code: String, align_type: Int, color: Int, btn_position: Int, btn_text: String, textColor:Int, icon:Int) {
         IR_CODE = ir_code
         ICON_TYPE = align_type
         COLOR = color
         BTN_POSITION = btn_position
         BTN_TEXT = btn_text
+        TEXT_COLOR = textColor
+        ICON = icon
     }
     constructor(obj:JSONObject){
         IR_CODE = obj.get("code") as String
@@ -24,6 +29,8 @@ class ButtonProperties {
         COLOR = obj.getInt("color")
         BTN_POSITION = obj.getInt("position")
         BTN_TEXT = obj.getString("text")
+        TEXT_COLOR = obj.getInt("textColor")
+        ICON = obj.getInt("icon")
     }
 
     fun getPosition():Int{
@@ -41,9 +48,20 @@ class ButtonProperties {
         return ICON_TYPE
     }
     fun getText():String{
-        return BTN_TEXT!!
+        return BTN_TEXT
     }
 
+    fun getTextColor():Int{
+        return TEXT_COLOR
+    }
+
+    fun getIcon():Int{
+        return ICON
+    }
+
+    fun setIcon(icon:Int){
+        ICON = icon
+    }
 
     fun setPosition(btn_position:Int){
         BTN_POSITION=btn_position
@@ -68,6 +86,11 @@ class ButtonProperties {
         listener?.onTextModified()
     }
 
+    fun setTextColor(color:Int){
+        TEXT_COLOR = color
+        listener?.onTextColorChanged()
+    }
+
     fun setOnModificationListener(listener: OnModificationListener){
         this.listener=listener
     }
@@ -80,4 +103,5 @@ interface OnModificationListener{
     fun onColorModified()
     fun onIrModified()
     fun onPositionModified()
+    fun onTextColorChanged()
 }

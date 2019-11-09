@@ -3,20 +3,26 @@ package com.irware.remote.ui.dialogs
 import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
-import android.support.v7.app.AlertDialog
+import android.os.Build
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
+import android.view.ViewGroup
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
+import androidx.core.graphics.drawable.DrawableCompat
 import com.irware.remote.MainActivity
 import com.irware.remote.R
 import com.irware.remote.net.IrCodeListener
 import com.irware.remote.net.SocketClient
-import com.irware.remote.ui.adapters.ButtonColorAdapter
-import com.irware.remote.ui.adapters.ButtonStyleAdapter
 import com.irware.remote.ui.buttons.RemoteButton
+import com.madrapps.pikolo.ColorPicker
+import com.madrapps.pikolo.HSLColorPicker
+import com.madrapps.pikolo.RGBColorPicker
+import com.madrapps.pikolo.listeners.SimpleColorSelectionListener
 import org.json.JSONObject
-import top.defaults.colorpicker.ColorPickerPopup
+import kotlin.math.roundToInt
 
 
 class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedListener): AlertDialog(context),IrCodeListener {
@@ -33,24 +39,12 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
     private val irCapInst:TextView
 
     private val remModButton:Button
-    private val colrBtn:Button
-    private val styleBtn:Button
-    private val iconBtn:Button
+    private val iconButton: Button
+    private val btnEditText : EditText
+    private var colorPicker : HSLColorPicker
+    private val clrPkr: ColorPicker
 
-    private var colorSelected:Int = Color.GRAY
-    private val colorDrawable = GradientDrawable()
-    private var btnStyle = RemoteButton.TYPE_RECT_HOR
-
-    private val colorDrawableList=intArrayOf(R.drawable.round_btn_bg_grey,R.drawable.round_btn_bg_blue,
-        R.drawable.round_btn_bg_green, R.drawable.round_btn_bg_yellow,
-        R.drawable.round_btn_bg_red)
-    private val iconDrawableList=intArrayOf(0,android.R.drawable.ic_lock_power_off, android.R.drawable.btn_plus,
-        android.R.drawable.btn_minus,android.R.drawable.stat_notify_call_mute,
-        android.R.drawable.ic_menu_info_details,android.R.drawable.arrow_up_float,
-        android.R.drawable.arrow_down_float,android.R.drawable.ic_media_play,
-        android.R.drawable.ic_media_pause,android.R.drawable.ic_media_next,
-        android.R.drawable.ic_media_previous,android.R.drawable.ic_input_delete)
-    private val styleParamList=ArrayList<LinearLayout.LayoutParams>()
+    private val styleParamList=ArrayList<RelativeLayout.LayoutParams>()
 
     init{
         setView(layoutInflater.inflate(R.layout.create_button_dialog_layout,null))
@@ -69,11 +63,40 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
         irCapErrLogo = findViewById<ImageView>(R.id.ir_capture_error_logo)!!
         irCapStatus = findViewById<TextView>(R.id.ir_capture_status)!!
         irCapInst = findViewById<TextView>(R.id.ir_capture_instruction)!!
+        btnEditText = findViewById<EditText>(R.id.btn_edit_text)!!
+        val colorPickerLayout = findViewById<RelativeLayout>(R.id.layout_color_picker)!!
+
+        colorDrawable.cornerRadius = 100F
+        colorDrawable.shape = GradientDrawable.RECTANGLE
+        colorDrawable.setStroke(2,Color.BLACK)
+        colorDrawable.setColor(colorSelected)
+
+        colorPicker = HSLColorPicker(context)
+        colorPickerLayout.addView(colorPicker)
+
+        val layoutParam = RelativeLayout.LayoutParams((MainActivity.size.x*0.8F).roundToInt(),(MainActivity.size.x*0.8F).roundToInt())
+        layoutParam.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE)
+        colorPicker.layoutParams = layoutParam
+
+        clrPkr = RGBColorPicker(context)
+        colorPickerLayout.addView(clrPkr)
+
+        val lparam = RelativeLayout.LayoutParams((MainActivity.size.x*0.55F).roundToInt(),(MainActivity.size.x*0.55F).roundToInt())
+        lparam.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE)
+        clrPkr.layoutParams = lparam
 
         remModButton = findViewById<Button>(R.id.remote_model_button)!!
-        colrBtn = findViewById<Button>(R.id.btn_choose_color)!!
-        iconBtn = findViewById<Button>(R.id.btn_choose_icon)!!
-        styleBtn = findViewById<Button>(R.id.btn_choose_style)!!
+        iconButton = findViewById<Button>(R.id.btn_icon)!!
+
+        clrPkr.setColorSelectionListener(object:SimpleColorSelectionListener(){
+            override fun onColorSelected(color: Int) {
+                colorContentSelected = color
+                remModButton.setTextColor(color)
+                setIconDrawable(iconSelected)
+            }
+        })
+
+        remModButton.background = colorDrawable
 
         captureInit()
     }
@@ -142,49 +165,81 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
     private fun manageButtonProperties(result:String){
         setTitle("New Button")
 
-        colorDrawable.cornerRadius = 100F
-        colorDrawable.shape = GradientDrawable.RECTANGLE
-        colorDrawable.setStroke(2,Color.BLACK)
-        colorDrawable.setColor(colorSelected)
-        remModButton.background = colorDrawable
 
-        styleParamList.add(LinearLayout.LayoutParams(RemoteButton.MIN_HIGHT -(2* RemoteButton.BTN_PADDING), RemoteButton.MIN_HIGHT -(2* RemoteButton.BTN_PADDING)))
-        styleParamList.add(LinearLayout.LayoutParams(RemoteButton.BTN_WIDTH -(2* RemoteButton.BTN_PADDING), RemoteButton.MIN_HIGHT -(2* RemoteButton.BTN_PADDING)))
-        styleParamList.add(LinearLayout.LayoutParams(RemoteButton.MIN_HIGHT -(2* RemoteButton.BTN_PADDING), RemoteButton.BTN_WIDTH -(2* RemoteButton.BTN_PADDING)))
-        styleParamList.add(LinearLayout.LayoutParams(RemoteButton.BTN_WIDTH -(2* RemoteButton.BTN_PADDING), RemoteButton.BTN_WIDTH -(2* RemoteButton.BTN_PADDING)))
+
+        styleParamList.add(RelativeLayout.LayoutParams(RemoteButton.MIN_HIGHT , RemoteButton.MIN_HIGHT))
+        styleParamList.add(RelativeLayout.LayoutParams(RemoteButton.BTN_WIDTH , RemoteButton.MIN_HIGHT))
+        styleParamList.add(RelativeLayout.LayoutParams(RemoteButton.MIN_HIGHT, RemoteButton.BTN_WIDTH ))
+        styleParamList.add(RelativeLayout.LayoutParams(RemoteButton.BTN_WIDTH, RemoteButton.BTN_WIDTH))
+
+        for(param in styleParamList)
+            param.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE)
 
         remModButton.layoutParams = styleParamList[btnStyle]
+        colorPicker.setColor(colorSelected)
+        colorPicker.setColorSelectionListener(object : SimpleColorSelectionListener() {
+            override fun onColorSelected(color: Int) {
+                colorSelected = color
+                colorDrawable.setColor(color)
+            }
+        })
 
-        colrBtn.setOnClickListener {
+        remModButton.setOnClickListener {
+            val popup = PopupMenu(context, remModButton)
+            //Inflating the Popup using xml file
+            popup.menuInflater.inflate(R.menu.btn_style_menu, popup.menu)
 
-            ColorPickerPopup.Builder(context)
-                .initialColor(colorSelected) // Set initial color
-                .enableBrightness(true) // Enable brightness slider or not
-                .enableAlpha(true) // Enable alpha slider or not
-                .okTitle("Choose")
-                .cancelTitle("Cancel")
-                .showIndicator(true)
-                .showValue(true)
-                .build()
-                .show(colrBtn,object : ColorPickerPopup.ColorPickerObserver() {
-                    override fun onColorPicked(color: Int) {
-                        colorSelected = color
-                        colorDrawable.setColor(color)
+            //registering popup with OnMenuItemClickListener
+            popup.setOnMenuItemClickListener {
+                when(it.itemId){
+                    R.id.round_button_small -> btnStyle = RemoteButton.TYPE_ROUND_MINI
+                    R.id.button_horizontal -> btnStyle = RemoteButton.TYPE_RECT_HOR
+                    R.id.button_vertical -> btnStyle = RemoteButton.TYPE_RECT_VER
+                    R.id.round_button_large -> btnStyle = RemoteButton.TYPE_ROUND_MEDIUM
+                }
+                remModButton.layoutParams = styleParamList[btnStyle]
+                setIconDrawable(iconSelected)
+                true }
+
+            popup.show()//showing popup menu
+        }
+
+        remModButton.setTextColor(colorContentSelected)
+        clrPkr.setColor(colorContentSelected)
+
+
+        iconButton.setOnClickListener {
+            val iconAdapter = object:ArrayAdapter<Int>(context,R.layout.drawable_layout,MainActivity.iconDrawableList.toTypedArray()){
+                override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+                    val drawable = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) context.getDrawable(getItem(position)!!)
+                        else context.resources.getDrawable(getItem(position)!!)
+                    DrawableCompat.setTint(drawable!!,Color.GRAY)
+                    var returnView = convertView
+                    if(returnView==null){
+                        returnView = layoutInflater.inflate(R.layout.drawable_layout,null)
                     }
-                })
+                    (returnView as LinearLayout).findViewById<ImageView>(R.id.btn_icon_grid).setImageDrawable(drawable)
+                    return returnView
+                }
+            }
+            val iconGridLayout = layoutInflater.inflate(R.layout.icon_grid_dialog,null) as LinearLayout
+            val iconGrid = iconGridLayout.findViewById<GridView>(R.id.icon_grid)
+            iconGrid.setSelection(iconSelected);iconGrid.adapter = iconAdapter
+            val dialog = Builder(context).setView(iconGridLayout).setTitle("Button Icon").show()
+            iconGrid.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                setIconDrawable(position)
+                dialog.dismiss()
+            }
         }
 
-        styleBtn.setOnClickListener {
-            Builder(context).setAdapter(ArrayAdapter(context,android.R.layout.simple_list_item_1,
-                arrayListOf("Small Round Button","Button Horizontal","Button Vertical", "Large Button Round"))) { dialog, which ->
-                btnStyle = which;remModButton.layoutParams = styleParamList[btnStyle]; dialog.dismiss()
-            }.show()
-        }
 
-        val iconGrid= Spinner(context,Spinner.MODE_DIALOG)
-        iconGrid.adapter=ButtonColorAdapter(iconDrawableList)
-        iconGrid.setSelection(0,true)
-
+        btnEditText.addTextChangedListener(object: TextWatcher{
+            override fun afterTextChanged(s: Editable?) {}
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                remModButton.text = s
+            }
+        })
 
         buttonPositive.visibility=View.VISIBLE
         buttonPositive.setOnClickListener {
@@ -192,15 +247,45 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
             obj.put("code",result)
             obj.put("type",btnStyle)
             obj.put("color",colorSelected)
-            obj.put("text",findViewById<EditText>(R.id.btn_edit_text)?.text)
-            Toast.makeText(context,colorSelected.toString()+" "+iconGrid.selectedItemPosition,Toast.LENGTH_LONG).show()
+            obj.put("textColor",colorContentSelected)
+            obj.put("icon",iconSelected)
+            obj.put("text",findViewById<EditText>(R.id.btn_edit_text)?.text.toString())
             listener.onSelected(obj)
             dismiss()
         }
     }
 
+    fun setIconDrawable(position:Int){
+        iconSelected = position
+        if(iconSelected == 0) remModButton.setCompoundDrawablesWithIntrinsicBounds(null,null,null,null)
+        else {
+            val drawable =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) context.getDrawable(
+                    MainActivity.iconDrawableList[iconSelected])
+                else context.resources.getDrawable(MainActivity.iconDrawableList[iconSelected])
+            DrawableCompat.setTint(drawable!!, colorContentSelected)
+            if (btnStyle == RemoteButton.TYPE_RECT_VER){
+                remModButton.setCompoundDrawablesWithIntrinsicBounds(null, drawable, null, null)
+                remModButton.setPadding(0,0,0,0)
+            }
+            else{
+                remModButton.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null)
+                remModButton.setPadding(8,0,0,0)
+            }
+
+        }
+    }
+
     override fun onBackPressed() {
         Toast.makeText(context,"Click on cancel to quit...",Toast.LENGTH_SHORT).show()
+    }
+
+    companion object{
+        private var colorSelected:Int = Color.GRAY
+        private var colorContentSelected = Color.WHITE
+        private var iconSelected = 0
+        private val colorDrawable = GradientDrawable()
+        private var btnStyle = RemoteButton.TYPE_RECT_HOR
     }
 }
 

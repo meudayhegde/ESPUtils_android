@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+            android:icon="@drawable/button_round_small"
+            android:id="@+id/round_button_small"
+            android:title="@string/round_button_small" />
+    <item
+            android:id="@+id/button_horizontal"
+            android:title="@string/button_horizontal"/>
+    <item
+            android:id="@+id/button_vertical"
+            android:title="@string/button_vertical"/>
+
+    <item
+            android:icon="@drawable/button_round_large"
+        android:id="@+id/round_button_large"
+        android:title="@string/round_button_large"/>
+</menu>

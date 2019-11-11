@@ -3,7 +3,6 @@ package com.irware.remote
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Intent
-import android.content.SharedPreferences
 import android.graphics.BitmapFactory
 import android.graphics.Point
 import android.graphics.drawable.BitmapDrawable
@@ -43,9 +42,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    private var homeFragment:HomeFragment?=null
-    private var manageRemoteFragment : ManageRemoteFragment?=null
-    private var aboutFragment: AboutFragment?=null
+    private var homeFragment:HomeFragment? = null
+    private var manageRemoteFragment : ManageRemoteFragment? = null
+    private var aboutFragment: AboutFragment? = null
     private var ipList=ArrayList<String>()
     private var ipConf : File? = null
     private var authenticated=false
@@ -56,7 +55,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         activity = this
         ipConf = File(filesDir.absolutePath+File.separator+"iplist.conf")
         if(!ipConf!!.exists())ipConf!!.createNewFile()
-        val splash=Dialog(this,android.R.style.Theme_Light_NoTitleBar_Fullscreen)
+        val splash=object:Dialog(this,android.R.style.Theme_Light_NoTitleBar_Fullscreen){
+            var exit = false
+            override fun onBackPressed() {
+                if(exit) finish()
+                else Toast.makeText(this@MainActivity,"Press back again to exit", Toast.LENGTH_LONG).show()
+                exit = true
+                Handler().postDelayed({
+                    exit = false
+                },2000)
+            }
+        }
 
         val splashView=layoutInflater.inflate(R.layout.splash_screen,null)
         splash.setContentView(splashView)
@@ -65,10 +74,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val blurredBitmap = BlurBuilder.blur(this, originalBitmap)
         splashView.background = BitmapDrawable(resources, blurredBitmap)
         splash.window?.attributes?.windowAnimations = R.style.DialogAnimationTheme
-        splash.setCancelable(false)
         splash.show()
         hideSystemUI(splashView)
         windowManager.defaultDisplay.getSize(size)
+
+        val file = File(filesDir.absolutePath+File.separator+ CONFIG_DIR)
+        if(!file.exists()) file.mkdir()
+
 
         val logo=splash.findViewById<ImageView>(R.id.splash_logo)
         logo.layoutParams=LinearLayout.LayoutParams((min(size.x,size.y)*0.6F).roundToInt(),(min(size.x,size.y)*0.6F).roundToInt())
@@ -146,6 +158,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         Handler().postDelayed({
             if(splash.isShowing) {
+                splash.findViewById<RelativeLayout>(R.id.splash_restart_layout).visibility = View.VISIBLE
                 val loginCard = splash.findViewById<LinearLayout>(R.id.login_view)
 
                 val cardAnim = AnimationUtils.loadAnimation(this, R.anim.expand)
@@ -202,7 +215,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         nav_view.setNavigationItemSelectedListener(this)
         nav_view.setCheckedItem(R.id.home_drawer)
-        if(homeFragment==null)
+        if(homeFragment == null)
             homeFragment=HomeFragment()
         replaceFragment(homeFragment as Fragment)
 
@@ -220,15 +233,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.main, menu)
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
             R.id.action_settings ->{
                 val intent = Intent(this,SettingsActivity :: class.java )
@@ -240,7 +249,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        // Handle navigation view item clicks here.
 
         when (item.itemId) {
             R.id.home_drawer -> {
@@ -272,23 +280,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun hideSystemUI(view:View) {
- // Set the IMMERSIVE flag.
-    // Set the content to appear under the system bars so that the content
-    // doesn't resize when the system bars hide and show.
         view.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                 or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                 or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
-
-                or View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
-
+                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_FULLSCREEN
                 or View.SYSTEM_UI_FLAG_IMMERSIVE)
-}
+    }
 
-// This snippet shows the system bars. It does this by removing all the flags
- // except for the ones that make the content appear under the system bars.
+
     private fun showSystemUI(view: View) {
-    view.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+        view.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
             or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
             or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
     }
@@ -296,6 +298,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     companion object {
         val size:Point=Point()
         const val PORT=48321
+        const val CONFIG_DIR = "remotes"
         var MCU_MAC = ""
         var MCU_IP = "192.168.4.1"
         var USERNAME = ""
@@ -308,4 +311,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.drawable.icon_cancel, R.drawable.icon_fast_forward,R.drawable.icon_fast_rewind,R.drawable.icon_flight_mode,
             R.drawable.icon_home, R.drawable.icon_back,R.drawable.icon_backspace,R.drawable.icon_block)
     }
+
+    private var restart = false
+    fun onRestartClicked(view: View) {
+        if(restart) recreate()
+        else Toast.makeText(this, "Press again to Restart",Toast.LENGTH_SHORT).show()
+        restart = true
+        Handler().postDelayed({ restart = false },1400)
+    }
+
+    fun viewRegisterClicked(view: View) {}
 }

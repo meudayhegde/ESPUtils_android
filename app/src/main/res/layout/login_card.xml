@@ -3,6 +3,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         style="@style/parent"
+        tools:context=".MainActivity"
         android:orientation="vertical"
         android:layout_gravity="center"
         android:layout_marginTop="@dimen/loginViewsMargin"
@@ -85,21 +86,13 @@
             android:textSize="@dimen/newsMoreTextSize"
             tools:visibility="gone" />
 
-    <Button
-        android:id="@+id/cirLoginButton"
-        style="@style/loginButton"
-        android:text="@string/login"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/loginViewsMargin"/>
+    <android.widget.Button
+            android:id="@+id/cirLoginButton"
+            style="@style/loginButton"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/loginViewsMargin"
+            android:text="@string/login"
+            tools:ignore="UnusedAttribute" />
 
-    <TextView
-        style="@style/parent"
-        android:textAlignment="center"
-        android:textStyle="bold"
-        android:textColor="@color/primaryTextColor"
-        android:text="@string/login_signup_hint"
-        android:onClick="viewRegisterClicked"
-        android:visibility="gone"
-        android:layout_marginTop="@dimen/loginViewsMargin"/>
 
 </LinearLayout>

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardUseCompatPadding="true"
+        app:cardElevation="4dp"
+        app:cardCornerRadius="6dp"
+        android:descendantFocusability="blocksDescendants">
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+        <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:orientation="vertical">
+
+            <LinearLayout
+                    android:id="@+id/layout_vendor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="6sp"
+                        android:layout_marginStart="14sp"
+                        android:text="@string/vendor_name"
+                        android:layout_marginTop="4sp"
+                        android:textSize="16sp"/>
+
+                <TextView
+                        android:id="@+id/vendor_name_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4sp"
+                        android:text="@string/vendor_name"
+                        android:textSize="18sp"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/layout_vendor"
+                    android:orientation="horizontal">
+
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="14sp"
+                        android:layout_marginTop="4sp"
+                        android:layout_marginEnd="6sp"
+                        android:text="@string/model_name"
+                        android:textSize="16sp" />
+
+                <TextView
+                        android:id="@+id/model_name_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="14sp"
+                        android:layout_marginTop="4sp"
+                        android:layout_marginEnd="14sp"
+                        android:text="@string/model_name"
+                        android:textSize="18sp" />
+
+            </LinearLayout>
+
+
+            <TextView
+                    android:id="@+id/btn_count"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10sp"
+                    android:layout_marginTop="2sp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginStart="0dp"
+                    android:layout_toEndOf="@+id/layout_vendor"
+                    android:gravity="end"
+                    android:textSize="26sp" />
+
+        </RelativeLayout>
+
+
+        <TextView
+                android:id="@+id/remote_desc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8sp"
+                android:layout_marginStart="14sp"
+                android:layout_marginBottom="4sp"
+                android:text="@string/description"
+                android:textSize="14sp" />
+
+    </LinearLayout>
+
+
+</androidx.cardview.widget.CardView>

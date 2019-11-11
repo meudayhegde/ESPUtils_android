@@ -5,7 +5,6 @@
             <corners android:radius="100dp"/>
             <stroke android:color="@color/btn_border_dark"
                     android:width="2px"/>
-            <solid android:color="@color/whiteTextColor"/>
         </shape>
     </item>
     <item android:state_pressed="true">
@@ -13,7 +12,6 @@
             <corners android:radius="100dp"/>
             <stroke android:color="@color/btn_border_dark"
                     android:width="2px"/>
-            <solid android:color="@color/bg_color_btn_grey"/>
         </shape>
     </item>
     <item android:state_enabled="false">
@@ -21,7 +19,6 @@
             <corners android:radius="100dp"/>
             <stroke android:color="@color/btn_border_dark"
                     android:width="0.2dp"/>
-            <solid android:color="#8F8F8F"/>
         </shape>
 
     </item>

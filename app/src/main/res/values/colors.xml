@@ -1,37 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <color name="colorPrimary">#b4306d</color>
-    <color name="colorPrimaryDark">#50002c</color>
-    <color name="colorAccent">#d4508d</color>
-    <color name="bg_colr_btn_red">#ff0000</color>
+    <color name="colorPrimary">#AC63FF</color>
+    <color name="colorPrimaryDark">#7B003B</color>
+    <color name="colorAccent">#7890FB</color>
     <color name="btn_border_dark">#000000</color>
-    <color name="bg_color_btn_red_pressed">#ff5100</color>
     <color name="color_fab">@color/colorPrimary</color>
     <color name="color_fab_ripple">@color/colorAccent</color>
-    <color name="bg_color_btn_green">#10c100</color>
-    <color name="bg_color_btn_green_pressed">#1cf100</color>
-    <color name="bg_color_btn_blue">#0059ff</color>
-    <color name="bg_color_btn_blue_pressed">#00aaff</color>
-    <color name="bg_color_btn_yellow">#ffff00</color>
-    <color name="bg_color_btn_yellow_pressed">#f4ff56</color>
-    <color name="bg_color_btn_grey">#636363</color>
-    <color name="bg_color_btn_grey_pressed">#919191</color>
-    <color name="bg_color_btn_disabled">#8F8F8F</color>
-    <color name="blue_fab_pressed">#0066FF</color>
     <color name="blue_fab_normal">#0096FF</color>
     <color name="blue_fab_ripple">#01D3FF</color>
     <color name="transparent" >#00ffffff</color>
-    <color name="item_pressed">#b500c8ff</color>
-    <color name="item_focused">#b500b7ff</color>
-    <color name="item_checked">#b56adfff</color>
     <color name="color_white">#ffffff</color>
     <!--colors for modern ui-->
     <color name="whiteTextColor">#fff</color>
     <color name="primaryTextColor">#00a5ff</color>
-    <color name="loginBkColor">#f0f0f0</color>
 
     <!--colros for card-->
-    <color name="whiteCardColor">#fff</color>
-    <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">#fff</color>
 
 </resources>

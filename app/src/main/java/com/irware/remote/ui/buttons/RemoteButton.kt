@@ -30,56 +30,55 @@ class RemoteButton : Button {
     constructor(context: Context?, properties:ButtonProperties):super(context){
         this.properties=properties
         setTextColor(Color.WHITE)
-        setButtonProperties()
+        setButtonProperties(properties)
 
         properties.setOnModificationListener(object:OnModificationListener{
             override fun onTextColorChanged() {
-                setTextColor(properties.getTextColor())
+                setTextColor(properties.textColor)
                 onIconModified()
             }
 
             override fun onTypeModified() {
-                setType(type = properties.getAlignType())
+                setType(type = properties.iconType)
                 onIconModified()
             }
 
             override fun onIconModified() {
-                setIcon(MainActivity.iconDrawableList[properties.getIcon()])
+                setIcon(MainActivity.iconDrawableList[properties.icon])
             }
 
             override fun onTextModified() {
-                text = properties.getText()
+                text = properties.text
             }
 
             override fun onColorModified() {
-                dr.setColor(properties.getColor())
+                dr.setColor(properties.color)
             }
 
             override fun onIrModified() {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
             }
 
             override fun onPositionModified() {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
             }
 
         })
     }
 
     @SuppressLint("InlinedApi")
-    private fun setButtonProperties(){
-        setType(type = properties?.getAlignType()!!)
-        text = properties?.getText()!!
-        dr.setColor(properties?.getColor()!!)
+    fun setButtonProperties(btnProperties:ButtonProperties){
+        properties = btnProperties
+        setType(type = properties?.iconType!!)
+        text = properties?.text
         gravity = Gravity.CENTER
         setTextSize(AUTO_SIZE_TEXT_TYPE_UNIFORM, 12F)
         dr.setStroke(2,Color.BLACK)
         dr.cornerRadius = 100F
-        dr.setColor(properties!!.getColor())
+        dr.setColor(properties?.color!!)
         background = dr
-        text = properties!!.getText()
-        setTextColor(properties!!.getTextColor())
-        setIcon(MainActivity.iconDrawableList[properties!!.getIcon()])
+        setTextColor(properties!!.textColor)
+        setIcon(MainActivity.iconDrawableList[properties!!.icon])
     }
 
     fun getProperties():ButtonProperties{
@@ -92,8 +91,8 @@ class RemoteButton : Button {
             var drawable = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) context.getDrawable(drawable_resid)
             else context.resources.getDrawable(drawable_resid)
             drawable = drawable?.mutate()
-            DrawableCompat.setTint(drawable!!,properties!!.getTextColor())
-            if(properties!!.getAlignType() == TYPE_RECT_VER) {
+            DrawableCompat.setTint(drawable!!,properties!!.textColor)
+            if(properties!!.iconType == TYPE_RECT_VER) {
                 setCompoundDrawablesWithIntrinsicBounds(null, drawable, null, null)
                 setPadding(0,0,0,0)
             }

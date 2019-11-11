@@ -1,12 +1,12 @@
 package com.irware.remote.net
 
-import android.content.SharedPreferences
-import android.os.Handler
-import android.os.Looper
+import android.content.DialogInterface
 import com.irware.remote.MainActivity
+import com.irware.remote.R
+import com.irware.remote.ui.dialogs.ButtonPropertiesDialog
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.*
-import java.lang.Thread.sleep
 import java.net.Socket
 
 object SocketClient{
@@ -34,32 +34,48 @@ object SocketClient{
     fun readIrCode(irlistener:IrCodeListener) {
         Thread {
             try {
-             /*   var connector = Connector(MainActivity.MCU_IP)
+                val connector = Connector(MainActivity.MCU_IP)
+                MainActivity.activity?.runOnUiThread {
+                    irlistener.parentDialog?.setButton(DialogInterface.BUTTON_NEGATIVE,"cancel",object:DialogInterface.OnClickListener{
+                        override fun onClick(dialog: DialogInterface?, which: Int) {
+                            connector.close()
+                            dialog?.dismiss()
+                        }
+                    })
+                }
                 connector.sendLine(
                     "{\"request\":\"ir_capture\",\"username\":\""
-                            + MainActivity.USERNAME + "\",\"password\":\"" + MainActivity.PASSWORD + "\"}"
-                )
+                            + MainActivity.USERNAME + "\",\"password\":\"" + MainActivity.PASSWORD + "\"}")
+                val result = JSONObject(connector.readLine())
 
-                var response: String = JSONObject(connector.readLine())["response"].toString()
                 connector.close()
-                if (response == "deny") irlistener.onDeny()
-                else if (response == "timeout") irlistener.onTimeout()
-                else irlistener.onIrRead(response)*/
-                irlistener.onIrRead("button")
+                when (result.getString("response")) {
+                    "rawData" -> {
+                        result.remove("response")
+                        result.put("text","")
+                        result.put("iconType",ButtonPropertiesDialog.btnStyle)
+                        result.put("color",ButtonPropertiesDialog.colorSelected)
+                        result.put("icon",ButtonPropertiesDialog.iconSelected)
+                        result.put("textColor",ButtonPropertiesDialog.colorContentSelected)
+                        irlistener.onIrRead(result)
+                    }
+                    "timeout" -> irlistener.onTimeout()
+                    else -> irlistener.onDeny(MainActivity.activity?.getString(R.string.auth_failed_login_again))
+                }
             }catch(ex:IOException){
-                irlistener.onDeny()
+                irlistener.onDeny(ex.toString())
             }
         }.start()
     }
 
-    fun sendIrCode(array:IntArray,pref:SharedPreferences) {
+    fun sendIrCode(length:Int,array:JSONArray) {
         Thread {
-            var ip = pref.getString("mcu_ip", "192.168.1.1")
-            var sock = Socket(ip, 4832)
-            var dos = DataOutputStream(sock.getOutputStream())
-            dos.write(("{\"task\":\"irsend\",\"code\":"+array.getString()+"}\n").toByteArray())
+            val connector = Connector(MainActivity.MCU_IP)
+            connector.sendLine(
+                "{\"request\":\"ir_send\",\"username\":\""
+                        + MainActivity.USERNAME + "\",\"password\":\"" + MainActivity.PASSWORD + "\",\"length\":"+length+",\"data\":"+array.join(",")+"}")
+            val result = JSONObject(connector.readLine())
 
-            sock.close()
         }.start()
     }
 
@@ -75,7 +91,8 @@ private fun IntArray.getString(): String? {
 }
 
 interface IrCodeListener{
-    fun onIrRead(result:String)
+    var parentDialog:androidx.appcompat.app.AlertDialog?
+    fun onIrRead(jsonObj:JSONObject)
     fun onTimeout()
-    fun onDeny()
+    fun onDeny(err_info:String?)
 }

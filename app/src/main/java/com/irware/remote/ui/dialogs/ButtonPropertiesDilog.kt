@@ -1,5 +1,6 @@
 package com.irware.remote.ui.dialogs
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Color
@@ -26,6 +27,7 @@ import kotlin.math.roundToInt
 
 
 class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedListener): AlertDialog(context),IrCodeListener {
+    override var parentDialog: AlertDialog? = null
 
     private val buttonPositive: Button
     private val buttonNegative: Button
@@ -47,6 +49,7 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
     private val styleParamList=ArrayList<RelativeLayout.LayoutParams>()
 
     init{
+        parentDialog = this
         setView(layoutInflater.inflate(R.layout.create_button_dialog_layout,null))
         setButton(DialogInterface.BUTTON_NEGATIVE,"cancel") { dialog, _ -> dialog!!.dismiss() }
         setButton(DialogInterface.BUTTON_POSITIVE,"add"){ _, _ -> }
@@ -98,10 +101,16 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
 
         remModButton.background = colorDrawable
 
-        captureInit()
+        btnEditText.addTextChangedListener(object: TextWatcher{
+            override fun afterTextChanged(s: Editable?) {}
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                remModButton.text = s
+            }
+        })
     }
 
-    private fun captureInit(){
+    fun captureInit(){
         btnPropTbl.visibility=View.GONE
         irCapLayout.visibility =View.VISIBLE
         buttonPositive.visibility=View.GONE
@@ -115,12 +124,12 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
         SocketClient.readIrCode(this)
     }
 
-    override fun onIrRead(result: String){
+    override fun onIrRead(jsonObj:JSONObject) {
         MainActivity.activity?.runOnUiThread {
             irCapLayout.visibility= View.GONE
             btnPropTbl.visibility=View.VISIBLE
-            buttonPositive.text = context.getString(R.string.add_btn)
-            manageButtonProperties(result)
+            buttonPositive.text = context.getString(R.string.apply)
+            manageButtonProperties(jsonObj)
         }
     }
 
@@ -140,14 +149,14 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
         }
     }
 
-    override fun onDeny() {
+    override fun onDeny(err_info:String?) {
         MainActivity.activity?.runOnUiThread {
-            Toast.makeText(context,"Authentication failed, please login again",Toast.LENGTH_LONG).show()
+            Toast.makeText(context,err_info,Toast.LENGTH_LONG).show()
             irProgress.visibility = View.GONE
             irCapErrLogo.visibility = View.VISIBLE
             irCapInst.visibility = View.GONE
 
-            irCapStatus.text = context.getString(R.string.auth_failed_login_again)
+            irCapStatus.text = err_info
 
             buttonNegative.text = context.getString(R.string.exit)
             buttonNegative.setOnClickListener {
@@ -162,10 +171,9 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
         }
     }
 
-    private fun manageButtonProperties(result:String){
-        setTitle("New Button")
-
-
+    @SuppressLint("InflateParams")
+    private fun manageButtonProperties(jsonObj:JSONObject){
+        setTitle("Set Button Properties")
 
         styleParamList.add(RelativeLayout.LayoutParams(RemoteButton.MIN_HIGHT , RemoteButton.MIN_HIGHT))
         styleParamList.add(RelativeLayout.LayoutParams(RemoteButton.BTN_WIDTH , RemoteButton.MIN_HIGHT))
@@ -175,7 +183,18 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
         for(param in styleParamList)
             param.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE)
 
+        btnStyle = jsonObj.getInt("iconType")
+        colorSelected = jsonObj.getInt("color")
+        colorDrawable.setColor(colorSelected)
+
+
+        colorContentSelected = jsonObj.getInt("textColor")
+        iconSelected = jsonObj.getInt("icon")
+        btnEditText.setText(jsonObj.getString("text"))
+        setIconDrawable(iconSelected)
+
         remModButton.layoutParams = styleParamList[btnStyle]
+
         colorPicker.setColor(colorSelected)
         colorPicker.setColorSelectionListener(object : SimpleColorSelectionListener() {
             override fun onColorSelected(color: Int) {
@@ -212,7 +231,7 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
             val iconAdapter = object:ArrayAdapter<Int>(context,R.layout.drawable_layout,MainActivity.iconDrawableList.toTypedArray()){
                 override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                     val drawable = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) context.getDrawable(getItem(position)!!)
-                        else context.resources.getDrawable(getItem(position)!!)
+                        else with(context) { resources.getDrawable(getItem(position)!!) }
                     DrawableCompat.setTint(drawable!!,Color.GRAY)
                     var returnView = convertView
                     if(returnView==null){
@@ -232,25 +251,15 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
             }
         }
 
-
-        btnEditText.addTextChangedListener(object: TextWatcher{
-            override fun afterTextChanged(s: Editable?) {}
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                remModButton.text = s
-            }
-        })
-
         buttonPositive.visibility=View.VISIBLE
         buttonPositive.setOnClickListener {
-            val obj=JSONObject()
-            obj.put("code",result)
-            obj.put("type",btnStyle)
-            obj.put("color",colorSelected)
-            obj.put("textColor",colorContentSelected)
-            obj.put("icon",iconSelected)
-            obj.put("text",findViewById<EditText>(R.id.btn_edit_text)?.text.toString())
-            listener.onSelected(obj)
+            jsonObj.put("text",findViewById<EditText>(R.id.btn_edit_text)?.text.toString())
+            jsonObj.put("iconType",btnStyle)
+            jsonObj.put("color",colorSelected)
+            jsonObj.put("icon",iconSelected)
+            jsonObj.put("textColor",colorContentSelected)
+
+            listener.onSelected(jsonObj)
             dismiss()
         }
     }
@@ -262,7 +271,7 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
             val drawable =
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) context.getDrawable(
                     MainActivity.iconDrawableList[iconSelected])
-                else context.resources.getDrawable(MainActivity.iconDrawableList[iconSelected])
+                else with(context) { resources.getDrawable(MainActivity.iconDrawableList[iconSelected]) }
             DrawableCompat.setTint(drawable!!, colorContentSelected)
             if (btnStyle == RemoteButton.TYPE_RECT_VER){
                 remModButton.setCompoundDrawablesWithIntrinsicBounds(null, drawable, null, null)
@@ -281,11 +290,11 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
     }
 
     companion object{
-        private var colorSelected:Int = Color.GRAY
-        private var colorContentSelected = Color.WHITE
-        private var iconSelected = 0
+        var colorSelected:Int = Color.GRAY
+        var colorContentSelected = Color.WHITE
+        var iconSelected = 0
+        var btnStyle = RemoteButton.TYPE_RECT_HOR
         private val colorDrawable = GradientDrawable()
-        private var btnStyle = RemoteButton.TYPE_RECT_HOR
     }
 }
 

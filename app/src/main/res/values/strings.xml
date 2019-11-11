@@ -2,7 +2,6 @@
     <string name="app_name">iR WaRE</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">iR WaRE</string>
     <string name="nav_header_subtitle">A universal infrared remote control solution</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
@@ -12,16 +11,12 @@
     <string name="splash_logo_desc">splash screen logo</string>
     <string name="login_uid_hint">User ID</string>
     <string name="login_password_hint">Password</string>
-    <string name="signup_login_hint">Already have an account? Sign In</string>
-    <string name="login_signup_hint">Don\'t have an account? Sign Up</string>
     <string name="forgot_password">Forgot Password?</string>
     <string name="ip_address">IP Address</string>
     <string name="login">Login</string>
     <string name="ir_capture_instruction">Press the target button in the original remote control towards iR WaRE Remote...</string>
     <string name="waiting_for_ir_signal">waiting for ir signal...</string>
     <string name="ir_capture_unit">IR Capture Unit</string>
-    <string name="color">Color</string>
-    <string name="style">Style</string>
     <string name="icon">Icon</string>
     <string name="button_text">Button Text</string>
     <string name="ir_capture_error_logo_description">logo to display on failed to capture ir signal</string>
@@ -30,13 +25,16 @@
     <string name="retry">Retry</string>
     <string name="restart">Restart</string>
     <string name="exit">Exit</string>
-    <string name="add_btn">Add Button</string>
+    <string name="apply">Apply</string>
     <string name="add_new_button">Add New Button</string>
     <string name="round_button_large">Round Button Large</string>
     <string name="round_button_small">Round Button Small</string>
     <string name="button_horizontal">Button Horizontal</string>
     <string name="button_vertical">Button vertical</string>
-    <string name="button_text_color">Text color</string>
     <string name="color_picker_help">Inner circle changes the color of content and outer two circle change button color</string>
+    <string name="vendor_name">Vendor Name:</string>
+    <string name="model_name">Model Name:</string>
+    <string name="description">Description</string>
+    <string name="restart_app_from_splash_screen">restart app from splash screen</string>
 
 </resources>

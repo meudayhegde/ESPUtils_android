@@ -1,9 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent" android:layout_height="match_parent"
-              android:theme="@style/AppTheme.NoActionBar" android:gravity="center" android:background="@mipmap/ic_launcher_background"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:theme="@style/AppTheme.NoActionBar"
+        android:gravity="center"
+        android:background="@mipmap/ic_launcher_background"
+        tools:context=".MainActivity"
         android:orientation="vertical">
 
+    <RelativeLayout
+            android:id="@+id/splash_restart_layout"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <ImageButton
+                android:layout_width="22sp"
+                android:layout_height="22sp"
+                android:onClick="onRestartClicked"
+                android:layout_marginEnd="18sp"
+                android:background="@color/transparent"
+                app:srcCompat="@drawable/icon_power"
+                android:layout_alignParentEnd="true"
+                android:contentDescription="@string/restart_app_from_splash_screen" />
+
+    </RelativeLayout>
 
     <ImageView
             android:id="@+id/splash_logo"
@@ -18,11 +41,9 @@
             layout="@layout/login_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/splash_logo"
             android:layout_marginLeft="25sp"
             android:layout_marginTop="75sp"
             android:layout_marginRight="25sp"
             android:visibility="gone" />
-
 
 </LinearLayout>

@@ -8,20 +8,14 @@
             android:id="@+id/btn_layout_listview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="14sp"
-            android:dividerHeight="0sp" />
+            android:divider="@null"
+            android:layout_marginTop="14sp" />
 
         <com.github.clans.fab.FloatingActionButton
-                android:id="@+id/fab_new_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                fab:fab_label="New Button"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentEnd="true"
-                fab:fab_size="normal"
-                fab:fab_colorNormal="@color/color_fab"
-                fab:fab_colorPressed="@color/color_fab_ripple"
-                fab:fab_colorRipple="@color/color_fab_ripple"
-                android:src="@drawable/fab_add" android:layout_marginEnd="20dp"
-                android:layout_marginBottom="20dp"/>
+                android:id="@+id/fab_new_button" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" fab:fab_label="New Button"
+                android:layout_alignParentBottom="true" android:layout_alignParentEnd="true"
+                fab:fab_size="normal" fab:fab_colorNormal="@color/color_fab"
+                fab:fab_colorPressed="@color/color_fab_ripple" fab:fab_colorRipple="@color/color_fab_ripple"
+                android:src="@drawable/fab_add" android:layout_marginEnd="20dp" android:layout_marginBottom="20dp"/>
 </android.widget.RelativeLayout>

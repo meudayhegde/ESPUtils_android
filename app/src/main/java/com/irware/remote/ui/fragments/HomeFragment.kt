@@ -7,6 +7,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
+import androidx.recyclerview.widget.RecyclerView
 
 import com.irware.remote.R
 
@@ -17,15 +19,14 @@ class HomeFragment : androidx.fragment.app.Fragment() {
         super.onCreate(savedInstanceState)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val rootView = inflater.inflate(R.layout.fragment_home, container, false) as FrameLayout
+        val remoteList = rootView.findViewById<RecyclerView>(R.id.home_remotes_recycler_view)
+
+
+        return rootView
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
     fun onButtonPressed(uri: Uri) {
         listener?.onFragmentInteraction(uri)
     }

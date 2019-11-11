@@ -22,7 +22,8 @@ class ButtonProperties(val jsonObj:JSONObject,private val parent:RemotePropertie
         set(value){field = value;jsonObj.put("textColor",value);listener?.onTextColorChanged();if(attached)parent.update()}
     var btnPosition  = jsonObj.getInt("btnPosition")
         set(value){field = value;jsonObj.put("btnPosition",value);listener?.onPositionModified();if(attached)parent.update()}
-    private var listener:OnModificationListener?=null
+    
+    private var listener:OnModificationListener?= null
 
     init{
         if(!attached){

@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -21,35 +20,24 @@ import com.google.android.material.textfield.TextInputEditText
 import com.irware.remote.MainActivity
 import com.irware.remote.R
 import com.irware.remote.holders.RemoteProperties
-import com.irware.remote.ui.dialogs.CreateRemoteDialog
-import java.io.*
+import com.irware.remote.ui.dialogs.RemoteDialog
+import java.io.File
 
 class ManageRemoteFragment : androidx.fragment.app.Fragment() {
-
-    private var configPath = MainActivity.activity?.filesDir?.absolutePath + File.separator + MainActivity.CONFIG_DIR
     private var listener: OnFragmentInteractionListener? = null
-    private val remotePropList = ArrayList<RemoteProperties>()
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
     private var rootView:RelativeLayout? = null
+
 
     @SuppressLint("DefaultLocale")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         if(rootView == null){
             rootView = inflater.inflate(R.layout.fragment_manage_remote, container, false) as RelativeLayout
 
-            val files = File(configPath).listFiles { pathname ->
-                pathname!!.isFile and (pathname.name.endsWith(
-                    ".json",
-                    true
-                )) and pathname.canWrite()
-            }
-            for (file in files)
-                remotePropList.add(RemoteProperties(file, null))
-
             viewManager = LinearLayoutManager(context)
-            viewAdapter = RemoteListAdapter(remotePropList)
+            viewAdapter = RemoteListAdapter(MainActivity.remotePropList)
 
             recyclerView = rootView!!.findViewById<RecyclerView>(R.id.manage_remotes_recycler_view).apply {
                 setHasFixedSize(true)
@@ -77,10 +65,10 @@ class ManageRemoteFragment : androidx.fragment.app.Fragment() {
                             var id = ("$vendor $model").toLowerCase().replace(" ", "_").replace("\n", "")
 
                             val desc = inputLayout.findViewById<TextInputEditText>(R.id.remote_desc)
-                            var configFile = File(configPath + File.separator + id + ".json")
+                            var configFile = File(MainActivity.configPath + File.separator + id + ".json")
                             var incr = 1
                             while(configFile.exists()) {
-                                configFile = File(configPath + File.separator + id + "_" + incr + ".json")
+                                configFile = File(MainActivity.configPath + File.separator + id + "_" + incr + ".json")
                                 incr++
                             }
                             if(incr>1) id+="_"+(incr-1)
@@ -91,7 +79,8 @@ class ManageRemoteFragment : androidx.fragment.app.Fragment() {
                             remoteProperties.remoteName = model
                             remoteProperties.remoteID = id
                             remoteProperties.description = desc.text.toString()
-                            CreateRemoteDialog(context, remoteProperties).show()
+                            MainActivity.remotePropList.add(remoteProperties)
+                            RemoteDialog(context, remoteProperties,RemoteDialog.MODE_EDIT).show()
                             dismiss()
                         }
                     }
@@ -99,10 +88,6 @@ class ManageRemoteFragment : androidx.fragment.app.Fragment() {
             }
         }
         return rootView
-    }
-
-    fun onButtonPressed(uri: Uri) {
-        listener?.onFragmentInteraction(uri)
     }
 
     override fun onAttach(context: Context) {
@@ -148,7 +133,7 @@ class RemoteListAdapter(private val propList: ArrayList<RemoteProperties>) : Rec
             desc.setText(prop.description)
             AlertDialog.Builder(holder.cardView.context).setTitle("Edit remote Information").setView(inputLayout)
                 .setNegativeButton("Cancel"){ dialog, _ -> dialog.dismiss()}
-                .setPositiveButton("Done"){dialog,_ ->
+                .setPositiveButton("Done"){ _, _ ->
                     prop.remoteVendor = vendor.text.toString()
                     prop.remoteName = name.text.toString()
                     prop.description = desc.text.toString()
@@ -159,7 +144,7 @@ class RemoteListAdapter(private val propList: ArrayList<RemoteProperties>) : Rec
                     prop.remoteName = name.text.toString()
                     prop.description = desc.text.toString()
                     setViewProps(holder.cardView,prop)
-                    CreateRemoteDialog(holder.cardView.context, prop).show()
+                    RemoteDialog(holder.cardView.context, prop,RemoteDialog.MODE_EDIT).show()
                 }.show()
         }
 

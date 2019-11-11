@@ -36,16 +36,14 @@ object SocketClient{
             try {
                 val connector = Connector(MainActivity.MCU_IP)
                 MainActivity.activity?.runOnUiThread {
-                    irlistener.parentDialog?.setButton(DialogInterface.BUTTON_NEGATIVE,"cancel",object:DialogInterface.OnClickListener{
-                        override fun onClick(dialog: DialogInterface?, which: Int) {
-                            connector.close()
-                            dialog?.dismiss()
-                        }
-                    })
+                    irlistener.parentDialog?.setButton(DialogInterface.BUTTON_NEGATIVE,"cancel") { dialog, _ ->
+                        connector.close()
+                        dialog?.dismiss()
+                    }
                 }
                 connector.sendLine(
                     "{\"request\":\"ir_capture\",\"username\":\""
-                            + MainActivity.USERNAME + "\",\"password\":\"" + MainActivity.PASSWORD + "\"}")
+                            + MainActivity.USERNAME + "\",\"password\":\"" + MainActivity.PASSWORD + "\",\"length\":0,\"data\":\"_\"}")
                 val result = JSONObject(connector.readLine())
 
                 connector.close()
@@ -68,26 +66,20 @@ object SocketClient{
         }.start()
     }
 
-    fun sendIrCode(length:Int,array:JSONArray) {
+    fun sendIrCode(length:Int,array:JSONArray,irSendListener: IrSendListener) {
         Thread {
             val connector = Connector(MainActivity.MCU_IP)
             connector.sendLine(
                 "{\"request\":\"ir_send\",\"username\":\""
-                        + MainActivity.USERNAME + "\",\"password\":\"" + MainActivity.PASSWORD + "\",\"length\":"+length+",\"data\":"+array.join(",")+"}")
-            val result = JSONObject(connector.readLine())
-
+                        + MainActivity.USERNAME + "\",\"password\":\""
+                        + MainActivity.PASSWORD + "\",\"length\":"
+                        +length+",\"data\":\"["+array.join(",")+"]\"}")
+            val result = connector.readLine()
+            connector.close()
+            irSendListener.onIrSend(result)
         }.start()
     }
 
-}
-
-private fun IntArray.getString(): String? {
-    var str="["
-    for(i in 0..size-2){
-        str+=this[i].toString()+","
-    }
-    str+=this[size-1].toString()+"]"
-    return str
 }
 
 interface IrCodeListener{
@@ -95,4 +87,8 @@ interface IrCodeListener{
     fun onIrRead(jsonObj:JSONObject)
     fun onTimeout()
     fun onDeny(err_info:String?)
+}
+
+interface IrSendListener{
+    fun onIrSend(result:String)
 }

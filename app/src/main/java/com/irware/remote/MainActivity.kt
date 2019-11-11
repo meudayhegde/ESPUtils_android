@@ -20,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.navigation.NavigationView
+import com.irware.remote.holders.RemoteProperties
 import com.irware.remote.listeners.OnValidationListener
 import com.irware.remote.net.SocketClient
 import com.irware.remote.ui.BlurBuilder
@@ -38,9 +39,7 @@ import kotlin.math.roundToInt
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
     OnFragmentInteractionListener {
-    override fun onFragmentInteraction(uri: Uri) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun onFragmentInteraction(uri: Uri) {}
 
     private var homeFragment:HomeFragment? = null
     private var manageRemoteFragment : ManageRemoteFragment? = null
@@ -52,7 +51,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     @SuppressLint("InflateParams")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        remotePropList.clear()
         activity = this
+        configPath = filesDir.absolutePath + File.separator + CONFIG_DIR
         ipConf = File(filesDir.absolutePath+File.separator+"iplist.conf")
         if(!ipConf!!.exists())ipConf!!.createNewFile()
         val splash=object:Dialog(this,android.R.style.Theme_Light_NoTitleBar_Fullscreen){
@@ -114,7 +115,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     try{
                         val connector = SocketClient.Connector(ip)
 
-                        connector.sendLine("{\"request\":\"authenticate\",\"username\":\""+uname.text.toString()+"\",\"password\":\""+pass.text.toString()+"\",\"data\":\"__\"}")
+                        connector.sendLine("{\"request\":\"authenticate\",\"username\":\""+uname.text.toString()+"\",\"password\":\""+pass.text.toString()+"\",\"data\":\"__\",\"length\":0}")
                         val response=connector.readLine()
                         connector.close()
                         if(JSONObject(response)["response"]=="authenticated"){
@@ -183,7 +184,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 if(InetAddress.getByName(ip).isReachable(100)){
                     try{
                         val connector=SocketClient.Connector(ip)
-                        connector.sendLine("{\"request\":\"ping\",\"username\":\"__\",\"password\":\"__\",\"data\":\"__\"}")
+                        connector.sendLine("{\"request\":\"ping\",\"username\":\"__\",\"password\":\"__\",\"data\":\"__\",\"length\":0}")
                         MCU_MAC = JSONObject(connector.readLine())["MAC"] as String
                         connector.close()
                         runOnUiThread {
@@ -198,6 +199,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
             }
 
+        }.start()
+
+        Thread{
+            val files = File(configPath).listFiles { pathname ->
+                pathname!!.isFile and (pathname.name.endsWith(
+                    ".json",
+                    true
+                )) and pathname.canWrite()
+            }
+            for (file in files)
+                remotePropList.add(RemoteProperties(file, null))
         }.start()
     }
 
@@ -299,7 +311,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val size:Point=Point()
         const val PORT=48321
         const val CONFIG_DIR = "remotes"
+        val remotePropList = ArrayList<RemoteProperties>()
         var MCU_MAC = ""
+        var configPath =""
         var MCU_IP = "192.168.4.1"
         var USERNAME = ""
         var PASSWORD = ""
@@ -320,5 +334,4 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         Handler().postDelayed({ restart = false },1400)
     }
 
-    fun viewRegisterClicked(view: View) {}
 }

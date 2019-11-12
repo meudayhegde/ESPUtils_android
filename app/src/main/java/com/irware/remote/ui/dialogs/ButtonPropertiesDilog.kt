@@ -8,6 +8,7 @@ import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
@@ -31,6 +32,7 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
 
     private val buttonPositive: Button
     private val buttonNegative: Button
+    private val buttonNeutral: Button
 
     private val irCapLayout:LinearLayout
     private val btnPropTbl:LinearLayout
@@ -45,19 +47,22 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
     private val btnEditText : EditText
     private var colorPicker : HSLColorPicker
     private val clrPkr: ColorPicker
+    private val sizeTextView:TextView
 
     private val styleParamList=ArrayList<RelativeLayout.LayoutParams>()
 
     init{
         parentDialog = this
         setView(layoutInflater.inflate(R.layout.create_button_dialog_layout,null))
-        setButton(DialogInterface.BUTTON_NEGATIVE,"cancel") { dialog, _ -> dialog!!.dismiss() }
+        setButton(DialogInterface.BUTTON_NEUTRAL,"reCapture") { dialog, _ -> dialog!!.dismiss() }
+        setButton(DialogInterface.BUTTON_NEGATIVE,"Cancel") { dialog, _ -> dialog!!.dismiss() }
         setButton(DialogInterface.BUTTON_POSITIVE,"add"){ _, _ -> }
         show()
         setCanceledOnTouchOutside(false)
         setTitle("Capture IR Code")
         buttonPositive=getButton(DialogInterface.BUTTON_POSITIVE)
         buttonNegative=getButton(DialogInterface.BUTTON_NEGATIVE)
+        buttonNeutral = getButton(DialogInterface.BUTTON_NEUTRAL)
 
         irCapLayout = findViewById<LinearLayout>(R.id.ir_capture_layout)!!
         btnPropTbl = findViewById<LinearLayout>(R.id.button_prop_layout)!!
@@ -71,7 +76,9 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
 
         colorDrawable.cornerRadius = 100F
         colorDrawable.shape = GradientDrawable.RECTANGLE
-        colorDrawable.setStroke(2,Color.BLACK)
+        val value = TypedValue()
+        context.theme.resolveAttribute(R.attr.colorOnBackground, value, true)
+        colorDrawable.setStroke(2,value.data)
         colorDrawable.setColor(colorSelected)
 
         colorPicker = HSLColorPicker(context)
@@ -99,6 +106,8 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
             }
         })
 
+        sizeTextView = findViewById<TextView>(R.id.text_ir_size)!!
+
         remModButton.background = colorDrawable
 
         btnEditText.addTextChangedListener(object: TextWatcher{
@@ -110,10 +119,11 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
         })
     }
 
-    fun captureInit(){
+    fun captureInit(jsonObj:JSONObject?){
         btnPropTbl.visibility=View.GONE
         irCapLayout.visibility =View.VISIBLE
         buttonPositive.visibility=View.GONE
+        buttonNeutral.visibility = View.GONE
 
         irProgress.visibility = View.VISIBLE
         irCapErrLogo.visibility = View.GONE
@@ -121,7 +131,7 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
         irCapStatus.text = context.getString(R.string.waiting_for_ir_signal)
         irCapInst.visibility = View.VISIBLE
 
-        SocketClient.readIrCode(this)
+        SocketClient.readIrCode(this,jsonObj)
     }
 
     override fun onIrRead(jsonObj:JSONObject) {
@@ -144,7 +154,7 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
             buttonPositive.text = context.getString(R.string.retry)
             buttonPositive.visibility = View.VISIBLE
             buttonPositive.setOnClickListener {
-                captureInit()
+                captureInit(null)
             }
         }
     }
@@ -175,6 +185,11 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
     private fun manageButtonProperties(jsonObj:JSONObject){
         setTitle("Set Button Properties")
 
+        buttonNeutral.visibility = View.VISIBLE
+        buttonNeutral.setOnClickListener {
+            captureInit(jsonObj)
+        }
+
         styleParamList.add(RelativeLayout.LayoutParams(RemoteButton.MIN_HIGHT , RemoteButton.MIN_HIGHT))
         styleParamList.add(RelativeLayout.LayoutParams(RemoteButton.BTN_WIDTH , RemoteButton.MIN_HIGHT))
         styleParamList.add(RelativeLayout.LayoutParams(RemoteButton.MIN_HIGHT, RemoteButton.BTN_WIDTH ))
@@ -202,6 +217,13 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
                 colorDrawable.setColor(color)
             }
         })
+
+        val text = context.resources.getString(R.string.length_of_captured_ir_signal) + " "+jsonObj.getInt("length")+" pulses"
+        sizeTextView.text = text
+        sizeTextView.setOnLongClickListener{
+            Toast.makeText(context,jsonObj.getJSONArray("irCode").toString().replace(" ","").replace("\n",""),Toast.LENGTH_LONG).show()
+            true
+        }
 
         remModButton.setOnClickListener {
             val popup = PopupMenu(context, remModButton)

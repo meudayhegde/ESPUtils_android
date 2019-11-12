@@ -7,23 +7,19 @@
         <item
                 android:id="@+id/home_drawer"
                 android:icon="@drawable/ic_home_drawer"
-                android:title="Home"/>
-        <item
-                android:id="@+id/manage_remote_drawer"
-                android:icon="@drawable/ic_menu_manage"
-                android:title="Manage"/>
+                android:title="@string/home"/>
         <item
                 android:id="@+id/info_drawer"
                 android:icon="@drawable/ic_info_drawer"
-                android:title="About"/>
+                android:title="@string/about"/>
     </group>
 
-    <item android:title="Communicate">
+    <item android:title="@string/communicate">
         <menu>
             <item
                     android:id="@+id/share_drawer"
                     android:icon="@drawable/ic_menu_share"
-                    android:title="Share"/>
+                    android:title="@string/share"/>
         </menu>
     </item>
 

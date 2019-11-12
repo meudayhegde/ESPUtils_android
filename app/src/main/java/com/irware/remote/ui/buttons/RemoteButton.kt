@@ -8,6 +8,7 @@ import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.Icon
 import android.os.Build
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.Button
@@ -66,14 +67,16 @@ class RemoteButton : Button {
         })
     }
 
-    @SuppressLint("InlinedApi")
+    @SuppressLint("InlinedApi", "ResourceType")
     fun setButtonProperties(btnProperties:ButtonProperties){
         properties = btnProperties
         setType(type = properties?.iconType!!)
         text = properties?.text
         gravity = Gravity.CENTER
         setTextSize(AUTO_SIZE_TEXT_TYPE_UNIFORM, 12F)
-        dr.setStroke(2,Color.BLACK)
+        val value = TypedValue()
+        context.theme.resolveAttribute(R.attr.colorOnBackground, value, true);
+        dr.setStroke(2,value.data)
         dr.cornerRadius = 100F
         dr.setColor(properties?.color!!)
         background = dr

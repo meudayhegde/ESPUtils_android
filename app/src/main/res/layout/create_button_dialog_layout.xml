@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -10,7 +11,7 @@
                 android:layout_height="wrap_content" android:gravity="center" android:visibility="gone">
 
             <TextView android:text="@string/ir_capture_unit" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:id="@+id/textView2" android:layout_margin="20dp" android:textSize="18sp"/>
+                    android:textColor="?attr/colorOnBackground" android:id="@+id/textView2" android:layout_margin="20dp" android:textSize="18sp"/>
 
             <ProgressBar style="?android:attr/progressBarStyle" android:layout_width="70dp" android:layout_height="70dp"
                     android:id="@+id/ir_capture_progress"/>
@@ -19,10 +20,10 @@
                     android:contentDescription="@string/ir_capture_error_logo_description" android:visibility="gone"/>
 
             <TextView android:text="@string/waiting_for_ir_signal" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:id="@+id/ir_capture_status" android:gravity="center" android:layout_margin="10dp"/>
+                    android:textColor="?attr/colorOnBackground" android:id="@+id/ir_capture_status" android:gravity="center" android:layout_margin="10dp"/>
 
             <TextView android:text="@string/ir_capture_instruction" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:id="@+id/ir_capture_instruction" android:gravity="center" android:layout_margin="20dp"/>
+                    android:textColor="?attr/colorOnBackground" android:id="@+id/ir_capture_instruction" android:gravity="center" android:layout_margin="20dp"/>
 
         </LinearLayout>
 
@@ -37,7 +38,7 @@
                     android:id="@+id/add_new_button" android:layout_width="match_parent"
                     android:layout_height="wrap_content" android:layout_marginTop="14sp"
                     android:layout_marginBottom="14sp" android:gravity="center"
-                    android:text="@string/add_new_button"
+                    android:text="@string/add_new_button" android:textColor="?attr/colorOnBackground"
                     android:textSize="18sp" android:textStyle="bold" />
 
             <RelativeLayout
@@ -54,45 +55,44 @@
              </RelativeLayout>
 
             <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_margin="14sp"
-                    android:gravity="center"
-                    android:text="@string/color_picker_help"
-                    android:textSize="16sp" />
+                    android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_gravity="center"
+                    android:drawableStart="@drawable/icon_info" android:drawableTint="?attr/colorOnBackground"
+                    android:layout_margin="14sp" android:paddingStart="10sp" android:gravity="center" android:textColor="?attr/colorOnBackground"
+                    android:text="@string/color_picker_help" android:textSize="16sp"
+                    tools:targetApi="m" tools:ignore="RtlSymmetry" />
 
-                    <LinearLayout
-                            style="?android:attr/buttonBarStyle" android:layout_width="match_parent"
-                            android:layout_height="match_parent" android:layout_marginTop="12sp"
-                            android:gravity="center_horizontal|center_vertical" android:orientation="horizontal">
+            <TextView
+                    android:layout_width="match_parent" android:id="@+id/text_ir_size" android:layout_marginBottom="14sp"
+                    android:text="@string/length_of_captured_ir_signal" android:textColor="?attr/colorOnBackground" android:gravity="center"
+                    android:layout_marginEnd="14sp" android:layout_marginStart="14sp" android:layout_height="wrap_content"/>
 
-                        <android.widget.Button
-                                android:id="@+id/btn_icon"
-                                style="?android:attr/buttonBarStyle"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="14sp"
-                                android:layout_marginTop="2sp"
-                                android:background="@drawable/round_corner_white_bg"
-                                android:text="@string/icon" />
+            <LinearLayout
+                    style="?android:attr/buttonBarStyle" android:layout_width="match_parent"
+                    android:layout_height="match_parent" android:layout_marginTop="12sp"
+                    android:gravity="center_horizontal|center_vertical" android:orientation="horizontal">
 
-                        <com.google.android.material.textfield.TextInputLayout
-                                android:id="@+id/textInputButtonName" style="@style/textFieldLayoutWhiteTheme"
-                                android:layout_marginTop="12sp" android:layout_marginLeft="10dp"
-                                android:layout_marginRight="10dp" android:layout_marginBottom="10dp"
-                                android:textColorHint="@android:color/darker_gray">
-                            <EditText
-                                    android:id="@+id/btn_edit_text" style="@style/modifiedEditText"
-                                    android:hint="@string/button_text" android:importantForAutofill="no"
-                                    android:inputType="text" android:maxLines="1" />
-                        </com.google.android.material.textfield.TextInputLayout>
+                <android.widget.Button
+                        android:id="@+id/btn_icon" style="?android:attr/buttonBarStyle"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:layout_marginStart="14sp" android:layout_marginTop="2sp"
+                        android:background="@drawable/round_corner_white_bg" android:text="@string/icon" />
 
-                    </LinearLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputButtonName" style="@style/textFieldLayoutWhiteTheme"
+                        android:layout_marginTop="12sp" android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp" android:layout_marginBottom="10dp"
+                        android:textColorHint="@android:color/darker_gray">
+                    <EditText
+                            android:id="@+id/btn_edit_text" style="@style/modifiedEditText"
+                            android:hint="@string/button_text" android:importantForAutofill="no"
+                            android:inputType="text" android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
 
 
-            </RelativeLayout>
+    </RelativeLayout>
 
-        </ScrollView>
+</ScrollView>

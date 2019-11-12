@@ -27,7 +27,6 @@ import com.irware.remote.ui.BlurBuilder
 import com.irware.remote.ui.buttons.RemoteButton
 import com.irware.remote.ui.fragments.AboutFragment
 import com.irware.remote.ui.fragments.HomeFragment
-import com.irware.remote.ui.fragments.ManageRemoteFragment
 import com.irware.remote.ui.fragments.OnFragmentInteractionListener
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
@@ -37,14 +36,14 @@ import java.net.InetAddress
 import kotlin.math.roundToInt
 
 
+@Suppress("NAME_SHADOWING")
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
     OnFragmentInteractionListener {
     override fun onFragmentInteraction(uri: Uri) {}
 
     private var homeFragment:HomeFragment? = null
-    private var manageRemoteFragment : ManageRemoteFragment? = null
     private var aboutFragment: AboutFragment? = null
-    private var ipList=ArrayList<String>()
+    private var ipList:ArrayList<String> = ArrayList<String>()
     private var ipConf : File? = null
     private var authenticated=false
 
@@ -74,7 +73,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val originalBitmap = BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher_background)
         val blurredBitmap = BlurBuilder.blur(this, originalBitmap)
         splashView.background = BitmapDrawable(resources, blurredBitmap)
-        splash.window?.attributes?.windowAnimations = R.style.DialogAnimationTheme
+        splash.window?.attributes?.windowAnimations = R.style.ActivityStartAnimationTheme
         splash.show()
         hideSystemUI(splashView)
         windowManager.defaultDisplay.getSize(size)
@@ -180,7 +179,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         Thread{
             ipList= BufferedReader(InputStreamReader(ipConf!!.inputStream())).readLines() as ArrayList<String>
 
-            for(ip in ipList){
+            for(ip:String in ipList){
                 if(InetAddress.getByName(ip).isReachable(100)){
                     try{
                         val connector=SocketClient.Connector(ip)
@@ -268,11 +267,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     homeFragment=HomeFragment()
                 replaceFragment(homeFragment as Fragment)
             }
-            R.id.manage_remote_drawer -> {
-                if(manageRemoteFragment==null)
-                    manageRemoteFragment=ManageRemoteFragment()
-                replaceFragment(manageRemoteFragment as Fragment)
-            }
             R.id.info_drawer -> {
                 if(aboutFragment==null)
                     aboutFragment=AboutFragment()
@@ -323,7 +317,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.drawable.icon_media_pause, R.drawable.icon_media_previous,R.drawable.icon_mic, R.drawable.icon_search,
             R.drawable.icon_volume, R.drawable.icon_wifi,R.drawable.icon_bluetooth,R.drawable.icon_alert,
             R.drawable.icon_cancel, R.drawable.icon_fast_forward,R.drawable.icon_fast_rewind,R.drawable.icon_flight_mode,
-            R.drawable.icon_home, R.drawable.icon_back,R.drawable.icon_backspace,R.drawable.icon_block)
+            R.drawable.icon_home, R.drawable.icon_back,R.drawable.icon_backspace,R.drawable.icon_block,
+            R.drawable.icon_edit,R.drawable.icon_delete)
     }
 
     private var restart = false

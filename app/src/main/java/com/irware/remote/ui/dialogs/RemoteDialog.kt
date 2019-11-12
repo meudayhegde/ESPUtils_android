@@ -26,6 +26,7 @@ class RemoteDialog(context: Context,private val properties:RemoteProperties, pri
 
     private var lv:ListView? = null
     init {
+        window?.attributes?.windowAnimations = R.style.DialogAnimationTheme
         val layoutList = ArrayList<LinearLayout>()
         setContentView(R.layout.create_remote_layout)
         lv = findViewById<ListView>(R.id.btn_layout_listview)
@@ -57,7 +58,7 @@ class RemoteDialog(context: Context,private val properties:RemoteProperties, pri
         if(mode == MODE_EDIT) fab.setOnClickListener {
             val dialog = ButtonPropertiesDialog(context, this)
             dialog.show()
-            dialog.captureInit()
+            dialog.captureInit(null)
         }
 
         val buttons = properties.getButtons()

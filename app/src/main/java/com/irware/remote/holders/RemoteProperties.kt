@@ -14,6 +14,13 @@ class RemoteProperties(private val remoteConfig: File, private val eventListener
 
     private var jsonObj : JSONObject = getJSONObject()
 
+    var fileName: String = jsonObj.optString("fileName")
+        set(value){
+            field = value
+            jsonObj.put("fileName",value)
+            update()
+        }
+
     var remoteVendor: String = jsonObj.optString("vendor")
         set(value){
             field = value

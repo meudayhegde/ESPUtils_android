@@ -31,7 +31,7 @@ object SocketClient{
         }
     }
 
-    fun readIrCode(irlistener:IrCodeListener) {
+    fun readIrCode(irlistener:IrCodeListener,jsonObj:JSONObject?) {
         Thread {
             try {
                 val connector = Connector(MainActivity.MCU_IP)
@@ -50,12 +50,19 @@ object SocketClient{
                 when (result.getString("response")) {
                     "rawData" -> {
                         result.remove("response")
-                        result.put("text","")
-                        result.put("iconType",ButtonPropertiesDialog.btnStyle)
-                        result.put("color",ButtonPropertiesDialog.colorSelected)
-                        result.put("icon",ButtonPropertiesDialog.iconSelected)
-                        result.put("textColor",ButtonPropertiesDialog.colorContentSelected)
-                        irlistener.onIrRead(result)
+
+                        if(jsonObj != null){
+                            jsonObj.put("length",result.getInt("length"))
+                            jsonObj.put("irCode",result.getJSONArray("irCode"))
+                            irlistener.onIrRead(jsonObj)
+                        }else{
+                            result.put("text","")
+                            result.put("iconType",ButtonPropertiesDialog.btnStyle)
+                            result.put("color",ButtonPropertiesDialog.colorSelected)
+                            result.put("icon",ButtonPropertiesDialog.iconSelected)
+                            result.put("textColor",ButtonPropertiesDialog.colorContentSelected)
+                            irlistener.onIrRead(result)
+                        }
                     }
                     "timeout" -> irlistener.onTimeout()
                     else -> irlistener.onDeny(MainActivity.activity?.getString(R.string.auth_failed_login_again))

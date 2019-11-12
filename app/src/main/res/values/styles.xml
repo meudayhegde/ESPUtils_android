@@ -7,6 +7,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorControlNormal">#ffffff</item>
+        <item name="android:navigationBarColor" tools:targetApi="lollipop">@color/colorPrimaryDark</item>
     </style>
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
@@ -65,6 +66,11 @@
 
     <style name="DialogAnimationTheme">
         <item name="android:windowEnterAnimation">@anim/fade_in</item>
+        <item name="android:windowExitAnimation">@anim/fade_out</item>
+    </style>
+
+    <style name="ActivityStartAnimationTheme">
+        <item name="android:windowEnterAnimation">@anim/fade_in_fast</item>
         <item name="android:windowExitAnimation">@anim/fade_out</item>
     </style>
 

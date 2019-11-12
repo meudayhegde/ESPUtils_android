@@ -36,5 +36,18 @@
     <string name="model_name">Model Name:</string>
     <string name="description">Description</string>
     <string name="restart_app_from_splash_screen">restart app from splash screen</string>
+    <string name="home">Home</string>
+    <string name="about">About</string>
+    <string name="communicate">Communicate</string>
+    <string name="share">Share</string>
+    <string name="info_icon">Info icon</string>
+    <string name="long_press_remote_item_card_to_edit_remote_controller_information">Long press remote item card to edit Remote controller information</string>
+    <string name="length_of_captured_ir_signal">Length of captured IR signal :</string>
+    <string name="edit_buttons">Edit Buttons</string>
+    <string name="delete_remote">Delete Remote</string>
+    <string name="cancel">Cancel</string>
+    <string name="done">Done</string>
+    <string name="edit_remote_informtion">Edit remote Information</string>
+    <string name="enter_remote_details">Enter Remote Details</string>
 
 </resources>

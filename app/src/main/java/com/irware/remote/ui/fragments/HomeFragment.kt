@@ -20,6 +20,16 @@ import com.irware.remote.R
 import com.irware.remote.holders.RemoteProperties
 import com.irware.remote.ui.dialogs.RemoteDialog
 import java.io.File
+import android.content.Intent
+import android.graphics.drawable.ColorDrawable
+import android.net.Uri
+import android.os.Build
+import android.os.Environment
+import androidx.core.app.ShareCompat
+import androidx.core.content.ContextCompat.startActivity
+import androidx.core.content.FileProvider
+import java.io.OutputStreamWriter
+
 
 class HomeFragment : androidx.fragment.app.Fragment() {
     private var listener: OnFragmentInteractionListener? = null
@@ -85,10 +95,11 @@ class HomeFragment : androidx.fragment.app.Fragment() {
                 }
                 val lWindowParams = WindowManager.LayoutParams()
                 lWindowParams.copyFrom(dialog.window?.attributes)
-                lWindowParams.width = WindowManager.LayoutParams.MATCH_PARENT
+                lWindowParams.width = MainActivity.size.x - MainActivity.size.x/8
                 lWindowParams.height = WindowManager.LayoutParams.WRAP_CONTENT
                 dialog.show()
                 dialog.window?.attributes = lWindowParams
+                dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             }
         }
         return rootView
@@ -127,6 +138,37 @@ class RemoteListAdapter(private val propList: ArrayList<RemoteProperties>) : Rec
         val prop = propList[position]
         setViewProps(holder.cardView,prop)
         holder.cardView.findViewById<TextView>(R.id.btn_count).text = prop.getButtons().length().toString()
+        val context = holder.cardView.context
+
+        val share = holder.cardView.findViewById<ImageView>(R.id.icon_share)
+        share.setOnClickListener {
+
+            val parent = context.externalCacheDir
+            if(parent!!.exists() and parent.isDirectory) parent.delete()
+            if(!parent.exists()) parent.mkdirs()
+            val fileToShare =  File(parent.absolutePath,prop.fileName)
+            if(fileToShare.exists())
+                fileToShare.delete()
+            fileToShare.createNewFile()
+            val writer = OutputStreamWriter(fileToShare.outputStream())
+            writer.write(prop.toString())
+            writer.flush()
+            writer.close()
+
+            val uri = FileProvider.getUriForFile(context,  context.applicationContext.packageName + ".provider", fileToShare)
+
+            val intent = ShareCompat.IntentBuilder.from(MainActivity.activity)
+                .setType("application/json")
+                .setSubject("Share File")
+                .setStream(uri)
+                .setChooserTitle("Share Remote Controller")
+                .createChooserIntent()
+                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+
+            startActivity(holder.cardView.context,Intent.createChooser(intent, "Share File"),null)
+
+        }
+
         holder.cardView.setOnLongClickListener {
             val inputLayout = LayoutInflater.from(holder.cardView.context).inflate(R.layout.new_remote_confirm, null) as ScrollView
             val vendor = inputLayout.findViewById<TextInputEditText>(R.id.vendor_name)
@@ -144,6 +186,8 @@ class RemoteListAdapter(private val propList: ArrayList<RemoteProperties>) : Rec
                             R.string.edit_remote_informtion)
             val dialog = Dialog(holder.cardView.context)
             dialog.setContentView(inputLayout)
+            dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
             btnCancel.setOnClickListener { dialog.dismiss() }
             btnFinish.setOnClickListener {
                 prop.remoteVendor = vendor.text.toString()
@@ -158,6 +202,7 @@ class RemoteListAdapter(private val propList: ArrayList<RemoteProperties>) : Rec
                 prop.description = desc.text.toString()
                 setViewProps(holder.cardView,prop)
                 RemoteDialog(holder.cardView.context, prop,RemoteDialog.MODE_EDIT).show()
+                dialog.dismiss()
             }
 
             btnDelete.setOnClickListener {
@@ -168,6 +213,7 @@ class RemoteListAdapter(private val propList: ArrayList<RemoteProperties>) : Rec
                         File(MainActivity.configPath+File.separator+prop.fileName).delete()
                         propList.remove(prop)
                         notifyDataSetChanged()
+                        dialog.dismiss()
                     }.setMessage("This action cannot be unDone\nAre you sure you want to delete "+prop.remoteVendor+" "+prop.remoteName+" ?")
                     .setTitle("Confirm Deletion")
                     .setIcon(icon)
@@ -176,7 +222,7 @@ class RemoteListAdapter(private val propList: ArrayList<RemoteProperties>) : Rec
 
             val lWindowParams = WindowManager.LayoutParams()
             lWindowParams.copyFrom(dialog.window?.attributes)
-            lWindowParams.width = WindowManager.LayoutParams.MATCH_PARENT
+            lWindowParams.width = MainActivity.size.x - MainActivity.size.x/8
             lWindowParams.height = WindowManager.LayoutParams.WRAP_CONTENT
             dialog.show()
             dialog.window?.attributes = lWindowParams

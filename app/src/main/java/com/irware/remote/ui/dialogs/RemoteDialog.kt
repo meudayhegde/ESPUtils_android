@@ -2,12 +2,14 @@ package com.irware.remote.ui.dialogs
 
 import android.app.Dialog
 import android.content.Context
+import android.graphics.Color
 import android.view.Gravity
 import android.view.View
-import android.widget.AbsListView
-import android.widget.LinearLayout
-import android.widget.ListView
-import android.widget.Toast
+import android.view.ViewGroup
+import android.view.ViewTreeObserver
+import android.widget.*
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.github.clans.fab.FloatingActionButton
 import com.irware.remote.MainActivity
 import com.irware.remote.R
@@ -25,14 +27,18 @@ import org.json.JSONObject
 class RemoteDialog(context: Context,private val properties:RemoteProperties, private val mode:Int) : Dialog(context, R.style.AppTheme),OnSelectedListener {
 
     private var lv:ListView? = null
+
     init {
         window?.attributes?.windowAnimations = R.style.DialogAnimationTheme
-        val layoutList = ArrayList<LinearLayout>()
         setContentView(R.layout.create_remote_layout)
+        val layoutList = ArrayList<LinearLayout>()
         lv = findViewById<ListView>(R.id.btn_layout_listview)
 
         val fab = findViewById<FloatingActionButton>(R.id.fab_new_button)
-        if(mode == MODE_VIEW_ONLY) fab.visibility = View.GONE
+        if(mode == MODE_VIEW_ONLY) {
+            fab.visibility = View.GONE
+            findViewById<TextView>(R.id.create_remote_info_layout).visibility = View.GONE
+        }
 
         val layoutCount = MainActivity.size.y / (RemoteButton.MIN_HIGHT + 10)
         for (i in 0 until layoutCount) {
@@ -60,17 +66,17 @@ class RemoteDialog(context: Context,private val properties:RemoteProperties, pri
             dialog.show()
             dialog.captureInit(null)
         }
-
         val buttons = properties.getButtons()
+
         if(buttons.length() > 0){
             for(i in 0 until buttons.length()){
                 val obj = buttons.getJSONObject(i)
                 val btnProp = ButtonProperties(obj,properties)
-                val btn= RemoteButton(lv?.context,btnProp)
+                val btn= RemoteButton(context,btnProp)
                 if(mode == MODE_EDIT) btn.setOnLongClickListener(ButtonLongClickListener())
+
                 (lv?.adapter as ButtonLayoutAdapter).getChildLayout(btn.getProperties().btnPosition).addView(btn)
                 btn.setOnClickListener{
-
                     when(mode){
                         MODE_EDIT ->{
                             val dialog = ButtonPropertiesDialog(context, this)
@@ -98,6 +104,8 @@ class RemoteDialog(context: Context,private val properties:RemoteProperties, pri
         }
     }
 
+
+
     override fun onSelected(prop: JSONObject) {
         try{
             val pos = prop.getInt("btnPosition")
@@ -108,7 +116,7 @@ class RemoteDialog(context: Context,private val properties:RemoteProperties, pri
             val pos=(lv?.adapter as ButtonLayoutAdapter).getGetEmptyPosition()
             prop.put("btnPosition",pos)
             val btnProp = ButtonProperties(prop,properties)
-            val btn = RemoteButton(lv?.context,btnProp)
+            val btn = RemoteButton(context,btnProp)
             btn.setOnClickListener{
                 val dialog = ButtonPropertiesDialog(context, this)
                 dialog.show()
@@ -124,3 +132,4 @@ class RemoteDialog(context: Context,private val properties:RemoteProperties, pri
         val MODE_VIEW_ONLY = 0
     }
 }
+

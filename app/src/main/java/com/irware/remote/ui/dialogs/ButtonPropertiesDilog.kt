@@ -76,9 +76,7 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
 
         colorDrawable.cornerRadius = 100F
         colorDrawable.shape = GradientDrawable.RECTANGLE
-        val value = TypedValue()
-        context.theme.resolveAttribute(R.attr.colorOnBackground, value, true)
-        colorDrawable.setStroke(2,value.data)
+        colorDrawable.setStroke(2,MainActivity.colorOnBackground)
         colorDrawable.setColor(colorSelected)
 
         colorPicker = HSLColorPicker(context)
@@ -254,12 +252,15 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
                 override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                     val drawable = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) context.getDrawable(getItem(position)!!)
                         else with(context) { resources.getDrawable(getItem(position)!!) }
-                    DrawableCompat.setTint(drawable!!,Color.GRAY)
+                    DrawableCompat.setTint(drawable!!,MainActivity.colorOnBackground)
                     var returnView = convertView
                     if(returnView==null){
                         returnView = layoutInflater.inflate(R.layout.drawable_layout,null)
                     }
-                    (returnView as LinearLayout).findViewById<ImageView>(R.id.btn_icon_grid).setImageDrawable(drawable)
+                    val iv = (returnView as LinearLayout).findViewById<ImageView>(R.id.btn_icon_grid)
+                    val lparam = LinearLayout.LayoutParams(MainActivity.size.x/(MainActivity.NUM_COLUMNS+2),MainActivity.size.x/(MainActivity.NUM_COLUMNS+2))
+                    iv.setImageDrawable(drawable)
+                    iv.layoutParams = lparam
                     return returnView
                 }
             }

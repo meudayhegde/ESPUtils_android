@@ -93,6 +93,10 @@ class RemoteProperties(private val remoteConfig: File, private val eventListener
     }
 
 
+    override fun toString(): String {
+        return jsonObj.toString(0).replace("\n","")
+    }
+
     companion object{
         interface EventListener{
             fun jsonLoadError(ex:Exception)

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:background="@drawable/layout_border_round_corner"
+        android:layout_height="match_parent"
+        tools:context=".RemoteParserActivity">
+
+
+    <TextView
+            android:id="@+id/title_dialog"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="18sp"
+            android:textSize="24sp"
+            android:drawablePadding="14sp"
+            android:gravity="center_vertical"
+            android:textStyle="bold"
+            android:drawableStart="@mipmap/ic_launcher_round"
+            android:textColor="?attr/colorOnBackground"
+            android:text="@string/app_name" />
+
+    <TextView
+            android:id="@+id/message_text"
+            android:layout_width="match_parent"
+            android:layout_marginStart="18sp"
+            android:layout_marginEnd="14sp"
+            android:textSize="18sp"
+            android:textColor="?attr/colorOnBackground"
+            android:layout_height="wrap_content"
+            android:text="@string/do_you_want_to_import_this_remote_configuration_file" />
+
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_marginTop="18sp"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:layout_marginStart="14sp"
+            android:layout_marginEnd="14sp"
+            android:layout_height="wrap_content">
+
+
+        <ProgressBar
+                android:id="@+id/progress_status"
+                style="?android:attr/progressBarStyle"
+                android:visibility="gone"
+                android:layout_margin="14sp"
+                android:layout_width="80sp"
+                android:layout_height="80sp" />
+
+        <ImageView
+                android:visibility="gone"
+                android:id="@+id/imv_status"
+                android:layout_centerInParent="true"
+                android:layout_width="80sp"
+                android:layout_height="80sp"
+                android:layout_margin="14sp"
+                app:srcCompat="@drawable/icon_check_circle"
+                android:contentDescription="@string/result_icon" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_marginTop="18sp"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:layout_marginStart="14sp"
+            android:layout_marginEnd="14sp"
+            android:layout_marginBottom="14sp"
+            android:layout_height="wrap_content">
+
+        <Button
+                android:id="@+id/button_import"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/button_cancel"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="14sp"
+                android:text="@string/import_" />
+
+        <Button
+                android:id="@+id/button_cancel"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_marginEnd="14sp"
+                android:text="@string/cancel" />
+    </RelativeLayout>
+
+
+</LinearLayout>

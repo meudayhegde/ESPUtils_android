@@ -49,5 +49,13 @@
     <string name="done">Done</string>
     <string name="edit_remote_informtion">Edit remote Information</string>
     <string name="enter_remote_details">Enter Remote Details</string>
+    <string name="icon_to_share_remote">icon to share remote</string>
+    <string name="create_remote_guide">Long press buttons to drag and drop, single click to edit properties</string>
+    <string name="do_you_want_to_import_this_remote_configuration_file">Do you want to import this remote configuration file ?</string>
+    <string name="result_icon">Result Icon</string>
+    <string name="import_">Import</string>
+    <string name="import_error">Sorry, Something went wrong and import action couldn\'t be completed</string>
+    <string name="import_success">Import remote controller configuration successful</string>
+    <string name="start_app">start iRWaRE</string>
 
 </resources>

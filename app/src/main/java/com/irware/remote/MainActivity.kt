@@ -4,12 +4,14 @@ import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Intent
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.graphics.Point
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.text.TextUtils
+import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -66,6 +68,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 },2000)
             }
         }
+
+        val value = TypedValue()
+        theme.resolveAttribute(R.attr.colorOnBackground, value, true)
+        colorOnBackground = value.data
 
         val splashView=layoutInflater.inflate(R.layout.splash_screen,null)
         splash.setContentView(splashView)
@@ -313,6 +319,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         var PASSWORD = ""
         var NUM_COLUMNS = 5
         var activity:MainActivity? = null
+        var colorOnBackground = Color.BLACK
         val iconDrawableList=intArrayOf(R.drawable.icon_transparent,R.drawable.icon_power, R.drawable.icon_info, R.drawable.icon_media_next,
             R.drawable.icon_media_pause, R.drawable.icon_media_previous,R.drawable.icon_mic, R.drawable.icon_search,
             R.drawable.icon_volume, R.drawable.icon_wifi,R.drawable.icon_bluetooth,R.drawable.icon_alert,

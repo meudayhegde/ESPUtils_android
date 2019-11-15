@@ -43,17 +43,17 @@ object SocketClient{
                 }
                 connector.sendLine(
                     "{\"request\":\"ir_capture\",\"username\":\""
-                            + MainActivity.USERNAME + "\",\"password\":\"" + MainActivity.PASSWORD + "\",\"length\":0,\"data\":\"_\"}")
+                            + MainActivity.USERNAME + "\",\"password\":\"" + MainActivity.PASSWORD + "\",\"length\":\"0\",\"data\":\"_\"}")
                 val result = JSONObject(connector.readLine())
 
                 connector.close()
                 when (result.getString("response")) {
-                    "rawData" -> {
+                    "success" -> {
                         result.remove("response")
 
                         if(jsonObj != null){
-                            jsonObj.put("length",result.getInt("length"))
-                            jsonObj.put("irCode",result.getJSONArray("irCode"))
+                            jsonObj.put("length",result.getString("length"))
+                            jsonObj.put("irCode",result.getString("irCode"))
                             irlistener.onIrRead(jsonObj)
                         }else{
                             result.put("text","")
@@ -73,14 +73,15 @@ object SocketClient{
         }.start()
     }
 
-    fun sendIrCode(length:Int,array:JSONArray,irSendListener: IrSendListener) {
+    fun sendIrCode(jsonObj:JSONObject,irSendListener: IrSendListener) {
         Thread {
             val connector = Connector(MainActivity.MCU_IP)
             connector.sendLine(
                 "{\"request\":\"ir_send\",\"username\":\""
                         + MainActivity.USERNAME + "\",\"password\":\""
-                        + MainActivity.PASSWORD + "\",\"length\":"
-                        +length+",\"data\":\"["+array.join(",")+"]\"}")
+                        + MainActivity.PASSWORD +"\",\"length\":\""
+                        +jsonObj.getString("length")+"\",\"protocol\":\""+jsonObj.getString("protocol")+"\",\"irCode\":\""
+                        +jsonObj.getString("irCode")+"\"}")
             val result = connector.readLine()
             connector.close()
             irSendListener.onIrSend(result)
@@ -94,6 +95,7 @@ interface IrCodeListener{
     fun onIrRead(jsonObj:JSONObject)
     fun onTimeout()
     fun onDeny(err_info:String?)
+
 }
 
 interface IrSendListener{

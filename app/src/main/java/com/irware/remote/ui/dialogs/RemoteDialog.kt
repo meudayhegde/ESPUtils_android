@@ -84,7 +84,7 @@ class RemoteDialog(context: Context,private val properties:RemoteProperties, pri
                             dialog.onIrRead((it as RemoteButton).getProperties().jsonObj)
                         }
                         MODE_VIEW_ONLY -> {
-                            SocketClient.sendIrCode(obj.getInt("length"),obj.getJSONArray("irCode"),object:IrSendListener{
+                            SocketClient.sendIrCode(obj,object:IrSendListener{
                                 override fun onIrSend(result:String) {
                                     MainActivity.activity?.runOnUiThread {
                                         try {
@@ -103,8 +103,6 @@ class RemoteDialog(context: Context,private val properties:RemoteProperties, pri
             }
         }
     }
-
-
 
     override fun onSelected(prop: JSONObject) {
         try{

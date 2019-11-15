@@ -1,26 +1,30 @@
 package com.irware.remote
 
 import android.annotation.SuppressLint
+import android.content.ContentResolver
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import android.view.View
-import android.view.WindowManager
-import android.content.ContentResolver
-import android.content.DialogInterface
-import android.content.Intent
-import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import android.provider.MediaStore
 import android.text.TextUtils
 import android.util.Log
-import android.widget.*
+import android.view.View
+import android.view.WindowManager
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.DrawableCompat
 import org.json.JSONObject
-import java.io.*
+import java.io.File
+import java.io.InputStream
+import java.io.InputStreamReader
+import java.io.OutputStreamWriter
 
 
 class RemoteParserActivity : AppCompatActivity() {
@@ -212,8 +216,9 @@ class RemoteParserActivity : AppCompatActivity() {
         val buttons = jsonObj.getJSONArray("buttons")
         for(i in 0 until buttons.length()){
             val button = buttons.getJSONObject(i)
-            val irCode = button.getJSONArray("irCode")
-            val length =button.getInt("length")
+            val protocol = button.getString("protocol")
+            val irCode = button.getString("irCode")
+            val length =button.getString("length")
         }
 
         return jsonObj

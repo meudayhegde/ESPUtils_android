@@ -1,14 +1,13 @@
 package com.irware.remote.holders
 
-import org.json.JSONArray
 import org.json.JSONObject
 
 class ButtonProperties(val jsonObj:JSONObject,private val parent:RemoteProperties) {
 
     private var attached = parent.addButton(jsonObj)
-    var length= jsonObj.getInt("length")
+    var length= jsonObj.getString("length")
         set(value){ field = value;jsonObj.put("length",value);if(attached)parent.update()}
-    var irCode:JSONArray = jsonObj.getJSONArray("irCode")
+    var irCode:String = jsonObj.getString("irCode")
         set(value){field = value;jsonObj.put("irCode",value);listener?.onIrModified();if(attached)parent.update()}
     var text: String = jsonObj.getString("text")
         set(value){field = value;jsonObj.put("text",value);listener?.onTextModified();if(attached)parent.update()}

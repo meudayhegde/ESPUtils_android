@@ -120,7 +120,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     try{
                         val connector = SocketClient.Connector(ip)
 
-                        connector.sendLine("{\"request\":\"authenticate\",\"username\":\""+uname.text.toString()+"\",\"password\":\""+pass.text.toString()+"\",\"data\":\"__\",\"length\":0}")
+                        connector.sendLine("{\"request\":\"authenticate\",\"username\":\""+uname.text.toString()+"\",\"password\":\""+pass.text.toString()+"\",\"data\":\"__\",\"length\":\"0\"}")
                         val response=connector.readLine()
                         connector.close()
                         if(JSONObject(response)["response"]=="authenticated"){
@@ -189,8 +189,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 if(InetAddress.getByName(ip).isReachable(100)){
                     try{
                         val connector=SocketClient.Connector(ip)
-                        connector.sendLine("{\"request\":\"ping\",\"username\":\"__\",\"password\":\"__\",\"data\":\"__\",\"length\":0}")
-                        MCU_MAC = JSONObject(connector.readLine())["MAC"] as String
+                        connector.sendLine("{\"request\":\"ping\",\"username\":\"__\",\"password\":\"__\",\"data\":\"__\",\"length\":\"0\"}")
+                        MCU_MAC = JSONObject(connector.readLine()).getString("MAC")
                         connector.close()
                         runOnUiThread {
                             splash.findViewById<EditText>(R.id.editTextIP).setText(ip)
@@ -198,8 +198,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                                 submit.callOnClick()
                             }
                         }
-                        ipList.remove(ip)
-                        ipList.add(0,ip)
+                    //    ipList.remove(ip)
+                     //   ipList.add(0,ip)
                     }catch(ex: IOException){}
                 }
             }

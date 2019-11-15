@@ -57,5 +57,10 @@
     <string name="import_error">Sorry, Something went wrong and import action couldn\'t be completed</string>
     <string name="import_success">Import remote controller configuration successful</string>
     <string name="start_app">start iRWaRE</string>
+    <string name="network_mode">Network mode</string>
+    <string name="about_irware">About iRWaRE</string>
+    <string name="about_irware">About iRWaRE</string>
+    <string name="this_universal_remote_device_which_controls_ir_devices_like_tv_projectors_operates_within_the_short_range_of_around_50m_this_device_is_cost_effective_easy_to_handle_and_maintain_multiple_devices_with_a_single_interface">This Universal Remote device which controls IR devices like TV, Projectors operates within the short range of around 50m. This device is Cost effective, easy to handle and maintain multiple devices with a single interface.</string>
+    <string name="libraries_used">Libraries Used</string>
 
 </resources>

@@ -9,8 +9,8 @@ android {
         iRWaRE_Release {
         storeFile file('iRWaRE_Release')
             storePassword 'sign_pass'
-            keyAlias = 'me.cool@hegde'
-            keyPassword 'me.cool@hegde'
+            keyAlias = 'passwd'
+            keyPassword 'password_example'
         }
     }
     compileSdkVersion 28
@@ -24,7 +24,6 @@ android {
         vectorDrawables.useSupportLibrary = true
         applicationIdSuffix = 'com.irware.remote'
         versionNameSuffix = '1.0'
-        signingConfig signingConfigs.iRWaRE_Release
         testApplicationId = 'com.irware.remote'
     }
     buildTypes {

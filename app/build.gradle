@@ -5,6 +5,14 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
+    signingConfigs {
+        iRWaRE_Release {
+        storeFile file('iRWaRE_Release')
+            storePassword 'sign_pass'
+            keyAlias = 'me.cool@hegde'
+            keyPassword 'me.cool@hegde'
+        }
+    }
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.irware.remote"
@@ -14,11 +22,18 @@ android {
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
+        applicationIdSuffix = 'com.irware.remote'
+        versionNameSuffix = '1.0'
+        signingConfig signingConfigs.iRWaRE_Release
+        testApplicationId = 'com.irware.remote'
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            applicationIdSuffix = 'com.irware.remote'
+            versionNameSuffix = '1_0'
+            signingConfig signingConfigs.iRWaRE_Release
         }
     }
 }

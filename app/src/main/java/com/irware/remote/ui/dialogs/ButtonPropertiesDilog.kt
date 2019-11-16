@@ -219,7 +219,7 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
         val text = context.resources.getString(R.string.length_of_captured_ir_signal) + " "+jsonObj.getString("length").toLong(16)+" pulses"
         sizeTextView.text = text
         sizeTextView.setOnLongClickListener{
-            Toast.makeText(context,jsonObj.getString("irCode").replace(" ","").replace("\n",""),Toast.LENGTH_LONG).show()
+            Toast.makeText(context,"Protocol :"+jsonObj.getString("protocol")+" "+jsonObj.getString("irCode").replace(" ","").replace("\n",""),Toast.LENGTH_LONG).show()
             true
         }
 

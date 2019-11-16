@@ -184,8 +184,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         Thread{
             ipList= BufferedReader(InputStreamReader(ipConf!!.inputStream())).readLines() as ArrayList<String>
-
-            for(ip:String in ipList){
+            val newList = ArrayList<String>()
+            newList.addAll(ipList)
+            for(ip:String in newList){
                 if(InetAddress.getByName(ip).isReachable(100)){
                     try{
                         val connector=SocketClient.Connector(ip)
@@ -198,8 +199,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                                 submit.callOnClick()
                             }
                         }
-                    //    ipList.remove(ip)
-                     //   ipList.add(0,ip)
+                        ipList.remove(ip)
+                        ipList.add(0,ip)
+                        break;
                     }catch(ex: IOException){}
                 }
             }

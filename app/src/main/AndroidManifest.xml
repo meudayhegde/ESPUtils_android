@@ -55,6 +55,7 @@
                 android:name=".SettingsActivity"
                 android:configChanges="keyboardHidden|orientation|screenSize"
                 android:label="@string/title_activity_settings"
+                android:theme="@style/AppTheme"
                 android:parentActivityName=".MainActivity">
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"

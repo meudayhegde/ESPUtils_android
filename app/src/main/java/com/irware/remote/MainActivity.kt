@@ -8,9 +8,11 @@ import android.graphics.Color
 import android.graphics.Point
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
+import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Handler
 import android.text.TextUtils
+import android.util.Log
 import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
@@ -22,6 +24,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.navigation.NavigationView
+import com.irware.getIPAddress
 import com.irware.remote.holders.RemoteProperties
 import com.irware.remote.listeners.OnValidationListener
 import com.irware.remote.net.SocketClient
@@ -48,6 +51,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private var ipList:ArrayList<String> = ArrayList<String>()
     private var ipConf : File? = null
     private var authenticated=false
+    private var connected = false
+
+    private lateinit var ipEdit:EditText
+    private lateinit var userEdit:EditText
+    private lateinit var passEdit:EditText
+    private lateinit var submit:Button
 
     @SuppressLint("InflateParams")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -95,13 +104,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val pref=getSharedPreferences("login",0)
         val editor=pref.edit()
 
-        val ipAddr= splash.findViewById<EditText>(R.id.editTextIP)
-        val pass= splash.findViewById<EditText>(R.id.editTextPassword)
-        pass.setText(pref.getString("password",""))
+        ipEdit= splash.findViewById(R.id.editTextIP)
+        passEdit= splash.findViewById(R.id.editTextPassword)
+        passEdit.setText(pref.getString("password",""))
 
-        val uname= splash.findViewById<EditText>(R.id.edit_text_uname)
-        uname.setText(pref.getString("username",""))
-        val  submit= splash.findViewById<Button>(R.id.cirLoginButton)
+        userEdit= splash.findViewById(R.id.edit_text_uname)
+        userEdit.setText(pref.getString("username",""))
+
+        submit= splash.findViewById(R.id.cirLoginButton)
         val validatedListener=object:OnValidationListener{
             override fun onValidated(verified: Boolean) {
                 if(verified){
@@ -114,19 +124,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
 
         submit.setOnClickListener {
-            val ip = ipAddr.text.toString()
+            val ip = ipEdit.text.toString()
             Thread{
                 if(InetAddress.getByName(ip).isReachable(500)) {
                     try{
                         val connector = SocketClient.Connector(ip)
 
-                        connector.sendLine("{\"request\":\"authenticate\",\"username\":\""+uname.text.toString()+"\",\"password\":\""+pass.text.toString()+"\",\"data\":\"__\",\"length\":\"0\"}")
+                        connector.sendLine("{\"request\":\"authenticate\",\"username\":\""+userEdit.text.toString()+"\",\"password\":\""+passEdit.text.toString()+"\",\"data\":\"__\",\"length\":\"0\"}")
                         val response=connector.readLine()
                         connector.close()
                         if(JSONObject(response)["response"]=="authenticated"){
                             MCU_IP = ip
-                            USERNAME = uname.text.toString()
-                            PASSWORD = pass.text.toString()
+                            USERNAME = userEdit.text.toString()
+                            PASSWORD = passEdit.text.toString()
                             if(!ipList.contains(ip)) ipList.add(0,ip)
                             else {ipList.remove(ip); ipList.add(0,ip)}
                             runOnUiThread {
@@ -161,6 +171,50 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }.start()
         }
 
+        Thread{
+            ipList= BufferedReader(InputStreamReader(ipConf!!.inputStream())).readLines() as ArrayList<String>
+            val newList = ArrayList<String>()
+            newList.addAll(ipList)
+            for(ip:String in newList){
+                if(!connected and InetAddress.getByName(ip).isReachable(50)){
+                    if(ipVerified(ip)) {
+                        onIpVerified(ip)
+                        break
+                    }
+                }
+            }
+            val addrs = getIPAddress()
+            for(addr in addrs){
+                if(!connected) {
+                    val str = addr.split(".").toMutableList()
+                    str.removeAt(str.lastIndex)
+                    val subnet = TextUtils.join(".", str)
+                    if(!connected){
+                        for (i in 0 until 255) {
+                                val ip = "$subnet.$i"
+                                if (!connected and InetAddress.getByName(ip).isReachable(20)) {
+                                    if (ipVerified(ip)) {
+                                        onIpVerified(ip)
+                                        break
+                                    }
+                                }
+                        }
+                    }
+                }
+            }
+
+        }.start()
+
+        Thread{
+            val files = File(configPath).listFiles { pathname ->
+                pathname!!.isFile and (pathname.name.endsWith(
+                    ".json",
+                    true
+                )) and pathname.canWrite()
+            }
+            for (file in files)
+                remotePropList.add(RemoteProperties(file, null))
+        }.start()
 
         Handler().postDelayed({
             if(splash.isShowing) {
@@ -181,47 +235,37 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
             }
         },2000)
-
-        Thread{
-            ipList= BufferedReader(InputStreamReader(ipConf!!.inputStream())).readLines() as ArrayList<String>
-            val newList = ArrayList<String>()
-            newList.addAll(ipList)
-            for(ip:String in newList){
-                if(InetAddress.getByName(ip).isReachable(100)){
-                    try{
-                        val connector=SocketClient.Connector(ip)
-                        connector.sendLine("{\"request\":\"ping\",\"username\":\"__\",\"password\":\"__\",\"data\":\"__\",\"length\":\"0\"}")
-                        MCU_MAC = JSONObject(connector.readLine()).getString("MAC")
-                        connector.close()
-                        runOnUiThread {
-                            splash.findViewById<EditText>(R.id.editTextIP).setText(ip)
-                            if(ipAddr.text.isNotEmpty() and uname.text.isNotEmpty() and pass.text.isNotEmpty()){
-                                submit.callOnClick()
-                            }
-                        }
-                        ipList.remove(ip)
-                        ipList.add(0,ip)
-                        break;
-                    }catch(ex: IOException){}
-                }
-            }
-
-        }.start()
-
-        Thread{
-            val files = File(configPath).listFiles { pathname ->
-                pathname!!.isFile and (pathname.name.endsWith(
-                    ".json",
-                    true
-                )) and pathname.canWrite()
-            }
-            for (file in files)
-                remotePropList.add(RemoteProperties(file, null))
-        }.start()
     }
 
     private fun min(x:Int, y:Int):Int{
         return if(x<y) x else y
+    }
+
+    private fun ipVerified(ip:String):Boolean{
+        try{
+            val connector=SocketClient.Connector(ip)
+            connector.sendLine("{\"request\":\"ping\"}")
+            MCU_MAC = JSONObject(connector.readLine()).getString("MAC")
+            connector.close()
+            if(ip in ipList){
+                ipList.remove(ip)
+                ipList.add(0,ip)
+            }else ipList.add(0,ip)
+            return true
+        }catch(ex: Exception){}
+        return false
+    }
+
+    private fun onIpVerified(ip:String){
+        runOnUiThread {
+            if(!connected) {
+                connected = true
+                ipEdit.setText(ip)
+                if (userEdit.text.isNotEmpty() and passEdit.text.isNotEmpty()) {
+                    submit.callOnClick()
+                }
+            }
+        }
     }
 
     fun setNavView(){

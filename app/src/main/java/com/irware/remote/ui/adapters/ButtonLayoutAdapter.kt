@@ -8,10 +8,10 @@ import android.widget.BaseAdapter
 import android.widget.LinearLayout
 import com.irware.remote.MainActivity
 import com.irware.remote.R
-import com.irware.remote.listeners.ButtonDragListener
 import com.irware.remote.ui.buttons.RemoteButton
+import com.irware.remote.ui.dialogs.RemoteDialog
 
-class ButtonLayoutAdapter(var layoutList: ArrayList<LinearLayout>) : BaseAdapter(){
+class ButtonLayoutAdapter(var layoutList: ArrayList<LinearLayout>,private val remoteDialog: RemoteDialog) : BaseAdapter(){
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         return layoutList[position]
@@ -52,7 +52,7 @@ class ButtonLayoutAdapter(var layoutList: ArrayList<LinearLayout>) : BaseAdapter
                 LinearLayout.LayoutParams(RemoteButton.BTN_WIDTH, LinearLayout.LayoutParams.MATCH_PARENT)
             child.minimumHeight = RemoteButton.MIN_HIGHT
             child.setBackgroundResource(R.drawable.layout_with_border_bg)
-            child.setOnDragListener(ButtonDragListener())
+            child.setOnDragListener(remoteDialog)
             layout.addView(child)
         }
         layoutList.add(layout)

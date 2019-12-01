@@ -11,6 +11,7 @@ import android.text.TextWatcher
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.core.graphics.drawable.DrawableCompat
@@ -73,6 +74,9 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
         irCapInst = findViewById<TextView>(R.id.ir_capture_instruction)!!
         btnEditText = findViewById<EditText>(R.id.btn_edit_text)!!
         val colorPickerLayout = findViewById<RelativeLayout>(R.id.layout_color_picker)!!
+
+        window?.setBackgroundDrawableResource(R.drawable.layout_border_round_corner)
+        window?.setLayout((MainActivity.size.x*0.86).toInt(),WindowManager.LayoutParams.WRAP_CONTENT)
 
         colorDrawable.cornerRadius = 100F
         colorDrawable.shape = GradientDrawable.RECTANGLE
@@ -268,6 +272,9 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
             val iconGrid = iconGridLayout.findViewById<GridView>(R.id.icon_grid)
             iconGrid.setSelection(iconSelected);iconGrid.adapter = iconAdapter
             val dialog = Builder(context).setView(iconGridLayout).setTitle("Button Icon").show()
+            dialog.window?.setLayout((MainActivity.size.x*0.85).toInt(),WindowManager.LayoutParams.WRAP_CONTENT)
+            dialog.window?.setBackgroundDrawableResource(R.drawable.layout_border_round_corner)
+
             iconGrid.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
                 setIconDrawable(position)
                 dialog.dismiss()

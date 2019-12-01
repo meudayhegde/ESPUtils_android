@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="18sp"
+            android:layout_marginStart="14sp"
+            android:layout_marginEnd="14sp"
+            android:background="@drawable/layout_border_round_corner"
+            android:orientation="vertical" >
+
+        <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16sp"
+                android:layout_marginEnd="14sp"
+                android:layout_marginStart="14sp"
+                android:id="@+id/til_user_name"
+                app:hintTextColor="?attr/colorOnBackground"
+                style="@style/textFieldLayoutWhiteTheme"
+                android:hint="@string/new_user_name">
+
+            <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8sp"
+                android:layout_marginEnd="14sp"
+                android:layout_marginStart="14sp"
+                app:hintTextColor="?attr/colorOnBackground"
+                android:id="@+id/til_user_passwd"
+                style="@style/textFieldLayoutWhiteTheme"
+                android:hint="@string/new_password">
+
+            <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPassword" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8sp"
+                android:layout_marginEnd="14sp"
+                android:layout_marginStart="14sp"
+                app:hintTextColor="?attr/colorOnBackground"
+                android:id="@+id/til_user_confirm_passwd"
+                style="@style/textFieldLayoutWhiteTheme"
+                android:hint="@string/confirm_password">
+
+            <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPassword" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:orientation="horizontal">
+            <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10sp"
+                    android:layout_marginStart="14sp"
+                    android:layout_marginEnd="14sp"
+                    android:layout_marginBottom="10sp"
+                    android:text="@string/apply"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <TextView
+            android:id="@+id/text_user_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="28sp"
+            android:background="?android:colorBackground"
+            android:textColor="?attr/colorOnBackground"
+            android:paddingLeft="4sp"
+            android:paddingRight="4sp"
+            android:layout_marginTop="6sp"
+            android:text="@string/user_settings"
+            android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+</RelativeLayout>

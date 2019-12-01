@@ -2,21 +2,15 @@ package com.irware.remote.ui.buttons
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
-import android.graphics.drawable.Icon
 import android.os.Build
 import android.util.AttributeSet
-import android.util.TypedValue
 import android.view.Gravity
-import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
-import androidx.annotation.RequiresApi
 import androidx.core.graphics.drawable.DrawableCompat
 import com.irware.remote.MainActivity
-import com.irware.remote.R
 import com.irware.remote.holders.ButtonProperties
 import com.irware.remote.holders.OnModificationListener
 
@@ -74,9 +68,7 @@ class RemoteButton : Button {
         text = properties?.text
         gravity = Gravity.CENTER
         setTextSize(AUTO_SIZE_TEXT_TYPE_UNIFORM, 12F)
-        val value = TypedValue()
-        context.theme.resolveAttribute(R.attr.colorOnBackground, value, true);
-        dr.setStroke(2,value.data)
+        dr.setStroke(2,MainActivity.colorOnBackground)
         dr.cornerRadius = 100F
         dr.setColor(properties?.color!!)
         background = dr

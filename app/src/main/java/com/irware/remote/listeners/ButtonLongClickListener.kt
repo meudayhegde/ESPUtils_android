@@ -15,7 +15,7 @@ class ButtonLongClickListener(private val remoteDialog: RemoteDialog): OnLongCli
         view?.startDrag(data, shadowBuilder, view, 0)
         view?.visibility = View.INVISIBLE
         remoteDialog.delView.visibility = View.VISIBLE
-        remoteDialog.delLayout.startAnimation(remoteDialog.animShow)
+        remoteDialog.infoTextVew.visibility = View.INVISIBLE
         return true
     }
 }

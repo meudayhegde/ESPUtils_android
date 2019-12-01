@@ -1,15 +1,22 @@
 package com.irware.remote.ui.fragments
 
 import android.annotation.SuppressLint
-import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
-import android.content.DialogInterface
+import android.content.Intent
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.cardview.widget.CardView
+import androidx.core.app.ShareCompat
+import androidx.core.content.ContextCompat.startActivity
+import androidx.core.content.FileProvider
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,14 +27,6 @@ import com.irware.remote.R
 import com.irware.remote.holders.RemoteProperties
 import com.irware.remote.ui.dialogs.RemoteDialog
 import java.io.File
-import android.content.Intent
-import android.graphics.drawable.ColorDrawable
-import android.net.Uri
-import android.os.Build
-import android.os.Environment
-import androidx.core.app.ShareCompat
-import androidx.core.content.ContextCompat.startActivity
-import androidx.core.content.FileProvider
 import java.io.OutputStreamWriter
 
 

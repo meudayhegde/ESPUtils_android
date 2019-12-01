@@ -59,8 +59,17 @@ class RemoteProperties(private val remoteConfig: File, private val eventListener
     fun addButton(button:JSONObject):Boolean{
         if( button !in buttonArray ){
             buttonArray.put(button)
+            update()
             return true
         }
+        return false
+    }
+
+    fun removeButton(button:JSONObject):Boolean{
+        if( button !in buttonArray)
+            return false
+        buttonArray.remove(buttonArray.index(button))
+        update()
         return true
     }
 
@@ -104,14 +113,20 @@ class RemoteProperties(private val remoteConfig: File, private val eventListener
     }
 }
 
-private operator fun JSONArray.contains(any: Any): Boolean {
-    if(length() <= 0) return false
+private fun JSONArray.index(any: Any):Int{
     for(item in 0 until this.length()){
         if(get(item) == any)
-            return true
+            return item
     }
-    return false
+    return -1
 }
+
+private operator fun JSONArray.contains(any: Any): Boolean {
+    if(index(any) == -1)
+        return false
+    return true
+}
+
 
 
 

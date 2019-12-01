@@ -1,6 +1,7 @@
 package com.irware.remote.net
 
 import android.content.DialogInterface
+import android.widget.Toast
 import com.irware.remote.MainActivity
 import com.irware.remote.R
 import com.irware.remote.ui.dialogs.ButtonPropertiesDialog
@@ -75,16 +76,23 @@ object SocketClient{
 
     fun sendIrCode(jsonObj:JSONObject,irSendListener: IrSendListener) {
         Thread {
-            val connector = Connector(MainActivity.MCU_IP)
-            connector.sendLine(
-                "{\"request\":\"ir_send\",\"username\":\""
-                        + MainActivity.USERNAME + "\",\"password\":\""
-                        + MainActivity.PASSWORD +"\",\"length\":\""
-                        +jsonObj.getString("length")+"\",\"protocol\":\""+jsonObj.getString("protocol")+"\",\"irCode\":\""
-                        +jsonObj.getString("irCode")+"\"}")
-            val result = connector.readLine()
-            connector.close()
-            irSendListener.onIrSend(result)
+            try {
+                val connector = Connector(MainActivity.MCU_IP)
+                connector.sendLine(
+                    "{\"request\":\"ir_send\",\"username\":\""
+                            + MainActivity.USERNAME + "\",\"password\":\""
+                            + MainActivity.PASSWORD + "\",\"length\":\""
+                            + jsonObj.getString("length") + "\",\"protocol\":\"" + jsonObj.getString(
+                        "protocol"
+                    ) + "\",\"irCode\":\""
+                            + jsonObj.getString("irCode") + "\"}"
+                )
+                val result = connector.readLine()
+                connector.close()
+                irSendListener.onIrSend(result)
+            }catch(ex:Exception){
+                irSendListener.onIrSend(ex.toString())
+            }
         }.start()
     }
 

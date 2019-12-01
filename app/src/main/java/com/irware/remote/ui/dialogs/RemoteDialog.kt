@@ -4,13 +4,14 @@ import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
 import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.view.DragEvent
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.Animation
-import android.view.animation.AnimationUtils
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.core.graphics.drawable.DrawableCompat
 import com.github.clans.fab.FloatingActionButton
 import com.irware.remote.MainActivity
@@ -29,10 +30,9 @@ class RemoteDialog(context: Context,private val properties:RemoteProperties, pri
     View.OnDragListener {
 
     private var lv:ListView? = null
-    val delLayout:LinearLayout
+    val infoTextVew:TextView
+    private val delLayout:LinearLayout
     val delView:ImageView
-    val animShow:Animation
-    val animHide:Animation
 
     init {
         window?.attributes?.windowAnimations = R.style.DialogAnimationTheme
@@ -46,18 +46,31 @@ class RemoteDialog(context: Context,private val properties:RemoteProperties, pri
             findViewById<TextView>(R.id.create_remote_info_layout).visibility = View.GONE
         }
 
+
         delLayout = findViewById(R.id.layout_del_button)
         delView = findViewById(R.id.image_view_delete)
-        animShow = AnimationUtils.loadAnimation(context,R.anim.delete_button_show_down)
-        animHide = AnimationUtils.loadAnimation(context, R.anim.delete_button_hide_up)
+        infoTextVew = findViewById(R.id.create_remote_info_layout)
 
-        delLayout.setOnDragListener { v, event ->
+        delLayout.setOnDragListener { _, event ->
             when (event.action) {
                 DragEvent.ACTION_DROP -> {
-
+                    val view = event.localState as RemoteButton
+                    val owner = view.parent as ViewGroup
+                    AlertDialog.Builder(context)
+                        .setTitle("Confirm")
+                        .setMessage("This action can't be undone.\nAre you sure you want to delete this button?")
+                        .setNegativeButton("cancel") { dialog, _ -> dialog.dismiss()}
+                        .setPositiveButton("delete"){ dialog, _ ->
+                            properties.removeButton(view.getProperties().jsonObj)
+                            owner.removeView(view)
+                            dialog.dismiss()
+                        }
+                        .show()
                 }
                 DragEvent.ACTION_DRAG_ENDED ->{
-                    delView.startAnimation(animHide)
+                    delView.visibility = View.INVISIBLE
+                    infoTextVew.visibility = View.VISIBLE
+                    DrawableCompat.setTint(delView.drawable,MainActivity.colorOnBackground)
                 }
                 DragEvent.ACTION_DRAG_ENTERED ->{
                     DrawableCompat.setTint(delView.drawable,Color.RED)
@@ -105,6 +118,9 @@ class RemoteDialog(context: Context,private val properties:RemoteProperties, pri
                 if(mode == MODE_EDIT) btn.setOnLongClickListener(ButtonLongClickListener(this))
 
                 (lv?.adapter as ButtonLayoutAdapter).getChildLayout(btn.getProperties().btnPosition).addView(btn)
+
+                val vibe = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+
                 btn.setOnClickListener{
                     when(mode){
                         MODE_EDIT ->{
@@ -113,15 +129,19 @@ class RemoteDialog(context: Context,private val properties:RemoteProperties, pri
                             dialog.onIrRead((it as RemoteButton).getProperties().jsonObj)
                         }
                         MODE_VIEW_ONLY -> {
-                            SocketClient.sendIrCode(obj,object:IrSendListener{
-                                override fun onIrSend(result:String) {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                vibe.vibrate(VibrationEffect.createOneShot(50,VibrationEffect.DEFAULT_AMPLITUDE))
+                            }else{
+                                vibe.vibrate(50)
+                            }
+                            SocketClient.sendIrCode(obj, object : IrSendListener {
+                                override fun onIrSend(result: String) {
                                     MainActivity.activity?.runOnUiThread {
                                         try {
                                             val jsonObj = JSONObject(result)
-                                            if (jsonObj.getString("response").equals("success", true))
-                                                Toast.makeText(context, "send signal success", Toast.LENGTH_SHORT).show()
-                                        }catch(ex:JSONException){
-                                            Toast.makeText(context, "response unknown", Toast.LENGTH_SHORT).show()
+                                            Toast.makeText(context, jsonObj.getString("response"), Toast.LENGTH_SHORT).show()
+                                        } catch (ex: JSONException) {
+                                            Toast.makeText(context, result, Toast.LENGTH_SHORT).show()
                                         }
                                     }
                                 }
@@ -170,7 +190,8 @@ class RemoteDialog(context: Context,private val properties:RemoteProperties, pri
             DragEvent.ACTION_DRAG_ENDED ->{
                 (event.localState as View).visibility=View.VISIBLE
                 v.background = null
-                    delLayout.startAnimation(animHide)
+                delView.visibility = View.INVISIBLE
+                infoTextVew.visibility = View.VISIBLE
             }
             DragEvent.ACTION_DRAG_ENTERED ->{
                 v.background = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)

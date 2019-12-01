@@ -33,21 +33,19 @@
 
     <LinearLayout
             android:id="@+id/layout_del_button"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:orientation="horizontal"
+            android:gravity="center_horizontal"
             android:layout_centerHorizontal="true">
 
         <ImageView
                 android:id="@+id/image_view_delete"
                 android:layout_width="40sp"
                 android:layout_height="40sp"
-                android:layout_marginStart="20sp"
-                android:layout_marginEnd="20sp"
-                android:paddingTop="4sp"
-                android:paddingBottom="4sp"
-                android:visibility="gone"
+                android:visibility="invisible"
+                android:layout_marginTop="15sp"
                 android:tint="?attr/colorOnBackground"
                 fab:srcCompat="@drawable/icon_delete"
                 android:contentDescription="@string/button_to_delete_remotebutton" />

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer-array name ="icons">
+        <item>@drawable/icon_transparent</item><item>@drawable/icon_power</item><item>@drawable/icon_info</item><item>@drawable/icon_search</item>
+        <item>@drawable/ic_menu</item><item>@drawable/ic_settings</item><item>@drawable/icon_cancel</item><item>@drawable/icon_delete</item>
+        <item>@drawable/ic_sort</item><item>@drawable/icon_edit</item><item>@drawable/ic_enter</item><item>@drawable/icon_back</item>
+        <item>@drawable/ic_arrow_drop_down</item><item>@drawable/ic_arrow_drop_up</item><item>@drawable/ic_chevron_left</item><item>@drawable/ic_chevron_right</item>
+        <item>@drawable/ic_arrow_back</item><item>@drawable/ic_arrow_upward</item><item>@drawable/ic_arrow_forward</item><item>@drawable/ic_arrow_downward</item>
+        <item>@drawable/icon_home</item><item>@drawable/ic_zoom_in</item><item>@drawable/ic_zoom_out</item><item>@drawable/ic_apps</item>
+        <item>@drawable/icon_backspace</item><item>@drawable/icon_block</item><item>@drawable/ic_style</item><item>@drawable/icon_flight_mode</item>
+        <item>@drawable/icon_wifi</item><item>@drawable/ic_wifi_tethering</item><item>@drawable/icon_bluetooth</item><item>@drawable/icon_mic</item>
+        <item>@drawable/ic_torch</item><item>@drawable/ic_clock</item><item>@drawable/ic_widgets</item><item>@drawable/ic_usb</item>
+        <item>@drawable/icon_fast_rewind</item><item>@drawable/icon_media_previous</item><item>@drawable/icon_media_pause</item><item>@drawable/ic_stop</item>
+        <item>@drawable/ic_play_arrow</item><item>@drawable/icon_fast_forward</item><item>@drawable/icon_media_next</item><item>@drawable/ic_videocam</item>
+        <item>@drawable/ic_videocam_off_black_24dp</item><item>@drawable/ic_slow_motion_video</item><item>@drawable/ic_sms</item><item>@drawable/icon_alert</item>
+        <item>@drawable/ic_volume_off</item><item>@drawable/ic_volume_down</item><item>@drawable/ic_volume_up</item><item>@drawable/icon_volume</item>
+    </integer-array>
+</resources>

@@ -45,7 +45,6 @@ class HomeFragment : androidx.fragment.app.Fragment() {
 
             viewManager = LinearLayoutManager(context)
             viewAdapter = RemoteListAdapter(MainActivity.remotePropList)
-
             recyclerView = rootView!!.findViewById<RecyclerView>(R.id.manage_remotes_recycler_view).apply {
                 setHasFixedSize(true)
                 layoutManager = viewManager
@@ -163,7 +162,6 @@ class RemoteListAdapter(private val propList: ArrayList<RemoteProperties>) : Rec
                 .setChooserTitle("Share Remote Controller")
                 .createChooserIntent()
                 .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-
             startActivity(holder.cardView.context,Intent.createChooser(intent, "Share File"),null)
 
         }

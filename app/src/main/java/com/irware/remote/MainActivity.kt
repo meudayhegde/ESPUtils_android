@@ -2,6 +2,7 @@ package com.irware.remote
 
 import android.annotation.SuppressLint
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.Color
@@ -20,7 +21,6 @@ import android.widget.*
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import com.google.android.material.navigation.NavigationView
 import com.irware.getIPAddress
@@ -37,6 +37,8 @@ import kotlinx.android.synthetic.main.app_bar_main.*
 import org.json.JSONObject
 import java.io.*
 import java.net.InetAddress
+import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
 
 
@@ -60,8 +62,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     @SuppressLint("InflateParams")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        when(getSharedPreferences("theme_setting", Context.MODE_PRIVATE).getInt("application_theme",0)){1->setTheme(R.style.LightTheme_NoActionBar);2->setTheme(R.style.DarkTheme_NoActionBar);else->setTheme(R.style.AppTheme_NoActionBar)}
+
         remotePropList.clear()
         activity = this
+        val arr = resources.obtainTypedArray(R.array.icons)
+        iconDrawableList = IntArray(arr.length())
+        for(i in 0 until arr.length())
+            iconDrawableList[i] = arr.getResourceId(i,0)
+        arr.recycle()
+
         configPath = filesDir.absolutePath + File.separator + CONFIG_DIR
         ipConf = File(filesDir.absolutePath+File.separator+"iplist.conf")
         if(!ipConf!!.exists())ipConf!!.createNewFile()
@@ -78,6 +89,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
 
         val value = TypedValue()
+
         theme.resolveAttribute(R.attr.colorOnBackground, value, true)
         colorOnBackground = value.data
 
@@ -120,6 +132,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
                 else Toast.makeText(this@MainActivity,"Authentication failed",Toast.LENGTH_LONG).show()
             }
+        }
+
+        splash.findViewById<TextView>(R.id.skip_login).setOnClickListener {
+            splash.dismiss()
+            setContentView(R.layout.activity_main)
+            setNavView()
         }
 
         submit.setOnClickListener {
@@ -281,7 +299,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         if(homeFragment == null)
             homeFragment=HomeFragment()
         replaceFragment(homeFragment as Fragment)
-
         val pref = getSharedPreferences("general",0)
         NUM_COLUMNS = pref.getInt("num_columns",5)
     }
@@ -361,6 +378,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
     }
 
+    override fun onResume() {
+        super.onResume()
+        if(SettingsActivity.themeChanged){
+            SettingsActivity.themeChanged = false
+            recreate()
+        }
+    }
+
     companion object {
         val size:Point=Point()
         const val PORT=48321
@@ -374,12 +399,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         var NUM_COLUMNS = 5
         var activity:MainActivity? = null
         var colorOnBackground = Color.BLACK
-        val iconDrawableList=intArrayOf(R.drawable.icon_transparent,R.drawable.icon_power, R.drawable.icon_info, R.drawable.icon_media_next,
-            R.drawable.icon_media_pause, R.drawable.icon_media_previous,R.drawable.icon_mic, R.drawable.icon_search,
-            R.drawable.icon_volume, R.drawable.icon_wifi,R.drawable.icon_bluetooth,R.drawable.icon_alert,
-            R.drawable.icon_cancel, R.drawable.icon_fast_forward,R.drawable.icon_fast_rewind,R.drawable.icon_flight_mode,
-            R.drawable.icon_home, R.drawable.icon_back,R.drawable.icon_backspace,R.drawable.icon_block,
-            R.drawable.icon_edit,R.drawable.icon_delete)
+        var iconDrawableList:IntArray = intArrayOf()
     }
 
     private var restart = false
@@ -389,5 +409,4 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         restart = true
         Handler().postDelayed({ restart = false },1400)
     }
-
 }

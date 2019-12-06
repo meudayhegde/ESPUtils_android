@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-        <LinearLayout
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/layout_wireless"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -14,8 +9,8 @@
                 android:layout_marginTop="18sp"
                 android:layout_marginStart="14sp"
                 android:layout_marginEnd="14sp"
-                android:background="@drawable/layout_border_round_corner"
                 android:orientation="vertical" >
+
 
             <LinearLayout
                     android:layout_width="match_parent"
@@ -36,6 +31,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="20sp"
+                        android:id="@+id/spinner_wireless_mode"
                         android:layout_marginEnd="20sp"/>
 
             </LinearLayout>
@@ -46,7 +42,7 @@
                     android:layout_marginTop="16sp"
                     android:layout_marginEnd="14sp"
                     android:layout_marginStart="14sp"
-                    android:id="@+id/til_wifi_name"
+                    android:id="@+id/til_wifi_name_"
                     app:hintTextColor="?attr/colorOnBackground"
                     style="@style/textFieldLayoutWhiteTheme"
                     android:hint="@string/wifi_name">
@@ -54,7 +50,9 @@
                 <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="text" />
+                        android:id="@+id/til_wifi_name"
+                        android:inputType="text"
+                        android:singleLine="true" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -63,49 +61,19 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8sp"
                     android:layout_marginEnd="14sp"
+                    app:passwordToggleEnabled="true"
                     android:layout_marginStart="14sp"
                     app:hintTextColor="?attr/colorOnBackground"
-                    android:id="@+id/til_wifi_passwd"
+                    android:id="@+id/til_wifi_passwd_"
                     style="@style/textFieldLayoutWhiteTheme"
                     android:hint="@string/wifi_password">
 
                 <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="textPassword" />
+                        android:id="@+id/til_wifi_passwd"
+                        android:inputType="textPassword"
+                        android:singleLine="true" />
 
             </com.google.android.material.textfield.TextInputLayout>
-
-            <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="end"
-                    android:orientation="horizontal">
-                <Button
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10sp"
-                        android:layout_marginStart="14sp"
-                        android:layout_marginEnd="14sp"
-                        android:layout_marginBottom="10sp"
-                        android:text="@string/apply"/>
-            </LinearLayout>
-
         </LinearLayout>
-
-        <TextView
-                android:id="@+id/text_wireless_header"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_marginStart="28sp"
-                android:background="?android:colorBackground"
-                android:textColor="?attr/colorOnBackground"
-                android:paddingLeft="4sp"
-                android:paddingRight="4sp"
-                android:layout_marginTop="6sp"
-                android:text="@string/wireless_settings"
-                android:textAppearance="?android:attr/textAppearanceSmall"/>
-
-
-</RelativeLayout>

@@ -29,7 +29,8 @@
                     android:id="@+id/vendor_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/vendor_name" />
+                    android:hint="@string/vendor_name"
+                    android:singleLine="true" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -44,7 +45,8 @@
             <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/model_name"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:singleLine="true" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -59,7 +61,8 @@
             <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/remote_desc"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:singleLine="true" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button

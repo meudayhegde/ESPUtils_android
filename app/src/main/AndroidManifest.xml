@@ -12,7 +12,7 @@
             android:label="@string/app_name"
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
-            android:theme="@style/AppTheme"
+            android:theme="@style/DarkTheme"
             android:fullBackupContent="true">
 
         <activity android:name=".RemoteParserActivity"
@@ -43,7 +43,7 @@
                 android:configChanges="keyboardHidden|orientation|screenSize"
                 android:icon="@mipmap/ic_launcher"
                 android:label="@string/app_name"
-                android:theme="@style/AppTheme.NoActionBar">
+                android:theme="@style/DarkTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
@@ -57,7 +57,7 @@
                 android:name=".SettingsActivity"
                 android:configChanges="keyboardHidden|orientation|screenSize"
                 android:label="@string/title_activity_settings"
-                android:theme="@style/AppTheme"
+                android:theme="@style/DarkTheme"
                 android:parentActivityName=".MainActivity">
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"

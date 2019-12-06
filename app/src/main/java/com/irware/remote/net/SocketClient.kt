@@ -34,14 +34,17 @@ object SocketClient{
 
     fun readIrCode(irlistener:IrCodeListener,jsonObj:JSONObject?) {
         Thread {
+            var canceled = false
             try {
                 val connector = Connector(MainActivity.MCU_IP)
                 MainActivity.activity?.runOnUiThread {
-                    irlistener.parentDialog?.setButton(DialogInterface.BUTTON_NEGATIVE,"cancel") { dialog, _ ->
+                    irlistener.parentDialog?.setButton(DialogInterface.BUTTON_NEGATIVE,"Cancel") { dialog, _ ->
+                        canceled = true
                         connector.close()
                         dialog?.dismiss()
                     }
                 }
+
                 connector.sendLine(
                     "{\"request\":\"ir_capture\",\"username\":\""
                             + MainActivity.USERNAME + "\",\"password\":\"" + MainActivity.PASSWORD + "\",\"length\":\"0\",\"data\":\"_\"}")
@@ -69,7 +72,8 @@ object SocketClient{
                     else -> irlistener.onDeny(MainActivity.activity?.getString(R.string.auth_failed_login_again))
                 }
             }catch(ex:IOException){
-                irlistener.onDeny(ex.toString())
+                if(!canceled)
+                    irlistener.onDeny(ex.toString())
             }
         }.start()
     }

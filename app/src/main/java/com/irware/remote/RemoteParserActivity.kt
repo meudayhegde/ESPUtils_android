@@ -2,6 +2,7 @@ package com.irware.remote
 
 import android.annotation.SuppressLint
 import android.content.ContentResolver
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -31,6 +32,9 @@ class RemoteParserActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        when(getSharedPreferences("theme_setting", Context.MODE_PRIVATE).getInt("application_theme",0)){1->setTheme(R.style.ActivityAsDialogLight);2->setTheme(R.style.ActivityAsDialogDark);else->setTheme(R.style.ActivityAsDialog)}
+
         setContentView(R.layout.import_remote_activity)
         setFinishOnTouchOutside(false)
 

@@ -76,16 +76,6 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <TextView
-            android:id="@+id/forgot_password"
-            style="@style/viewParent"
-            android:layout_gravity="end"
-            android:layout_marginTop="10dp"
-            android:text="@string/forgot_password"
-            android:textColor="@color/primaryTextColor"
-            android:textSize="@dimen/newsMoreTextSize"
-            tools:visibility="gone" />
-
     <android.widget.Button
             android:id="@+id/cirLoginButton"
             style="@style/loginButton"
@@ -94,5 +84,13 @@
             android:text="@string/login"
             tools:ignore="UnusedAttribute" />
 
+    <TextView
+            android:id="@+id/skip_login"
+            style="@style/viewParent"
+            android:layout_gravity="end"
+            android:layout_marginTop="10dp"
+            android:text="@string/skip"
+            android:textColor="@color/primaryTextColor"
+            android:textSize="@dimen/newsMoreTextSize" />
 
 </LinearLayout>

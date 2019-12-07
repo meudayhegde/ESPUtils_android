@@ -4,8 +4,8 @@
         android:fillAfter="true">
 
     <translate
-            android:fromYDelta="27%p"
-            android:toYDelta="0%p"
+            android:fromYDelta="0%p"
+            android:toYDelta="-27%p"
             android:duration="350" />
     <scale
             android:duration="350"

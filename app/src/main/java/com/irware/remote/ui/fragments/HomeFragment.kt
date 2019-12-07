@@ -37,7 +37,6 @@ class HomeFragment : androidx.fragment.app.Fragment() {
     private lateinit var viewManager: RecyclerView.LayoutManager
     private var rootView:RelativeLayout? = null
 
-
     @SuppressLint("DefaultLocale")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         if(rootView == null){
@@ -49,6 +48,10 @@ class HomeFragment : androidx.fragment.app.Fragment() {
                 setHasFixedSize(true)
                 layoutManager = viewManager
                 adapter = viewAdapter
+            }
+
+            rootView!!.findViewById<FloatingActionButton>(R.id.fab_import_remote).setOnClickListener {
+                MainActivity.activity?.startConfigChooser()
             }
 
             rootView!!.findViewById<FloatingActionButton>(R.id.fab_new_remote).setOnClickListener {
@@ -115,6 +118,10 @@ class HomeFragment : androidx.fragment.app.Fragment() {
     override fun onDetach() {
         super.onDetach()
         listener = null
+    }
+
+    fun notifyDataChanged(){
+        viewAdapter.notifyDataSetChanged()
     }
 
 }

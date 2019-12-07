@@ -97,6 +97,7 @@ class SettingsActivity : AppCompatActivity() {
                 }
                 if(nPassCon.text != nPass.text){
                     (nPassCon.parent.parent as TextInputLayout).error = getString(R.string.passwd_mismatch)
+                    hasError = true
                 }
                 if(!hasError){
                     AlertDialog.Builder(this)

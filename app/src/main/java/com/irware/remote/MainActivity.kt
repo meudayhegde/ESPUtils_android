@@ -2,6 +2,7 @@ package com.irware.remote
 
 import android.annotation.SuppressLint
 import android.app.Dialog
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
@@ -12,6 +13,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.text.TextUtils
+import android.util.Log
 import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
@@ -37,8 +39,6 @@ import kotlinx.android.synthetic.main.app_bar_main.*
 import org.json.JSONObject
 import java.io.*
 import java.net.InetAddress
-import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
 
 
@@ -47,12 +47,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     OnFragmentInteractionListener {
     override fun onFragmentInteraction(uri: Uri) {}
 
-    private var homeFragment:HomeFragment? = null
+    var homeFragment:HomeFragment? = null
     private var aboutFragment: AboutFragment? = null
     private var ipList:ArrayList<String> = ArrayList<String>()
     private var ipConf : File? = null
     private var authenticated=false
     private var connected = false
+    private val FILE_SELECT_CODE = 0
 
     private lateinit var ipEdit:EditText
     private lateinit var userEdit:EditText
@@ -109,7 +110,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 
         val logo=splash.findViewById<ImageView>(R.id.splash_logo)
-        logo.layoutParams=LinearLayout.LayoutParams((min(size.x,size.y)*0.6F).roundToInt(),(min(size.x,size.y)*0.6F).roundToInt())
+        val lparams = RelativeLayout.LayoutParams((min(size.x,size.y)*0.6F).roundToInt(),(min(size.x,size.y)*0.6F).roundToInt())
+        lparams.addRule(RelativeLayout.CENTER_IN_PARENT)
+        logo.layoutParams = lparams
+
         RemoteButton.onActivityLoad()
 
         val pref=getSharedPreferences("login",0)
@@ -384,6 +388,46 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             SettingsActivity.themeChanged = false
             recreate()
         }
+    }
+
+    fun startConfigChooser(){
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
+        intent.type = "application/json"
+        intent.addCategory(Intent.CATEGORY_OPENABLE)
+
+        try {
+            startActivityForResult(
+                    Intent.createChooser(intent, "Select a remote controller configuration file"), FILE_SELECT_CODE)
+        } catch (ex: ActivityNotFoundException) {
+            // Potentially direct the user to the Market with a Dialog
+            Toast.makeText(
+                this, "Please install a File Manager.",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    override fun onActivityResult(requestCode:Int, resultCode:Int, data:Intent?) {
+        when (requestCode) {
+            FILE_SELECT_CODE ->
+                if (resultCode == RESULT_OK) {
+                    // Get the Uri of the selected file
+                    val uri = data?.data
+                    Log.d("CONFIG_SELECTOR", "File Uri: " + uri.toString())
+                    try {
+                        val mIntent = Intent(Intent.ACTION_VIEW)
+
+                        mIntent.setDataAndType(uri, "application/json")
+                        mIntent.setPackage(packageName)
+                        mIntent.putExtra("fromIrware",true)
+                        startActivity(Intent.createChooser(mIntent, "Import Config File"))
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+
+                }
+        }
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
     companion object {

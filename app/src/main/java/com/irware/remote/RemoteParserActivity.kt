@@ -21,6 +21,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.DrawableCompat
+import com.irware.remote.holders.RemoteProperties
 import org.json.JSONObject
 import java.io.File
 import java.io.InputStream
@@ -30,6 +31,8 @@ import java.io.OutputStreamWriter
 
 class RemoteParserActivity : AppCompatActivity() {
 
+    private var configFile :File? = null
+    private var fromIrware = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -57,8 +60,8 @@ class RemoteParserActivity : AppCompatActivity() {
         val cancel = findViewById<Button>(R.id.button_cancel)
         val import = findViewById<Button>(R.id.button_import)
 
-        val intent = intent
         val action = intent.action
+        fromIrware = intent.getBooleanExtra("fromIrware",false)
         var jsonObject = JSONObject()
         if (action!!.compareTo(Intent.ACTION_VIEW) == 0) {
             val scheme = intent.scheme
@@ -130,6 +133,7 @@ class RemoteParserActivity : AppCompatActivity() {
                             outFile.createNewFile()
                             jsonObject.put("fileName",outFile)
                             writeFile(outFile,jsonObject)
+                            configFile = outFile
                             onSuccess(progress,imV,msg,import)
                             dialog.dismiss()
                         }
@@ -137,6 +141,7 @@ class RemoteParserActivity : AppCompatActivity() {
                             outFile.delete()
                             outFile.createNewFile()
                             writeFile(outFile,jsonObject)
+                            configFile = outFile
                             onSuccess(progress,imV,msg,import)
                             dialog.dismiss()
                         }
@@ -145,6 +150,7 @@ class RemoteParserActivity : AppCompatActivity() {
                 }else{
                     outFile.createNewFile()
                     writeFile(outFile,jsonObject)
+                    configFile = outFile
                     onSuccess(progress,imV,msg,import)
                 }
 
@@ -176,12 +182,22 @@ class RemoteParserActivity : AppCompatActivity() {
 
         msg.text = getString(R.string.import_success)
 
-        btn.text = getString(R.string.start_app)
-
-        btn.setOnClickListener {
-            val intent = Intent(this,MainActivity::class.java)
-            startActivity(intent)
-            finish()
+        if(fromIrware){
+            if(configFile!=null){
+                MainActivity.remotePropList.add(RemoteProperties(configFile!!,null))
+                MainActivity.activity?.homeFragment?.notifyDataChanged()
+            }
+            btn.text = getString(R.string.done)
+            btn.setOnClickListener {
+                finish()
+            }
+        }else {
+            btn.text = getString(R.string.start_app)
+            btn.setOnClickListener {
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
+                finish()
+            }
         }
     }
 
@@ -211,10 +227,10 @@ class RemoteParserActivity : AppCompatActivity() {
         insr.close()
 
         val jsonObj = JSONObject(out)
-        val name= jsonObj.optString("name")
-        val vendor = jsonObj.optString("vendor")
-        val fileName= jsonObj.optString("fileName")
-        val id = jsonObj.optString("id")
+        val name= jsonObj.getString("name")
+        val vendor = jsonObj.getString("vendor")
+        val fileName= jsonObj.getString("fileName")
+        val id = jsonObj.getString("id")
         val description = jsonObj.optString("description")
 
         val buttons = jsonObj.getJSONArray("buttons")

@@ -7,6 +7,7 @@ import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.util.AttributeSet
 import android.view.Gravity
+import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
 import androidx.core.graphics.drawable.DrawableCompat
@@ -19,11 +20,19 @@ class RemoteButton : Button {
     private var properties:ButtonProperties?=null
     private val dr = GradientDrawable()
 
-    constructor(context:Context):super(context)
+    constructor(context:Context):super(context){
+        visibility = View.GONE
+    }
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, int:Int) : super(context, attrs,int)
-    constructor(context: Context?, properties:ButtonProperties):super(context){
+
+    fun initialize(properties:ButtonProperties?){
         this.properties=properties
+        if(properties == null) {
+            visibility = View.GONE
+            return
+        }
+        visibility = View.VISIBLE
         setTextColor(Color.WHITE)
         setButtonProperties(properties)
 
@@ -84,7 +93,10 @@ class RemoteButton : Button {
     fun setIcon(drawable_resid:Int){
         if(drawable_resid != MainActivity.iconDrawableList[0]){
             var drawable = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) context.getDrawable(drawable_resid)
-            else context.resources.getDrawable(drawable_resid)
+            else with(context) {
+                @Suppress("DEPRECATION")
+                resources.getDrawable(drawable_resid)
+            }
             drawable = drawable?.mutate()
             DrawableCompat.setTint(drawable!!,properties!!.textColor)
             if(properties!!.iconType == TYPE_RECT_VER) {
@@ -104,16 +116,16 @@ class RemoteButton : Button {
     fun setType(type:Int){
         when(type){
             TYPE_RECT_HOR -> {
-                layoutParams= LinearLayout.LayoutParams(BTN_WIDTH, MIN_HIGHT)
+                layoutParams= LinearLayout.LayoutParams(BTN_WIDTH, MIN_HEIGHT)
             }
             TYPE_ROUND_MINI -> {
-                layoutParams= LinearLayout.LayoutParams(MIN_HIGHT,MIN_HIGHT)
+                layoutParams= LinearLayout.LayoutParams(MIN_HEIGHT,MIN_HEIGHT)
             }
             TYPE_ROUND_MEDIUM -> {
                 layoutParams= LinearLayout.LayoutParams(BTN_WIDTH,BTN_WIDTH)
             }
             TYPE_RECT_VER -> {
-                layoutParams= LinearLayout.LayoutParams(MIN_HIGHT,BTN_WIDTH)
+                layoutParams= LinearLayout.LayoutParams(MIN_HEIGHT,BTN_WIDTH)
             }
         }
         (layoutParams as LinearLayout.LayoutParams).setMargins(12,12,12,12)
@@ -127,11 +139,11 @@ class RemoteButton : Button {
         const val TYPE_ROUND_MEDIUM=3
 
         var BTN_WIDTH=160
-        var MIN_HIGHT=80
+        var MIN_HEIGHT=80
 
         fun onActivityLoad(){
-            BTN_WIDTH = (MainActivity.size.x-MainActivity.size.x/(2*MainActivity.NUM_COLUMNS)) / MainActivity.NUM_COLUMNS
-            MIN_HIGHT = BTN_WIDTH / 2
+            BTN_WIDTH = ((MainActivity.size.x-MainActivity.size.x/(1.3*MainActivity.NUM_COLUMNS)) / MainActivity.NUM_COLUMNS).toInt()
+            MIN_HEIGHT = BTN_WIDTH / 2
         }
     }
 }

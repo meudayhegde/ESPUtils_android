@@ -7,10 +7,10 @@ apply plugin: 'kotlin-android-extensions'
 android {
     signingConfigs {
         iRWaRE_Release {
-        storeFile file('iRWaRE_Release')
-            storePassword 'sign_pass'
-            keyAlias = 'passwd'
-            keyPassword 'password_example'
+        storeFile file('/home/hegdeuday/AndroidStudioProjects/iRWaRE_android.jks')
+            storePassword 'infrared.redefined'
+            keyAlias = 'key0'
+            keyPassword 'infrared.redefined'
         }
     }
     compileSdkVersion 28
@@ -28,8 +28,9 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            //noinspection GradlePath
             applicationIdSuffix = 'com.irware.remote'
             versionNameSuffix = '1_0'
             signingConfig signingConfigs.iRWaRE_Release

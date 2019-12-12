@@ -1,17 +1,17 @@
 package com.irware.remote.ui
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.renderscript.Allocation
 import android.renderscript.Element.U8_4
-import android.renderscript.ScriptIntrinsicBlur
 import android.renderscript.RenderScript
-import android.graphics.Bitmap
+import android.renderscript.ScriptIntrinsicBlur
 import kotlin.math.roundToInt
 
 
 object BlurBuilder {
-    private val BITMAP_SCALE = 0.4f
-    private val BLUR_RADIUS = 2.5f
+    private const val BITMAP_SCALE = 0.4f
+    private const val BLUR_RADIUS = 2.5f
 
     fun blur(context: Context, image: Bitmap): Bitmap {
         val width = (image.width * BITMAP_SCALE).roundToInt()

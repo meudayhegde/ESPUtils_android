@@ -3,42 +3,39 @@ package com.irware.remote.ui.dialogs
 import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
-import android.os.Build
-import android.os.VibrationEffect
-import android.os.Vibrator
 import android.view.DragEvent
-import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.core.graphics.drawable.DrawableCompat
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.github.clans.fab.FloatingActionButton
 import com.irware.remote.MainActivity
 import com.irware.remote.R
 import com.irware.remote.holders.ButtonProperties
 import com.irware.remote.holders.RemoteProperties
-import com.irware.remote.listeners.ButtonLongClickListener
-import com.irware.remote.net.IrSendListener
-import com.irware.remote.net.SocketClient
-import com.irware.remote.ui.adapters.ButtonLayoutAdapter
+import com.irware.remote.ui.adapters.ButtonsGridAdapter
 import com.irware.remote.ui.buttons.RemoteButton
 import org.json.JSONException
 import org.json.JSONObject
 
-class RemoteDialog(context: Context,private val properties:RemoteProperties, private val mode:Int) : Dialog(context,R.style.AppTheme),OnSelectedListener,
-    View.OnDragListener {
+class RemoteDialog(context: Context,private val properties:RemoteProperties, val mode:Int) : Dialog(context,R.style.AppTheme),OnSelectedListener {
 
-    private var lv:ListView? = null
-    val infoTextVew:TextView
+    val infoTextView:TextView
     private val delLayout:LinearLayout
     val delView:ImageView
+    private val recyclerView:RecyclerView
+    private val arrayList:ArrayList<ButtonProperties?> = ArrayList()
+    private val adapter:ButtonsGridAdapter
 
     init {
         window?.attributes?.windowAnimations = R.style.DialogAnimationTheme
         setContentView(R.layout.create_remote_layout)
-        val layoutList = ArrayList<LinearLayout>()
-        lv = findViewById<ListView>(R.id.btn_layout_listview)
+        recyclerView = findViewById(R.id.buttons_layout_recycler_view)
 
         val fab = findViewById<FloatingActionButton>(R.id.fab_new_button)
         if(mode == MODE_VIEW_ONLY) {
@@ -49,7 +46,7 @@ class RemoteDialog(context: Context,private val properties:RemoteProperties, pri
 
         delLayout = findViewById(R.id.layout_del_button)
         delView = findViewById(R.id.image_view_delete)
-        infoTextVew = findViewById(R.id.create_remote_info_layout)
+        infoTextView = findViewById(R.id.create_remote_info_layout)
 
         delLayout.setOnDragListener { _, event ->
             when (event.action) {
@@ -69,7 +66,7 @@ class RemoteDialog(context: Context,private val properties:RemoteProperties, pri
                 }
                 DragEvent.ACTION_DRAG_ENDED ->{
                     delView.visibility = View.INVISIBLE
-                    infoTextVew.visibility = View.VISIBLE
+                    infoTextView.visibility = View.VISIBLE
                     DrawableCompat.setTint(delView.drawable,MainActivity.colorOnBackground)
                 }
                 DragEvent.ACTION_DRAG_ENTERED ->{
@@ -82,74 +79,34 @@ class RemoteDialog(context: Context,private val properties:RemoteProperties, pri
             true
         }
 
-        val layoutCount = MainActivity.size.y / (RemoteButton.MIN_HIGHT + 10)
-        for (i in 0 until layoutCount) {
-            val layout = LinearLayout(context)
-            layout.layoutParams = AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.WRAP_CONTENT)
-            layout.gravity = Gravity.CENTER
-            layout.orientation = LinearLayout.HORIZONTAL
-            for (j in 0 until MainActivity.size.x / (RemoteButton.BTN_WIDTH)) {
-                val child = com.irware.remote.ui.LinearLayout(context)
-                child.gravity = Gravity.CENTER
-                child.position = (i*(MainActivity.size.x / (RemoteButton.BTN_WIDTH))) + j
-                val layoutParams = LinearLayout.LayoutParams(RemoteButton.BTN_WIDTH+20, LinearLayout.LayoutParams.MATCH_PARENT)
-                child.layoutParams = layoutParams
-                child.minimumHeight = RemoteButton.MIN_HIGHT
-                child.setOnDragListener(this)
-                layout.addView(child)
-            }
-            layoutList.add(layout)
+        val length = MainActivity.NUM_COLUMNS*MainActivity.size.y/RemoteButton.MIN_HEIGHT
+        for(i in 0 until length){
+            arrayList.add(null)
         }
-        val adapter = ButtonLayoutAdapter(layoutList,this)
-        lv!!.adapter = adapter
 
-        if(mode == MODE_EDIT) fab.setOnClickListener {
-            val dialog = ButtonPropertiesDialog(context, this)
-            dialog.show()
-            dialog.captureInit(null)
-        }
         val buttons = properties.getButtons()
 
         if(buttons.length() > 0){
             for(i in 0 until buttons.length()){
                 val obj = buttons.getJSONObject(i)
                 val btnProp = ButtonProperties(obj,properties)
-                val btn= RemoteButton(context,btnProp)
-                if(mode == MODE_EDIT) btn.setOnLongClickListener(ButtonLongClickListener(this))
-
-                (lv?.adapter as ButtonLayoutAdapter).getChildLayout(btn.getProperties().btnPosition).addView(btn)
-
-                val vibe = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-
-                btn.setOnClickListener{
-                    when(mode){
-                        MODE_EDIT ->{
-                            val dialog = ButtonPropertiesDialog(context, this)
-                            dialog.show()
-                            dialog.onIrRead((it as RemoteButton).getProperties().jsonObj)
-                        }
-                        MODE_VIEW_ONLY -> {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                vibe.vibrate(VibrationEffect.createOneShot(50,VibrationEffect.DEFAULT_AMPLITUDE))
-                            }else{
-                                vibe.vibrate(50)
-                            }
-                            SocketClient.sendIrCode(obj, object : IrSendListener {
-                                override fun onIrSend(result: String) {
-                                    MainActivity.activity?.runOnUiThread {
-                                        try {
-                                            val jsonObj = JSONObject(result)
-                                            Toast.makeText(context, jsonObj.getString("response"), Toast.LENGTH_SHORT).show()
-                                        } catch (ex: JSONException) {
-                                            Toast.makeText(context, result, Toast.LENGTH_SHORT).show()
-                                        }
-                                    }
-                                }
-                            })
-                        }
+                if(length<btnProp.btnPosition) {
+                    for(j in length until btnProp.btnPosition){
+                        arrayList.add(null)
                     }
                 }
+                arrayList[btnProp.btnPosition] = btnProp
             }
+        }
+
+        adapter = ButtonsGridAdapter(arrayList,this)
+        recyclerView.layoutManager = GridLayoutManager(context,MainActivity.NUM_COLUMNS)
+        recyclerView.adapter = adapter
+
+        if(mode == MODE_EDIT) fab.setOnClickListener {
+            val dialog = ButtonPropertiesDialog(context, this)
+            dialog.show()
+            dialog.captureInit(null)
         }
     }
 
@@ -157,57 +114,20 @@ class RemoteDialog(context: Context,private val properties:RemoteProperties, pri
         try{
             val pos = prop.getInt("btnPosition")
             val btnProp = ButtonProperties(prop,properties)
-            (((lv?.adapter as ButtonLayoutAdapter).getChildLayout(pos) as com.irware.remote.ui.LinearLayout)
-                .getChildAt(0) as RemoteButton).setButtonProperties(btnProp)
+            arrayList[pos] = btnProp
+            adapter.notifyDataSetChanged()
         }catch(ex:JSONException){
-            val pos=(lv?.adapter as ButtonLayoutAdapter).getGetEmptyPosition()
+            val pos=adapter.getGetEmptyPosition()
             prop.put("btnPosition",pos)
             val btnProp = ButtonProperties(prop,properties)
-            val btn = RemoteButton(context,btnProp)
-            btn.setOnClickListener{
-                val dialog = ButtonPropertiesDialog(context, this)
-                dialog.show()
-                dialog.onIrRead((it as RemoteButton).getProperties().jsonObj)
-            }
-            btn.setOnLongClickListener(ButtonLongClickListener(this))
-            (lv?.adapter as ButtonLayoutAdapter).getChildLayout(btn.getProperties().btnPosition).addView(btn)
+            arrayList[pos] = btnProp
+            adapter.notifyDataSetChanged()
         }
-    }
-
-    override fun onDrag(v: View, event: DragEvent): Boolean {
-        when (event.action) {
-            DragEvent.ACTION_DROP -> {
-                val view = event.localState as RemoteButton
-                val owner = view.parent as ViewGroup
-                val container = v as com.irware.remote.ui.LinearLayout
-                if(container.childCount==0) {
-                    owner.removeView(view)
-                    container.addView(view)
-                    view.getProperties().btnPosition = container.position
-                }
-                view.visibility = View.VISIBLE
-            }
-            DragEvent.ACTION_DRAG_ENDED ->{
-                (event.localState as View).visibility=View.VISIBLE
-                v.background = null
-                delView.visibility = View.INVISIBLE
-                infoTextVew.visibility = View.VISIBLE
-            }
-            DragEvent.ACTION_DRAG_ENTERED ->{
-                v.background = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                    v.context.getDrawable(R.drawable.round_corner)
-                else  v.context.resources.getDrawable(R.drawable.round_corner)
-            }
-            DragEvent.ACTION_DRAG_EXITED -> {
-                v.background = null
-            }
-        }
-        return true
     }
 
     companion object{
-        val MODE_EDIT = 1
-        val MODE_VIEW_ONLY = 0
+        const val MODE_EDIT = 1
+        const val MODE_VIEW_ONLY = 0
     }
 }
 

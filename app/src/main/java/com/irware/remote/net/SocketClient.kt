@@ -1,11 +1,9 @@
 package com.irware.remote.net
 
 import android.content.DialogInterface
-import android.widget.Toast
 import com.irware.remote.MainActivity
 import com.irware.remote.R
 import com.irware.remote.ui.dialogs.ButtonPropertiesDialog
-import org.json.JSONArray
 import org.json.JSONObject
 import java.io.*
 import java.net.Socket

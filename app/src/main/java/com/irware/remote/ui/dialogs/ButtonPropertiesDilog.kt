@@ -8,7 +8,6 @@ import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -192,9 +191,9 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
             captureInit(jsonObj)
         }
 
-        styleParamList.add(RelativeLayout.LayoutParams(RemoteButton.MIN_HIGHT , RemoteButton.MIN_HIGHT))
-        styleParamList.add(RelativeLayout.LayoutParams(RemoteButton.BTN_WIDTH , RemoteButton.MIN_HIGHT))
-        styleParamList.add(RelativeLayout.LayoutParams(RemoteButton.MIN_HIGHT, RemoteButton.BTN_WIDTH ))
+        styleParamList.add(RelativeLayout.LayoutParams(RemoteButton.MIN_HEIGHT , RemoteButton.MIN_HEIGHT))
+        styleParamList.add(RelativeLayout.LayoutParams(RemoteButton.BTN_WIDTH , RemoteButton.MIN_HEIGHT))
+        styleParamList.add(RelativeLayout.LayoutParams(RemoteButton.MIN_HEIGHT, RemoteButton.BTN_WIDTH ))
         styleParamList.add(RelativeLayout.LayoutParams(RemoteButton.BTN_WIDTH, RemoteButton.BTN_WIDTH))
 
         for(param in styleParamList)
@@ -255,7 +254,10 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
             val iconAdapter = object:ArrayAdapter<Int>(context,R.layout.drawable_layout,MainActivity.iconDrawableList.toTypedArray()){
                 override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                     val drawable = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) context.getDrawable(getItem(position)!!)
-                        else with(context) { resources.getDrawable(getItem(position)!!) }
+                        else with(context) {
+                        @Suppress("DEPRECATION")
+                        resources.getDrawable(getItem(position)!!)
+                    }
                     DrawableCompat.setTint(drawable!!,MainActivity.colorOnBackground)
                     var returnView = convertView
                     if(returnView==null){
@@ -301,7 +303,10 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
             val drawable =
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) context.getDrawable(
                     MainActivity.iconDrawableList[iconSelected])
-                else with(context) { resources.getDrawable(MainActivity.iconDrawableList[iconSelected]) }
+                else with(context) {
+                    @Suppress("DEPRECATION")
+                    resources.getDrawable(MainActivity.iconDrawableList[iconSelected])
+                }
             DrawableCompat.setTint(drawable!!, colorContentSelected)
             if (btnStyle == RemoteButton.TYPE_RECT_VER){
                 remModButton.setCompoundDrawablesWithIntrinsicBounds(null, drawable, null, null)

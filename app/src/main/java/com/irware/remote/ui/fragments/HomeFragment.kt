@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -37,7 +38,7 @@ class HomeFragment : androidx.fragment.app.Fragment() {
     private lateinit var viewManager: RecyclerView.LayoutManager
     private var rootView:RelativeLayout? = null
 
-    @SuppressLint("DefaultLocale")
+    @SuppressLint("DefaultLocale", "InflateParams")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         if(rootView == null){
             rootView = inflater.inflate(R.layout.fragment_manage_remote, container, false) as RelativeLayout
@@ -139,6 +140,7 @@ class RemoteListAdapter(private val propList: ArrayList<RemoteProperties>) : Rec
         return MyViewHolder(cardView)
     }
 
+    @SuppressLint("InflateParams")
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val prop = propList[position]
         setViewProps(holder.cardView,prop)
@@ -210,8 +212,13 @@ class RemoteListAdapter(private val propList: ArrayList<RemoteProperties>) : Rec
             }
 
             btnDelete.setOnClickListener {
-                val icon = dialog.context.resources.getDrawable(R.drawable.icon_delete)
-                DrawableCompat.setTint(icon,Color.RED)
+                val icon = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    dialog.context.getDrawable(R.drawable.icon_delete)
+                } else {
+                    @Suppress("DEPRECATION")
+                    dialog.context.resources.getDrawable(R.drawable.icon_delete)
+                }
+                DrawableCompat.setTint(icon!!,Color.RED)
                 AlertDialog.Builder(dialog.context).setNegativeButton("No,Quit"){ dialog, _ -> dialog.dismiss()}
                     .setPositiveButton("Yes,Delete"){_,_ ->
                         File(MainActivity.configPath+File.separator+prop.fileName).delete()

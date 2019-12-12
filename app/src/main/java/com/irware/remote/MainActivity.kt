@@ -52,22 +52,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     var homeFragment:HomeFragment? = null
     private var aboutFragment: AboutFragment? = null
     private var ipList:ArrayList<String> = ArrayList()
-    private var ipConf : File? = null
+    private lateinit var ipConf : File
     private var authenticated=false
     private var connected = false
-    private val FILE_SELECT_CODE = 0
-
-    private lateinit var ipEdit:EditText
-    private lateinit var userEdit:EditText
-    private lateinit var passEdit:EditText
-    private lateinit var submit:Button
 
     @SuppressLint("InflateParams")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         when(getSharedPreferences("theme_setting", Context.MODE_PRIVATE).getInt("application_theme",if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) { 0 }else{ 2 }))
-        {1-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);2-> AppCompatDelegate.setDefaultNightMode(
-            AppCompatDelegate.MODE_NIGHT_YES)}
+        {1-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);2-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)}
         remotePropList.clear()
         activity = this
         val arr = resources.obtainTypedArray(R.array.icons)
@@ -75,10 +68,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         for(i in 0 until arr.length())
             iconDrawableList[i] = arr.getResourceId(i,0)
         arr.recycle()
-
+        NUM_COLUMNS = when{ size.x<920->3;else->5}
         configPath = filesDir.absolutePath + File.separator + CONFIG_DIR
         ipConf = File(filesDir.absolutePath+File.separator+"iplist.conf")
-        if(!ipConf!!.exists())ipConf!!.createNewFile()
+        if(!ipConf.exists())ipConf.createNewFile()
         val splash=object:Dialog(this,android.R.style.Theme_Light_NoTitleBar_Fullscreen){
             var exit = false
             override fun onBackPressed() {
@@ -90,8 +83,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 },2000)
             }
         }
-        val value = TypedValue()
 
+        val value = TypedValue()
         theme.resolveAttribute(R.attr.colorOnBackground, value, true)
         colorOnBackground = value.data
 
@@ -105,6 +98,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         splash.show()
         hideSystemUI(splashView)
         windowManager.defaultDisplay.getSize(size)
+        NUM_COLUMNS = when{size.x>920->5;size.x<720->3;else->4}
 
         val file = File(filesDir.absolutePath+File.separator+ CONFIG_DIR)
         if(!file.exists()) file.mkdir()
@@ -120,14 +114,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val pref=getSharedPreferences("login",0)
         val editor=pref.edit()
 
-        ipEdit= splash.findViewById(R.id.editTextIP)
-        passEdit= splash.findViewById(R.id.editTextPassword)
+        val ipEdit:EditText= splash.findViewById(R.id.editTextIP)
+        val passEdit:EditText= splash.findViewById(R.id.editTextPassword)
         passEdit.setText(pref.getString("password",""))
 
-        userEdit= splash.findViewById(R.id.edit_text_uname)
+        val userEdit:EditText= splash.findViewById(R.id.edit_text_uname)
         userEdit.setText(pref.getString("username",""))
 
-        submit= splash.findViewById(R.id.cirLoginButton)
+        val submit:Button= splash.findViewById(R.id.cirLoginButton)
         val validatedListener=object:OnValidationListener{
             override fun onValidated(verified: Boolean) {
                 if(verified){
@@ -186,7 +180,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         Toast.makeText(this@MainActivity,"Ip is not reachable!",Toast.LENGTH_LONG).show()
                     }
                 }
-                val writer=OutputStreamWriter(ipConf!!.outputStream())
+                val writer=OutputStreamWriter(ipConf.outputStream())
                 writer.write(TextUtils.join("\n",ipList))
                 writer.flush()
                 writer.close()
@@ -194,13 +188,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
 
         Thread{
-            ipList= BufferedReader(InputStreamReader(ipConf!!.inputStream())).readLines() as ArrayList<String>
+            ipList= BufferedReader(InputStreamReader(ipConf.inputStream())).readLines() as ArrayList<String>
             val newList = ArrayList<String>()
             newList.addAll(ipList)
             for(ip:String in newList){
                 if(!connected and InetAddress.getByName(ip).isReachable(50)){
                     if(ipVerified(ip)) {
-                        onIpVerified(ip)
+                        onIpVerified(ip,ipEdit,userEdit,passEdit,submit)
                         break
                     }
                 }
@@ -216,7 +210,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                                 val ip = "$subnet.$i"
                                 if (!connected and InetAddress.getByName(ip).isReachable(20)) {
                                     if (ipVerified(ip)) {
-                                        onIpVerified(ip)
+                                        onIpVerified(ip,ipEdit,userEdit,passEdit,submit)
                                         break
                                     }
                                 }
@@ -278,7 +272,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return false
     }
 
-    private fun onIpVerified(ip:String){
+    private fun onIpVerified(ip:String,ipEdit:EditText,userEdit:EditText,passEdit:EditText,submit:Button){
         runOnUiThread {
             if(!connected) {
                 connected = true
@@ -307,7 +301,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
 
-    var backPressed = false
+    private var backPressed = false
     override fun onBackPressed() {
         when {
             drawer_layout.isDrawerOpen(GravityCompat.START) -> drawer_layout.closeDrawer(GravityCompat.START)
@@ -375,12 +369,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
 
-    private fun showSystemUI(view: View) {
-        view.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-            or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-            or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
-    }
-
     fun startConfigChooser(){
         val intent = Intent(Intent.ACTION_GET_CONTENT)
         intent.type = "application/json"
@@ -425,6 +413,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val size:Point=Point()
         const val PORT=48321
         const val CONFIG_DIR = "remotes"
+        const val FILE_SELECT_CODE = 0
         val remotePropList = ArrayList<RemoteProperties>()
         var MCU_MAC = ""
         var configPath =""
@@ -439,6 +428,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private var restart = false
     fun onRestartClicked(view: View) {
+        view.visibility = View.VISIBLE
         if(restart) recreate()
         else Toast.makeText(this, "Press again to Restart",Toast.LENGTH_SHORT).show()
         restart = true

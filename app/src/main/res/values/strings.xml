@@ -9,7 +9,6 @@
     <string name="splash_logo_desc">splash screen logo</string>
     <string name="login_uid_hint">User ID</string>
     <string name="login_password_hint">Password</string>
-    <string name="forgot_password">Forgot Password?</string>
     <string name="ip_address">IP Address</string>
     <string name="login">Login</string>
     <string name="ir_capture_instruction">Press the target button in the original remote control towards iR WaRE Remote…</string>
@@ -38,7 +37,6 @@
     <string name="about">About</string>
     <string name="communicate">Communicate</string>
     <string name="share">Share</string>
-    <string name="info_icon">Info icon</string>
     <string name="long_press_remote_item_card_to_edit_remote_controller_information">Long press remote item card to edit Remote controller information</string>
     <string name="length_of_captured_ir_signal">Length of captured IR signal :</string>
     <string name="edit_buttons">Edit Buttons</string>
@@ -55,20 +53,16 @@
     <string name="import_error">Sorry, Something went wrong and import action couldn\'t be completed</string>
     <string name="import_success">Import remote controller configuration successful</string>
     <string name="start_app">start iRWaRE</string>
-    <string name="network_mode">Network mode</string>
     <string name="about_irware">About iRWaRE</string>
     <string name="this_universal_remote_device_which_controls_ir_devices_like_tv_projectors_operates_within_the_short_range_of_around_50m_this_device_is_cost_effective_easy_to_handle_and_maintain_multiple_devices_with_a_single_interface">This Universal Remote device which controls IR devices like TV, Projectors operates within the short range of around 50m. This device is Cost effective, easy to handle and maintain multiple devices with a single interface.</string>
     <string name="libraries_used">Libraries Used</string>
-    <string name="wireless_settings">Wireless Settings</string>
     <string name="wireless_mode">Wireless Mode</string>
     <string name="wifi_name">WiFi Name</string>
     <string name="wifi_password">WiFi Password</string>
-    <string name="user_settings">User Settings</string>
     <string name="new_user_name">New User Name</string>
     <string name="new_password">New Password</string>
     <string name="confirm_password">Confirm Password</string>
     <string name="button_to_delete_remotebutton">button to delete RemoteButton</string>
-    <string name="header">Header</string>
     <string name="title">Title</string>
     <string name="subtitle">Subtitle</string>
     <string name="skip"><![CDATA[skip>>]]></string>

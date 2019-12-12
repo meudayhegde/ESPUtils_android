@@ -104,6 +104,7 @@ class RemoteParserActivity : AppCompatActivity() {
                 val drawable = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     getDrawable(R.drawable.icon_cancel)
                 } else {
+                    @Suppress("DEPRECATION")
                     resources.getDrawable(R.drawable.icon_cancel)
                 }
                 DrawableCompat.setTint(drawable!!,Color.RED)
@@ -159,6 +160,7 @@ class RemoteParserActivity : AppCompatActivity() {
                 val drawable = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     getDrawable(R.drawable.icon_cancel)
                 } else {
+                    @Suppress("DEPRECATION")
                     resources.getDrawable(R.drawable.icon_cancel)
                 }
                 DrawableCompat.setTint(drawable!!,Color.RED)
@@ -175,6 +177,7 @@ class RemoteParserActivity : AppCompatActivity() {
         val drawable = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getDrawable(R.drawable.icon_check_circle)
         } else {
+            @Suppress("DEPRECATION")
             resources.getDrawable(R.drawable.icon_check_circle)
         }
         DrawableCompat.setTint(drawable!!,Color.GREEN)
@@ -227,18 +230,17 @@ class RemoteParserActivity : AppCompatActivity() {
         insr.close()
 
         val jsonObj = JSONObject(out)
-        val name= jsonObj.getString("name")
-        val vendor = jsonObj.getString("vendor")
-        val fileName= jsonObj.getString("fileName")
-        val id = jsonObj.getString("id")
-        val description = jsonObj.optString("description")
+        jsonObj.getString("name")
+        jsonObj.getString("vendor")
+        jsonObj.getString("fileName")
+        jsonObj.getString("id")
 
         val buttons = jsonObj.getJSONArray("buttons")
         for(i in 0 until buttons.length()){
             val button = buttons.getJSONObject(i)
-            val protocol = button.getString("protocol")
-            val irCode = button.getString("irCode")
-            val length =button.getString("length")
+            button.getString("protocol")
+            button.getString("irCode")
+            button.getString("length")
         }
 
         return jsonObj

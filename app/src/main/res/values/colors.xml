@@ -5,7 +5,7 @@
     <color name="colorAccent">#7890FB</color>
     <color name="btn_border_dark">#000000</color>
     <color name="color_fab">@color/colorPrimary</color>
-    <color name="color_fab_ripple">@color/colorAccent</color>
+    <color name="color_fab_ripple">@color/colorPrimaryDark</color>
     <color name="blue_fab_normal">#0096FF</color>
     <color name="blue_fab_ripple">#01D3FF</color>
     <color name="transparent" >#00ffffff</color>

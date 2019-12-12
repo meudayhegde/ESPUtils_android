@@ -20,6 +20,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.graphics.drawable.DrawableCompat
 import com.irware.remote.holders.RemoteProperties
 import org.json.JSONObject
@@ -35,9 +36,8 @@ class RemoteParserActivity : AppCompatActivity() {
     private var fromIrware = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        when(getSharedPreferences("theme_setting", Context.MODE_PRIVATE).getInt("application_theme",0)){1->setTheme(R.style.ActivityAsDialogLight);2->setTheme(R.style.ActivityAsDialogDark);else->setTheme(R.style.ActivityAsDialog)}
-
+        when(getSharedPreferences("theme_setting", Context.MODE_PRIVATE).getInt("application_theme",if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) { 0 }else{ 2 }))
+        {1-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);2-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)}
         setContentView(R.layout.import_remote_activity)
         setFinishOnTouchOutside(false)
 

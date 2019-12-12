@@ -26,7 +26,7 @@ import com.irware.remote.ui.buttons.RemoteButton
 import org.json.JSONException
 import org.json.JSONObject
 
-class RemoteDialog(context: Context,private val properties:RemoteProperties, private val mode:Int) : Dialog(context,when(context.getSharedPreferences("theme_setting", Context.MODE_PRIVATE).getInt("application_theme",0)){1->R.style.LightTheme;2->R.style.DarkTheme;else->R.style.AppTheme}),OnSelectedListener,
+class RemoteDialog(context: Context,private val properties:RemoteProperties, private val mode:Int) : Dialog(context,R.style.AppTheme),OnSelectedListener,
     View.OnDragListener {
 
     private var lv:ListView? = null

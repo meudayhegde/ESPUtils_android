@@ -10,6 +10,7 @@ import android.graphics.Color
 import android.graphics.Point
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.text.TextUtils
@@ -22,6 +23,7 @@ import android.view.animation.AnimationUtils
 import android.widget.*
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.navigation.NavigationView
@@ -49,7 +51,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     var homeFragment:HomeFragment? = null
     private var aboutFragment: AboutFragment? = null
-    private var ipList:ArrayList<String> = ArrayList<String>()
+    private var ipList:ArrayList<String> = ArrayList()
     private var ipConf : File? = null
     private var authenticated=false
     private var connected = false
@@ -63,9 +65,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     @SuppressLint("InflateParams")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        when(getSharedPreferences("theme_setting", Context.MODE_PRIVATE).getInt("application_theme",0)){1->setTheme(R.style.LightTheme_NoActionBar);2->setTheme(R.style.DarkTheme_NoActionBar);else->setTheme(R.style.AppTheme_NoActionBar)}
-
+        when(getSharedPreferences("theme_setting", Context.MODE_PRIVATE).getInt("application_theme",if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) { 0 }else{ 2 }))
+        {1-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);2-> AppCompatDelegate.setDefaultNightMode(
+            AppCompatDelegate.MODE_NIGHT_YES)}
         remotePropList.clear()
         activity = this
         val arr = resources.obtainTypedArray(R.array.icons)
@@ -88,7 +90,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 },2000)
             }
         }
-
         val value = TypedValue()
 
         theme.resolveAttribute(R.attr.colorOnBackground, value, true)
@@ -291,9 +292,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     fun setNavView(){
         setSupportActionBar(toolbar)
-        val toggle = ActionBarDrawerToggle(
-            this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close
-        )
+        val toggle = ActionBarDrawerToggle(this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawer_layout.addDrawerListener(toggle)
 
         toggle.syncState()
@@ -380,14 +379,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         view.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
             or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
             or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        if(SettingsActivity.themeChanged){
-            SettingsActivity.themeChanged = false
-            recreate()
-        }
     }
 
     fun startConfigChooser(){

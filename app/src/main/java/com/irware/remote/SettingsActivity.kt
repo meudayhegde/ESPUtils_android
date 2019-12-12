@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -14,6 +15,7 @@ import android.view.WindowManager
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
@@ -31,8 +33,8 @@ class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        when(getSharedPreferences("theme_setting", Context.MODE_PRIVATE).getInt("application_theme",0)){1->setTheme(R.style.LightTheme);2->setTheme(R.style.DarkTheme);else->setTheme(R.style.AppTheme)}
-
+        when(getSharedPreferences("theme_setting", Context.MODE_PRIVATE).getInt("application_theme",if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) { 0 }else{ 2 }))
+        {1-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);2-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)}
         setContentView(R.layout.activity_settings)
 
         viewManager = LinearLayoutManager(this)
@@ -265,7 +267,7 @@ class SettingsActivity : AppCompatActivity() {
                         editor.putInt("application_theme",when(content.checkedRadioButtonId){R.id.rb_light_theme->1;R.id.rb_dark_theme->2;else -> 0 })
                         editor.commit()
                         themeChanged = true
-                        recreate()
+                        AppCompatDelegate.setDefaultNightMode(when(content.checkedRadioButtonId){R.id.rb_light_theme->AppCompatDelegate.MODE_NIGHT_NO;R.id.rb_dark_theme->AppCompatDelegate.MODE_NIGHT_YES;else->AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM})
                     }
                     .show()
             }

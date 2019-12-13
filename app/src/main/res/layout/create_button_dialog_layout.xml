@@ -1,98 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_width="match_parent" android:layout_height="wrap_content">
 
-    <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content">
+    <LinearLayout android:orientation="vertical" android:layout_width="match_parent" android:id="@+id/ir_capture_layout"
+            android:layout_height="wrap_content" android:gravity="center" android:visibility="visible">
 
-        <LinearLayout android:orientation="vertical" android:layout_width="match_parent" android:id="@+id/ir_capture_layout"
-                android:layout_height="wrap_content" android:gravity="center" android:visibility="gone">
+        <TextView android:text="@string/ir_capture_unit" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:textColor="?attr/colorOnBackground" android:id="@+id/textView2" android:layout_margin="20dp" android:textSize="18sp"/>
 
-            <TextView android:text="@string/ir_capture_unit" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:textColor="?attr/colorOnBackground" android:id="@+id/textView2" android:layout_margin="20dp" android:textSize="18sp"/>
-
-            <ProgressBar style="?android:attr/progressBarStyle" android:layout_width="70dp" android:layout_height="70dp"
+        <RelativeLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:gravity="center" android:layout_gravity="center">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/time_remaining_text"
+                    android:textSize="40sp" android:layout_centerInParent="true" android:textColor="?attr/colorOnBackground" android:textStyle="bold"/>
+            <ProgressBar style="?android:attr/progressBarStyle" android:layout_width="70sp" android:layout_height="70sp"
                     android:id="@+id/ir_capture_progress"/>
-            <ImageView android:layout_width="60sp" android:layout_height="60sp"
-                    android:id="@+id/ir_capture_error_logo" android:layout_margin="20dp" app:srcCompat="@drawable/ic_error_red"
-                    android:contentDescription="@string/ir_capture_error_logo_description" android:visibility="gone"/>
+        </RelativeLayout>
+        <ImageView android:layout_width="60sp" android:layout_height="60sp"
+                android:id="@+id/ir_capture_error_logo" android:layout_margin="20dp" app:srcCompat="@drawable/ic_error_red"
+                android:contentDescription="@string/ir_capture_error_logo_description" android:visibility="gone"/>
 
-            <TextView android:text="@string/waiting_for_ir_signal" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:textColor="?attr/colorOnBackground" android:id="@+id/ir_capture_status" android:gravity="center" android:layout_margin="10dp"/>
+        <ImageView android:layout_width="60sp" android:layout_height="60sp" android:id="@+id/ir_capture_success_logo"
+                android:layout_margin="20dp" app:srcCompat="@drawable/icon_check_circle" android:tint="@color/success"
+                android:contentDescription="@string/ir_capture_error_logo_description" android:visibility="gone"/>
 
-            <TextView android:text="@string/ir_capture_instruction" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:textColor="?attr/colorOnBackground" android:id="@+id/ir_capture_instruction" android:gravity="center" android:layout_margin="20dp"/>
+        <TextView android:text="@string/waiting_for_ir_signal" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:textColor="?attr/colorOnBackground" android:id="@+id/ir_capture_status" android:gravity="center" android:layout_margin="10dp"/>
 
-        </LinearLayout>
+        <TextView android:text="@string/ir_capture_instruction" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:textColor="?attr/colorOnBackground" android:id="@+id/ir_capture_instruction" android:gravity="center" android:layout_margin="20dp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+            android:id="@+id/button_prop_layout" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:layout_marginBottom="14sp" android:gravity="center_horizontal"
+            android:orientation="vertical" android:visibility="gone">
+
+
+        <TextView
+                android:id="@+id/add_new_button" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:layout_marginTop="14sp"
+                android:layout_marginBottom="14sp" android:gravity="center"
+                android:text="@string/add_new_button" android:textColor="?attr/colorOnBackground"
+                android:textSize="18sp" android:textStyle="bold" />
+
+        <RelativeLayout
+                android:id="@+id/layout_color_picker" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:gravity="center"
+                android:layout_gravity="center" android:layout_marginTop="12sp"
+                android:layout_marginBottom="18sp">
+
+
+            <android.widget.Button
+                    android:id="@+id/remote_model_button" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:gravity="center" android:text="" />
+
+         </RelativeLayout>
+
+        <TextView
+                android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_gravity="center"
+                android:drawableStart="@drawable/icon_info" android:drawableTint="?attr/colorOnBackground"
+                android:layout_margin="14sp" android:paddingStart="10sp" android:gravity="center" android:textColor="?attr/colorOnBackground"
+                android:text="@string/color_picker_help" android:textSize="16sp"
+                tools:targetApi="m" tools:ignore="RtlSymmetry" />
+
+        <TextView
+                android:layout_width="match_parent" android:id="@+id/text_ir_size" android:layout_marginBottom="14sp"
+                android:text="@string/length_of_captured_ir_signal" android:textColor="?attr/colorOnBackground" android:gravity="center"
+                android:layout_marginEnd="14sp" android:layout_marginStart="14sp" android:layout_height="wrap_content"/>
 
         <LinearLayout
-                android:id="@+id/button_prop_layout" android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:layout_alignParentBottom="true"
-                android:layout_marginBottom="14sp" android:gravity="center_horizontal"
-                android:orientation="vertical">
+                style="?android:attr/buttonBarStyle" android:layout_width="match_parent"
+                android:layout_height="match_parent" android:layout_marginTop="12sp"
+                android:gravity="center_horizontal|center_vertical" android:orientation="horizontal">
 
+            <android.widget.Button
+                    android:id="@+id/btn_icon" style="?android:attr/buttonBarStyle"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:layout_marginStart="14sp" android:layout_marginTop="2sp"
+                    android:background="@drawable/round_corner_white_bg" android:text="@string/icon" />
 
-            <TextView
-                    android:id="@+id/add_new_button" android:layout_width="match_parent"
-                    android:layout_height="wrap_content" android:layout_marginTop="14sp"
-                    android:layout_marginBottom="14sp" android:gravity="center"
-                    android:text="@string/add_new_button" android:textColor="?attr/colorOnBackground"
-                    android:textSize="18sp" android:textStyle="bold" />
-
-            <RelativeLayout
-                    android:id="@+id/layout_color_picker" android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:gravity="center"
-                    android:layout_gravity="center" android:layout_marginTop="12sp"
-                    android:layout_marginBottom="18sp">
-
-
-                <android.widget.Button
-                        android:id="@+id/remote_model_button" android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" android:gravity="center" android:text="" />
-
-             </RelativeLayout>
-
-            <TextView
-                    android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_gravity="center"
-                    android:drawableStart="@drawable/icon_info" android:drawableTint="?attr/colorOnBackground"
-                    android:layout_margin="14sp" android:paddingStart="10sp" android:gravity="center" android:textColor="?attr/colorOnBackground"
-                    android:text="@string/color_picker_help" android:textSize="16sp"
-                    tools:targetApi="m" tools:ignore="RtlSymmetry" />
-
-            <TextView
-                    android:layout_width="match_parent" android:id="@+id/text_ir_size" android:layout_marginBottom="14sp"
-                    android:text="@string/length_of_captured_ir_signal" android:textColor="?attr/colorOnBackground" android:gravity="center"
-                    android:layout_marginEnd="14sp" android:layout_marginStart="14sp" android:layout_height="wrap_content"/>
-
-            <LinearLayout
-                    style="?android:attr/buttonBarStyle" android:layout_width="match_parent"
-                    android:layout_height="match_parent" android:layout_marginTop="12sp"
-                    android:gravity="center_horizontal|center_vertical" android:orientation="horizontal">
-
-                <android.widget.Button
-                        android:id="@+id/btn_icon" style="?android:attr/buttonBarStyle"
-                        android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:layout_marginStart="14sp" android:layout_marginTop="2sp"
-                        android:background="@drawable/round_corner_white_bg" android:text="@string/icon" />
-
-                <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/textInputButtonName" style="@style/textFieldLayoutWhiteTheme"
-                        android:layout_marginTop="12sp" android:layout_marginLeft="10dp"
-                        android:layout_marginRight="10dp" android:layout_marginBottom="10dp"
-                        android:textColorHint="@android:color/darker_gray">
-                    <EditText
-                            android:id="@+id/btn_edit_text" style="@style/modifiedEditText"
-                            android:hint="@string/button_text" android:importantForAutofill="no"
-                            android:inputType="text" android:maxLines="1" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-            </LinearLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textInputButtonName" style="@style/textFieldLayoutWhiteTheme"
+                    android:layout_marginTop="12sp" android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp" android:layout_marginBottom="10dp"
+                    android:textColorHint="@android:color/darker_gray">
+                <EditText
+                        android:id="@+id/btn_edit_text" style="@style/modifiedEditText"
+                        android:hint="@string/button_text" android:importantForAutofill="no"
+                        android:inputType="text" android:maxLines="1" />
+            </com.google.android.material.textfield.TextInputLayout>
 
         </LinearLayout>
 
+    </LinearLayout>
 
-    </RelativeLayout>
-
-</ScrollView>
+</RelativeLayout>

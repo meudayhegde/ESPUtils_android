@@ -20,6 +20,7 @@ import com.irware.remote.net.SocketClient
 import com.irware.remote.ui.buttons.RemoteButton
 import com.irware.remote.ui.dialogs.ButtonPropertiesDialog
 import com.irware.remote.ui.dialogs.RemoteDialog
+import kotlinx.android.synthetic.main.create_remote_layout.*
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -36,7 +37,6 @@ class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>,priv
         val layoutParams = LinearLayout.LayoutParams(RemoteButton.BTN_WIDTH+20, LinearLayout.LayoutParams.WRAP_CONTENT)
         container.layoutParams = layoutParams
         container.minimumHeight = RemoteButton.MIN_HEIGHT
-
         val btn = RemoteButton(context)
         if(remoteDialog.mode == RemoteDialog.MODE_EDIT){
             btn.setOnLongClickListener(this)
@@ -44,7 +44,7 @@ class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>,priv
         btn.setOnClickListener{
             when(remoteDialog.mode){
                 RemoteDialog.MODE_EDIT ->{
-                    val dialog = ButtonPropertiesDialog(context, remoteDialog)
+                    val dialog = ButtonPropertiesDialog(context, remoteDialog,ButtonPropertiesDialog.MODE_SINGLE)
                     dialog.show()
                     dialog.onIrRead((it as RemoteButton).getProperties().jsonObj)
                 }
@@ -115,8 +115,8 @@ class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>,priv
             DragEvent.ACTION_DRAG_ENDED ->{
                 (event.localState as View).visibility=View.VISIBLE
                 v.background = null
-                remoteDialog.delView.visibility = View.INVISIBLE
-                remoteDialog.infoTextView.visibility = View.VISIBLE
+                remoteDialog.image_view_delete.visibility = View.INVISIBLE
+                remoteDialog.create_remote_info_layout.visibility = View.VISIBLE
             }
 
             DragEvent.ACTION_DRAG_ENTERED ->{
@@ -145,8 +145,8 @@ class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>,priv
             view?.startDrag(data, shadowBuilder, view, 0)
         }
         view?.visibility = View.INVISIBLE
-        remoteDialog.delView.visibility = View.VISIBLE
-        remoteDialog.infoTextView.visibility = View.INVISIBLE
+        remoteDialog.image_view_delete.visibility = View.VISIBLE
+        remoteDialog.create_remote_info_layout.visibility = View.INVISIBLE
         return true
     }
 }

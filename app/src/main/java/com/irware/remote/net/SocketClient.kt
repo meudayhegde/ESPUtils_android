@@ -28,6 +28,10 @@ object SocketClient{
         fun close(){
             soc.close()
         }
+
+        fun isConnected():Boolean{
+            return soc.isConnected
+        }
     }
 
     fun readIrCode(irlistener:IrCodeListener,jsonObj:JSONObject?) {
@@ -45,33 +49,45 @@ object SocketClient{
 
                 connector.sendLine(
                     "{\"request\":\"ir_capture\",\"username\":\""
-                            + MainActivity.USERNAME + "\",\"password\":\"" + MainActivity.PASSWORD + "\",\"length\":\"0\",\"data\":\"_\"}")
-                val result = JSONObject(connector.readLine())
+                            + MainActivity.USERNAME + "\",\"password\":\"" + MainActivity.PASSWORD + "\",\"capture_mode\":"+irlistener.mode+"}")
+                while(connector.isConnected()) {
+                    val result = JSONObject(connector.readLine())
+                    when (result.getString("response")) {
+                        "success" -> {
+                            if(irlistener.mode == ButtonPropertiesDialog.MODE_SINGLE) connector.close()
+                            result.remove("response")
 
-                connector.close()
-                when (result.getString("response")) {
-                    "success" -> {
-                        result.remove("response")
-
-                        if(jsonObj != null){
-                            jsonObj.put("length",result.getString("length"))
-                            jsonObj.put("irCode",result.getString("irCode"))
-                            irlistener.onIrRead(jsonObj)
-                        }else{
-                            result.put("text","")
-                            result.put("iconType",ButtonPropertiesDialog.btnStyle)
-                            result.put("color",ButtonPropertiesDialog.colorSelected)
-                            result.put("icon",ButtonPropertiesDialog.iconSelected)
-                            result.put("textColor",ButtonPropertiesDialog.colorContentSelected)
-                            irlistener.onIrRead(result)
+                            if (jsonObj != null) {
+                                jsonObj.put("length", result.getString("length"))
+                                jsonObj.put("irCode", result.getString("irCode"))
+                                irlistener.onIrRead(jsonObj)
+                            } else {
+                                if(irlistener.mode == ButtonPropertiesDialog.MODE_SINGLE) result.put("text", "")
+                                else{
+                                    result.put("text",ButtonPropertiesDialog.textInt)
+                                    ButtonPropertiesDialog.textInt++
+                                }
+                                result.put("iconType", ButtonPropertiesDialog.btnStyle)
+                                result.put("color", ButtonPropertiesDialog.colorSelected)
+                                result.put("icon", ButtonPropertiesDialog.iconSelected)
+                                result.put("textColor", ButtonPropertiesDialog.colorContentSelected)
+                                irlistener.onIrRead(result)
+                            }
                         }
+                        "timeout" -> irlistener.onTimeout()
+                        "progress" -> {
+                            MainActivity.activity?.runOnUiThread {
+                                irlistener.onProgress(result.getInt("value"))
+                            }
+                        }
+                        else -> irlistener.onDeny(MainActivity.activity?.getString(R.string.auth_failed_login_again))
                     }
-                    "timeout" -> irlistener.onTimeout()
-                    else -> irlistener.onDeny(MainActivity.activity?.getString(R.string.auth_failed_login_again))
                 }
             }catch(ex:IOException){
                 if(!canceled)
                     irlistener.onDeny(ex.toString())
+            }catch(ex:IllegalStateException){
+                 irlistener.onTimeout()
             }
         }.start()
     }
@@ -102,10 +118,11 @@ object SocketClient{
 
 interface IrCodeListener{
     var parentDialog:androidx.appcompat.app.AlertDialog?
+    var mode:Int
     fun onIrRead(jsonObj:JSONObject)
     fun onTimeout()
     fun onDeny(err_info:String?)
-
+    fun onProgress(value:Int)
 }
 
 interface IrSendListener{

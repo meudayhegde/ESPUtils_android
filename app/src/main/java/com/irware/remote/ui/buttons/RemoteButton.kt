@@ -35,7 +35,6 @@ class RemoteButton : Button {
         visibility = View.VISIBLE
         setTextColor(Color.WHITE)
         setButtonProperties(properties)
-
         properties.setOnModificationListener(object:OnModificationListener{
             override fun onTextColorChanged() {
                 setTextColor(properties.textColor)

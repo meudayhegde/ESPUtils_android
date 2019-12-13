@@ -9,8 +9,9 @@
     <color name="blue_fab_normal">#0096FF</color>
     <color name="blue_fab_ripple">#01D3FF</color>
     <color name="transparent" >#00ffffff</color>
-    <color name="color_white">#ffffff</color>
+    <color name="color_white">#fff</color>
     <color name="error">#f00</color>
+    <color name="success" >#0c0</color>
     <!--colors for modern ui-->
     <color name="whiteTextColor">#fff</color>
     <color name="primaryTextColor">#00a5ff</color>

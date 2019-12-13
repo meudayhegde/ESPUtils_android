@@ -27,13 +27,47 @@
             android:divider="@null"
             android:paddingTop="14sp"/>
 
-    <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/fab_new_button" android:layout_width="wrap_content"
-            android:layout_height="wrap_content" fab:fab_label="New Button"
-            android:layout_alignParentBottom="true" android:layout_alignParentEnd="true"
-            fab:fab_size="normal" fab:fab_colorNormal="@color/color_fab"
-            fab:fab_colorPressed="@color/color_fab_ripple" fab:fab_colorRipple="@color/color_fab_ripple"
-            android:src="@drawable/fab_add" android:layout_marginEnd="20dp" android:layout_marginBottom="20dp"/>
+
+    <com.github.clans.fab.FloatingActionMenu
+            android:id="@+id/fam_manage_button_actions"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:paddingEnd="30sp"
+            android:paddingStart="30sp"
+            android:paddingBottom="30dp"
+            fab:menu_labels_showAnimation="@anim/fab_slide_in_from_right"
+            fab:menu_labels_hideAnimation="@anim/fab_slide_out_to_right"
+            fab:menu_shadowColor="#444"
+            fab:menu_backgroundColor="#44000000"
+            fab:menu_buttonSpacing="5dp"
+            fab:menu_fab_label="Actions "
+            fab:menu_colorNormal="?attr/colorPrimary"
+            fab:menu_colorPressed="?attr/colorAccent"
+            fab:menu_colorRipple="?attr/colorAccent">
+
+        <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/fab_new_button" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" fab:fab_label="New Button"
+                fab:fab_size="mini" fab:fab_colorNormal="@color/color_fab"
+                fab:fab_colorPressed="?attr/colorPrimaryDark" fab:fab_colorRipple="?attr/colorPrimaryDark"
+                android:src="@drawable/ic_import_single" android:layout_marginEnd="20dp" android:layout_marginBottom="20dp"
+                tools:ignore="VectorDrawableCompat" />
+
+        <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/fab_multi_capture"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                fab:fab_label="Multi Capture"
+                fab:fab_size="mini"
+                fab:fab_colorNormal="?attr/colorPrimary"
+                fab:fab_colorPressed="?attr/colorPrimaryDark"
+                fab:fab_colorRipple="?attr/colorPrimaryDark"
+                android:src="@drawable/ic_multi_capture"
+                tools:ignore="VectorDrawableCompat" />
+
+    </com.github.clans.fab.FloatingActionMenu>
 
     <LinearLayout
             android:id="@+id/layout_del_button"

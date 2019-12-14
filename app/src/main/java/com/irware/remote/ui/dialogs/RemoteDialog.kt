@@ -5,7 +5,6 @@ import android.content.Context
 import android.graphics.Color
 import android.view.DragEvent
 import android.view.View
-import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.core.graphics.drawable.DrawableCompat
@@ -33,37 +32,6 @@ class RemoteDialog(context: Context,private val properties:RemoteProperties, val
             findViewById<TextView>(R.id.create_remote_info_layout).visibility = View.GONE
         }
 
-        layout_del_button.setOnDragListener { _, event ->
-            when (event.action) {
-                DragEvent.ACTION_DROP -> {
-                    val view = event.localState as RemoteButton
-                    val owner = view.parent as ViewGroup
-                    AlertDialog.Builder(context)
-                        .setTitle("Confirm")
-                        .setMessage("This action can't be undone.\nAre you sure you want to delete this button?")
-                        .setNegativeButton("cancel") { dialog, _ -> dialog.dismiss()}
-                        .setPositiveButton("delete"){ dialog, _ ->
-                            properties.removeButton(view.getProperties().jsonObj)
-                            owner.removeView(view)
-                            dialog.dismiss()
-                        }
-                        .show()
-                }
-                DragEvent.ACTION_DRAG_ENDED ->{
-                    image_view_delete.visibility = View.INVISIBLE
-                    create_remote_info_layout.visibility = View.VISIBLE
-                    DrawableCompat.setTint(image_view_delete.drawable,MainActivity.colorOnBackground)
-                }
-                DragEvent.ACTION_DRAG_ENTERED ->{
-                    DrawableCompat.setTint(image_view_delete.drawable,Color.RED)
-                }
-                DragEvent.ACTION_DRAG_EXITED -> {
-                    DrawableCompat.setTint(image_view_delete.drawable, MainActivity.colorOnBackground)
-                }
-            }
-            true
-        }
-
         var length = MainActivity.NUM_COLUMNS*MainActivity.size.y/(RemoteButton.MIN_HEIGHT+12)
         for(i in 0 until length){
             arrayList.add(null)
@@ -86,6 +54,38 @@ class RemoteDialog(context: Context,private val properties:RemoteProperties, val
         }
 
         adapter = ButtonsGridAdapter(arrayList,this)
+
+        layout_del_button.setOnDragListener { _, event ->
+            when (event.action) {
+                DragEvent.ACTION_DROP -> {
+                    val view = event.localState as RemoteButton
+                    AlertDialog.Builder(context)
+                        .setTitle("Confirm")
+                        .setMessage("This action can't be undone.\nAre you sure you want to delete this button?")
+                        .setNegativeButton("cancel") { dialog, _ -> dialog.dismiss()}
+                        .setPositiveButton("delete"){ dialog, _ ->
+                            properties.removeButton(view.getProperties().jsonObj)
+                            arrayList[view.getProperties().btnPosition] = null
+                            adapter.notifyDataSetChanged()
+                            dialog.dismiss()
+                        }
+                        .show()
+                }
+                DragEvent.ACTION_DRAG_ENDED ->{
+                    image_view_delete.visibility = View.INVISIBLE
+                    create_remote_info_layout.visibility = View.VISIBLE
+                    DrawableCompat.setTint(image_view_delete.drawable,MainActivity.colorOnBackground)
+                }
+                DragEvent.ACTION_DRAG_ENTERED ->{
+                    DrawableCompat.setTint(image_view_delete.drawable,Color.RED)
+                }
+                DragEvent.ACTION_DRAG_EXITED -> {
+                    DrawableCompat.setTint(image_view_delete.drawable, MainActivity.colorOnBackground)
+                }
+            }
+            true
+        }
+
         buttons_layout_recycler_view.layoutManager = GridLayoutManager(context,MainActivity.NUM_COLUMNS)
         buttons_layout_recycler_view.adapter = adapter
 

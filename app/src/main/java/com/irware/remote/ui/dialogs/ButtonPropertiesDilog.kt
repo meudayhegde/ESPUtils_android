@@ -103,6 +103,7 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
         time_remaining_text.text = ""
         button_prop_layout.visibility=View.GONE
         ir_capture_layout.visibility =View.VISIBLE
+        ir_capture_success_logo.visibility = View.GONE
         buttonPositive.visibility=View.GONE
         buttonNeutral.visibility = View.GONE
 
@@ -112,9 +113,7 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
         ir_capture_status.text = context.getString(R.string.waiting_for_ir_signal)
         ir_capture_instruction.visibility = View.VISIBLE
         if(mode == MODE_MULTI)
-            ir_capture_instruction.text =
-                "${ir_capture_instruction.text}\nKeep clicking buttons to capture more buttons."
-
+            ir_capture_instruction.text = "${context.getString(R.string.ir_capture_instruction)}\n${context.getString(R.string.multi_capture_hint)}"
         SocketClient.readIrCode(this,jsonObj)
     }
 
@@ -152,7 +151,7 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
             if(mode == MODE_MULTI && capturedCount>0){
                 ir_capture_error_logo.visibility = View.GONE
                 ir_capture_success_logo.visibility = View.VISIBLE
-                ir_capture_status.text = "Successfully Captured $capturedCount Buttons.\nRetry to capture more Buttons"
+                ir_capture_status.text = context.getString(R.string.multi_capture_count).replace("#n",capturedCount.toString())
             }
         }
     }

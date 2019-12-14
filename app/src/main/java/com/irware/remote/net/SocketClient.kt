@@ -30,7 +30,7 @@ object SocketClient{
         }
 
         fun isConnected():Boolean{
-            return soc.isConnected
+            return !soc.isClosed
         }
     }
 
@@ -54,7 +54,6 @@ object SocketClient{
                     val result = JSONObject(connector.readLine())
                     when (result.getString("response")) {
                         "success" -> {
-                            if(irlistener.mode == ButtonPropertiesDialog.MODE_SINGLE) connector.close()
                             result.remove("response")
 
                             if (jsonObj != null) {
@@ -87,7 +86,7 @@ object SocketClient{
                 if(!canceled)
                     irlistener.onDeny(ex.toString())
             }catch(ex:IllegalStateException){
-                 irlistener.onTimeout()
+                 //irlistener.onTimeout()
             }
         }.start()
     }

@@ -4,11 +4,12 @@
         android:layout_height="wrap_content"
         android:layout_width="wrap_content">
 
-    <com.irware.remote.ui.buttons.CheckableImageView
+    <ImageView
             android:layout_width="50sp"
             android:layout_height="50sp"
             android:layout_margin="12sp"
             android:id="@+id/btn_icon_grid"
             android:background="@drawable/checkable_bg"
-            app:srcCompat="@drawable/icon_alert" />
+            app:srcCompat="@drawable/icon_alert"
+            android:contentDescription="@string/icons_for_remote_controller_buttons" />
 </LinearLayout>

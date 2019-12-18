@@ -3,12 +3,13 @@ package com.irware.remote.ui.dialogs
 import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
+import android.os.Handler
 import android.view.DragEvent
 import android.view.View
-import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.GridLayoutManager
+import com.github.clans.fab.FloatingActionButton
 import com.irware.remote.MainActivity
 import com.irware.remote.R
 import com.irware.remote.holders.ButtonProperties
@@ -26,31 +27,21 @@ class RemoteDialog(context: Context,private val properties:RemoteProperties, val
     init {
         window?.attributes?.windowAnimations = R.style.DialogAnimationTheme
         setContentView(R.layout.create_remote_layout)
-
         if(mode == MODE_VIEW_ONLY) {
             fam_manage_button_actions.visibility = View.GONE
-            findViewById<TextView>(R.id.create_remote_info_layout).visibility = View.GONE
+            create_remote_info_layout.visibility = View.GONE
         }
-
         var length = MainActivity.NUM_COLUMNS*MainActivity.size.y/(RemoteButton.MIN_HEIGHT+12)
-        for(i in 0 until length){
-            arrayList.add(null)
-        }
-
+        arrayList.addAll(arrayOfNulls(length))
         val buttons = properties.getButtons()
-
-        if(buttons.length() > 0){
-            for(i in 0 until buttons.length()){
-                val obj = buttons.getJSONObject(i)
-                val btnProp = ButtonProperties(obj,properties)
-                if(length<btnProp.btnPosition) {
-                    for(j in length until btnProp.btnPosition){
-                        arrayList.add(null)
-                    }
-                    length = btnProp.btnPosition
-                }
-                arrayList[btnProp.btnPosition] = btnProp
+        for(i in 0 until buttons.length()){
+            val obj = buttons.getJSONObject(i)
+            val btnProp = ButtonProperties(obj,properties)
+            if(length<btnProp.btnPosition) {
+                arrayList.addAll(arrayOfNulls(btnProp.btnPosition-length))
+                length = btnProp.btnPosition
             }
+            arrayList[btnProp.btnPosition] = btnProp
         }
 
         adapter = ButtonsGridAdapter(arrayList,this)
@@ -90,16 +81,23 @@ class RemoteDialog(context: Context,private val properties:RemoteProperties, val
         buttons_layout_recycler_view.adapter = adapter
 
         if(mode == MODE_EDIT) {
-            fab_new_button.setOnClickListener {
-                val dialog = ButtonPropertiesDialog(context, this,ButtonPropertiesDialog.MODE_SINGLE)
-                dialog.show()
-                dialog.captureInit(null)
-            }
-            fab_multi_capture.setOnClickListener {
-                val dialog = ButtonPropertiesDialog(context, this,ButtonPropertiesDialog.MODE_MULTI)
-                dialog.show()
-                dialog.captureInit(null)
-            }
+            fam_manage_button_actions.hideMenuButton(false)
+            Handler().postDelayed({
+                fam_manage_button_actions.showMenuButton(true)
+                Handler().postDelayed({fam_manage_button_actions.open(true)},800)
+            },800)
+            fam_manage_button_actions.setClosedOnTouchOutside(true)
+            setOnFabClickListener(fab_new_button,ButtonPropertiesDialog.MODE_SINGLE)
+            setOnFabClickListener(fab_multi_capture,ButtonPropertiesDialog.MODE_MULTI)
+        }
+    }
+
+    private fun setOnFabClickListener(fab:FloatingActionButton,mode:Int){
+        fab.setOnClickListener {
+            val dialog = ButtonPropertiesDialog(context, this,mode)
+            dialog.show()
+            dialog.captureInit(null)
+            fam_manage_button_actions.close(true)
         }
     }
 

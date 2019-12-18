@@ -5,21 +5,31 @@
 
     <group android:checkableBehavior="single">
         <item
-                android:id="@+id/home_drawer"
-                android:icon="@drawable/ic_home_drawer"
-                android:title="@string/home"/>
+            android:id="@+id/home_drawer"
+            android:icon="@drawable/ic_home_drawer"
+            android:title="@string/home"/>
         <item
-                android:id="@+id/info_drawer"
-                android:icon="@drawable/ic_info_drawer"
-                android:title="@string/about"/>
+            android:id="@+id/info_drawer"
+            android:icon="@drawable/ic_info_drawer"
+            android:title="@string/about"/>
     </group>
+
+    <item
+        android:id="@+id/nav_action_settings"
+        android:title="@string/action_settings"
+        android:icon="@drawable/ic_settings"/>
+
 
     <item android:title="@string/communicate">
         <menu>
             <item
-                    android:id="@+id/share_drawer"
-                    android:icon="@drawable/ic_menu_share"
-                    android:title="@string/share"/>
+                android:id="@+id/share_drawer"
+                android:icon="@drawable/ic_menu_share"
+                android:title="@string/share"/>
+            <item
+                android:id="@+id/nav_rate"
+                android:icon="@drawable/ic_star"
+                android:title="@string/rate"/>
         </menu>
     </item>
 

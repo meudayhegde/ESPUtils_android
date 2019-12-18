@@ -163,7 +163,6 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
             ir_capture_progress.visibility = View.GONE
             ir_capture_error_logo.visibility = View.VISIBLE
             ir_capture_instruction.visibility = View.GONE
-
             ir_capture_status.text = err_info
 
             buttonNegative.text = context.getString(R.string.exit)

@@ -8,6 +8,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +23,7 @@ import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.clans.fab.FloatingActionButton
+import com.github.clans.fab.FloatingActionMenu
 import com.google.android.material.textfield.TextInputEditText
 import com.irware.remote.MainActivity
 import com.irware.remote.R
@@ -42,7 +44,6 @@ class HomeFragment : androidx.fragment.app.Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         if(rootView == null){
             rootView = inflater.inflate(R.layout.fragment_manage_remote, container, false) as RelativeLayout
-
             viewManager = LinearLayoutManager(context)
             viewAdapter = RemoteListAdapter(MainActivity.remotePropList)
             recyclerView = rootView!!.findViewById<RecyclerView>(R.id.manage_remotes_recycler_view).apply {
@@ -50,9 +51,10 @@ class HomeFragment : androidx.fragment.app.Fragment() {
                 layoutManager = viewManager
                 adapter = viewAdapter
             }
-
+            rootView!!.findViewById<FloatingActionMenu>(R.id.fam_manage_remotes).setClosedOnTouchOutside(true)
             rootView!!.findViewById<FloatingActionButton>(R.id.fab_import_remote).setOnClickListener {
                 MainActivity.activity?.startConfigChooser()
+                rootView!!.findViewById<FloatingActionMenu>(R.id.fam_manage_remotes).close(true)
             }
 
             rootView!!.findViewById<FloatingActionButton>(R.id.fab_new_remote).setOnClickListener {
@@ -95,15 +97,15 @@ class HomeFragment : androidx.fragment.app.Fragment() {
                     RemoteDialog(context!!, remoteProperties,RemoteDialog.MODE_EDIT).show()
                     dialog.dismiss()
                 }
-                val lWindowParams = WindowManager.LayoutParams()
-                lWindowParams.copyFrom(dialog.window?.attributes)
-                lWindowParams.width = MainActivity.size.x - MainActivity.size.x/8
-                lWindowParams.height = WindowManager.LayoutParams.WRAP_CONTENT
                 dialog.show()
-                dialog.window?.attributes = lWindowParams
+                dialog.window?.attributes = MainActivity.dialogParams
                 dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                rootView!!.findViewById<FloatingActionMenu>(R.id.fam_manage_remotes).close(true)
             }
         }
+        if(!rootView!!.findViewById<FloatingActionMenu>(R.id.fam_manage_remotes).isOpened)
+            rootView!!.findViewById<FloatingActionMenu>(R.id.fam_manage_remotes).hideMenuButton(false)
+        Handler().postDelayed({if(rootView!!.findViewById<FloatingActionMenu>(R.id.fam_manage_remotes).isMenuButtonHidden)rootView!!.findViewById<FloatingActionMenu>(R.id.fam_manage_remotes).showMenuButton(true)},400)
         return rootView
     }
 
@@ -231,13 +233,13 @@ class RemoteListAdapter(private val propList: ArrayList<RemoteProperties>) : Rec
                     .show()
             }
 
-            val lWindowParams = WindowManager.LayoutParams()
-            lWindowParams.copyFrom(dialog.window?.attributes)
-            lWindowParams.width = MainActivity.size.x - MainActivity.size.x/8
-            lWindowParams.height = WindowManager.LayoutParams.WRAP_CONTENT
             dialog.show()
-            dialog.window?.attributes = lWindowParams
+            MainActivity.dialogParams.copyFrom(dialog.window!!.attributes)
+            MainActivity.dialogParams.width = MainActivity.size.x - MainActivity.size.x/8
+            MainActivity.dialogParams.height = WindowManager.LayoutParams.WRAP_CONTENT
 
+            dialog.window?.attributes = MainActivity.dialogParams
+            dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             true
         }
 

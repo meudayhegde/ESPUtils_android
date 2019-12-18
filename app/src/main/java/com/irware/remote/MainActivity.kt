@@ -1,7 +1,9 @@
 package com.irware.remote
 
 import android.annotation.SuppressLint
+import android.annotation.TargetApi
 import android.app.Dialog
+import android.app.assist.AssistContent
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
@@ -19,6 +21,7 @@ import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.WindowManager
 import android.view.animation.AnimationUtils
 import android.widget.*
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -349,6 +352,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.share_drawer -> {
 
             }
+            R.id.nav_action_settings -> {
+                val intent = Intent(this,SettingsActivity :: class.java )
+                startActivity(intent)
+            }
+            R.id.nav_rate -> {
+
+            }
         }
 
         drawer_layout.closeDrawer(GravityCompat.START)
@@ -384,6 +394,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 Toast.LENGTH_SHORT
             ).show()
         }
+
+
     }
 
     override fun onActivityResult(requestCode:Int, resultCode:Int, data:Intent?) {
@@ -409,8 +421,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         super.onActivityResult(requestCode, resultCode, data)
     }
 
+    @TargetApi(Build.VERSION_CODES.M)
+    override fun onProvideAssistContent(outContent: AssistContent?) {
+        outContent?.structuredData = JSONObject().put("@type","SmartHome").put("@id","https://example.com/lights/on").put("name","Lights On").toString()
+        super.onProvideAssistContent(outContent)
+    }
+
     companion object {
         val size:Point=Point()
+        val dialogParams = WindowManager.LayoutParams()
         const val PORT=48321
         const val CONFIG_DIR = "remotes"
         const val FILE_SELECT_CODE = 0

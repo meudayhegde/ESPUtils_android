@@ -78,4 +78,5 @@
     <string name="icons_for_remote_controller_buttons">icons for remote controller buttons</string>
     <string name="multi_capture_count">Successfully Captured #n Buttons.\nRetry to capture more Buttons</string>
     <string name="multi_capture_hint">Keep clicking buttons to capture more buttons.</string>
+    <string name="rate">Rate</string>
 </resources>

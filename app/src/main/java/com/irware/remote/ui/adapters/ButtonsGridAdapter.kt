@@ -103,17 +103,22 @@ class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>,priv
 
             DragEvent.ACTION_DROP -> {
                 val orig = event.localState as RemoteButton
-                val prop = orig.getProperties()
-                if(arrayList[v.position] == null) {
-                    arrayList[v.position] = prop
-                    arrayList[prop.btnPosition] = null
-                    prop.btnPosition = v.position
-                    notifyDataSetChanged()
+                v.post {
+                    val prop = orig.getProperties()
+                    if(arrayList[v.position] == null) {
+                        arrayList[v.position] = prop
+                        arrayList[prop.btnPosition] = null
+                        prop.btnPosition = v.position
+                        notifyDataSetChanged()
+                    }
                 }
             }
 
             DragEvent.ACTION_DRAG_ENDED ->{
-                (event.localState as View).visibility=View.VISIBLE
+                val view = event.localState as View
+                v.post{
+                    view.visibility=View.VISIBLE
+                }
                 v.background = null
                 remoteDialog.image_view_delete.visibility = View.INVISIBLE
                 remoteDialog.create_remote_info_layout.visibility = View.VISIBLE

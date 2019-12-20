@@ -73,23 +73,24 @@
             <Button
                     android:id="@+id/_edit_buttons"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_toEndOf="@id/delete_remote"
-                    android:layout_alignParentEnd="true"
                     android:layout_marginEnd="14sp"
+                    android:layout_marginStart="14sp"
                     android:text="@string/edit_buttons"
                     app:icon="@drawable/icon_edit" />
+
             <Button
                     android:id="@+id/delete_remote"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="14sp"
                     android:layout_marginEnd="14sp"
                     android:text="@string/delete_remote"
                     app:icon="@drawable/icon_delete"
-                    android:layout_alignParentStart="true"/>
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@id/_edit_buttons"/>
 
             <Button
                     android:id="@+id/cancel"
@@ -97,11 +98,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="14sp"
-                    android:layout_marginEnd="14sp"
                     android:text="@string/cancel"
                     app:icon="@drawable/icon_cancel"
-                    android:layout_alignParentStart="true"
-                    android:layout_below="@id/delete_remote"/>
+                    android:layout_below="@id/delete_remote"
+                    android:layout_alignParentStart="true"/>
 
             <Button
                     android:id="@+id/button_done"
@@ -114,8 +114,7 @@
                     android:text="@string/done"
                     app:icon="@drawable/icon_done"
                     android:layout_alignParentEnd="true"
-                    android:layout_below="@id/_edit_buttons"/>
+                    android:layout_below="@id/delete_remote"/>
         </RelativeLayout>
     </LinearLayout>
-
 </ScrollView>

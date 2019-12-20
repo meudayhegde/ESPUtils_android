@@ -1,8 +1,6 @@
 package com.irware.remote.holders
 
 import android.text.TextUtils
-import android.widget.Toast
-import com.irware.remote.MainActivity
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -30,7 +28,6 @@ class RemoteProperties(private val remoteConfig: File, private val eventListener
     var remoteName: String = jsonObj.optString("name")
         set(value){
             field = value
-            Toast.makeText(MainActivity.activity!!,value,Toast.LENGTH_LONG).show()
             jsonObj.put("name",value)
             update()
         }

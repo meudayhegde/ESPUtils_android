@@ -25,6 +25,7 @@ import com.madrapps.pikolo.RGBColorPicker
 import com.madrapps.pikolo.listeners.SimpleColorSelectionListener
 import kotlinx.android.synthetic.main.create_button_dialog_layout.*
 import org.json.JSONObject
+import kotlin.math.min
 import kotlin.math.roundToInt
 
 
@@ -57,7 +58,7 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
         val colorPickerLayout = findViewById<RelativeLayout>(R.id.layout_color_picker)!!
 
         window?.setBackgroundDrawableResource(R.drawable.layout_border_round_corner)
-        window?.setLayout((MainActivity.size.x*0.86).toInt(),WindowManager.LayoutParams.WRAP_CONTENT)
+        window?.setLayout((min(MainActivity.size.x,MainActivity.size.y)*0.86).toInt(),WindowManager.LayoutParams.WRAP_CONTENT)
 
         colorDrawable.cornerRadius = 100F
         colorDrawable.shape = GradientDrawable.RECTANGLE
@@ -67,14 +68,14 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
         colorPicker = HSLColorPicker(context)
         colorPickerLayout.addView(colorPicker)
 
-        val layoutParam = RelativeLayout.LayoutParams((MainActivity.size.x*0.8F).roundToInt(),(MainActivity.size.x*0.8F).roundToInt())
+        val layoutParam = RelativeLayout.LayoutParams((min(MainActivity.size.x,MainActivity.size.y)*0.8F).roundToInt(),(min(MainActivity.size.x,MainActivity.size.y)*0.8F).roundToInt())
         layoutParam.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE)
         colorPicker.layoutParams = layoutParam
 
         clrPkr = RGBColorPicker(context)
         colorPickerLayout.addView(clrPkr)
 
-        val lparam = RelativeLayout.LayoutParams((MainActivity.size.x*0.55F).roundToInt(),(MainActivity.size.x*0.55F).roundToInt())
+        val lparam = RelativeLayout.LayoutParams((min(MainActivity.size.x,MainActivity.size.y)*0.55F).roundToInt(),(min(MainActivity.size.x,MainActivity.size.y)*0.55F).roundToInt())
         lparam.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE)
         clrPkr.layoutParams = lparam
 

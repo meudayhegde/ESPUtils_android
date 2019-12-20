@@ -38,7 +38,7 @@ class RemoteDialog(context: Context,private val properties:RemoteProperties, val
             val obj = buttons.getJSONObject(i)
             val btnProp = ButtonProperties(obj,properties)
             if(length<btnProp.btnPosition) {
-                arrayList.addAll(arrayOfNulls(btnProp.btnPosition-length))
+                arrayList.addAll(arrayOfNulls(btnProp.btnPosition-length+1))
                 length = btnProp.btnPosition
             }
             arrayList[btnProp.btnPosition] = btnProp
@@ -47,9 +47,9 @@ class RemoteDialog(context: Context,private val properties:RemoteProperties, val
         adapter = ButtonsGridAdapter(arrayList,this)
 
         layout_del_button.setOnDragListener { _, event ->
-            when (event.action) {
+            val view = event.localState as RemoteButton
+            when (event?.action) {
                 DragEvent.ACTION_DROP -> {
-                    val view = event.localState as RemoteButton
                     AlertDialog.Builder(context)
                         .setTitle("Confirm")
                         .setMessage("This action can't be undone.\nAre you sure you want to delete this button?")
@@ -64,8 +64,8 @@ class RemoteDialog(context: Context,private val properties:RemoteProperties, val
                 }
                 DragEvent.ACTION_DRAG_ENDED ->{
                     image_view_delete.visibility = View.INVISIBLE
-                    create_remote_info_layout.visibility = View.VISIBLE
                     DrawableCompat.setTint(image_view_delete.drawable,MainActivity.colorOnBackground)
+                    create_remote_info_layout.visibility = View.VISIBLE
                 }
                 DragEvent.ACTION_DRAG_ENTERED ->{
                     DrawableCompat.setTint(image_view_delete.drawable,Color.RED)
@@ -84,7 +84,6 @@ class RemoteDialog(context: Context,private val properties:RemoteProperties, val
             fam_manage_button_actions.hideMenuButton(false)
             Handler().postDelayed({
                 fam_manage_button_actions.showMenuButton(true)
-                Handler().postDelayed({fam_manage_button_actions.open(true)},800)
             },800)
             fam_manage_button_actions.setClosedOnTouchOutside(true)
             setOnFabClickListener(fab_new_button,ButtonPropertiesDialog.MODE_SINGLE)

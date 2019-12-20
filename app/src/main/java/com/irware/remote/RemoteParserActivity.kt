@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
@@ -221,6 +222,19 @@ class RemoteParserActivity : AppCompatActivity() {
         } else {
             null
         }
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        val lWindowParams = WindowManager.LayoutParams()
+        lWindowParams.copyFrom(window?.attributes)
+        lWindowParams.width = WindowManager.LayoutParams.MATCH_PARENT
+        lWindowParams.height = WindowManager.LayoutParams.WRAP_CONTENT
+        window?.attributes = lWindowParams
+
+        windowManager.defaultDisplay.getSize(MainActivity.size)
+        lWindowParams.width = MainActivity.size.x - MainActivity.size.x/8
+        window?.attributes = lWindowParams
     }
 
     private fun onIntentRead(ins:InputStream?):JSONObject{

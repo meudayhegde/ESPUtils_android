@@ -22,6 +22,7 @@
                 android:background="@color/transparent"
                 app:srcCompat="@drawable/icon_power"
                 android:layout_alignParentEnd="true"
+                android:layout_marginTop="14sp"
                 android:contentDescription="@string/restart_app_from_splash_screen" />
 
     </RelativeLayout>

@@ -31,6 +31,7 @@ import com.irware.remote.holders.RemoteProperties
 import com.irware.remote.ui.dialogs.RemoteDialog
 import java.io.File
 import java.io.OutputStreamWriter
+import kotlin.math.min
 
 
 class HomeFragment : androidx.fragment.app.Fragment() {
@@ -98,7 +99,8 @@ class HomeFragment : androidx.fragment.app.Fragment() {
                     dialog.dismiss()
                 }
                 dialog.show()
-                dialog.window?.attributes = MainActivity.dialogParams
+                val width = min(MainActivity.size.x,MainActivity.size.y)
+                dialog.window?.setLayout(width - width/8,WindowManager.LayoutParams.WRAP_CONTENT)
                 dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
                 rootView!!.findViewById<FloatingActionMenu>(R.id.fam_manage_remotes).close(true)
             }
@@ -234,11 +236,10 @@ class RemoteListAdapter(private val propList: ArrayList<RemoteProperties>) : Rec
             }
 
             dialog.show()
-            MainActivity.dialogParams.copyFrom(dialog.window!!.attributes)
-            MainActivity.dialogParams.width = MainActivity.size.x - MainActivity.size.x/8
-            MainActivity.dialogParams.height = WindowManager.LayoutParams.WRAP_CONTENT
 
-            dialog.window?.attributes = MainActivity.dialogParams
+            val width = min(MainActivity.size.x,MainActivity.size.y)
+            dialog.window?.setLayout(width - width/8,WindowManager.LayoutParams.WRAP_CONTENT)
+
             dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             true
         }

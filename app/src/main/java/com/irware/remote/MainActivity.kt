@@ -1,12 +1,11 @@
 package com.irware.remote
 
 import android.annotation.SuppressLint
-import android.annotation.TargetApi
 import android.app.Dialog
-import android.app.assist.AssistContent
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Point
@@ -21,7 +20,7 @@ import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.WindowManager
+import android.view.ViewTreeObserver
 import android.view.animation.AnimationUtils
 import android.widget.*
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -44,6 +43,7 @@ import kotlinx.android.synthetic.main.app_bar_main.*
 import org.json.JSONObject
 import java.io.*
 import java.net.InetAddress
+import kotlin.math.min
 import kotlin.math.roundToInt
 
 
@@ -58,10 +58,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var ipConf : File
     private var authenticated=false
     private var connected = false
+    private val onConfigChangeListeners:ArrayList<OnConfigurationChangeListener> = ArrayList()
 
     @SuppressLint("InflateParams")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         when(getSharedPreferences("theme_setting", Context.MODE_PRIVATE).getInt("application_theme",if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) { 0 }else{ 2 }))
         {1-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);2-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)}
         remotePropList.clear()
@@ -71,7 +73,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         for(i in 0 until arr.length())
             iconDrawableList[i] = arr.getResourceId(i,0)
         arr.recycle()
-        NUM_COLUMNS = when{ size.x<920->3;else->5}
         configPath = filesDir.absolutePath + File.separator + CONFIG_DIR
         ipConf = File(filesDir.absolutePath+File.separator+"iplist.conf")
         if(!ipConf.exists())ipConf.createNewFile()
@@ -106,16 +107,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val file = File(filesDir.absolutePath+File.separator+ CONFIG_DIR)
         if(!file.exists()) file.mkdir()
 
-
-        val logo=splash.findViewById<ImageView>(R.id.splash_logo)
         val lparams = RelativeLayout.LayoutParams((min(size.x,size.y)*0.6F).roundToInt(),(min(size.x,size.y)*0.6F).roundToInt())
         lparams.addRule(RelativeLayout.CENTER_IN_PARENT)
-        logo.layoutParams = lparams
+        splash.findViewById<ImageView>(R.id.splash_logo).layoutParams = lparams
 
         RemoteButton.onActivityLoad()
 
         val pref=getSharedPreferences("login",0)
         val editor=pref.edit()
+
+        splash.findViewById<TextView>(R.id.skip_login).setOnClickListener {
+            splash.dismiss()
+            setNavView()
+        }
 
         val ipEdit:EditText= splash.findViewById(R.id.editTextIP)
         val passEdit:EditText= splash.findViewById(R.id.editTextPassword)
@@ -134,12 +138,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
                 else Toast.makeText(this@MainActivity,"Authentication failed",Toast.LENGTH_LONG).show()
             }
-        }
-
-        splash.findViewById<TextView>(R.id.skip_login).setOnClickListener {
-            splash.dismiss()
-            setContentView(R.layout.activity_main)
-            setNavView()
         }
 
         submit.setOnClickListener {
@@ -189,6 +187,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 writer.close()
             }.start()
         }
+
+        addOnConfigurationChangeListener(object:OnConfigurationChangeListener{
+            override fun onConfigurationChanged(config: Configuration) {
+                if(splash.isShowing && splash.findViewById<LinearLayout>(R.id.login_view).visibility == View.VISIBLE){
+                    if(config.orientation ==  Configuration.ORIENTATION_LANDSCAPE) splashLandscape(splash)
+                    else splashPortrait(splash)
+                }
+            }
+        })
 
         Thread{
             ipList= BufferedReader(InputStreamReader(ipConf.inputStream())).readLines() as ArrayList<String>
@@ -240,12 +247,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 splash.findViewById<RelativeLayout>(R.id.splash_restart_layout).visibility = View.VISIBLE
                 val loginCard = splash.findViewById<LinearLayout>(R.id.login_view)
 
-                val cardAnim = AnimationUtils.loadAnimation(this, R.anim.expand)
-                val logoAnim = AnimationUtils.loadAnimation(this, R.anim.move)
-
                 loginCard.visibility = View.VISIBLE
-                logo.startAnimation(logoAnim)
-                loginCard.startAnimation(cardAnim)
+                if(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    val lparams = RelativeLayout.LayoutParams(size.x*11/20,RelativeLayout.LayoutParams.WRAP_CONTENT)
+                    lparams.addRule(RelativeLayout.ALIGN_PARENT_END)
+                    lparams.addRule(RelativeLayout.CENTER_VERTICAL)
+                    loginCard.layoutParams = lparams
+                    loginCard.setPadding(size.y/14,size.y/10,size.y/14,0)
+                    loginCard.startAnimation(AnimationUtils.loadAnimation(this, R.anim.expand_landscape))
+                    splash.findViewById<ImageView>(R.id.splash_logo).startAnimation(AnimationUtils.loadAnimation(this, R.anim.move_landscape))
+                }else{
+                    loginCard.startAnimation(AnimationUtils.loadAnimation(this, R.anim.expand))
+                    splash.findViewById<ImageView>(R.id.splash_logo).startAnimation(AnimationUtils.loadAnimation(this, R.anim.move))
+                }
 
                 if (authenticated) {
                     splash.dismiss()
@@ -256,8 +270,47 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         },2000)
     }
 
-    private fun min(x:Int, y:Int):Int{
-        return if(x<y) x else y
+    private fun splashPortrait(splash:Dialog){
+        val login = splash.findViewById<LinearLayout>(R.id.login_view)
+        login.clearAnimation()
+        login.setPadding(size.x/14,0,size.x/12,size.y/22)
+        val lparams = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,RelativeLayout.LayoutParams.WRAP_CONTENT)
+        lparams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
+        login.layoutParams = lparams
+
+        if(login.viewTreeObserver.isAlive){
+            login.viewTreeObserver.addOnGlobalLayoutListener(object:ViewTreeObserver.OnGlobalLayoutListener{
+                override fun onGlobalLayout() {
+                    login.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                    val height = size.y-login.height
+
+                    val logoParams = RelativeLayout.LayoutParams(height/2,height/2)
+                    logoParams.addRule(RelativeLayout.ALIGN_PARENT_TOP)
+                    logoParams.addRule(RelativeLayout.CENTER_HORIZONTAL)
+                    logoParams.topMargin = height/4
+                    splash.findViewById<ImageView>(R.id.splash_logo).clearAnimation()
+                    splash.findViewById<ImageView>(R.id.splash_logo).layoutParams = logoParams
+
+                }
+            })
+        }
+    }
+
+    private fun splashLandscape(splash:Dialog){
+        val login = splash.findViewById<LinearLayout>(R.id.login_view)
+        val lparams = RelativeLayout.LayoutParams(size.x*11/20,RelativeLayout.LayoutParams.WRAP_CONTENT)
+        lparams.addRule(RelativeLayout.ALIGN_PARENT_END)
+        lparams.addRule(RelativeLayout.CENTER_VERTICAL)
+        login.layoutParams = lparams
+        login.clearAnimation()
+        login.setPadding(size.y/14,size.y/10,size.y/14,0)
+
+        val logoParams = RelativeLayout.LayoutParams(size.x/4,size.x/4)
+        logoParams.addRule(RelativeLayout.ALIGN_PARENT_START)
+        logoParams.addRule(RelativeLayout.CENTER_VERTICAL)
+        logoParams.marginStart = size.x/8
+        splash.findViewById<ImageView>(R.id.splash_logo).clearAnimation()
+        splash.findViewById<ImageView>(R.id.splash_logo).layoutParams = logoParams
     }
 
     private fun ipVerified(ip:String):Boolean{
@@ -288,6 +341,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     fun setNavView(){
+        setContentView(R.layout.activity_main)
+
         setSupportActionBar(toolbar)
         val toggle = ActionBarDrawerToggle(this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawer_layout.addDrawerListener(toggle)
@@ -295,14 +350,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         toggle.syncState()
 
         nav_view.setNavigationItemSelectedListener(this)
+        supportFragmentManager.beginTransaction().commitAllowingStateLoss()
         nav_view.setCheckedItem(R.id.home_drawer)
         if(homeFragment == null)
             homeFragment=HomeFragment()
+
         replaceFragment(homeFragment as Fragment)
-        val pref = getSharedPreferences("general",0)
-        NUM_COLUMNS = pref.getInt("num_columns",5)
     }
 
+    private fun replaceFragment(fragment: Fragment){
+        supportFragmentManager.beginTransaction().replace(R.id.include_content,fragment).commitAllowingStateLoss()
+    }
 
     private var backPressed = false
     override fun onBackPressed() {
@@ -365,10 +423,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-    private fun replaceFragment(fragment: Fragment){
-        supportFragmentManager.beginTransaction().replace(R.id.include_content,fragment).commit()
-    }
-
     private fun hideSystemUI(view:View) {
         view.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                 or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
@@ -388,7 +442,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             startActivityForResult(
                     Intent.createChooser(intent, "Select a remote controller configuration file"), FILE_SELECT_CODE)
         } catch (ex: ActivityNotFoundException) {
-            // Potentially direct the user to the Market with a Dialog
             Toast.makeText(
                 this, "Please install a File Manager.",
                 Toast.LENGTH_SHORT
@@ -421,15 +474,26 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         super.onActivityResult(requestCode, resultCode, data)
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
-    override fun onProvideAssistContent(outContent: AssistContent?) {
-        outContent?.structuredData = JSONObject().put("@type","SmartHome").put("@id","https://example.com/lights/on").put("name","Lights On").toString()
-        super.onProvideAssistContent(outContent)
+    fun addOnConfigurationChangeListener(listener: OnConfigurationChangeListener){
+        onConfigChangeListeners.add(listener)
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        windowManager.defaultDisplay.getSize(size)
+        NUM_COLUMNS = when{size.x>920->5;size.x<720->3;else->4}
+        onConfigChangeListeners.iterator().forEach {
+            try {
+                it.onConfigurationChanged(newConfig)
+            }catch(ex:Exception){
+                onConfigChangeListeners.remove(it)
+                Toast.makeText(this, "Config changed listener error $ex",Toast.LENGTH_LONG).show()
+            }
+        }
     }
 
     companion object {
         val size:Point=Point()
-        val dialogParams = WindowManager.LayoutParams()
         const val PORT=48321
         const val CONFIG_DIR = "remotes"
         const val FILE_SELECT_CODE = 0
@@ -453,4 +517,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         restart = true
         Handler().postDelayed({ restart = false },1400)
     }
+}
+
+interface OnConfigurationChangeListener{
+    fun onConfigurationChanged(config:Configuration)
 }

@@ -1,6 +1,5 @@
 package com.irware.remote.ui.buttons
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
@@ -18,7 +17,7 @@ import com.irware.remote.holders.OnModificationListener
 
 class RemoteButton : Button {
     private var properties:ButtonProperties?=null
-    private val dr = GradientDrawable()
+    private val gd = GradientDrawable()
 
     constructor(context:Context):super(context){
         visibility = View.GONE
@@ -35,6 +34,7 @@ class RemoteButton : Button {
         visibility = View.VISIBLE
         setTextColor(Color.WHITE)
         setButtonProperties(properties)
+        gd.orientation = GradientDrawable.Orientation.BOTTOM_TOP
         properties.setOnModificationListener(object:OnModificationListener{
             override fun onTextColorChanged() {
                 setTextColor(properties.textColor)
@@ -55,31 +55,24 @@ class RemoteButton : Button {
             }
 
             override fun onColorModified() {
-                dr.setColor(properties.color)
+                setButtonDrawableColor(gd,properties.color)
             }
 
-            override fun onIrModified() {
-
-            }
-
-            override fun onPositionModified() {
-
-            }
+            override fun onIrModified() {}
+            override fun onPositionModified() {}
 
         })
     }
 
-    @SuppressLint("InlinedApi", "ResourceType")
-    fun setButtonProperties(btnProperties:ButtonProperties){
+    private fun setButtonProperties(btnProperties:ButtonProperties){
         properties = btnProperties
         setType(type = properties?.iconType!!)
         text = properties?.text
         gravity = Gravity.CENTER
         setTextSize(AUTO_SIZE_TEXT_TYPE_UNIFORM, 12F)
-        dr.setStroke(2,MainActivity.colorOnBackground)
-        dr.cornerRadius = 100F
-        dr.setColor(properties?.color!!)
-        background = dr
+        gd.cornerRadius = 100F
+        setButtonDrawableColor(gd,properties?.color!!)
+        background = gd
         setTextColor(properties!!.textColor)
         setIcon(MainActivity.iconDrawableList[properties!!.icon])
     }
@@ -143,6 +136,18 @@ class RemoteButton : Button {
         fun onActivityLoad(){
             BTN_WIDTH = ((MainActivity.size.x-MainActivity.size.x/(1.3*MainActivity.NUM_COLUMNS)) / MainActivity.NUM_COLUMNS).toInt()
             MIN_HEIGHT = BTN_WIDTH / 2
+        }
+
+        fun setButtonDrawableColor(dr:GradientDrawable,colorInt:Int){
+            val red = Color.red(colorInt)
+            val green = Color.green(colorInt)
+            val blue = Color.blue(colorInt)
+            val newColorInt = Color.argb(0xFF,
+                when(true){red>0x80->red-0x40;else -> red+0x40},
+                when(true){green>0x80->green-0x40;else -> green+0x40},
+                when(true){blue>0x80->blue-0x40;else -> blue+0x40})
+            dr.colors = intArrayOf(colorInt,newColorInt)
+            dr.setStroke(8,newColorInt)
         }
     }
 }

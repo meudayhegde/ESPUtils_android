@@ -62,8 +62,7 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
 
         colorDrawable.cornerRadius = 100F
         colorDrawable.shape = GradientDrawable.RECTANGLE
-        colorDrawable.setStroke(2,MainActivity.colorOnBackground)
-        colorDrawable.setColor(colorSelected)
+        RemoteButton.setButtonDrawableColor(colorDrawable, colorSelected)
 
         colorPicker = HSLColorPicker(context)
         colorPickerLayout.addView(colorPicker)
@@ -216,7 +215,7 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
         colorPicker.setColorSelectionListener(object : SimpleColorSelectionListener() {
             override fun onColorSelected(color: Int) {
                 colorSelected = color
-                colorDrawable.setColor(color)
+                RemoteButton.setButtonDrawableColor(colorDrawable,color)
             }
         })
 

@@ -25,7 +25,8 @@
             android:layout_marginBottom="8sp"
             android:background="@drawable/layout_border_round_corner"
             android:divider="@null"
-            android:paddingTop="14sp"/>
+            android:paddingTop="14sp"
+            android:layout_centerHorizontal="true"/>
 
 
     <com.github.clans.fab.FloatingActionMenu

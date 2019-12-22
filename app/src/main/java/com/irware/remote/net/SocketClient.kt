@@ -66,10 +66,10 @@ object SocketClient{
                                     result.put("text",ButtonPropertiesDialog.textInt)
                                     ButtonPropertiesDialog.textInt++
                                 }
-                                result.put("iconType", ButtonPropertiesDialog.btnStyle)
-                                result.put("color", ButtonPropertiesDialog.colorSelected)
-                                result.put("icon", ButtonPropertiesDialog.iconSelected)
-                                result.put("textColor", ButtonPropertiesDialog.colorContentSelected)
+                                result.put("iconType", ButtonPropertiesDialog.jsonObj.getInt("iconType"))
+                                result.put("color", ButtonPropertiesDialog.jsonObj.getInt("color"))
+                                result.put("icon", ButtonPropertiesDialog.jsonObj.getInt("icon"))
+                                result.put("textColor", ButtonPropertiesDialog.jsonObj.getInt("textColor"))
                                 irlistener.onIrRead(result)
                             }
                         }

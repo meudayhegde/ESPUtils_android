@@ -16,13 +16,19 @@
             android:text="@string/long_press_remote_item_card_to_edit_remote_controller_information" android:textSize="15sp"
             tools:targetApi="m" tools:ignore="RtlSymmetry" />
 
-    <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/manage_remotes_recycler_view"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:layout_width="match_parent"
-            android:layout_below="@id/info_layout"
             android:layout_height="match_parent"
-            android:scrollbars="vertical"
-            android:layout_margin="14sp" />
+            android:id="@+id/refresh_layout"
+            android:layout_below="@id/info_layout">
+
+        <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/manage_remotes_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scrollbars="vertical"
+                android:layout_margin="14sp" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 
     <com.github.clans.fab.FloatingActionMenu

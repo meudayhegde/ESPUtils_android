@@ -24,6 +24,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.graphics.drawable.DrawableCompat
 import com.irware.remote.holders.RemoteProperties
+import kotlinx.android.synthetic.main.import_remote_activity.*
 import org.json.JSONObject
 import java.io.File
 import java.io.InputStream
@@ -34,7 +35,6 @@ import java.io.OutputStreamWriter
 class RemoteParserActivity : AppCompatActivity() {
 
     private var configFile :File? = null
-    private var fromIrware = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         when(getSharedPreferences("theme_setting", Context.MODE_PRIVATE).getInt("application_theme",if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) { 0 }else{ 2 }))
@@ -62,7 +62,7 @@ class RemoteParserActivity : AppCompatActivity() {
         val import = findViewById<Button>(R.id.button_import)
 
         val action = intent.action
-        fromIrware = intent.getBooleanExtra("fromIrware",false)
+
         var jsonObject = JSONObject()
         if (action!!.compareTo(Intent.ACTION_VIEW) == 0) {
             val scheme = intent.scheme
@@ -186,17 +186,19 @@ class RemoteParserActivity : AppCompatActivity() {
 
         msg.text = getString(R.string.import_success)
 
-        if(fromIrware){
+        if(MainActivity.activity!=null){
             if(configFile!=null){
                 MainActivity.remotePropList.add(RemoteProperties(configFile!!,null))
                 MainActivity.activity?.homeFragment?.notifyDataChanged()
             }
             btn.text = getString(R.string.done)
+            button_cancel.visibility = View.GONE
             btn.setOnClickListener {
                 finish()
             }
         }else {
             btn.text = getString(R.string.start_app)
+            button_cancel.text = getString(R.string.done)
             btn.setOnClickListener {
                 val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)

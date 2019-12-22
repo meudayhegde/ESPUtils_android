@@ -102,7 +102,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         splash.show()
         hideSystemUI(splashView)
         windowManager.defaultDisplay.getSize(size)
-        NUM_COLUMNS = when{size.x>920->5;size.x<720->3;else->4}
+        val x = min(size.x,size.y)
+        NUM_COLUMNS = when{x>920->5;x<720->3;else->4}
 
         val file = File(filesDir.absolutePath+File.separator+ CONFIG_DIR)
         if(!file.exists()) file.mkdir()
@@ -111,7 +112,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         lparams.addRule(RelativeLayout.CENTER_IN_PARENT)
         splash.findViewById<ImageView>(R.id.splash_logo).layoutParams = lparams
 
-        RemoteButton.onActivityLoad()
+        RemoteButton.onConfigChanged()
 
         val pref=getSharedPreferences("login",0)
         val editor=pref.edit()
@@ -189,10 +190,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
 
         addOnConfigurationChangeListener(object:OnConfigurationChangeListener{
+            override var keepAlive = true
             override fun onConfigurationChanged(config: Configuration) {
                 if(splash.isShowing && splash.findViewById<LinearLayout>(R.id.login_view).visibility == View.VISIBLE){
+                    hideSystemUI(splash.findViewById<LinearLayout>(R.id.login_view))
                     if(config.orientation ==  Configuration.ORIENTATION_LANDSCAPE) splashLandscape(splash)
                     else splashPortrait(splash)
+                }else{
+                    keepAlive = false
                 }
             }
         })
@@ -463,7 +468,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
                         mIntent.setDataAndType(uri, "application/json")
                         mIntent.setPackage(packageName)
-                        mIntent.putExtra("fromIrware",true)
                         startActivity(Intent.createChooser(mIntent, "Import Config File"))
                     } catch (e: Exception) {
                         e.printStackTrace()
@@ -474,17 +478,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         super.onActivityResult(requestCode, resultCode, data)
     }
 
-    fun addOnConfigurationChangeListener(listener: OnConfigurationChangeListener){
+    private fun addOnConfigurationChangeListener(listener: OnConfigurationChangeListener){
         onConfigChangeListeners.add(listener)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         windowManager.defaultDisplay.getSize(size)
-        NUM_COLUMNS = when{size.x>920->5;size.x<720->3;else->4}
         onConfigChangeListeners.iterator().forEach {
             try {
                 it.onConfigurationChanged(newConfig)
+                if(!it.keepAlive) onConfigChangeListeners.remove(it)
             }catch(ex:Exception){
                 onConfigChangeListeners.remove(it)
                 Toast.makeText(this, "Config changed listener error $ex",Toast.LENGTH_LONG).show()
@@ -520,5 +524,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 }
 
 interface OnConfigurationChangeListener{
+    var keepAlive:Boolean
     fun onConfigurationChanged(config:Configuration)
 }

@@ -22,6 +22,7 @@ import androidx.core.content.FileProvider
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.github.clans.fab.FloatingActionButton
 import com.github.clans.fab.FloatingActionMenu
 import com.google.android.material.textfield.TextInputEditText
@@ -56,6 +57,27 @@ class HomeFragment : androidx.fragment.app.Fragment() {
             rootView!!.findViewById<FloatingActionButton>(R.id.fab_import_remote).setOnClickListener {
                 MainActivity.activity?.startConfigChooser()
                 rootView!!.findViewById<FloatingActionMenu>(R.id.fam_manage_remotes).close(true)
+            }
+
+            val refreshLayout = rootView!!.findViewById<SwipeRefreshLayout>(R.id.refresh_layout)
+            refreshLayout.setOnRefreshListener {
+                refreshLayout.isRefreshing = true
+                Thread{
+                    MainActivity.remotePropList.clear()
+                    val files = File(MainActivity.configPath).listFiles { pathname ->
+                        pathname!!.isFile and (pathname.name.endsWith(
+                            ".json",
+                            true
+                        )) and pathname.canWrite()
+                    }
+                    files.forEach {
+                        MainActivity.remotePropList.add(RemoteProperties(it, null))
+                    }
+                    MainActivity.activity?.runOnUiThread{
+                        viewAdapter.notifyDataSetChanged()
+                        refreshLayout.isRefreshing = false
+                    }
+                }.start()
             }
 
             rootView!!.findViewById<FloatingActionButton>(R.id.fab_new_remote).setOnClickListener {

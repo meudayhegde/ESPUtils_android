@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Color
-import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.text.Editable
 import android.text.TextWatcher
@@ -16,6 +15,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.graphics.drawable.DrawableCompat
 import com.irware.remote.MainActivity
 import com.irware.remote.R
+import com.irware.remote.holders.ButtonProperties
 import com.irware.remote.net.IrCodeListener
 import com.irware.remote.net.SocketClient
 import com.irware.remote.ui.buttons.RemoteButton
@@ -40,7 +40,7 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
     private var colorPicker : HSLColorPicker
     private val clrPkr: ColorPicker
     private var capturedCount = 0
-    private val styleParamList=ArrayList<RelativeLayout.LayoutParams>()
+    private var buttonProperties:ButtonProperties? = null
 
     init{
         parentDialog = this
@@ -60,10 +60,6 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
         window?.setBackgroundDrawableResource(R.drawable.layout_border_round_corner)
         window?.setLayout((min(MainActivity.size.x,MainActivity.size.y)*0.86).toInt(),WindowManager.LayoutParams.WRAP_CONTENT)
 
-        colorDrawable.cornerRadius = 100F
-        colorDrawable.shape = GradientDrawable.RECTANGLE
-        RemoteButton.setButtonDrawableColor(colorDrawable, colorSelected)
-
         colorPicker = HSLColorPicker(context)
         colorPickerLayout.addView(colorPicker)
 
@@ -80,13 +76,9 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
 
         clrPkr.setColorSelectionListener(object:SimpleColorSelectionListener(){
             override fun onColorSelected(color: Int) {
-                colorContentSelected = color
-                remote_model_button.setTextColor(color)
-                setIconDrawable(iconSelected)
+                buttonProperties?.textColor = color
             }
         })
-
-        remote_model_button.background = colorDrawable
 
         btn_edit_text.addTextChangedListener(object: TextWatcher{
             override fun afterTextChanged(s: Editable?) {}
@@ -185,37 +177,20 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
     @SuppressLint("InflateParams")
     private fun manageButtonProperties(jsonObj:JSONObject){
         setTitle("Set Button Properties")
-
+        ButtonPropertiesDialog.jsonObj = jsonObj
+        buttonProperties = ButtonProperties(jsonObj)
+        remote_model_button.initialize(buttonProperties)
         buttonNeutral.visibility = View.VISIBLE
         buttonNeutral.setOnClickListener {
             captureInit(jsonObj)
         }
 
-        styleParamList.add(RelativeLayout.LayoutParams(RemoteButton.MIN_HEIGHT , RemoteButton.MIN_HEIGHT))
-        styleParamList.add(RelativeLayout.LayoutParams(RemoteButton.BTN_WIDTH , RemoteButton.MIN_HEIGHT))
-        styleParamList.add(RelativeLayout.LayoutParams(RemoteButton.MIN_HEIGHT, RemoteButton.BTN_WIDTH ))
-        styleParamList.add(RelativeLayout.LayoutParams(RemoteButton.BTN_WIDTH, RemoteButton.BTN_WIDTH))
+        btn_edit_text.setText(buttonProperties?.text)
 
-        for(param in styleParamList)
-            param.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE)
-
-        btnStyle = jsonObj.getInt("iconType")
-        colorSelected = jsonObj.getInt("color")
-        colorDrawable.setColor(colorSelected)
-
-
-        colorContentSelected = jsonObj.getInt("textColor")
-        iconSelected = jsonObj.getInt("icon")
-        btn_edit_text.setText(jsonObj.getString("text"))
-        setIconDrawable(iconSelected)
-
-        remote_model_button.layoutParams = styleParamList[btnStyle]
-
-        colorPicker.setColor(colorSelected)
+        buttonProperties?.color?.let { colorPicker.setColor(it) }
         colorPicker.setColorSelectionListener(object : SimpleColorSelectionListener() {
             override fun onColorSelected(color: Int) {
-                colorSelected = color
-                RemoteButton.setButtonDrawableColor(colorDrawable,color)
+                buttonProperties?.color = color
             }
         })
 
@@ -228,26 +203,15 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
 
         remote_model_button.setOnClickListener {
             val popup = PopupMenu(context, remote_model_button)
-            //Inflating the Popup using xml file
             popup.menuInflater.inflate(R.menu.btn_style_menu, popup.menu)
-
-            //registering popup with OnMenuItemClickListener
             popup.setOnMenuItemClickListener {
-                when(it.itemId){
-                    R.id.round_button_small -> btnStyle = RemoteButton.TYPE_ROUND_MINI
-                    R.id.button_horizontal -> btnStyle = RemoteButton.TYPE_RECT_HOR
-                    R.id.button_vertical -> btnStyle = RemoteButton.TYPE_RECT_VER
-                    R.id.round_button_large -> btnStyle = RemoteButton.TYPE_ROUND_MEDIUM
-                }
-                remote_model_button.layoutParams = styleParamList[btnStyle]
-                setIconDrawable(iconSelected)
-                true }
-
-            popup.show()//showing popup menu
+                buttonProperties?.iconType = arrayOf(R.id.round_button_small,R.id.button_horizontal,R.id.button_vertical,R.id.round_button_large).indexOf(it.itemId)
+                true
+            }
+            popup.show()
         }
 
-        remote_model_button.setTextColor(colorContentSelected)
-        clrPkr.setColor(colorContentSelected)
+        buttonProperties?.textColor?.let { clrPkr.setColor(it) }
 
 
         btn_icon.setOnClickListener {
@@ -272,67 +236,35 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
             }
             val iconGridLayout = layoutInflater.inflate(R.layout.icon_grid_dialog,null) as LinearLayout
             val iconGrid = iconGridLayout.findViewById<GridView>(R.id.icon_grid)
-            iconGrid.setSelection(iconSelected);iconGrid.adapter = iconAdapter
+            iconGrid.adapter = iconAdapter
+            buttonProperties?.icon?.let { it1 -> iconGrid.setSelection(it1) }
             val dialog = Builder(context).setView(iconGridLayout).setTitle("Button Icon").show()
             dialog.window?.setLayout((MainActivity.size.x*0.85).toInt(),WindowManager.LayoutParams.WRAP_CONTENT)
             dialog.window?.setBackgroundDrawableResource(R.drawable.layout_border_round_corner)
 
             iconGrid.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                setIconDrawable(position)
+                buttonProperties?.icon = position
                 dialog.dismiss()
             }
         }
 
         buttonPositive.visibility=View.VISIBLE
         buttonPositive.setOnClickListener {
-            jsonObj.put("text",findViewById<EditText>(R.id.btn_edit_text)?.text.toString())
-            jsonObj.put("iconType",btnStyle)
-            jsonObj.put("color",colorSelected)
-            jsonObj.put("icon",iconSelected)
-            jsonObj.put("textColor",colorContentSelected)
-
-            listener.onSelected(jsonObj)
+            listener.onSelected(JSONObject(jsonObj.toString()))
             dismiss()
         }
     }
 
-    fun setIconDrawable(position:Int){
-        iconSelected = position
-        if(iconSelected == 0) remote_model_button.setCompoundDrawablesWithIntrinsicBounds(null,null,null,null)
-        else {
-            val drawable =
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) context.getDrawable(
-                    MainActivity.iconDrawableList[iconSelected])
-                else with(context) {
-                    @Suppress("DEPRECATION")
-                    resources.getDrawable(MainActivity.iconDrawableList[iconSelected])
-                }
-            DrawableCompat.setTint(drawable!!, colorContentSelected)
-            if (btnStyle == RemoteButton.TYPE_RECT_VER){
-                remote_model_button.setCompoundDrawablesWithIntrinsicBounds(null, drawable, null, null)
-                remote_model_button.setPadding(0,0,0,0)
-            }
-            else{
-                remote_model_button.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null)
-                remote_model_button.setPadding(8,0,0,0)
-            }
-
-        }
-    }
 
     override fun onBackPressed() {
         Toast.makeText(context,"Click on cancel to quit...",Toast.LENGTH_SHORT).show()
     }
 
     companion object{
-        var colorSelected:Int = Color.GRAY
-        var colorContentSelected = Color.WHITE
-        var iconSelected = 0
         var textInt = 0
-        var btnStyle = RemoteButton.TYPE_RECT_HOR
         var MODE_SINGLE = 0
         var MODE_MULTI = 1
-        private val colorDrawable = GradientDrawable()
+        var jsonObj = JSONObject("""{"iconType":${RemoteButton.TYPE_RECT_HOR},"color":${Color.GRAY},"icon":0,"textColor":${Color.WHITE}}""")
     }
 }
 

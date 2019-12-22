@@ -34,8 +34,7 @@ class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>,priv
         val context = parent.context
         val container = com.irware.remote.ui.adapters.LinearLayout(context)
         container.gravity = Gravity.CENTER
-        val layoutParams = LinearLayout.LayoutParams(RemoteButton.BTN_WIDTH+20, LinearLayout.LayoutParams.WRAP_CONTENT)
-        container.layoutParams = layoutParams
+        container.layoutParams = LinearLayout.LayoutParams(RemoteButton.BTN_WIDTH+20, LinearLayout.LayoutParams.WRAP_CONTENT)
         container.minimumHeight = RemoteButton.MIN_HEIGHT
         val btn = RemoteButton(context)
         if(remoteDialog.mode == RemoteDialog.MODE_EDIT){
@@ -85,13 +84,12 @@ class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>,priv
         val container = holder.container
         container.position = position
         holder.button.initialize(arrayList[position])
+        container.layoutParams = LinearLayout.LayoutParams(RemoteButton.BTN_WIDTH+20, LinearLayout.LayoutParams.WRAP_CONTENT)
     }
 
     fun getGetEmptyPosition():Int{
-        for(i in 0 until arrayList.size){
-            if(arrayList[i] == null){
-                return i
-            }
+        arrayList.withIndex().forEach {
+            indexedValue: IndexedValue<ButtonProperties?> -> if(indexedValue.value == null) return indexedValue.index
         }
         arrayList.add(null)
         return arrayList.size-1
@@ -100,7 +98,6 @@ class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>,priv
     override fun onDrag(v: View, event: DragEvent): Boolean {
         v as com.irware.remote.ui.adapters.LinearLayout
         when (event.action) {
-
             DragEvent.ACTION_DROP -> {
                 val orig = event.localState as RemoteButton
                 v.post {

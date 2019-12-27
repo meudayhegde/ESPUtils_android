@@ -4,7 +4,7 @@ import org.json.JSONObject
 
 class ButtonProperties(val jsonObj:JSONObject) {
 
-    private var parent:RemoteProperties? = null
+    var parent:RemoteProperties? = null
     private var attached = false
     constructor(jsonObj:JSONObject,parent:RemoteProperties) : this(jsonObj) {
         this.parent = parent
@@ -12,7 +12,7 @@ class ButtonProperties(val jsonObj:JSONObject) {
         parent.update()
     }
 
-    var length= jsonObj.getString("length")
+    var length: String = jsonObj.getString("length")
         set(value){ field = value;jsonObj.put("length",value);if(attached)parent?.update()}
     var irCode:String = jsonObj.getString("irCode")
         set(value){field = value;jsonObj.put("irCode",value);listener?.onIrModified();if(attached)parent?.update()}
@@ -28,7 +28,12 @@ class ButtonProperties(val jsonObj:JSONObject) {
         set(value){field = value;jsonObj.put("textColor",value);listener?.onTextColorChanged();if(attached)parent?.update()}
     var btnPosition  = jsonObj.getInt("btnPosition")
         set(value){field = value;jsonObj.put("btnPosition",value);listener?.onPositionModified();if(attached)parent?.update()}
-    
+    var buttonId:Long = jsonObj.optLong("buttonID")
+        get() {if(jsonObj.optLong("buttonID") == 0L) {jsonObj.put("buttonID",System.currentTimeMillis());parent?.update()};return jsonObj.getLong("buttonID")}
+        set(value){field = value;jsonObj.put("buttonID",value);if(attached)parent?.update()}
+
+    var buttonShowAnimation = true
+
     private var listener:OnModificationListener?= null
 
     fun setOnModificationListener(listener: OnModificationListener){

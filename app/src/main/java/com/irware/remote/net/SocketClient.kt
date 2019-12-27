@@ -1,5 +1,6 @@
 package com.irware.remote.net
 
+import android.content.Context
 import android.content.DialogInterface
 import com.irware.remote.MainActivity
 import com.irware.remote.R
@@ -34,11 +35,12 @@ object SocketClient{
         }
     }
 
-    fun readIrCode(irlistener:IrCodeListener,jsonObj:JSONObject?) {
+    fun readIrCode(context:Context,irlistener:IrCodeListener,jsonObj:JSONObject?) {
         Thread {
             var canceled = false
             try {
-                val connector = Connector(MainActivity.MCU_IP)
+                val pref = context.getSharedPreferences("login",Context.MODE_PRIVATE)
+                val connector = Connector(pref.getString("lastIP","")!!)
                 MainActivity.activity?.runOnUiThread {
                     irlistener.parentDialog?.setButton(DialogInterface.BUTTON_NEGATIVE,"Cancel") { dialog, _ ->
                         canceled = true
@@ -49,7 +51,7 @@ object SocketClient{
 
                 connector.sendLine(
                     "{\"request\":\"ir_capture\",\"username\":\""
-                            + MainActivity.USERNAME + "\",\"password\":\"" + MainActivity.PASSWORD + "\",\"capture_mode\":"+irlistener.mode+"}")
+                            + pref.getString("username","") + "\",\"password\":\"" + pref.getString("password","") + "\",\"capture_mode\":"+irlistener.mode+"}")
                 while(connector.isConnected()) {
                     val result = JSONObject(connector.readLine())
                     when (result.getString("response")) {
@@ -91,19 +93,17 @@ object SocketClient{
         }.start()
     }
 
-    fun sendIrCode(jsonObj:JSONObject,irSendListener: IrSendListener) {
+    fun sendIrCode(context: Context, jsonObj:JSONObject, irSendListener: IrSendListener) {
         Thread {
             try {
-                val connector = Connector(MainActivity.MCU_IP)
+                val pref = context.getSharedPreferences("login",Context.MODE_PRIVATE)
+                val connector = Connector(pref.getString("lastIP","")!!)
                 connector.sendLine(
                     "{\"request\":\"ir_send\",\"username\":\""
-                            + MainActivity.USERNAME + "\",\"password\":\""
-                            + MainActivity.PASSWORD + "\",\"length\":\""
-                            + jsonObj.getString("length") + "\",\"protocol\":\"" + jsonObj.getString(
-                        "protocol"
-                    ) + "\",\"irCode\":\""
-                            + jsonObj.getString("irCode") + "\"}"
-                )
+                            + pref.getString("username","") + "\",\"password\":\""
+                            + pref.getString("password","") + "\",\"length\":\""
+                            + jsonObj.getString("length") + "\",\"protocol\":\"" + jsonObj.getString("protocol") + "\",\"irCode\":\""
+                            + jsonObj.getString("irCode") + "\"}")
                 val result = connector.readLine()
                 connector.close()
                 irSendListener.onIrSend(result)

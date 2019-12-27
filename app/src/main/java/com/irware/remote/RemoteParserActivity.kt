@@ -50,7 +50,7 @@ class RemoteParserActivity : AppCompatActivity() {
         window?.attributes = lWindowParams
 
         windowManager.defaultDisplay.getSize(MainActivity.size)
-        lWindowParams.width = MainActivity.size.x - MainActivity.size.x/8
+        lWindowParams.width = MainActivity.size.x*7/8
         window?.attributes = lWindowParams
 
         val msg = findViewById<TextView>(R.id.message_text)
@@ -129,11 +129,11 @@ class RemoteParserActivity : AppCompatActivity() {
                         .setNegativeButton("Quit") { _, _ -> finish() }
                         .setNeutralButton("Keep both"){ dialog,_ ->
                             while(outFile.exists()) {
-                                outFile = File(outFile.parent, count.toString() + "_" + fileName)
+                                outFile = File(outFile.parent, fileName.removeSuffix(".json")+"_"+count.toString()+".json")
                                 count++
                             }
                             outFile.createNewFile()
-                            jsonObject.put("fileName",outFile)
+                            jsonObject.put("fileName",outFile.name)
                             writeFile(outFile,jsonObject)
                             configFile = outFile
                             onSuccess(progress,imV,msg,import)

@@ -7,7 +7,7 @@ apply plugin: 'kotlin-android-extensions'
 android {
     signingConfigs {
         iRWaRE_Release {
-        storeFile file('/home/hegdeuday/AndroidStudioProjects/iRWaRE_android.jks')
+            storeFile file('/home/hegdeuday/AndroidStudioProjects/iRWaRE_android.jks')
             storePassword 'infrared.redefined'
             keyAlias = 'key0'
             keyPassword 'infrared.redefined'
@@ -18,12 +18,12 @@ android {
         applicationId "com.irware.remote"
         minSdkVersion 19
         targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
+        versionCode 1024
+        versionName "1.0.24"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         applicationIdSuffix = 'com.irware.remote'
-        versionNameSuffix = '1.0'
+        versionNameSuffix = '1.0.24'
         testApplicationId = 'com.irware.remote'
     }
     buildTypes {
@@ -31,8 +31,8 @@ android {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             //noinspection GradlePath
-            applicationIdSuffix = 'com.irware.remote'
-            versionNameSuffix = '1_0'
+            applicationIdSuffix = ''
+            versionNameSuffix = '1_0_24'
             signingConfig signingConfigs.iRWaRE_Release
         }
     }

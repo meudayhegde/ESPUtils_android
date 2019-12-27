@@ -106,7 +106,7 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
         ir_capture_instruction.visibility = View.VISIBLE
         if(mode == MODE_MULTI)
             ir_capture_instruction.text = "${context.getString(R.string.ir_capture_instruction)}\n${context.getString(R.string.multi_capture_hint)}"
-        SocketClient.readIrCode(this,jsonObj)
+        SocketClient.readIrCode(context,this,jsonObj)
     }
 
     override fun onIrRead(jsonObj:JSONObject) {

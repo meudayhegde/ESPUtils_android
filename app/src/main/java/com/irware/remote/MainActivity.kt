@@ -114,7 +114,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         RemoteButton.onConfigChanged()
 
-        val pref=getSharedPreferences("login",0)
+        val pref= getSharedPreferences("login",0)
         val editor=pref.edit()
 
         splash.findViewById<TextView>(R.id.skip_login).setOnClickListener {
@@ -152,7 +152,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         val response=connector.readLine()
                         connector.close()
                         if(JSONObject(response)["response"]=="authenticated"){
-                            MCU_IP = ip
+                            editor.putString("lastIP",ip)
                             USERNAME = userEdit.text.toString()
                             PASSWORD = passEdit.text.toString()
                             if(!ipList.contains(ip)) ipList.add(0,ip)
@@ -192,10 +192,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         addOnConfigurationChangeListener(object:OnConfigurationChangeListener{
             override var keepAlive = true
             override fun onConfigurationChanged(config: Configuration) {
-                if(splash.isShowing && splash.findViewById<LinearLayout>(R.id.login_view).visibility == View.VISIBLE){
-                    hideSystemUI(splash.findViewById<LinearLayout>(R.id.login_view))
-                    if(config.orientation ==  Configuration.ORIENTATION_LANDSCAPE) splashLandscape(splash)
-                    else splashPortrait(splash)
+                if(splash.isShowing){
+                    if(splash.findViewById<LinearLayout>(R.id.login_view).visibility == View.VISIBLE) {
+                        hideSystemUI(splash.findViewById<LinearLayout>(R.id.login_view))
+                        if (config.orientation == Configuration.ORIENTATION_LANDSCAPE) splashLandscape(splash)
+                        else splashPortrait(splash)
+                    }
                 }else{
                     keepAlive = false
                 }
@@ -282,20 +284,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val lparams = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,RelativeLayout.LayoutParams.WRAP_CONTENT)
         lparams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
         login.layoutParams = lparams
+        splash.findViewById<ImageView>(R.id.splash_logo).clearAnimation()
 
         if(login.viewTreeObserver.isAlive){
             login.viewTreeObserver.addOnGlobalLayoutListener(object:ViewTreeObserver.OnGlobalLayoutListener{
                 override fun onGlobalLayout() {
                     login.viewTreeObserver.removeOnGlobalLayoutListener(this)
                     val height = size.y-login.height
-
                     val logoParams = RelativeLayout.LayoutParams(height/2,height/2)
                     logoParams.addRule(RelativeLayout.ALIGN_PARENT_TOP)
                     logoParams.addRule(RelativeLayout.CENTER_HORIZONTAL)
                     logoParams.topMargin = height/4
-                    splash.findViewById<ImageView>(R.id.splash_logo).clearAnimation()
                     splash.findViewById<ImageView>(R.id.splash_logo).layoutParams = logoParams
-
                 }
             })
         }
@@ -504,7 +504,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val remotePropList = ArrayList<RemoteProperties>()
         var MCU_MAC = ""
         var configPath =""
-        var MCU_IP = "192.168.4.1"
         var USERNAME = ""
         var PASSWORD = ""
         var NUM_COLUMNS = 5

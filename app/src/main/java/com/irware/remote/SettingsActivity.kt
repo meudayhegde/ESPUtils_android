@@ -41,7 +41,7 @@ class SettingsActivity : AppCompatActivity() {
         viewAdapter = SettingsAdapter(arrayListOf(
             SettingsItem("Application Theme","UI theme for iRWaRE Application",themeSelectionDialog()),
             SettingsItem("Wireless Settings","Wi-Fi/Hotspot SSID and passwords",wirelessSettingsDialog()),
-            SettingsItem("User Settings","User credentials (username and password)",userSettingsdialog())
+            SettingsItem("User Settings","User credentials (username and password)",userSettingsDialog())
         ))
 
         recyclerView = findViewById<RecyclerView>(R.id.settings_list).apply {
@@ -60,7 +60,8 @@ class SettingsActivity : AppCompatActivity() {
         return true
     }
 
-    private fun userSettingsdialog():AlertDialog{
+    @SuppressLint("InflateParams")
+    private fun userSettingsDialog():AlertDialog{
         val content = LayoutInflater.from(this).inflate(R.layout.user_settings,null) as LinearLayout
         val cUname = content.findViewById<TextInputEditText>(R.id.cur_user_name)
         val cPass = content.findViewById<TextInputEditText>(R.id.cur_user_passwd)
@@ -111,7 +112,7 @@ class SettingsActivity : AppCompatActivity() {
                             dialog.dismiss()
                             Thread {
                                 try {
-                                    val connector = SocketClient.Connector(MainActivity.MCU_IP)
+                                    val connector = SocketClient.Connector(getSharedPreferences("login",Context.MODE_PRIVATE).getString("lastIP","")!!)
                                     connector.sendLine("{\"request\":\"set_user\",\"username\":\""
                                             + cUname.text.toString() + "\",\"password\":\""
                                             + cPass.text.toString() + "\",\"new_username\":\""
@@ -147,6 +148,7 @@ class SettingsActivity : AppCompatActivity() {
         return dialog
     }
 
+    @SuppressLint("InflateParams")
     private fun wirelessSettingsDialog():AlertDialog{
         val content = LayoutInflater.from(this).inflate(R.layout.wireless_settings,null) as LinearLayout
         val ssid = content.findViewById<TextInputEditText>(R.id.til_wifi_name)
@@ -196,11 +198,11 @@ class SettingsActivity : AppCompatActivity() {
                         .setMessage("Wrong settings may result in inaccessibility of iRWaRE device (full reset will be required to recover))."
                                 +"\nMake Sure All SSID and password are correct")
                         .setNegativeButton("Cancel"){dg,_->dg.dismiss()}
-                        .setPositiveButton("Confirm"){dg,_->
+                        .setPositiveButton("Confirm"){ _, _->
                             dialog.dismiss()
                             Thread {
                                 try {
-                                    val connector = SocketClient.Connector(MainActivity.MCU_IP)
+                                    val connector = SocketClient.Connector(getSharedPreferences("login",Context.MODE_PRIVATE).getString("lastIP","")!!)
                                     connector.sendLine("{\"request\":\"set_wireless\",\"username\":\""
                                                 + MainActivity.USERNAME + "\",\"password\":\""
                                                 + MainActivity.PASSWORD + "\",\"wireless_mode\":\""+mode+"\",\"new_ssid\":\""
@@ -238,7 +240,7 @@ class SettingsActivity : AppCompatActivity() {
         return dialog
     }
 
-    @SuppressLint("ApplySharedPref")
+    @SuppressLint("ApplySharedPref", "InflateParams")
     private fun themeSelectionDialog():AlertDialog{
         val pref = getSharedPreferences("theme_setting", Context.MODE_PRIVATE)
         val editor = pref.edit()

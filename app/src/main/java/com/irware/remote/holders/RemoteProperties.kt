@@ -8,7 +8,7 @@ import java.io.File
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 
-class RemoteProperties(private val remoteConfig: File, private val eventListener: EventListener?)  {
+class RemoteProperties(val remoteConfigFile: File, private val eventListener: EventListener?)  {
 
     private var jsonObj : JSONObject = getJSONObject()
 
@@ -80,7 +80,7 @@ class RemoteProperties(private val remoteConfig: File, private val eventListener
     }
 
     private fun getJSONObject():JSONObject{
-        val isr = InputStreamReader(remoteConfig.inputStream())
+        val isr = InputStreamReader(remoteConfigFile.inputStream())
         val content = TextUtils.join("\n",isr.readLines())
         isr.close()
         return try{
@@ -92,7 +92,7 @@ class RemoteProperties(private val remoteConfig: File, private val eventListener
     }
 
     fun update(){
-        val osr =OutputStreamWriter(remoteConfig.outputStream())
+        val osr =OutputStreamWriter(remoteConfigFile.outputStream())
         osr.write(jsonObj.toString().replace("\n",""))
         osr.flush()
         osr.close()

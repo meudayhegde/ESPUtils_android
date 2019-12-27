@@ -79,4 +79,9 @@
     <string name="multi_capture_count">Successfully Captured #n Buttons.\nRetry to capture more Buttons</string>
     <string name="multi_capture_hint">Keep clicking buttons to capture more buttons.</string>
     <string name="rate">Rate</string>
+    <string name="select_remote_controller_button">Select Remote Controller Button</string>
+    <string name="remote_controller_button">remote controller button</string>
+    <string name="widget">Widget</string>
+    <string name="add_to_home_confirm">Do you want to add this button to home screen?</string>
+    <string name="device_not_connected">Device not connected, please try logging again from the app</string>
 </resources>

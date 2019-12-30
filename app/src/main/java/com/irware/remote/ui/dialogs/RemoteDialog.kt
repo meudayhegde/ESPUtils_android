@@ -52,6 +52,11 @@ class RemoteDialog(context: Context,private val properties:RemoteProperties, val
         }
 
         adapter = ButtonsGridAdapter(arrayList,this)
+        button_refresh_layout.setOnRefreshListener {
+            button_refresh_layout.isRefreshing = true
+            adapter.notifyDataSetChanged(true)
+            button_refresh_layout.isRefreshing = false
+        }
 
         if(mode == MODE_EDIT){
             layout_add_to_home.layoutParams.width = MainActivity.size.x/2
@@ -87,16 +92,20 @@ class RemoteDialog(context: Context,private val properties:RemoteProperties, val
 
     override fun onSelected(prop: JSONObject) {
         try{
-            val pos = prop.getInt("btnPosition")
+            var pos = prop.getInt("btnPosition")
+            if(pos<0){
+                pos = adapter.getGetEmptyPosition()
+                prop.put("btnPosition",pos)
+            }
             val btnProp = ButtonProperties(prop,properties)
             arrayList[pos] = btnProp
-            adapter.notifyDataSetChanged()
+            adapter.notifyDataSetChanged(false)
         }catch(ex:JSONException){
-            val pos=adapter.getGetEmptyPosition()
+            val pos= adapter.getGetEmptyPosition()
             prop.put("btnPosition",pos)
             val btnProp = ButtonProperties(prop,properties)
             arrayList[pos] = btnProp
-            adapter.notifyDataSetChanged()
+            adapter.notifyDataSetChanged(false)
         }
     }
 
@@ -167,7 +176,14 @@ class HomeButtonDropListener(private val remoteDialog:RemoteDialog):View.OnDragL
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val appWidgetManager: AppWidgetManager= remoteDialog.context.getSystemService(AppWidgetManager::class.java)
             val myProvider = ComponentName(remoteDialog.context, ButtonWidgetProvider::class.java)
-            draggedButtonIdString = properties.parent?.remoteConfigFile?.name + ","+ properties.buttonId
+
+            val pref = remoteDialog.context.getSharedPreferences("widget_associations",Context.MODE_PRIVATE)
+            val editor = pref.edit()
+            editor.putString("queued_button",properties.parent?.remoteConfigFile?.name + ","+ properties.buttonId)
+            editor.apply()
+
+            Toast.makeText(remoteDialog.context,pref.getString("queued_button",""),Toast.LENGTH_LONG).show()
+
             if(appWidgetManager.isRequestPinAppWidgetSupported){
                 appWidgetManager.requestPinAppWidget(myProvider, null, null)
             }
@@ -179,10 +195,6 @@ class HomeButtonDropListener(private val remoteDialog:RemoteDialog):View.OnDragL
         }
     }
 
-    companion object{
-
-        var draggedButtonIdString = ""
-    }
 
 }
 

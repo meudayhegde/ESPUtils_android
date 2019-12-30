@@ -1,7 +1,10 @@
 package com.irware.remote
 
+import android.app.Activity
 import android.appwidget.AppWidgetManager
+import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.WindowManager
@@ -29,12 +32,21 @@ class WidgetConfiguratorActivity : AppCompatActivity(),SwipeRefreshLayout.OnRefr
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activity = this
-        when(getSharedPreferences("theme_setting", Context.MODE_PRIVATE).getInt("application_theme",if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) { 0 }else{ 2 }))
-        {1-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);2-> AppCompatDelegate.setDefaultNightMode(
-            AppCompatDelegate.MODE_NIGHT_YES)}
-        setContentView(R.layout.activity_widget_configurator)
 
         widgetId = intent?.extras?.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID) ?: AppWidgetManager.INVALID_APPWIDGET_ID
+
+        val pref = getSharedPreferences("widget_associations",Context.MODE_PRIVATE)
+
+        if(!pref.getString(widgetId.toString(),"").isNullOrEmpty()){
+            updateAppWidget()
+        }else if(!pref.getString("queued_button","").isNullOrEmpty()){
+            pref.edit().putString("queued_button","").apply()
+            updateAppWidget()
+        }
+
+        when(getSharedPreferences("theme_setting", Context.MODE_PRIVATE).getInt("application_theme",if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) { 0 }else{ 2 }))
+        {1-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);2-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)}
+        setContentView(R.layout.activity_widget_configurator)
 
         window?.setBackgroundDrawableResource(R.drawable.layout_border_round_corner)
         val lWindowParams = WindowManager.LayoutParams()
@@ -87,6 +99,20 @@ class WidgetConfiguratorActivity : AppCompatActivity(),SwipeRefreshLayout.OnRefr
                 (remote_refresh_layout as SwipeRefreshLayout).isRefreshing = false
             }
         }.start()
+    }
+
+    private fun updateAppWidget(){
+        val intent = Intent(this, ButtonWidgetProvider::class.java)
+        intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+        val  ids = AppWidgetManager.getInstance(this).getAppWidgetIds(ComponentName(this,ButtonWidgetProvider::class.java))
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
+        sendBroadcast(intent)
+
+        val resultValue = Intent().apply {
+            putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId)
+        }
+        setResult(Activity.RESULT_OK, resultValue)
+        finish()
     }
 
     companion object{

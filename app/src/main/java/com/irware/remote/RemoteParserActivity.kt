@@ -186,7 +186,7 @@ class RemoteParserActivity : AppCompatActivity() {
 
         msg.text = getString(R.string.import_success)
 
-        if(MainActivity.activity!=null){
+        if(MainActivity.activity!=null && !MainActivity.activity!!.isDestroyed){
             if(configFile!=null){
                 MainActivity.remotePropList.add(RemoteProperties(configFile!!,null))
                 MainActivity.activity?.homeFragment?.notifyDataChanged()

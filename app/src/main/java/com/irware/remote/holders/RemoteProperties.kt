@@ -53,19 +53,19 @@ class RemoteProperties(val remoteConfigFile: File, private val eventListener: Ev
             update()
         }
 
-    fun addButton(button:JSONObject):Boolean{
-        if( button !in buttonArray ){
-            buttonArray.put(button)
-            update()
-            return true
+    fun addButton(button:JSONObject):JSONObject?{
+        val index = buttonArray.index(button)
+        if( index>=0){
+            return buttonArray.getJSONObject(index)
         }
-        return false
+        buttonArray.put(button)
+        return button
     }
 
     fun removeButton(button:JSONObject):Boolean{
-        if( button !in buttonArray)
-            return false
-        buttonArray.remove(buttonArray.index(button))
+        val index = buttonArray.index(button)
+        if(index<0) return false
+        buttonArray.remove(index)
         update()
         return true
     }
@@ -92,7 +92,7 @@ class RemoteProperties(val remoteConfigFile: File, private val eventListener: Ev
     }
 
     fun update(){
-        val osr =OutputStreamWriter(remoteConfigFile.outputStream())
+        val osr = OutputStreamWriter(remoteConfigFile.outputStream())
         osr.write(jsonObj.toString().replace("\n",""))
         osr.flush()
         osr.close()
@@ -110,16 +110,16 @@ class RemoteProperties(val remoteConfigFile: File, private val eventListener: Ev
     }
 }
 
-private fun JSONArray.index(any: Any):Int{
-    for(item in 0 until this.length()){
-        if(get(item) == any)
-            return item
+private fun JSONArray.index(obj: JSONObject):Int{
+    for(position in 0 until this.length()){
+        if(getJSONObject(position).optLong("buttonID") == obj.getLong("buttonID"))
+            return position
     }
     return -1
 }
 
-private operator fun JSONArray.contains(any: Any): Boolean {
-    if(index(any) == -1)
+private operator fun JSONArray.contains(obj: JSONObject): Boolean {
+    if(index(obj) == -1)
         return false
     return true
 }

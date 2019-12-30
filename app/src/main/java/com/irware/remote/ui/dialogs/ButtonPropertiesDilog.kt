@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Color
 import android.os.Build
+import android.os.Handler
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -24,6 +25,7 @@ import com.madrapps.pikolo.HSLColorPicker
 import com.madrapps.pikolo.RGBColorPicker
 import com.madrapps.pikolo.listeners.SimpleColorSelectionListener
 import kotlinx.android.synthetic.main.create_button_dialog_layout.*
+import org.json.JSONException
 import org.json.JSONObject
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -41,6 +43,7 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
     private val clrPkr: ColorPicker
     private var capturedCount = 0
     private var buttonProperties:ButtonProperties? = null
+    private val handler = Handler()
 
     init{
         parentDialog = this
@@ -79,14 +82,6 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
                 buttonProperties?.textColor = color
             }
         })
-
-        btn_edit_text.addTextChangedListener(object: TextWatcher{
-            override fun afterTextChanged(s: Editable?) {}
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                remote_model_button.text = s
-            }
-        })
     }
 
     @SuppressLint("SetTextI18n")
@@ -110,7 +105,7 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
     }
 
     override fun onIrRead(jsonObj:JSONObject) {
-        MainActivity.activity?.runOnUiThread {
+        handler.post {
             if(mode == MODE_SINGLE){
                 ir_capture_layout.visibility= View.GONE
                 button_prop_layout.visibility=View.VISIBLE
@@ -126,7 +121,7 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
 
     @SuppressLint("SetTextI18n")
     override fun onTimeout() {
-        MainActivity.activity?.runOnUiThread{
+        handler.post{
             time_remaining_text.visibility = View.GONE
             Toast.makeText(context,"TimeOut",Toast.LENGTH_LONG).show()
             ir_capture_progress.visibility = View.GONE
@@ -149,7 +144,7 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
     }
 
     override fun onDeny(err_info:String?) {
-        MainActivity.activity?.runOnUiThread {
+        handler.post {
             time_remaining_text.visibility = View.GONE
             Toast.makeText(context,err_info,Toast.LENGTH_LONG).show()
             ir_capture_progress.visibility = View.GONE
@@ -177,6 +172,11 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
     @SuppressLint("InflateParams")
     private fun manageButtonProperties(jsonObj:JSONObject){
         setTitle("Set Button Properties")
+        try{
+            jsonObj.getInt("btnPosition")
+        }catch(ex:JSONException){
+            jsonObj.put("btnPosition",-1)
+        }
         ButtonPropertiesDialog.jsonObj = jsonObj
         buttonProperties = ButtonProperties(jsonObj)
         remote_model_button.initialize(buttonProperties)
@@ -247,6 +247,14 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
                 dialog.dismiss()
             }
         }
+        btn_edit_text.addTextChangedListener(object: TextWatcher{
+            override fun afterTextChanged(s: Editable?) {}
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                remote_model_button.text = s
+                buttonProperties?.text = s.toString()
+            }
+        })
 
         buttonPositive.visibility=View.VISIBLE
         buttonPositive.setOnClickListener {

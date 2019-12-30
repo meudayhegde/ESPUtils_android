@@ -22,9 +22,7 @@ android {
         versionName "1.0.24"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
-        applicationIdSuffix = 'com.irware.remote'
-        versionNameSuffix = '1.0.24'
-        testApplicationId = 'com.irware.remote'
+        testApplicationId = 'com.irware.remote.test'
     }
     buildTypes {
         release {
@@ -32,7 +30,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             //noinspection GradlePath
             applicationIdSuffix = ''
-            versionNameSuffix = '1_0_24'
+            versionNameSuffix = ''
             signingConfig signingConfigs.iRWaRE_Release
         }
     }

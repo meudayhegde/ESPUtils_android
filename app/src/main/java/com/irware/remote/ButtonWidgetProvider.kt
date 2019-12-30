@@ -13,7 +13,6 @@ import com.irware.remote.holders.ButtonProperties
 import com.irware.remote.holders.RemoteProperties
 import com.irware.remote.net.IrSendListener
 import com.irware.remote.net.SocketClient
-import com.irware.remote.ui.dialogs.HomeButtonDropListener
 import org.json.JSONObject
 import java.io.File
 import java.io.FileNotFoundException
@@ -89,19 +88,21 @@ class ButtonWidgetProvider: AppWidgetProvider() {
         val editor = pref.edit()
         var buttonInfo = pref.getString(widgetID.toString(),"")
         if(buttonInfo.isNullOrEmpty()){
-            if(HomeButtonDropListener.draggedButtonIdString.isNotEmpty()){
-                editor.putString(widgetID.toString(),HomeButtonDropListener.draggedButtonIdString)
+            val queuedButton = pref.getString("queued_button","")
+            Toast.makeText(context,queuedButton,Toast.LENGTH_LONG).show()
+            if(!queuedButton.isNullOrEmpty()){
+                editor.putString(widgetID.toString(),queuedButton)
+                editor.putString("queued_button","")
                 editor.apply()
-                buttonInfo = HomeButtonDropListener.draggedButtonIdString
-                HomeButtonDropListener.draggedButtonIdString = ""
+                buttonInfo = pref.getString(widgetID.toString(),"")
             }else{
-                Toast.makeText(context,"Button Not configured, Click to configure",Toast.LENGTH_LONG).show()
+            //    Toast.makeText(context,"Button Not configured, Click to configure",Toast.LENGTH_LONG).show()
                 setConfigureOnClick(context,widgetID,views)
                 return null
             }
         }
         try{
-            val remoteProp = RemoteProperties(File(context.filesDir.absolutePath+File.separator+"remotes"+File.separator+buttonInfo.split(",")[0]),null)
+            val remoteProp = RemoteProperties(File(context.filesDir.absolutePath+File.separator+"remotes"+File.separator+buttonInfo!!.split(",")[0]),null)
             val buttonProps = remoteProp.getButtons()
             for(i in 0 until buttonProps.length()){
                 val jsonObj = buttonProps.getJSONObject(i)

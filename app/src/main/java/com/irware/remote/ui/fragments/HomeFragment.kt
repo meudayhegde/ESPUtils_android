@@ -123,7 +123,7 @@ class HomeFragment : androidx.fragment.app.Fragment(),View.OnClickListener {
         btnFinish.setOnClickListener {
             val vendor = inputLayout.findViewById<TextInputEditText>(R.id.vendor_name).text.toString()
             val model = inputLayout.findViewById<TextInputEditText>(R.id.model_name).text.toString()
-            var id = ("$vendor $model").toLowerCase().replace(" ", "_").replace("\n", "")
+            var id = ("$vendor $model").toLowerCase().replace(" ", "_").replace("\n", "").replace("/","_")
 
             val desc = inputLayout.findViewById<TextInputEditText>(R.id.remote_desc)
             var configFile = File(MainActivity.configPath + File.separator + id + ".json")

@@ -44,6 +44,15 @@ class SettingsActivity : AppCompatActivity() {
             SettingsItem("User Settings","User credentials (username and password)",userSettingsDialog())
         ))
 
+        supportActionBar?.setBackgroundDrawable(
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                getDrawable(R.mipmap.ic_launcher_background)
+            }else{
+                @Suppress("DEPRECATION")
+                resources.getDrawable(R.mipmap.ic_launcher_background)
+            }
+        )
+
         recyclerView = findViewById<RecyclerView>(R.id.settings_list).apply {
             setHasFixedSize(true)
             layoutManager = viewManager

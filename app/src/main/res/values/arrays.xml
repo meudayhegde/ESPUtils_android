@@ -17,4 +17,13 @@
         <item>@drawable/ic_volume_off</item><item>@drawable/ic_volume_down</item><item>@drawable/ic_volume_up</item><item>@drawable/icon_volume</item>
         <item>@drawable/ic_live_tv</item><item>@drawable/ic_radio</item><item>@drawable/ic_star</item>
     </integer-array>
+
+    <string-array name="about">
+        <item>iRWaRE is initially developed to replace all infrared remote controllers and unite them in one place.</item>
+        <item>Most of the android devices lack hardware for sending and receiving IR signals.</item>
+        <item>A micro controller ESP8266 with inbuilt Wi-Fi for interaction is used as addon for hardware.</item>
+        <item>This application acts as interface for the user to command the ESP8266 micro controller.</item>
+        <item>User can capture the signals of existing IR remote controller and send them at anytime using this application and ESP8266 micro controller.</item>
+    </string-array>
+
 </resources>

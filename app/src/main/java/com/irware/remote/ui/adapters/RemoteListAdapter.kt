@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
@@ -42,6 +43,11 @@ class RemoteListAdapter(private val propList: ArrayList<RemoteProperties>, priva
         val cardView = LayoutInflater.from(parent.context).inflate(R.layout.manage_remote_list_item, parent, false) as CardView
         if(mode == RemoteDialog.MODE_SELECT_BUTTON){
             cardView.findViewById<ImageView>(R.id.icon_share).visibility =View.GONE
+        }
+        when (cardView.context?.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)) {
+            Configuration.UI_MODE_NIGHT_YES -> { }
+            Configuration.UI_MODE_NIGHT_NO -> { }
+            Configuration.UI_MODE_NIGHT_UNDEFINED -> { }
         }
         return MyViewHolder(cardView)
     }

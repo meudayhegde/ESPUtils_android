@@ -6,7 +6,7 @@
         android:layout_height="wrap_content"
         app:cardUseCompatPadding="true"
         app:cardElevation="4dp"
-        app:cardCornerRadius="6dp"
+        app:cardCornerRadius="6sp"
         android:descendantFocusability="blocksDescendants">
 
         <RelativeLayout

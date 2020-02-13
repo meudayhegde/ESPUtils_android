@@ -68,7 +68,7 @@
     <string name="current_username">Current UserName</string>
     <string name="current_password">Current Password</string>
     <string name="empty_ssid">SSID cannot be empty</string>
-    <string name="empty_password">Password cannot be empty</string>
+    <string name="empty_password">Password must contain minimum 8 characters</string>
     <string name="empty_field">Field Cannot be empty</string>
     <string name="passwd_mismatch">Password mismatch</string>
     <string name="follow_system_theme">Follow System Theme</string>

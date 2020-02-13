@@ -29,6 +29,7 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
+    private var wirelessData:JSONObject? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -162,14 +163,16 @@ class SettingsActivity : AppCompatActivity() {
         val content = LayoutInflater.from(this).inflate(R.layout.wireless_settings,null) as LinearLayout
         val ssid = content.findViewById<TextInputEditText>(R.id.til_wifi_name)
         val pass = content.findViewById<TextInputEditText>(R.id.til_wifi_passwd)
+        val progressBar = content.findViewById<ProgressBar>(R.id.get_wireless_loading)
         val spinner = content.findViewById<Spinner>(R.id.spinner_wireless_mode)
         spinner.adapter = ArrayAdapter(this,android.R.layout.simple_list_item_1, arrayListOf("Station (WiFi)","Access Point (Hotspot)"))
         var mode = if(spinner.selectedItemPosition == 0) "WIFI" else "AP"
         spinner.onItemSelectedListener = object:AdapterView.OnItemSelectedListener{
             override fun onNothingSelected(parent: AdapterView<*>?) {}
-
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 mode = if(position ==0 ) "WIFI" else "AP"
+                ssid.setText(wirelessData?.optString(when(mode){"WIFI" -> "station" else -> "ap"} + "_ssid"))
+                pass.setText(wirelessData?.optString(when(mode){"WIFI" -> "station" else -> "ap"} + "_psk"))
                 (ssid.parent.parent as TextInputLayout).hint = "$mode Name"
                 (pass.parent.parent as TextInputLayout).hint = "$mode Password"
             }
@@ -181,6 +184,7 @@ class SettingsActivity : AppCompatActivity() {
                 override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                     (item.parent.parent as TextInputLayout).error = null
+                    wirelessData?.put(when(mode){"WIFI"->"station" else->"ap"} + "_" + when(item.id){R.id.til_wifi_name -> "ssid" else -> "psk"},s)
                 }
             })
         }
@@ -194,14 +198,28 @@ class SettingsActivity : AppCompatActivity() {
         dialog.setOnShowListener {
             dialog.window?.setBackgroundDrawableResource(R.drawable.layout_border_round_corner)
             dialog.window?.setLayout((MainActivity.size.x*0.8).toInt(),WindowManager.LayoutParams.WRAP_CONTENT)
+            progressBar.visibility = View.VISIBLE
+            getWirelessSettings(object:OnSocketReadListener{
+                override fun onSocketRead(data: JSONObject) {
+                    progressBar.visibility = View.GONE
+                    var wirelessMode = data.optString("wireless_mode")
+                    if(!wirelessMode.isNullOrEmpty()) {
+                        wirelessData = data
+                        mode = wirelessMode
+                        spinner.setSelection(when(mode){"WIFI"->0 else->1 },true)
+                        ssid.setText(wirelessData?.optString(when(mode){"WIFI"->"station" else->"ap" } + "_ssid"))
+                        pass.setText(wirelessData?.optString(when(mode){"WIFI"->"station" else->"ap" } + "_psk"))
+                    }
+                }
+            })
             val positiveButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
 
             positiveButton.setOnClickListener {
                 if(ssid.text.isNullOrEmpty())
                     (ssid.parent.parent as TextInputLayout).error = getString(R.string.empty_ssid)
-                if(pass.text.isNullOrEmpty())
+                if(pass.text?.length?:8 < 8)
                     (pass.parent.parent as TextInputLayout).error = getString(R.string.empty_password)
-                if(ssid.text!!.isNotEmpty() and pass.text!!.isNotEmpty()){
+                if(ssid.text!!.isNotEmpty() and (pass.text?.length?:0 >= 8)){
                     AlertDialog.Builder(this)
                         .setTitle("Confirm")
                         .setMessage("Wrong settings may result in inaccessibility of iRWaRE device (full reset will be required to recover))."
@@ -249,6 +267,28 @@ class SettingsActivity : AppCompatActivity() {
         return dialog
     }
 
+    private fun getWirelessSettings(onReadWiFiConfig: OnSocketReadListener){
+        Thread{
+            try {
+                val connector = SocketClient.Connector(getSharedPreferences("login",Context.MODE_PRIVATE).getString("lastIP","")!!)
+                connector.sendLine("{\"request\":\"get_wireless\",\"username\":\""
+                        + MainActivity.USERNAME + "\",\"password\":\""
+                        + MainActivity.PASSWORD + "\"}"
+                )
+                val result = connector.readLine()
+                val resultObj = JSONObject(result)
+                runOnUiThread{
+                    onReadWiFiConfig.onSocketRead(resultObj)
+                }
+                connector.close()
+            }catch(ex:Exception){
+                runOnUiThread{
+                    onReadWiFiConfig.onSocketRead(JSONObject())
+                }
+            }
+        }.start()
+    }
+
     @SuppressLint("ApplySharedPref", "InflateParams")
     private fun themeSelectionDialog():AlertDialog{
         val pref = getSharedPreferences("theme_setting", Context.MODE_PRIVATE)
@@ -293,3 +333,7 @@ class SettingsActivity : AppCompatActivity() {
 }
 
 class SettingsItem(var title:String, var subtitle:String,var dialog:Dialog)
+
+interface OnSocketReadListener{
+    fun onSocketRead(data:JSONObject)
+}

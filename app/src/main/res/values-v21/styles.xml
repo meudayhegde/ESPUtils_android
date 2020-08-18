@@ -11,7 +11,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorControlNormal">#ffffff</item>
-        <item name="android:navigationBarColor"></item>
+        <item name="android:navigationBarColor">#0F0D43</item>
     </style>
 
 </resources>

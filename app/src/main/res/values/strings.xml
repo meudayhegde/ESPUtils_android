@@ -33,11 +33,14 @@
     <string name="model_name">Model Name:</string>
     <string name="description">Description</string>
     <string name="restart_app_from_splash_screen">restart app from splash screen</string>
+    <string name="ir_remote_controller">IR Remote Controller</string>
+    <string name="gpio_controller">GPIO Controller</string>
     <string name="home">Home</string>
     <string name="about">About</string>
     <string name="communicate">Communicate</string>
     <string name="share">Share</string>
     <string name="long_press_remote_item_card_to_edit_remote_controller_information">Long press remote item card to edit Remote controller information</string>
+    <string name="long_press_gpio_item">Long press GPIO item to edit configuration</string>
     <string name="length_of_captured_ir_signal">Length of captured IR signal :</string>
     <string name="edit_buttons">Edit Buttons</string>
     <string name="delete_remote">Delete Remote</string>
@@ -86,4 +89,5 @@
     <string name="floating_action_button">Floating Action Button</string>
     <string name="pikolo_colorpicker">Pikolo - ColorPicker</string>
     <string name="material_components_android">Material Components Android</string>
+    <string name="led_switch">LED Switch</string>
 </resources>

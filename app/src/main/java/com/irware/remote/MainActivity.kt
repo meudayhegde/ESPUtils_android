@@ -36,6 +36,7 @@ import com.irware.remote.net.SocketClient
 import com.irware.remote.ui.BlurBuilder
 import com.irware.remote.ui.buttons.RemoteButton
 import com.irware.remote.ui.fragments.AboutFragment
+import com.irware.remote.ui.fragments.GPIOControllerFragment
 import com.irware.remote.ui.fragments.HomeFragment
 import com.irware.remote.ui.fragments.OnFragmentInteractionListener
 import kotlinx.android.synthetic.main.activity_main.*
@@ -53,6 +54,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onFragmentInteraction(uri: Uri) {}
 
     var homeFragment:HomeFragment? = null
+    var gpioFragment:GPIOControllerFragment? = null
     private var aboutFragment: AboutFragment? = null
     private var ipList:ArrayList<String> = ArrayList()
     private lateinit var ipConf : File
@@ -406,6 +408,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 if(homeFragment==null)
                     homeFragment=HomeFragment()
                 replaceFragment(homeFragment as Fragment)
+            }
+            R.id.gpio_drawer -> {
+                if(gpioFragment==null)
+                    gpioFragment=GPIOControllerFragment()
+                replaceFragment(gpioFragment as Fragment)
             }
             R.id.info_drawer -> {
                 if(aboutFragment==null)

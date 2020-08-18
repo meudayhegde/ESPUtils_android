@@ -30,7 +30,7 @@ import java.io.File
 import kotlin.math.min
 
 
-class HomeFragment : androidx.fragment.app.Fragment(),View.OnClickListener {
+class HomeFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
     private var listener: OnFragmentInteractionListener? = null
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
@@ -77,13 +77,14 @@ class HomeFragment : androidx.fragment.app.Fragment(),View.OnClickListener {
 
             rootView!!.findViewById<FloatingActionButton>(R.id.fab_new_remote).setOnClickListener(this)
         }
-        if(!rootView!!.findViewById<FloatingActionMenu>(R.id.fam_manage_remotes).isOpened)
-            rootView!!.findViewById<FloatingActionMenu>(R.id.fam_manage_remotes).hideMenuButton(false)
+        val manageMenu = rootView!!.findViewById<FloatingActionMenu>(R.id.fam_manage_remotes)
+        if(!manageMenu.isOpened)
+            manageMenu.hideMenuButton(false)
         Handler().postDelayed({
-            if(rootView!!.findViewById<FloatingActionMenu>(R.id.fam_manage_remotes).isMenuButtonHidden)
-                rootView!!.findViewById<FloatingActionMenu>(R.id.fam_manage_remotes).showMenuButton(true)
+            if(manageMenu.isMenuButtonHidden)
+                manageMenu.showMenuButton(true)
             if(MainActivity.remotePropList.isEmpty())
-                Handler().postDelayed({rootView!!.findViewById<FloatingActionMenu>(R.id.fam_manage_remotes).showMenu(true)},400)
+                Handler().postDelayed({manageMenu.showMenu(true)},400)
         },400)
         return rootView
     }

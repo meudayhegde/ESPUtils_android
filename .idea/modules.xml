@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/AndroidStudioProjects-iRWaRE_android.iml" filepath="$PROJECT_DIR$/.idea/modules/AndroidStudioProjects-iRWaRE_android.iml" group="iRWaRE_android" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/iRWaRE_android.iml" filepath="$PROJECT_DIR$/iRWaRE_android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/iRWaRE_android-app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/iRWaRE_android-app.iml" group="iRWaRE_android/app" />
     </modules>
   </component>
 </project>

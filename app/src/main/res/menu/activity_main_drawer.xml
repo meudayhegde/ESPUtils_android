@@ -9,6 +9,10 @@
             android:icon="@drawable/ic_home_drawer"
             android:title="@string/home"/>
         <item
+                android:id="@+id/gpio_drawer"
+                android:icon="@drawable/ic_apps"
+                android:title="@string/gpio_controller"/>
+        <item
             android:id="@+id/info_drawer"
             android:icon="@drawable/ic_info_drawer"
             android:title="@string/about"/>

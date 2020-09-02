@@ -18,6 +18,7 @@ import com.irware.remote.MainActivity
 import com.irware.remote.R
 import com.irware.remote.holders.RemoteProperties
 import com.irware.remote.net.SocketClient
+import com.irware.remote.ui.adapters.GPIOListAdapter
 import com.irware.remote.ui.adapters.RemoteListAdapter
 import java.io.File
 
@@ -32,7 +33,7 @@ class GPIOControllerFragment : androidx.fragment.app.Fragment()  {
         if(rootView == null ){
             rootView = inflater.inflate(R.layout.fragment_gpio_controller, container, false) as RelativeLayout
             viewManager = LinearLayoutManager(context)
-            viewAdapter = RemoteListAdapter(MainActivity.remotePropList,0)
+            viewAdapter = GPIOListAdapter(MainActivity.remotePropList,0)
             recyclerView = rootView!!.findViewById<RecyclerView>(R.id.manage_remotes_recycler_view).apply {
                 setHasFixedSize(true)
                 layoutManager = viewManager

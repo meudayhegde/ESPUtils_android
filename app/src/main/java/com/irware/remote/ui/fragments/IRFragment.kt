@@ -30,7 +30,7 @@ import java.io.File
 import kotlin.math.min
 
 
-class HomeFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
+class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
     private var listener: OnFragmentInteractionListener? = null
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
@@ -59,13 +59,13 @@ class HomeFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
                 refreshLayout.isRefreshing = true
                 Thread{
                     MainActivity.remotePropList.clear()
-                    val files = File(MainActivity.configPath).listFiles { pathname ->
+                    val files = File(MainActivity.remoteConfigPath).listFiles { pathname ->
                         pathname!!.isFile and (pathname.name.endsWith(
                             ".json",
                             true
                         )) and pathname.canWrite()
                     }
-                    files.forEach {
+                    files!!.forEach {
                         MainActivity.remotePropList.add(RemoteProperties(it, null))
                     }
                     MainActivity.activity?.runOnUiThread{
@@ -127,10 +127,10 @@ class HomeFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
             var id = ("$vendor $model").toLowerCase().replace(" ", "_").replace("\n", "").replace("/","_")
 
             val desc = inputLayout.findViewById<TextInputEditText>(R.id.remote_desc)
-            var configFile = File(MainActivity.configPath + File.separator + id + ".json")
+            var configFile = File(MainActivity.remoteConfigPath + File.separator + id + ".json")
             var incr = 1
             while(configFile.exists()) {
-                configFile = File(MainActivity.configPath + File.separator + id + "_" + incr + ".json")
+                configFile = File(MainActivity.remoteConfigPath + File.separator + id + "_" + incr + ".json")
                 incr++
             }
             if(incr>1) id+="_"+(incr-1)

@@ -11,8 +11,9 @@ import java.net.Socket
 
 object SocketClient{
 
-    class Connector(ip:String){
-        private val soc = Socket(ip,MainActivity.PORT)
+    class Connector(address:String){
+        private val adr = address.split(":")
+        private val soc = if(adr.size == 2) Socket(adr[0],adr[1].toInt()) else Socket(address, MainActivity.PORT)
         private val br = BufferedReader(InputStreamReader(soc.getInputStream()))
         private val bw = BufferedWriter(OutputStreamWriter(soc.getOutputStream()))
 

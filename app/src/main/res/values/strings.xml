@@ -90,4 +90,20 @@
     <string name="pikolo_colorpicker">Pikolo - ColorPicker</string>
     <string name="material_components_android">Material Components Android</string>
     <string name="led_switch">LED Switch</string>
+    <string name="ir_remotes">IR Remotes</string>
+    <string name="esp_devices">ESP Devices</string>
+    <string name="device_name">Device Name</string>
+    <string name="mac_address">MAC Address</string>
+    <string name="icon_device_online">icon device online</string>
+    <string name="online">Online</string>
+    <string name="offline">Offline</string>
+    <string name="icon_device_offline">icon device offline</string>
+    <string name="scanning">Scanning</string>
+    <string name="device_address">Device Address (ip:port/url)</string>
+    <string name="user_name">User Name</string>
+    <string name="password">Password</string>
+    <string name="next">Next</string>
+    <string name="add_new_device">Add new Device</string>
+    <string name="add_device">Add Device</string>
+    <string name="connecting">Connecting…</string>
 </resources>

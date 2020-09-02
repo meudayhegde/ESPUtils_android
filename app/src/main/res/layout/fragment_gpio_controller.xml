@@ -76,17 +76,6 @@
             fab:menu_colorRipple="?attr/colorAccent">
 
         <com.github.clans.fab.FloatingActionButton
-                android:id="@+id/fab_new_remote"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                fab:fab_label="Create Remote"
-                fab:fab_size="mini"
-                fab:fab_colorNormal="?attr/colorPrimary"
-                fab:fab_colorPressed="?attr/colorPrimaryDark"
-                fab:fab_colorRipple="?attr/colorPrimaryDark"
-                android:src="@drawable/fab_add"/>
-
-        <com.github.clans.fab.FloatingActionButton
                 android:id="@+id/fab_new_switch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

@@ -85,7 +85,7 @@ class WidgetConfiguratorActivity : AppCompatActivity(),SwipeRefreshLayout.OnRefr
         (remote_refresh_layout as SwipeRefreshLayout).isRefreshing = true
         Thread{
             remotePropList.clear()
-            val files = File(filesDir.absolutePath + File.separator + MainActivity.CONFIG_DIR).listFiles { pathname ->
+            val files = File(filesDir.absolutePath + File.separator + MainActivity.REMOTE_CONFIG_DIR).listFiles { pathname ->
                 pathname!!.isFile and (pathname.name.endsWith(
                     ".json",
                     true

@@ -120,7 +120,7 @@ class RemoteParserActivity : AppCompatActivity() {
             msg.visibility = View.GONE;progress.visibility = View.VISIBLE
             try{
                 val fileName= jsonObject.getString("fileName")
-                var outFile = File(filesDir.absolutePath + File.separator + MainActivity.CONFIG_DIR,fileName)
+                var outFile = File(filesDir.absolutePath + File.separator + MainActivity.REMOTE_CONFIG_DIR,fileName)
                 val parent = outFile.parentFile
                 if(!parent.exists()) parent.mkdirs()
                 var count = 1
@@ -189,7 +189,7 @@ class RemoteParserActivity : AppCompatActivity() {
         if(MainActivity.activity!=null && !MainActivity.activity!!.isDestroyed){
             if(configFile!=null){
                 MainActivity.remotePropList.add(RemoteProperties(configFile!!,null))
-                MainActivity.activity?.homeFragment?.notifyDataChanged()
+                MainActivity.activity?.irFragment?.notifyDataChanged()
             }
             btn.text = getString(R.string.done)
             button_cancel.visibility = View.GONE

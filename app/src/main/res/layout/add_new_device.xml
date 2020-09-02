@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:background="@drawable/layout_border_round_corner"
+        android:layout_height="wrap_content">
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+        <TextView
+                android:id="@+id/title_add_new_device" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:textColor="?attr/colorOnBackground" android:text="@string/add_new_device"
+                android:gravity="center" android:layout_marginTop="10sp" android:layout_marginStart="14sp"
+                android:layout_marginEnd="14sp" android:layout_marginBottom="14sp" android:textSize="18sp"/>
+
+        <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_marginTop="10sp"
+                android:layout_marginStart="14sp"
+                android:layout_marginEnd="14sp"
+                android:layout_marginBottom="4sp"
+                style="@style/textFieldLayoutWhiteTheme"
+                android:layout_height="wrap_content">
+
+            <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/device_address"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/device_address"
+                    android:singleLine="true" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone"
+                android:id="@+id/new_device_properties_layout">
+
+            <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="10sp"
+                    android:layout_marginStart="14sp"
+                    android:layout_marginEnd="14sp"
+                    android:layout_marginBottom="4sp"
+                    style="@style/textFieldLayoutWhiteTheme"
+                    android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/device_user_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/user_name"
+                        android:singleLine="true" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="14sp"
+                    android:layout_marginEnd="14sp"
+                    style="@style/textFieldLayoutWhiteTheme"
+                    android:layout_marginBottom="4sp"
+                    app:passwordToggleEnabled="true"
+                    android:hint="@string/password">
+
+                <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/device_password"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPassword"
+                        android:singleLine="true" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_marginStart="14sp"
+                    android:layout_marginEnd="14sp"
+                    android:layout_marginTop="10sp"
+                    android:layout_marginBottom="4sp"
+                    android:hint="@string/device_name"
+                    style="@style/textFieldLayoutWhiteTheme"
+                    android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/device_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:singleLine="true" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_marginStart="14sp"
+                    android:layout_marginEnd="14sp"
+                    android:layout_marginBottom="4sp"
+                    android:hint="@string/description"
+                    style="@style/textFieldLayoutWhiteTheme"
+                    android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/device_desc"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:singleLine="true" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+        <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14sp">
+
+            <Button
+                    android:id="@+id/cancel"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="14sp"
+                    android:text="@string/cancel"
+                    app:icon="@drawable/icon_cancel"
+                    android:layout_alignParentStart="true"/>
+
+            <Button
+                    android:id="@+id/button_done"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="14sp"
+                    android:layout_marginEnd="14sp"
+                    android:layout_marginBottom="8sp"
+                    android:text="@string/next"
+                    app:icon="@drawable/icon_done"
+                    android:layout_alignParentEnd="true"
+                    tools:ignore="RelativeOverlap" />
+        </RelativeLayout>
+    </LinearLayout>
+</ScrollView>

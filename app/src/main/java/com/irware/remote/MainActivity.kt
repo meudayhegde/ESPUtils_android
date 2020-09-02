@@ -30,20 +30,19 @@ import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.navigation.NavigationView
 import com.irware.getIPAddress
+import com.irware.remote.holders.DeviceProperties
 import com.irware.remote.holders.RemoteProperties
 import com.irware.remote.listeners.OnValidationListener
 import com.irware.remote.net.SocketClient
 import com.irware.remote.ui.BlurBuilder
 import com.irware.remote.ui.buttons.RemoteButton
-import com.irware.remote.ui.fragments.AboutFragment
-import com.irware.remote.ui.fragments.GPIOControllerFragment
-import com.irware.remote.ui.fragments.HomeFragment
-import com.irware.remote.ui.fragments.OnFragmentInteractionListener
+import com.irware.remote.ui.fragments.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import org.json.JSONObject
 import java.io.*
 import java.net.InetAddress
+import kotlin.collections.ArrayList
 import kotlin.math.min
 import kotlin.math.roundToInt
 
@@ -53,9 +52,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     OnFragmentInteractionListener {
     override fun onFragmentInteraction(uri: Uri) {}
 
-    var homeFragment:HomeFragment? = null
+    var devicesFragment: DevicesFragment? = null
+    var irFragment:IRFragment? = null
     var gpioFragment:GPIOControllerFragment? = null
     private var aboutFragment: AboutFragment? = null
+    private var splash: Dialog? = null
     private var ipList:ArrayList<String> = ArrayList()
     private lateinit var ipConf : File
     private var authenticated=false
@@ -68,17 +69,28 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         when(getSharedPreferences("theme_setting", Context.MODE_PRIVATE).getInt("application_theme",if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) { 0 }else{ 2 }))
         {1-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);2-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)}
+
         remotePropList.clear()
+        devicePropList.clear()
+
         activity = this
         val arr = resources.obtainTypedArray(R.array.icons)
         iconDrawableList = IntArray(arr.length())
         for(i in 0 until arr.length())
             iconDrawableList[i] = arr.getResourceId(i,0)
         arr.recycle()
-        configPath = filesDir.absolutePath + File.separator + CONFIG_DIR
+
+        remoteConfigPath = filesDir.absolutePath + File.separator + REMOTE_CONFIG_DIR
+        deviceConfigPath = filesDir.absolutePath + File.separator + DEVICE_CONFIG_DIR
+        val deviceConfigDir = File(deviceConfigPath)
+        deviceConfigDir.exists() or deviceConfigDir.mkdirs()
+        for(file: File in deviceConfigDir.listFiles { _, name -> name?.endsWith(".json")?: false }!!){
+            devicePropList.add(DeviceProperties(file))
+        }
+
         ipConf = File(filesDir.absolutePath+File.separator+"iplist.conf")
         if(!ipConf.exists())ipConf.createNewFile()
-        val splash=object:Dialog(this,android.R.style.Theme_Light_NoTitleBar_Fullscreen){
+        splash = object: Dialog(this,android.R.style.Theme_Light_NoTitleBar_Fullscreen){
             var exit = false
             override fun onBackPressed() {
                 if(exit) finish()
@@ -95,47 +107,47 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         colorOnBackground = value.data
 
         val splashView=layoutInflater.inflate(R.layout.splash_screen,null)
-        splash.setContentView(splashView)
+        splash?.setContentView(splashView)
 
         val originalBitmap = BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher_background)
         val blurredBitmap = BlurBuilder.blur(this, originalBitmap)
         splashView.background = BitmapDrawable(resources, blurredBitmap)
-        splash.window?.attributes?.windowAnimations = R.style.ActivityStartAnimationTheme
-        splash.show()
+        splash?.window?.attributes?.windowAnimations = R.style.ActivityStartAnimationTheme
+        splash?.show()
         hideSystemUI(splashView)
         windowManager.defaultDisplay.getSize(size)
         val x = min(size.x,size.y)
         NUM_COLUMNS = when{x>920->5;x<720->3;else->4}
 
-        val file = File(filesDir.absolutePath+File.separator+ CONFIG_DIR)
+        val file = File(filesDir.absolutePath+File.separator+ REMOTE_CONFIG_DIR)
         if(!file.exists()) file.mkdir()
 
         val lparams = RelativeLayout.LayoutParams((min(size.x,size.y)*0.6F).roundToInt(),(min(size.x,size.y)*0.6F).roundToInt())
         lparams.addRule(RelativeLayout.CENTER_IN_PARENT)
-        splash.findViewById<ImageView>(R.id.splash_logo).layoutParams = lparams
+        splash?.findViewById<ImageView>(R.id.splash_logo)?.layoutParams = lparams
 
         RemoteButton.onConfigChanged()
 
         val pref= getSharedPreferences("login",0)
         val editor=pref.edit()
 
-        splash.findViewById<TextView>(R.id.skip_login).setOnClickListener {
-            splash.dismiss()
+        splash?.findViewById<TextView>(R.id.skip_login)?.setOnClickListener {
+            splash?.dismiss()
             setNavView()
         }
 
-        val ipEdit:EditText= splash.findViewById(R.id.editTextIP)
-        val passEdit:EditText= splash.findViewById(R.id.editTextPassword)
-        passEdit.setText(pref.getString("password",""))
+        val ipEdit:EditText? = splash?.findViewById(R.id.editTextIP)
+        val passEdit:EditText? = splash?.findViewById(R.id.editTextPassword)
+        passEdit?.setText(pref.getString("password",""))
 
-        val userEdit:EditText= splash.findViewById(R.id.edit_text_uname)
-        userEdit.setText(pref.getString("username",""))
+        val userEdit: EditText? = splash?.findViewById(R.id.edit_text_uname)
+        userEdit?.setText(pref.getString("username",""))
 
-        val submit:Button= splash.findViewById(R.id.cirLoginButton)
-        val validatedListener=object:OnValidationListener{
+        val submit: Button? = splash?.findViewById(R.id.cirLoginButton)
+        val validatedListener = object: OnValidationListener{
             override fun onValidated(verified: Boolean) {
                 if(verified){
-                    splash.dismiss()
+                    splash?.dismiss()
                     this@MainActivity.setContentView(R.layout.activity_main)
                     setNavView()
                 }
@@ -143,20 +155,22 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
         }
 
-        submit.setOnClickListener {
-            val ip = ipEdit.text.toString()
+        submit?.setOnClickListener {
+            val ip = ipEdit?.text.toString()
             Thread{
                 if(InetAddress.getByName(ip).isReachable(500)) {
                     try{
                         val connector = SocketClient.Connector(ip)
 
-                        connector.sendLine("{\"request\":\"authenticate\",\"username\":\""+userEdit.text.toString()+"\",\"password\":\""+passEdit.text.toString()+"\",\"data\":\"__\",\"length\":\"0\"}")
+                        connector.sendLine("{\"request\":\"authenticate\",\"username\":" +
+                                "\"${userEdit?.text.toString()}\",\"password\":\"${passEdit?.text.toString()}\"," +
+                                "\"data\":\"__\",\"length\":\"0\"}")
                         val response=connector.readLine()
                         connector.close()
                         if(JSONObject(response)["response"]=="authenticated"){
                             editor.putString("lastIP",ip)
-                            USERNAME = userEdit.text.toString()
-                            PASSWORD = passEdit.text.toString()
+                            USERNAME = userEdit?.text.toString()
+                            PASSWORD = passEdit?.text.toString()
                             if(!ipList.contains(ip)) ipList.add(0,ip)
                             else {ipList.remove(ip); ipList.add(0,ip)}
                             runOnUiThread {
@@ -194,11 +208,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         addOnConfigurationChangeListener(object:OnConfigurationChangeListener{
             override var keepAlive = true
             override fun onConfigurationChanged(config: Configuration) {
-                if(splash.isShowing){
-                    if(splash.findViewById<LinearLayout>(R.id.login_view).visibility == View.VISIBLE) {
-                        hideSystemUI(splash.findViewById<LinearLayout>(R.id.login_view))
-                        if (config.orientation == Configuration.ORIENTATION_LANDSCAPE) splashLandscape(splash)
-                        else splashPortrait(splash)
+                if(splash?.isShowing == true){
+                    if(splash?.findViewById<LinearLayout>(R.id.login_view)?.visibility == View.VISIBLE) {
+                        hideSystemUI(splash!!.findViewById<LinearLayout>(R.id.login_view))
+                        if (config.orientation == Configuration.ORIENTATION_LANDSCAPE) splashLandscape(splash!!)
+                        else splashPortrait(splash!!)
                     }
                 }else{
                     keepAlive = false
@@ -241,20 +255,20 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }.start()
 
         Thread{
-            val files = File(configPath).listFiles { pathname ->
+            val files = File(remoteConfigPath).listFiles { pathname ->
                 pathname!!.isFile and (pathname.name.endsWith(
                     ".json",
                     true
                 )) and pathname.canWrite()
             }
-            for (file in files)
+            for (file in files!!)
                 remotePropList.add(RemoteProperties(file, null))
         }.start()
 
         Handler().postDelayed({
-            if(splash.isShowing) {
-                splash.findViewById<RelativeLayout>(R.id.splash_restart_layout).visibility = View.VISIBLE
-                val loginCard = splash.findViewById<LinearLayout>(R.id.login_view)
+            if(splash?.isShowing == true) {
+                splash!!.findViewById<RelativeLayout>(R.id.splash_restart_layout).visibility = View.VISIBLE
+                val loginCard = splash!!.findViewById<LinearLayout>(R.id.login_view)
 
                 loginCard.visibility = View.VISIBLE
                 if(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -264,14 +278,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     loginCard.layoutParams = lparams
                     loginCard.setPadding(size.y/14,size.y/10,size.y/14,0)
                     loginCard.startAnimation(AnimationUtils.loadAnimation(this, R.anim.expand_landscape))
-                    splash.findViewById<ImageView>(R.id.splash_logo).startAnimation(AnimationUtils.loadAnimation(this, R.anim.move_landscape))
+                    splash!!.findViewById<ImageView>(R.id.splash_logo).startAnimation(AnimationUtils.loadAnimation(this, R.anim.move_landscape))
                 }else{
                     loginCard.startAnimation(AnimationUtils.loadAnimation(this, R.anim.expand))
-                    splash.findViewById<ImageView>(R.id.splash_logo).startAnimation(AnimationUtils.loadAnimation(this, R.anim.move))
+                    splash!!.findViewById<ImageView>(R.id.splash_logo).startAnimation(AnimationUtils.loadAnimation(this, R.anim.move))
                 }
 
                 if (authenticated) {
-                    splash.dismiss()
+                    splash?.dismiss()
                     setContentView(R.layout.activity_main)
                     setNavView()
                 }
@@ -335,13 +349,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return false
     }
 
-    private fun onIpVerified(ip:String,ipEdit:EditText,userEdit:EditText,passEdit:EditText,submit:Button){
+    private fun onIpVerified(ip:String,ipEdit:EditText?, userEdit:EditText?, passEdit:EditText?, submit:Button?){
         runOnUiThread {
             if(!connected) {
                 connected = true
-                ipEdit.setText(ip)
-                if (userEdit.text.isNotEmpty() and passEdit.text.isNotEmpty()) {
-                    submit.callOnClick()
+                ipEdit?.setText(ip)
+                if (userEdit?.text?.isNotEmpty() == true and (passEdit?.text?.isNotEmpty() == true)) {
+                    submit?.callOnClick()
                 }
             }
         }
@@ -359,10 +373,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         nav_view.setNavigationItemSelectedListener(this)
         supportFragmentManager.beginTransaction().commitAllowingStateLoss()
         nav_view.setCheckedItem(R.id.home_drawer)
-        if(homeFragment == null)
-            homeFragment=HomeFragment()
+        if(irFragment == null)
+            irFragment=IRFragment()
 
-        replaceFragment(homeFragment as Fragment)
+        replaceFragment(irFragment as Fragment)
     }
 
     private fun replaceFragment(fragment: Fragment){
@@ -404,10 +418,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
 
         when (item.itemId) {
+            R.id.device_drawer_item -> {
+                if(devicesFragment==null)
+                    devicesFragment=DevicesFragment()
+                replaceFragment(devicesFragment as Fragment)
+            }
             R.id.home_drawer -> {
-                if(homeFragment==null)
-                    homeFragment=HomeFragment()
-                replaceFragment(homeFragment as Fragment)
+                if(irFragment==null)
+                    irFragment=IRFragment()
+                replaceFragment(irFragment as Fragment)
             }
             R.id.gpio_drawer -> {
                 if(gpioFragment==null)
@@ -503,14 +522,22 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
+    override fun onDestroy() {
+        if(splash?.isShowing == true) splash?.dismiss()
+        super.onDestroy()
+    }
+
     companion object {
         val size:Point=Point()
         const val PORT=48321
-        const val CONFIG_DIR = "remotes"
+        const val REMOTE_CONFIG_DIR = "remotes"
+        const val DEVICE_CONFIG_DIR = "devices"
         const val FILE_SELECT_CODE = 0
         val remotePropList = ArrayList<RemoteProperties>()
+        val devicePropList = ArrayList<DeviceProperties>()
         var MCU_MAC = ""
-        var configPath =""
+        var remoteConfigPath =""
+        var deviceConfigPath =""
         var USERNAME = ""
         var PASSWORD = ""
         var NUM_COLUMNS = 5

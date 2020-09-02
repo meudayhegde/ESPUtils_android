@@ -1,6 +1,7 @@
 package com.irware.remote.ui.adapters
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
@@ -91,7 +92,7 @@ class GPIOListAdapter(private val propList: ArrayList<RemoteProperties>, private
     }
 
     private fun setViewProps(cardView: CardView, prop: RemoteProperties){
-        cardView.findViewById<TextView>(R.id.vendor_name_text).text = prop.remoteVendor
+        cardView.findViewById<TextView>(R.id.mac_addr).text = prop.remoteVendor
         cardView.findViewById<TextView>(R.id.model_name_text).text = prop.remoteName
         cardView.findViewById<TextView>(R.id.remote_desc).text = prop.description
     }
@@ -117,7 +118,7 @@ class GPIOListAdapter(private val propList: ArrayList<RemoteProperties>, private
             fileToShare
         )
 
-        val intent = ShareCompat.IntentBuilder.from(MainActivity.activity)
+        val intent = ShareCompat.IntentBuilder.from(MainActivity.activity as Activity)
             .setType("application/json")
             .setSubject("Share File")
             .setStream(uri)

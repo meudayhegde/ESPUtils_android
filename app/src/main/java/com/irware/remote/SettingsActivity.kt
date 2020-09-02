@@ -31,6 +31,7 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var viewManager: RecyclerView.LayoutManager
     private var wirelessData:JSONObject? = null
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -61,8 +62,8 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when(item!!.itemId){
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
             android.R.id.home-> {
                 finish()
             }

@@ -5,9 +5,13 @@
 
     <group android:checkableBehavior="single">
         <item
+                android:id="@+id/device_drawer_item"
+                android:icon="@drawable/icon_esp_devices"
+                android:title="@string/esp_devices"/>
+        <item
             android:id="@+id/home_drawer"
-            android:icon="@drawable/ic_home_drawer"
-            android:title="@string/home"/>
+            android:icon="@drawable/icon_ir_remote"
+            android:title="@string/ir_remotes"/>
         <item
                 android:id="@+id/gpio_drawer"
                 android:icon="@drawable/ic_apps"

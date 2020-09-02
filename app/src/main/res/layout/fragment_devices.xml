@@ -4,28 +4,17 @@
         xmlns:fab="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.fragments.IRFragment">
-
-
-
-    <TextView android:id="@+id/info_layout"
-            android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_gravity="center"
-            android:drawableStart="@drawable/icon_info" android:drawableTint="?attr/colorOnBackground"
-            android:layout_marginTop="14sp" android:layout_marginStart="14sp" android:layout_marginEnd="14sp"
-            android:paddingStart="10sp" android:gravity="center" android:textColor="?attr/colorOnBackground"
-            android:text="@string/long_press_remote_item_card_to_edit_remote_controller_information" android:textSize="15sp"
-            tools:targetApi="m" tools:ignore="RtlSymmetry" />
+        tools:context=".ui.fragments.GPIOControllerFragment">
 
     <include layout="@layout/controllers_refresh_layout"
-        android:id="@+id/refresh_layout"
-        android:layout_width="match_parent"
-        android:layout_margin="14sp"
-        android:layout_height="match_parent"
-        android:layout_below="@id/info_layout"/>
+            android:id="@+id/refresh_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="14sp" />
 
 
     <com.github.clans.fab.FloatingActionMenu
-            android:id="@+id/fam_manage_remotes"
+            android:id="@+id/fam_manage_gpio"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentBottom="true"
@@ -38,16 +27,16 @@
             fab:menu_shadowColor="#444"
             fab:menu_backgroundColor="#44000000"
             fab:menu_buttonSpacing="5dp"
-            fab:menu_fab_label="Actions "
+            fab:menu_fab_label="New Device"
             fab:menu_colorNormal="?attr/colorPrimary"
             fab:menu_colorPressed="?attr/colorAccent"
             fab:menu_colorRipple="?attr/colorAccent">
 
         <com.github.clans.fab.FloatingActionButton
-                android:id="@+id/fab_new_remote"
+                android:id="@+id/fab_enter_address"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                fab:fab_label="Create Remote"
+                fab:fab_label="Enter Address"
                 fab:fab_size="mini"
                 fab:fab_colorNormal="?attr/colorPrimary"
                 fab:fab_colorPressed="?attr/colorPrimaryDark"
@@ -55,16 +44,15 @@
                 android:src="@drawable/fab_add"/>
 
         <com.github.clans.fab.FloatingActionButton
-                android:id="@+id/fab_import_remote"
+                android:id="@+id/fab_scan_device"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                fab:fab_label="Import Remote"
+                fab:fab_label="Scan Network"
                 fab:fab_size="mini"
                 fab:fab_colorNormal="?attr/colorPrimary"
                 fab:fab_colorPressed="?attr/colorPrimaryDark"
                 fab:fab_colorRipple="?attr/colorPrimaryDark"
-                android:src="@drawable/ic_fab_import"
-                tools:ignore="VectorDrawableCompat" />
+                android:src="@drawable/ic_refresh"/>
 
     </com.github.clans.fab.FloatingActionMenu>
 

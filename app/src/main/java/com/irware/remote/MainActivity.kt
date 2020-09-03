@@ -372,11 +372,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         nav_view.setNavigationItemSelectedListener(this)
         supportFragmentManager.beginTransaction().commitAllowingStateLoss()
-        nav_view.setCheckedItem(R.id.home_drawer)
-        if(irFragment == null)
-            irFragment=IRFragment()
+        nav_view.setCheckedItem(R.id.device_drawer_item)
+        if(devicesFragment == null)
+            devicesFragment = DevicesFragment()
 
-        replaceFragment(irFragment as Fragment)
+        replaceFragment(devicesFragment as Fragment)
     }
 
     private fun replaceFragment(fragment: Fragment){

@@ -6,6 +6,7 @@ import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.net.InetAddresses
 import android.os.Bundle
 import android.os.Handler
 import android.view.LayoutInflater
@@ -159,6 +160,8 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
                     devProp!!.macAddr = macAddr
                     devProp!!.ipAddr = addresses
                     devProp!!.description = devDescription.text.toString()
+                    devProp!!.userName = userName.text.toString()
+                    devProp!!.password = password.text.toString()
 
                     (context as Activity).runOnUiThread{
                         if(devExist){

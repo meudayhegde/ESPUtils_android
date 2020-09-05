@@ -93,7 +93,7 @@ class RemoteProperties(val remoteConfigFile: File, private val eventListener: Ev
 
     fun update(){
         val osr = OutputStreamWriter(remoteConfigFile.outputStream())
-        osr.write(jsonObj.toString().replace("\n",""))
+        osr.write(jsonObj.toString(4))
         osr.flush()
         osr.close()
     }

@@ -41,7 +41,7 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
         if(rootView == null ){
             rootView = inflater.inflate(R.layout.fragment_devices, container, false) as RelativeLayout
             viewManager = LinearLayoutManager(context)
-            viewAdapter = DeviceListAdapter(MainActivity.devicePropList)
+            viewAdapter = DeviceListAdapter(MainActivity.devicePropList, this)
             recyclerView = rootView!!.findViewById<RecyclerView>(R.id.manage_remotes_recycler_view).apply {
                 setHasFixedSize(true)
                 layoutManager = viewManager
@@ -142,6 +142,7 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
             addresses.insert(0, address)
         }
         devName.setText(devProp?.nickName?: macAddr.replace(":", "_"))
+        devDescription.setText(devProp?.description?: "")
 
         btnAdd.setOnClickListener{
             Thread{

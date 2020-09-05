@@ -17,26 +17,6 @@
         android:layout_marginBottom="@dimen/loginViewsMargin"/>
 
     <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputIP"
-            style="@style/textFieldLayout"
-            android:textColorHint="@color/whiteTextColor"
-            app:passwordToggleTint="@color/whiteTextColor">
-
-        <EditText
-                android:id="@+id/editTextIP"
-                style="@style/modifiedEditText"
-                android:hint="@string/ip_address"
-                android:importantForAutofill="no"
-                android:inputType="textEmailAddress"
-                android:maxLines="1"
-                android:textColor="@color/whiteTextColor"
-                android:textColorHighlight="@color/blue_fab_normal"
-                android:textColorHint="@color/whiteTextColor"
-                android:textColorLink="@color/blue_fab_ripple" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-
-    <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputEmail"
             style="@style/textFieldLayout"
             android:layout_marginTop="12sp"

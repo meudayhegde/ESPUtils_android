@@ -10,43 +10,12 @@
 
     <TextView android:id="@+id/info_layout"
             android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_gravity="center"
-            android:drawableStart="@drawable/icon_info" android:drawableTint="?attr/colorOnBackground"
             android:layout_marginTop="14sp" android:layout_marginStart="14sp" android:layout_marginEnd="14sp"
             android:paddingStart="10sp" android:gravity="center" android:textColor="?attr/colorOnBackground"
             android:text="@string/long_press_gpio_item" android:textSize="15sp"
-            tools:targetApi="m" tools:ignore="RtlSymmetry" />
-
-    <androidx.cardview.widget.CardView
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/layout_switch"
-            android:layout_below="@id/info_layout"
-            app:cardUseCompatPadding="true"
-            android:layout_margin="14sp"
-            app:cardElevation="4dp"
-            app:cardCornerRadius="6sp"
-            android:descendantFocusability="blocksDescendants">
-
-        <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="50sp"
-                android:orientation="horizontal">
-            <Switch
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/led_switch"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="2sp"
-                    android:layout_marginEnd="4sp"/>
-
-            <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:text="@string/led_switch"/>
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
+            tools:targetApi="m" tools:ignore="RtlSymmetry"
+            fab:drawableStartCompat="@drawable/icon_info"
+            fab:drawableTint="?attr/colorOnBackground" />
 
     <include layout="@layout/controllers_refresh_layout"
             android:id="@+id/refresh_layout"

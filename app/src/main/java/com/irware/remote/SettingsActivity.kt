@@ -6,9 +6,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.os.Build
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.WindowManager
+import android.view.*
 import android.widget.RadioGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -34,17 +32,17 @@ class SettingsActivity : AppCompatActivity() {
 
         viewManager = LinearLayoutManager(this)
         viewAdapter = SettingsAdapter(arrayListOf(
-            SettingsItem("Application Theme","UI theme for iRWaRE Application",themeSelectionDialog())
+            SettingsItem("Application Theme","UI theme for iRWaRE Application",themeSelectionDialog(), R.drawable.icon_theme)
         ))
 
-        supportActionBar?.setBackgroundDrawable(
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                getDrawable(R.mipmap.ic_launcher_background)
-            }else{
-                @Suppress("DEPRECATION")
-                resources.getDrawable(R.mipmap.ic_launcher_background)
-            }
-        )
+//        supportActionBar?.setBackgroundDrawable(
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//                getDrawable(R.mipmap.ic_launcher_background)
+//            }else{
+//                @Suppress("DEPRECATION")
+//                resources.getDrawable(R.mipmap.ic_launcher_background)
+//            }
+//        )
 
         recyclerView = findViewById<RecyclerView>(R.id.settings_list).apply {
             setHasFixedSize(true)
@@ -105,7 +103,7 @@ class SettingsActivity : AppCompatActivity() {
     }
 }
 
-class SettingsItem(var title:String, var subtitle:String,var dialog:Dialog)
+class SettingsItem(var title: String, var subtitle: String, var dialog:Dialog, var iconRes: Int = 0)
 
 interface OnSocketReadListener{
     fun onSocketRead(data:JSONObject)

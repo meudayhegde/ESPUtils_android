@@ -12,23 +12,23 @@ class DeviceProperties(private val deviceConfigFile: File)  {
 
     private var jsonObj : JSONObject = getJSONObject()
 
-    var nickName: String? = jsonObj.optString("nickName")
-        get() { return jsonObj.optString("nickName")}
+    var nickName: String = jsonObj.optString("nickName", "")
+        get() { return jsonObj.optString("nickName", "")}
         set(value){ field = value; jsonObj.put("nickName", value); update() }
-    var userName: String? = jsonObj.optString("userName")
-        get() { return jsonObj.optString("userName")}
+    var userName: String = jsonObj.optString("userName", "")
+        get() { return jsonObj.optString("userName", "")}
         set(value){ field = value; jsonObj.put("userName", value); update() }
-    var password: String? = jsonObj.optString("password")
-        get() { return jsonObj.optString("password")}
+    var password: String = jsonObj.optString("password", "")
+        get() { return jsonObj.optString("password", "")}
         set(value){ field = value; jsonObj.put("password", value); update() }
-    var macAddr: String? = jsonObj.optString("macAddr")
-        get() { return jsonObj.optString("macAddr")}
+    var macAddr: String = jsonObj.optString("macAddr")
+        get() { return jsonObj.optString("macAddr", "")}
         set(value){ field = value; jsonObj.put("macAddr", value); update() }
     var ipAddr: JSONArray? = jsonObj.optJSONArray("ipAddr")
         get() { return jsonObj.optJSONArray("ipAddr")}
         set(value){ field = value; jsonObj.put("ipAddr", value); update() }
-    var description: String? = jsonObj.optString("description")
-        get() { return jsonObj.optString("description")}
+    var description: String = jsonObj.optString("description", "")
+        get() { return jsonObj.optString("description", "")}
         set(value){ field = value; jsonObj.put("description", value); update() }
 
     private fun getJSONObject():JSONObject{
@@ -44,13 +44,13 @@ class DeviceProperties(private val deviceConfigFile: File)  {
 
     fun update(){
         val osr = OutputStreamWriter(deviceConfigFile.outputStream())
-        osr.write(jsonObj.toString().replace("\n",""))
+        osr.write(jsonObj.toString(4))
         osr.flush()
         osr.close()
     }
 
     override fun toString(): String {
-        return jsonObj.toString(2).replace("\n","")
+        return nickName
     }
 }
 

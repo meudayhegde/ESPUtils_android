@@ -5,6 +5,7 @@ import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
@@ -16,7 +17,8 @@ class SettingsAdapter(private val list: ArrayList<SettingsItem>) : RecyclerView.
 
     class MyViewHolder(val cardView: CardView) : RecyclerView.ViewHolder(cardView){
         val titleView: TextView = cardView.findViewById(R.id.setting_title)
-        val subTitleView:TextView = cardView.findViewById(R.id.setting_subtitle)
+        val subTitleView: TextView = cardView.findViewById(R.id.setting_subtitle)
+        val iconView: ImageView = cardView.findViewById(R.id.ic_settings)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup,
@@ -30,6 +32,7 @@ class SettingsAdapter(private val list: ArrayList<SettingsItem>) : RecyclerView.
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         holder.titleView.text = list[position].title
         holder.subTitleView.text = list[position].subtitle
+        if(list[position].iconRes != 0) holder.iconView.setImageResource(list[position].iconRes)
         holder.cardView.setOnClickListener{
             list[position].dialog.setTitle(list[position].title)
             list[position].dialog.show()

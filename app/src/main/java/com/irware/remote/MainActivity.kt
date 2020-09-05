@@ -14,7 +14,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
-import android.text.TextUtils
 import android.util.Log
 import android.util.TypedValue
 import android.view.Menu
@@ -29,19 +28,17 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.navigation.NavigationView
-import com.irware.getIPAddress
 import com.irware.remote.holders.DeviceProperties
+import com.irware.remote.holders.GPIOConfig
+import com.irware.remote.holders.GPIOObject
 import com.irware.remote.holders.RemoteProperties
 import com.irware.remote.listeners.OnValidationListener
-import com.irware.remote.net.SocketClient
 import com.irware.remote.ui.BlurBuilder
 import com.irware.remote.ui.buttons.RemoteButton
 import com.irware.remote.ui.fragments.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
-import org.json.JSONObject
 import java.io.*
-import java.net.InetAddress
 import kotlin.collections.ArrayList
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -57,10 +54,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     var gpioFragment:GPIOControllerFragment? = null
     private var aboutFragment: AboutFragment? = null
     private var splash: Dialog? = null
-    private var ipList:ArrayList<String> = ArrayList()
-    private lateinit var ipConf : File
     private var authenticated=false
-    private var connected = false
     private val onConfigChangeListeners:ArrayList<OnConfigurationChangeListener> = ArrayList()
 
     @SuppressLint("InflateParams")
@@ -72,6 +66,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         remotePropList.clear()
         devicePropList.clear()
+        gpioObjectList.clear()
 
         activity = this
         val arr = resources.obtainTypedArray(R.array.icons)
@@ -81,6 +76,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         arr.recycle()
 
         remoteConfigPath = filesDir.absolutePath + File.separator + REMOTE_CONFIG_DIR
+
         deviceConfigPath = filesDir.absolutePath + File.separator + DEVICE_CONFIG_DIR
         val deviceConfigDir = File(deviceConfigPath)
         deviceConfigDir.exists() or deviceConfigDir.mkdirs()
@@ -88,14 +84,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             devicePropList.add(DeviceProperties(file))
         }
 
-        ipConf = File(filesDir.absolutePath+File.separator+"iplist.conf")
-        if(!ipConf.exists())ipConf.createNewFile()
+        val gpioConfigFile = File(filesDir.absolutePath + File.separator + "GPIOConfig.json")
+        if (!gpioConfigFile.exists()) gpioConfigFile.createNewFile()
+        gpioConfig = GPIOConfig(gpioConfigFile)
+        val gpioObjectArray = gpioConfig!!.gpioObjectArray
+        if(gpioObjectArray.length()> 0)for(i: Int in 0 until gpioObjectArray.length()){
+            gpioObjectList.add(GPIOObject(gpioObjectArray.getJSONObject(i), gpioConfig!!))
+        }
+
         splash = object: Dialog(this,android.R.style.Theme_Light_NoTitleBar_Fullscreen){
             var exit = false
             override fun onBackPressed() {
                 if(exit) finish()
                 else Toast.makeText(this@MainActivity,"Press back again to exit", Toast.LENGTH_LONG).show()
                 exit = true
+                @Suppress("DEPRECATION")
                 Handler().postDelayed({
                     exit = false
                 },2000)
@@ -115,6 +118,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         splash?.window?.attributes?.windowAnimations = R.style.ActivityStartAnimationTheme
         splash?.show()
         hideSystemUI(splashView)
+
+        @Suppress("DEPRECATION")
         windowManager.defaultDisplay.getSize(size)
         val x = min(size.x,size.y)
         NUM_COLUMNS = when{x>920->5;x<720->3;else->4}
@@ -136,7 +141,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             setNavView()
         }
 
-        val ipEdit:EditText? = splash?.findViewById(R.id.editTextIP)
         val passEdit:EditText? = splash?.findViewById(R.id.editTextPassword)
         passEdit?.setText(pref.getString("password",""))
 
@@ -156,53 +160,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
 
         submit?.setOnClickListener {
-            val ip = ipEdit?.text.toString()
-            Thread{
-                if(InetAddress.getByName(ip).isReachable(500)) {
-                    try{
-                        val connector = SocketClient.Connector(ip)
 
-                        connector.sendLine("{\"request\":\"authenticate\",\"username\":" +
-                                "\"${userEdit?.text.toString()}\",\"password\":\"${passEdit?.text.toString()}\"," +
-                                "\"data\":\"__\",\"length\":\"0\"}")
-                        val response=connector.readLine()
-                        connector.close()
-                        if(JSONObject(response)["response"]=="authenticated"){
-                            editor.putString("lastIP",ip)
-                            USERNAME = userEdit?.text.toString()
-                            PASSWORD = passEdit?.text.toString()
-                            if(!ipList.contains(ip)) ipList.add(0,ip)
-                            else {ipList.remove(ip); ipList.add(0,ip)}
-                            runOnUiThread {
-                                authenticated=true
-                                editor.putString("username",USERNAME)
-                                editor.putString("password",PASSWORD)
-                                editor.apply()
-                                validatedListener.onValidated(true)
-                            }
-                        }else{
-                            runOnUiThread {
-                                Toast.makeText(this@MainActivity,
-                                    "Authentication failed, please check credentials",Toast.LENGTH_LONG).show()
-                            }
-                        }
+            USERNAME = userEdit?.text.toString()
+            PASSWORD = passEdit?.text.toString()
 
-                    }catch(ex:IOException){
-                        runOnUiThread {
-                            Toast.makeText(this@MainActivity,"ip is not of a valid iRWaRE device",Toast.LENGTH_LONG).show()
-                        }
-                    }
+            authenticated=true
+            editor.putString("username",USERNAME)
+            editor.putString("password",PASSWORD)
+            editor.apply()
 
-                }else{
-                    runOnUiThread {
-                        Toast.makeText(this@MainActivity,"Ip is not reachable!",Toast.LENGTH_LONG).show()
-                    }
-                }
-                val writer=OutputStreamWriter(ipConf.outputStream())
-                writer.write(TextUtils.join("\n",ipList))
-                writer.flush()
-                writer.close()
-            }.start()
+            validatedListener.onValidated(true)
         }
 
         addOnConfigurationChangeListener(object:OnConfigurationChangeListener{
@@ -221,40 +188,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         })
 
         Thread{
-            ipList= BufferedReader(InputStreamReader(ipConf.inputStream())).readLines() as ArrayList<String>
-            val newList = ArrayList<String>()
-            newList.addAll(ipList)
-            for(ip:String in newList){
-                if(!connected and InetAddress.getByName(ip).isReachable(50)){
-                    if(ipVerified(ip)) {
-                        onIpVerified(ip,ipEdit,userEdit,passEdit,submit)
-                        break
-                    }
-                }
-            }
-            val addrs = getIPAddress()
-            for(addr in addrs){
-                if(!connected) {
-                    val str = addr.split(".").toMutableList()
-                    str.removeAt(str.lastIndex)
-                    val subnet = TextUtils.join(".", str)
-                    if(!connected){
-                        for (i in 0 until 255) {
-                                val ip = "$subnet.$i"
-                                if (!connected and InetAddress.getByName(ip).isReachable(20)) {
-                                    if (ipVerified(ip)) {
-                                        onIpVerified(ip,ipEdit,userEdit,passEdit,submit)
-                                        break
-                                    }
-                                }
-                        }
-                    }
-                }
-            }
-
-        }.start()
-
-        Thread{
             val files = File(remoteConfigPath).listFiles { pathname ->
                 pathname!!.isFile and (pathname.name.endsWith(
                     ".json",
@@ -265,6 +198,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 remotePropList.add(RemoteProperties(file, null))
         }.start()
 
+        if(pref.getString("username", "") != "" && pref.getString("password", "") != "") authenticated = true
+
+        @Suppress("DEPRECATION")
         Handler().postDelayed({
             if(splash?.isShowing == true) {
                 splash!!.findViewById<RelativeLayout>(R.id.splash_restart_layout).visibility = View.VISIBLE
@@ -290,7 +226,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     setNavView()
                 }
             }
-        },2000)
+        }, 1100)
     }
 
     private fun splashPortrait(splash:Dialog){
@@ -334,33 +270,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         splash.findViewById<ImageView>(R.id.splash_logo).layoutParams = logoParams
     }
 
-    private fun ipVerified(ip:String):Boolean{
-        try{
-            val connector=SocketClient.Connector(ip)
-            connector.sendLine("{\"request\":\"ping\"}")
-            MCU_MAC = JSONObject(connector.readLine()).getString("MAC")
-            connector.close()
-            if(ip in ipList){
-                ipList.remove(ip)
-                ipList.add(0,ip)
-            }else ipList.add(0,ip)
-            return true
-        }catch(ex: Exception){}
-        return false
-    }
-
-    private fun onIpVerified(ip:String,ipEdit:EditText?, userEdit:EditText?, passEdit:EditText?, submit:Button?){
-        runOnUiThread {
-            if(!connected) {
-                connected = true
-                ipEdit?.setText(ip)
-                if (userEdit?.text?.isNotEmpty() == true and (passEdit?.text?.isNotEmpty() == true)) {
-                    submit?.callOnClick()
-                }
-            }
-        }
-    }
-
     fun setNavView(){
         setContentView(R.layout.activity_main)
 
@@ -391,6 +300,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             else -> {
                 backPressed = true
                 Toast.makeText(this,"press back button again to exit",Toast.LENGTH_SHORT).show()
+
+                @Suppress("DEPRECATION")
                 Handler().postDelayed({
                     backPressed = false
                 },2000)
@@ -455,6 +366,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun hideSystemUI(view:View) {
+        @Suppress("DEPRECATION")
         view.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                 or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                 or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
@@ -510,6 +422,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
+
+        @Suppress("DEPRECATION")
         windowManager.defaultDisplay.getSize(size)
         onConfigChangeListeners.iterator().forEach {
             try {
@@ -533,9 +447,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         const val REMOTE_CONFIG_DIR = "remotes"
         const val DEVICE_CONFIG_DIR = "devices"
         const val FILE_SELECT_CODE = 0
+        var gpioConfig: GPIOConfig? = null
         val remotePropList = ArrayList<RemoteProperties>()
         val devicePropList = ArrayList<DeviceProperties>()
-        var MCU_MAC = ""
+        val gpioObjectList = ArrayList<GPIOObject>()
         var remoteConfigPath =""
         var deviceConfigPath =""
         var USERNAME = ""
@@ -552,6 +467,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         if(restart) recreate()
         else Toast.makeText(this, "Press again to Restart",Toast.LENGTH_SHORT).show()
         restart = true
+
+        @Suppress("DEPRECATION")
         Handler().postDelayed({ restart = false },1400)
     }
 }

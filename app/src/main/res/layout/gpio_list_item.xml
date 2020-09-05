@@ -11,6 +11,7 @@
         android:descendantFocusability="blocksDescendants">
 
     <RelativeLayout
+            android:id="@+id/layout_gpio_list_item"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:foreground="?android:attr/selectableItemBackground"
@@ -21,35 +22,44 @@
             tools:ignore="UnusedAttribute">
 
         <ImageView
-                android:id="@+id/ic_settings"
+                android:id="@+id/ic_gpio_list_item"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="8sp"
-                android:src="@drawable/ic_settings"
+                android:src="@drawable/icon_lamp"
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
                 app:tint="?attr/colorOnBackground"
                 android:contentDescription="@string/icon_for_settings_list_item"/>
 
         <TextView
-                android:id="@+id/setting_title"
+                android:id="@+id/gpio_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="18sp"
-                android:layout_toEndOf="@id/ic_settings"
+                android:layout_toEndOf="@id/ic_gpio_list_item"
                 android:textColor="?attr/colorOnBackground"
                 android:layout_marginStart="6sp"
-                android:text="@string/title" />
+                android:text="@string/title"
+                tools:ignore="RelativeOverlap" />
 
         <TextView
-                android:id="@+id/setting_subtitle"
+                android:id="@+id/gpio_description"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/setting_title"
-                android:layout_toEndOf="@id/ic_settings"
+                android:layout_below="@id/gpio_name"
+                android:layout_toEndOf="@id/ic_gpio_list_item"
                 android:layout_marginStart="6sp"
                 android:textSize="14sp"
                 android:text="@string/subtitle" />
+
+        <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/gpio_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="12sp"/>
 
     </RelativeLayout>
 

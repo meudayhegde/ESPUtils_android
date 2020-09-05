@@ -2,6 +2,7 @@ package com.irware.remote.ui.adapters
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Color
@@ -26,14 +27,17 @@ import com.irware.remote.R
 import com.irware.remote.SettingsItem
 import com.irware.remote.holders.DeviceProperties
 import com.irware.remote.net.SocketClient
+import com.irware.remote.ui.fragments.DevicesFragment
 import org.json.JSONArray
 import org.json.JSONObject
 import java.net.InetAddress
+import kotlin.math.min
 
-class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>) : RecyclerView.Adapter<DeviceListAdapter.MyViewHolder>(){
-
+class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>, private val devicesFragment: DevicesFragment) : RecyclerView.Adapter<DeviceListAdapter.MyViewHolder>(){
+    
     class MyViewHolder(val cardView: CardView) : RecyclerView.ViewHolder(cardView)
 
+    val context = devicesFragment.context
     override fun onCreateViewHolder(parent: ViewGroup,
                                     viewType: Int): MyViewHolder {
         val cardView = LayoutInflater.from(parent.context).inflate(R.layout.device_list_item, parent, false) as CardView
@@ -45,7 +49,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>) : Rec
         setViewProps(holder.cardView, prop)
     }
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint("SetTextI18n", "UseCompatLoadingForDrawables", "InflateParams")
     private fun setViewProps(cardView: CardView, prop: DeviceProperties){
         cardView.findViewById<TextView>(R.id.name_device).text = prop.nickName
         cardView.findViewById<TextView>(R.id.mac_addr).text = "(${prop.macAddr})"
@@ -60,7 +64,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>) : Rec
         refresh.visibility = View.VISIBLE
         icOnline.visibility = View.GONE
         icOffline.visibility = View.GONE
-        status.text = cardView.context.getString(R.string.connecting)
+        status.text = context?.getString(R.string.connecting)
         ipText.text = ""
         cardView.setOnClickListener {  }
         Thread{
@@ -80,34 +84,64 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>) : Rec
                     connected = true; break
                 }catch(ex: Exception){ }
             }
-            (cardView.context as Activity).runOnUiThread{
+            (context as Activity).runOnUiThread{
                 refresh.visibility = View.GONE
                 icOnline.visibility = if(connected) View.VISIBLE else View.GONE
                 icOffline.visibility = if(connected) View.GONE else View.VISIBLE
-                status.text = cardView.context.getString(if(connected) R.string.online else R.string.offline)
+                status.text = context.getString(if(connected) R.string.online else R.string.offline)
                 ipText.text = prop.ipAddr!!.get(0) as String
-                cardView.setOnClickListener {
-                    val settingsDialog = AlertDialog.Builder(cardView.context)
-                        .setPositiveButton("Done") { p0, _ -> p0.dismiss() }
-                        .setTitle("Settings for ${prop.nickName}")
-                        .setView(R.layout.activity_settings)
-                        .create()
-                    settingsDialog.show()
-                    settingsDialog.window?.setBackgroundDrawableResource(R.drawable.layout_border_round_corner)
-                    settingsDialog.window?.setLayout((MainActivity.size.x*0.9).toInt(), (MainActivity.size.y*0.9).toInt())
+                val settingsIcon = context.getDrawable(R.drawable.ic_settings)
+                settingsIcon?.setTint(MainActivity.colorOnBackground)
+                if (connected){
+                    cardView.setOnClickListener {
+                        val settingsDialog = AlertDialog.Builder(context)
+                            .setPositiveButton("Done") { p0, _ -> p0.dismiss() }
+                            .setTitle("Settings for ${prop.nickName}")
+                            .setView(R.layout.activity_settings)
+                            .setIcon(settingsIcon)
+                            .create()
+                        settingsDialog.show()
+                        settingsDialog.window?.setBackgroundDrawableResource(R.drawable.layout_border_round_corner)
+                        settingsDialog.window?.setLayout((MainActivity.size.x*0.9).toInt(), (MainActivity.size.y*0.9).toInt())
 
 
-                    val viewManager = LinearLayoutManager(cardView.context)
-                    val viewAdapter = SettingsAdapter(arrayListOf(
-                        SettingsItem("Wireless Settings","Wi-Fi/Hotspot SSID and passwords",
-                            wirelessSettingsDialog(cardView.context, prop.ipAddr!!.get(0) as String, prop.userName, prop.password)),
-                        SettingsItem("User Settings","User credentials (username and password)",
-                            userSettingsDialog(cardView.context, prop.ipAddr!!.get(0) as String))
-                    ))
-                    settingsDialog.findViewById<RecyclerView>(R.id.settings_list)?.apply {
-                        setHasFixedSize(true)
-                        layoutManager = viewManager
-                        adapter = viewAdapter
+                        val viewManager = LinearLayoutManager(context)
+                        val viewAdapter = SettingsAdapter(arrayListOf(
+                            SettingsItem("Wireless Settings","Wi-Fi/Hotspot SSID and passwords",
+                                wirelessSettingsDialog(context, prop.ipAddr!!.get(0) as String, prop.userName, prop.password), R.drawable.icon_wifi),
+                            SettingsItem("User Settings","User credentials (username and password)",
+                                userSettingsDialog(context, prop.ipAddr!!.get(0) as String), R.drawable.ic_user)
+                        ))
+                        settingsDialog.findViewById<RecyclerView>(R.id.settings_list)?.apply {
+                            setHasFixedSize(true)
+                            layoutManager = viewManager
+                            adapter = viewAdapter
+                        }
+                    }
+
+                    cardView.setOnLongClickListener {
+                        val content = LayoutInflater.from(context).inflate(R.layout.add_new_device,null) as ScrollView
+                        val btnCancel = content.findViewById<Button>(R.id.cancel)
+
+                        val dialog = Dialog(context)
+                        dialog.setContentView(content)
+                        btnCancel.setOnClickListener { dialog.dismiss() }
+                        dialog.show()
+                        dialog.findViewById<TextView>(R.id.title_add_new_device).text = context.getString(
+                                                    R.string.set_dev_props)
+                        val width = min(MainActivity.size.x,MainActivity.size.y)
+                        dialog.window?.setLayout(width*7/8, WindowManager.LayoutParams.WRAP_CONTENT)
+                        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                        devicesFragment.onAddressVerified(dialog, prop.ipAddr?.get(0) as String, prop.macAddr!!)
+                        true
+                    }
+                }else {
+                    cardView.setOnClickListener{
+                        Toast.makeText(context, "Device Offline!", Toast.LENGTH_SHORT).show()
+                    }
+                    cardView.setOnLongClickListener {
+                        Toast.makeText(context, "Device Offline!", Toast.LENGTH_SHORT).show()
+                        true
                     }
                 }
             }
@@ -129,6 +163,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>) : Rec
         val dialog = AlertDialog.Builder(context)
             .setTitle("User Settings")
             .setView(content)
+            .setIcon(R.drawable.ic_user)
             .setNegativeButton("Cancel"){dialog,_ -> dialog.dismiss()}
             .setPositiveButton(context.getString(R.string.apply)){_,_->}
             .create()
@@ -242,6 +277,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>) : Rec
             .setView(content)
             .setNegativeButton("Cancel"){dialog,_ -> dialog.dismiss()}
             .setPositiveButton(context.getString(R.string.apply)){_,_->}
+            .setIcon(R.drawable.icon_wifi)
             .create()
         dialog.setOnShowListener {
             dialog.window?.setBackgroundDrawableResource(R.drawable.layout_border_round_corner)

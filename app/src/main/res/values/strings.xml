@@ -64,6 +64,7 @@
     <string name="new_user_name">New User Name</string>
     <string name="new_password">New Password</string>
     <string name="confirm_password">Confirm Password</string>
+    <string name="confirm">Confirm</string>
     <string name="button_to_delete_remotebutton">button to delete RemoteButton</string>
     <string name="title">Title</string>
     <string name="subtitle">Subtitle</string>
@@ -106,4 +107,9 @@
     <string name="add_new_device">Add new Device</string>
     <string name="add_device">Add Device</string>
     <string name="connecting">Connecting…</string>
+    <string name="icon_for_settings_list_item">icon for settings list item</string>
+    <string name="set_dev_props">Set Device Properties</string>
+    <string name="switch_name">Switch Name</string>
+    <string name="select_device">-Select Device-</string>
+    <string name="pin">-GPIO-</string>
 </resources>

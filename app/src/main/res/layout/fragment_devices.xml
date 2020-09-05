@@ -12,7 +12,6 @@
             android:layout_height="match_parent"
             android:layout_margin="14sp" />
 
-
     <com.github.clans.fab.FloatingActionMenu
             android:id="@+id/fam_manage_gpio"
             android:layout_width="match_parent"

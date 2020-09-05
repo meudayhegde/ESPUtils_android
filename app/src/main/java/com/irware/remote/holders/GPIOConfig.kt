@@ -12,7 +12,8 @@ class GPIOConfig(private val gpioConfigFile: File)  {
 
     private var jsonObj : JSONObject = getJSONObject()
 
-    var GPIOObjectArray: JSONArray? = jsonObj.optJSONArray("GPIOObjectArray")
+    var gpioObjectArray: JSONArray = getGPIO()
+        get() = getGPIO()
         set(value){
             field = value
             jsonObj.put("GPIOObjectArray", value)
@@ -37,6 +38,33 @@ class GPIOConfig(private val gpioConfigFile: File)  {
         }
     }
 
+    fun addGPIO(gpio: JSONObject):JSONObject?{
+        val index = gpioObjectArray.index(gpio)
+        if( index >= 0){
+            return gpioObjectArray.getJSONObject(index)
+        }
+        gpioObjectArray.put(gpio)
+        return gpio
+    }
+
+    fun removeGPIO(gpio: JSONObject):Boolean{
+        val index = gpioObjectArray.index(gpio)
+        if(index<0) return false
+        gpioObjectArray.remove(index)
+        update()
+        return true
+    }
+
+    private fun getGPIO():JSONArray{
+        return try{
+            update()
+            jsonObj.getJSONArray("GPIOObjectArray")
+        }catch(ex:JSONException){
+            jsonObj.put("GPIOObjectArray", JSONArray())
+            getGPIO()
+        }
+    }
+
     fun update(){
         val osr = OutputStreamWriter(gpioConfigFile.outputStream())
         osr.write(jsonObj.toString().replace("\n",""))
@@ -51,8 +79,9 @@ class GPIOConfig(private val gpioConfigFile: File)  {
 
 private fun JSONArray.index(obj: JSONObject):Int{
     for(position in 0 until this.length()){
-        if(getJSONObject(position).optLong("buttonID") == obj.getLong("buttonID"))
-            return position
+        val curObj = getJSONObject(position)
+        if(curObj.optString("macAddr", "") == obj.optString("macAddr", "") &&
+                curObj.optInt("gpioNumber") == obj.optInt("gpioNumber")) return position
     }
     return -1
 }

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardUseCompatPadding="true"
+        app:cardElevation="4dp"
+        app:cardCornerRadius="12sp"
+        android:descendantFocusability="blocksDescendants">
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:background="@drawable/layout_border_round_corner"
+            android:orientation="vertical"
+            tools:ignore="UnusedAttribute">
+
+        <TextView
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:id="@+id/device_ip_address" android:text="@string/ip_address"
+                android:textSize="14sp" android:layout_marginTop="10sp"
+                android:layout_marginStart="8sp" android:layout_marginEnd="8sp"/>
+
+        <TextView
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:textSize="12sp" android:layout_marginTop="4sp"
+                android:id="@+id/device_mac_address" android:text="@string/mac_address"
+                android:layout_marginStart="8sp" android:layout_marginEnd="8sp"
+                android:layout_marginBottom="8sp"/>
+
+    </LinearLayout>
+
+
+</androidx.cardview.widget.CardView>

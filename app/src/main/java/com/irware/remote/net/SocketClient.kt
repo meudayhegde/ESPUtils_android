@@ -36,12 +36,11 @@ object SocketClient{
         }
     }
 
-    fun readIrCode(context:Context,irlistener:IrCodeListener,jsonObj:JSONObject?) {
+    fun readIrCode(address: String, userName: String, password: String, irlistener:IrCodeListener,jsonObj:JSONObject?) {
         Thread {
             var canceled = false
             try {
-                val pref = context.getSharedPreferences("login",Context.MODE_PRIVATE)
-                val connector = Connector(pref.getString("lastIP","")!!)
+                val connector = Connector(address)
                 MainActivity.activity?.runOnUiThread {
                     irlistener.parentDialog?.setButton(DialogInterface.BUTTON_NEGATIVE,"Cancel") { dialog, _ ->
                         canceled = true
@@ -51,8 +50,7 @@ object SocketClient{
                 }
 
                 connector.sendLine(
-                    "{\"request\":\"ir_capture\",\"username\":\""
-                            + pref.getString("username","") + "\",\"password\":\"" + pref.getString("password","") + "\",\"capture_mode\":"+irlistener.mode+"}")
+                    "{\"request\":\"ir_capture\",\"username\":\"${userName}\",\"password\":\"${password}\",\"capture_mode\":${irlistener.mode}}")
                 while(connector.isConnected()) {
                     val result = JSONObject(connector.readLine())
                     when (result.getString("response")) {
@@ -94,15 +92,12 @@ object SocketClient{
         }.start()
     }
 
-    fun sendIrCode(context: Context, jsonObj:JSONObject, irSendListener: IrSendListener) {
+    fun sendIrCode(address: String, userName: String, password: String, jsonObj:JSONObject, irSendListener: IrSendListener) {
         Thread {
             try {
-                val pref = context.getSharedPreferences("login",Context.MODE_PRIVATE)
-                val connector = Connector(pref.getString("lastIP","")!!)
+                val connector = Connector(address)
                 connector.sendLine(
-                    "{\"request\":\"ir_send\",\"username\":\""
-                            + pref.getString("username","") + "\",\"password\":\""
-                            + pref.getString("password","") + "\",\"length\":\""
+                    "{\"request\":\"ir_send\",\"username\":\"${userName}\",\"password\":\"${password}\",\"length\":\""
                             + jsonObj.getString("length") + "\",\"protocol\":\"" + jsonObj.getString("protocol") + "\",\"irCode\":\""
                             + jsonObj.getString("irCode") + "\"}")
                 val result = connector.readLine()

@@ -28,11 +28,9 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.navigation.NavigationView
-import com.irware.remote.holders.DeviceProperties
-import com.irware.remote.holders.GPIOConfig
-import com.irware.remote.holders.GPIOObject
-import com.irware.remote.holders.RemoteProperties
+import com.irware.remote.holders.*
 import com.irware.remote.listeners.OnValidationListener
+import com.irware.remote.net.ARPTable
 import com.irware.remote.ui.BlurBuilder
 import com.irware.remote.ui.buttons.RemoteButton
 import com.irware.remote.ui.fragments.*
@@ -60,7 +58,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     @SuppressLint("InflateParams")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        arpTable = ARPTable(this, -1)
         when(getSharedPreferences("theme_setting", Context.MODE_PRIVATE).getInt("application_theme",if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) { 0 }else{ 2 }))
         {1-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);2-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)}
 
@@ -441,6 +439,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         super.onDestroy()
     }
 
+    override fun onResume() {
+        super.onResume()
+        devicePropList.forEach { it.updateStatus(this) }
+    }
+
     companion object {
         val size:Point=Point()
         const val PORT=48321
@@ -451,6 +454,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val remotePropList = ArrayList<RemoteProperties>()
         val devicePropList = ArrayList<DeviceProperties>()
         val gpioObjectList = ArrayList<GPIOObject>()
+        var arpTable: ARPTable? = null
         var remoteConfigPath =""
         var deviceConfigPath =""
         var USERNAME = ""

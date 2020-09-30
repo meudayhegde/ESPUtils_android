@@ -11,10 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.Button
-import android.widget.RelativeLayout
-import android.widget.ScrollView
-import android.widget.TextView
+import android.widget.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -80,6 +77,7 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
         val manageMenu = rootView!!.findViewById<FloatingActionMenu>(R.id.fam_manage_remotes)
         if(!manageMenu.isOpened)
             manageMenu.hideMenuButton(false)
+        @Suppress("DEPRECATION")
         Handler().postDelayed({
             if(manageMenu.isMenuButtonHidden)
                 manageMenu.showMenuButton(true)
@@ -114,6 +112,12 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
         val btnDelete = inputLayout.findViewById<Button>(R.id.delete_remote)
         val btnCancel = inputLayout.findViewById<Button>(R.id.cancel)
         val btnFinish = inputLayout.findViewById<Button>(R.id.button_done)
+        val spinner = inputLayout.findViewById<Spinner>(R.id.select_device)
+
+        val devicePropList = arrayListOf<Any>(getString(R.string.select_device))
+        devicePropList.addAll(MainActivity.devicePropList)
+        spinner.adapter = ArrayAdapter(context!!, android.R.layout.simple_list_item_1, devicePropList)
+
         btnDelete.visibility = View.GONE
         btnEdit.visibility = View.GONE
         inputLayout.findViewById<TextView>(R.id.title_new_remote_confirm).text = getString(R.string.enter_remote_details)
@@ -122,6 +126,13 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
         dialog.setContentView(inputLayout)
         btnCancel.setOnClickListener { dialog.cancel() }
         btnFinish.setOnClickListener {
+
+            if(spinner.selectedItemPosition == 0){
+                Toast.makeText(context!!, getString(R.string.device_not_selected_note), Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
+            val selectedDevice = MainActivity.devicePropList[spinner.selectedItemPosition - 1]
+
             val vendor = inputLayout.findViewById<TextInputEditText>(R.id.vendor_name).text.toString()
             val model = inputLayout.findViewById<TextInputEditText>(R.id.model_name).text.toString()
             var id = ("$vendor $model").toLowerCase().replace(" ", "_").replace("\n", "").replace("/","_")
@@ -133,16 +144,16 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
                 configFile = File(MainActivity.remoteConfigPath + File.separator + id + "_" + incr + ".json")
                 incr++
             }
-            if(incr>1) id+="_"+(incr-1)
+            if(incr>1) id += "_" + (incr-1)
             if (!configFile.exists()) configFile.createNewFile()
             val remoteProperties = RemoteProperties(configFile, null)
-
 
             remoteProperties.fileName = configFile.name
             remoteProperties.remoteVendor = vendor
             remoteProperties.remoteName = model
             remoteProperties.remoteID = id
             remoteProperties.description = desc.text.toString()
+            remoteProperties.deviceConfigFileName = selectedDevice.deviceConfigFile.name
             MainActivity.remotePropList.add(remoteProperties)
             viewAdapter.notifyDataSetChanged()
             RemoteDialog(context!!, remoteProperties,RemoteDialog.MODE_EDIT).show()

@@ -9,7 +9,9 @@ import android.content.Intent
 import android.os.Handler
 import android.widget.RemoteViews
 import android.widget.Toast
+import com.irware.remote.net.ARPTable
 import com.irware.remote.holders.ButtonProperties
+import com.irware.remote.net.OnIpListener
 import com.irware.remote.holders.RemoteProperties
 import com.irware.remote.net.IrSendListener
 import com.irware.remote.net.SocketClient
@@ -34,7 +36,10 @@ class ButtonWidgetProvider: AppWidgetProvider() {
         for (widgetId in allWidgetIds) {
 
             val remoteViews = RemoteViews(context.packageName, R.layout.widget_layout)
-            val buttonProp = getJSONObject(context,widgetId,remoteViews) ?: return
+            val objList = getJSONObject(context,widgetId,remoteViews)
+            if(objList.isEmpty()) return
+            val remoteProp = objList[0] as RemoteProperties
+            val buttonProp = objList[1] as ButtonProperties
 
             remoteViews.setTextViewText(R.id.widget_button,buttonProp.text)
             if(buttonProp.icon!=0) remoteViews.setTextViewCompoundDrawables(R.id.widget_button,iconDrawableList[buttonProp.icon],0,0,0)
@@ -58,18 +63,35 @@ class ButtonWidgetProvider: AppWidgetProvider() {
             val watchWidget = ComponentName(context!!,ButtonWidgetProvider::class.java)
 
             val widgetID = intent.getIntExtra("WidgetID",0)
-            val buttonProp = getJSONObject(context,widgetID,remoteViews) ?:return
+            val objList = getJSONObject(context, widgetID, remoteViews)
+            if(objList.isEmpty()) return
+            val remoteProp = objList[0] as RemoteProperties
+            val buttonProp = objList[1] as ButtonProperties
             val handler = Handler()
-            SocketClient.sendIrCode(context,buttonProp.jsonObj,object:IrSendListener{
-                override fun onIrSend(result: String) {
-                    handler.post {
-                        if(result.contains("success")) Toast.makeText(context,buttonProp.text + ": " + JSONObject(result).getString("response"),Toast.LENGTH_LONG).show()
-                        else Toast.makeText(context,context.getString(R.string.device_not_connected),Toast.LENGTH_LONG).show()
+
+            (MainActivity.arpTable ?: ARPTable(context, 1)).getIpFromMac(remoteProp.deviceProperties.macAddr, object:
+                OnIpListener {
+                override val uiThread: Boolean = true
+
+                override fun onIpResult(address: String?) {
+                    val userName = remoteProp.deviceProperties.userName
+                    val password = remoteProp.deviceProperties.password
+                    if (address  == null){
+                        Toast.makeText(context, "Err: Device not reachable", Toast.LENGTH_LONG).show()
+                        manager.updateAppWidget(watchWidget, remoteViews)
+                        return
                     }
+                    SocketClient.sendIrCode(address, userName, password, buttonProp.jsonObj, object:IrSendListener{
+                        override fun onIrSend(result: String) {
+                            handler.post {
+                                if(result.contains("success")) Toast.makeText(context,buttonProp.text + ": " + JSONObject(result).getString("response"),Toast.LENGTH_LONG).show()
+                                else Toast.makeText(context,context.getString(R.string.device_not_connected),Toast.LENGTH_LONG).show()
+                            }
+                        }
+                    })
+                    manager.updateAppWidget(watchWidget,remoteViews)
                 }
             })
-
-            manager.updateAppWidget(watchWidget,remoteViews)
         }
     }
 
@@ -83,7 +105,7 @@ class ButtonWidgetProvider: AppWidgetProvider() {
         }
     }
 
-    private fun getJSONObject(context:Context,widgetID:Int,views:RemoteViews):ButtonProperties?{
+    private fun getJSONObject(context:Context,widgetID:Int,views:RemoteViews):ArrayList<Any>{
         val pref = context.getSharedPreferences("widget_associations",Context.MODE_PRIVATE)
         val editor = pref.edit()
         var buttonInfo = pref.getString(widgetID.toString(),"")
@@ -98,26 +120,27 @@ class ButtonWidgetProvider: AppWidgetProvider() {
             }else{
             //    Toast.makeText(context,"Button Not configured, Click to configure",Toast.LENGTH_LONG).show()
                 setConfigureOnClick(context,widgetID,views)
-                return null
+                return ArrayList()
             }
         }
         try{
-            val remoteProp = RemoteProperties(File(context.filesDir.absolutePath+File.separator+"remotes"+File.separator+buttonInfo!!.split(",")[0]),null)
+
+            val remoteProp = RemoteProperties(File(context.filesDir.absolutePath + File.separator + MainActivity.REMOTE_CONFIG_DIR + File.separator + buttonInfo!!.split(",")[0]),null)
             val buttonProps = remoteProp.getButtons()
             for(i in 0 until buttonProps.length()){
                 val jsonObj = buttonProps.getJSONObject(i)
                 if(jsonObj.optLong("buttonID") == buttonInfo.split(",")[1].toLong()){
-                    return ButtonProperties(jsonObj)
+                    return arrayListOf(remoteProp, ButtonProperties(jsonObj))
                 }
             }
         }catch(ex:FileNotFoundException){
-            Toast.makeText(context,"Remote Configuration Deleted, click button to configure.",Toast.LENGTH_LONG).show()
+            Toast.makeText(context,"Remote Configuration Deleted, click button to configure. $ex",Toast.LENGTH_LONG).show()
             setConfigureOnClick(context,widgetID,views)
-            return null
+            return ArrayList()
         }
         Toast.makeText(context,"Button is deleted from Remote Configuration, click widget to configure.",Toast.LENGTH_LONG).show()
         setConfigureOnClick(context,widgetID,views)
-        return null
+        return ArrayList()
     }
 
     private fun setConfigureOnClick(context:Context,widgetID: Int,views: RemoteViews){

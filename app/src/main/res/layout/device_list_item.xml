@@ -18,7 +18,6 @@
             android:background="@drawable/layout_border_round_corner"
             android:orientation="vertical"
             tools:ignore="UnusedAttribute">
-<!--            -->
 
         <LinearLayout
                 android:id="@+id/layout_vendor"

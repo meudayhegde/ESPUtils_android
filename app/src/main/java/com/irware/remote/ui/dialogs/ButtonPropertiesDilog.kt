@@ -31,7 +31,8 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 
 
-class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedListener, override var mode:Int): AlertDialog(context),IrCodeListener {
+class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedListener, override var mode:Int,
+                             private val address: String, private val userName: String, private val password: String): AlertDialog(context),IrCodeListener {
 
     override var parentDialog: AlertDialog? = null
 
@@ -101,7 +102,7 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
         ir_capture_instruction.visibility = View.VISIBLE
         if(mode == MODE_MULTI)
             ir_capture_instruction.text = "${context.getString(R.string.ir_capture_instruction)}\n${context.getString(R.string.multi_capture_hint)}"
-        SocketClient.readIrCode(context,this,jsonObj)
+        SocketClient.readIrCode(address, userName, password,this,jsonObj)
     }
 
     override fun onIrRead(jsonObj:JSONObject) {

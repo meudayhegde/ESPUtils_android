@@ -15,10 +15,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.animation.AnimationUtils
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.ScrollView
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.cardview.widget.CardView
 import androidx.core.app.ShareCompat
@@ -100,7 +97,7 @@ class RemoteListAdapter(private val propList: ArrayList<RemoteProperties>, priva
     override fun getItemCount() = propList.size
 
     private fun onShareClick(context: Context,prop:RemoteProperties) {
-        val parent = context.externalCacheDir
+        val parent = context.filesDir
         if (parent!!.exists() and parent.isFile) parent.delete()
         if (!parent.exists()) parent.mkdirs()
         val fileToShare = File(parent.absolutePath, prop.remoteConfigFile.name)
@@ -150,15 +147,30 @@ class RemoteListAdapter(private val propList: ArrayList<RemoteProperties>, priva
             card.context.getString(
                 R.string.edit_remote_informtion
             )
+        val spinner = inputLayout.findViewById<Spinner>(R.id.select_device)
+
+        val devicePropList = arrayListOf<Any>(card.context.getString(R.string.select_device))
+        devicePropList.addAll(MainActivity.devicePropList)
+        spinner.adapter = ArrayAdapter(card.context, android.R.layout.simple_list_item_1, devicePropList)
+
+        spinner.setSelection(MainActivity.devicePropList.indexOf(prop.deviceProperties) + 1)
+
         val dialog = Dialog(card.context)
         dialog.setContentView(inputLayout)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
         btnCancel.setOnClickListener { dialog.dismiss() }
         btnFinish.setOnClickListener {
+            if(spinner.selectedItemPosition == 0){
+                Toast.makeText(card.context, card.context.getString(R.string.device_not_selected_note), Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
+            val selectedDevice = MainActivity.devicePropList[spinner.selectedItemPosition - 1]
+
             prop.remoteVendor = vendor.text.toString()
             prop.remoteName = name.text.toString()
             prop.description = desc.text.toString()
+            prop.deviceConfigFileName = selectedDevice.deviceConfigFile.name
             setViewProps(card, prop)
             dialog.dismiss()
         }
@@ -173,7 +185,7 @@ class RemoteListAdapter(private val propList: ArrayList<RemoteProperties>, priva
 
         btnDelete.setOnClickListener {
             val icon = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                dialog.context.getDrawable(R.drawable.icon_delete)
+                ContextCompat.getDrawable(dialog.context, R.drawable.icon_delete)
             } else {
                 @Suppress("DEPRECATION")
                 dialog.context.resources.getDrawable(R.drawable.icon_delete)

@@ -17,6 +17,7 @@ import com.github.clans.fab.FloatingActionButton
 import com.irware.remote.ButtonWidgetProvider
 import com.irware.remote.MainActivity
 import com.irware.remote.R
+import com.irware.remote.net.ARPTable
 import com.irware.remote.holders.ButtonProperties
 import com.irware.remote.holders.RemoteProperties
 import com.irware.remote.ui.adapters.ButtonsGridAdapter
@@ -25,7 +26,7 @@ import kotlinx.android.synthetic.main.create_remote_layout.*
 import org.json.JSONException
 import org.json.JSONObject
 
-class RemoteDialog(context: Context,private val properties:RemoteProperties, val mode:Int) : Dialog(context,R.style.AppTheme),OnSelectedListener,View.OnDragListener {
+class RemoteDialog(context: Context, private val properties:RemoteProperties, val mode:Int) : Dialog(context,R.style.AppTheme),OnSelectedListener,View.OnDragListener {
     private val arrayList:ArrayList<ButtonProperties?> = ArrayList()
     private val adapter:ButtonsGridAdapter
 
@@ -51,7 +52,9 @@ class RemoteDialog(context: Context,private val properties:RemoteProperties, val
             arrayList[btnProp.btnPosition] = btnProp
         }
 
-        adapter = ButtonsGridAdapter(arrayList,this)
+        adapter = ButtonsGridAdapter(arrayList,this,
+            (MainActivity.arpTable ?: ARPTable(context, 1)).getIpFromMac(properties.deviceProperties.macAddr) ?: "",
+            properties.deviceProperties.userName, properties.deviceProperties.password)
         button_refresh_layout.setOnRefreshListener {
             button_refresh_layout.isRefreshing = true
             adapter.notifyDataSetChanged(true)
@@ -66,12 +69,14 @@ class RemoteDialog(context: Context,private val properties:RemoteProperties, val
 
 
         buttons_layout_recycler_view.layoutManager = GridLayoutManager(context,MainActivity.NUM_COLUMNS)
+        @Suppress("DEPRECATION")
         Handler().postDelayed({
             buttons_layout_recycler_view.adapter = adapter
         },200)
 
         if(mode == MODE_EDIT) {
             fam_manage_button_actions.hideMenuButton(false)
+            @Suppress("DEPRECATION")
             Handler().postDelayed({
                 fam_manage_button_actions.showMenuButton(true)
             },800)
@@ -83,7 +88,7 @@ class RemoteDialog(context: Context,private val properties:RemoteProperties, val
 
     private fun setOnFabClickListener(fab:FloatingActionButton,mode:Int){
         fab.setOnClickListener {
-            val dialog = ButtonPropertiesDialog(context, this,mode)
+            val dialog = ButtonPropertiesDialog(context, this, mode, "", "", "")
             dialog.show()
             dialog.captureInit(null)
             fam_manage_button_actions.close(true)

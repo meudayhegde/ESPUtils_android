@@ -17,6 +17,7 @@ class GPIOObject(var jsonObj: JSONObject) {
         }
         parent.update()
         macAddr.intern()
+        deviceProperties!!.pinConfig.add(this)
     }
 
     var title: String = jsonObj.optString("title", "")
@@ -43,4 +44,6 @@ class GPIOObject(var jsonObj: JSONObject) {
     var gpioNumber: Int = jsonObj.optInt("gpioNumber", 0)
         get() { return jsonObj.optInt("gpioNumber", 0)}
         set(value){ field = value; jsonObj.put("gpioNumber", value); parent?.update() }
+
+    var pinValue = 0
 }

@@ -15,14 +15,13 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
+import com.irware.remote.holders.DeviceProperties
 import com.irware.remote.holders.RemoteProperties
 import kotlinx.android.synthetic.main.import_remote_activity.*
 import org.json.JSONObject
@@ -60,6 +59,21 @@ class RemoteParserActivity : AppCompatActivity() {
 
         val cancel = findViewById<Button>(R.id.button_cancel)
         val import = findViewById<Button>(R.id.button_import)
+
+        val spinner = findViewById<Spinner>(R.id.select_device)
+
+        if(MainActivity.devicePropList.isEmpty()){
+            MainActivity.deviceConfigPath = filesDir.absolutePath + File.separator + MainActivity.DEVICE_CONFIG_DIR
+            val deviceConfigDir = File(MainActivity.deviceConfigPath)
+            deviceConfigDir.exists() or deviceConfigDir.mkdirs()
+            for(file: File in deviceConfigDir.listFiles { _, name -> name?.endsWith(".json")?: false }!!){
+                MainActivity.devicePropList.add(DeviceProperties(file))
+            }
+        }
+
+        val devicePropList = arrayListOf<Any>(getString(R.string.select_device))
+        devicePropList.addAll(MainActivity.devicePropList)
+        spinner.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, devicePropList)
 
         val action = intent.action
 
@@ -102,12 +116,7 @@ class RemoteParserActivity : AppCompatActivity() {
 
             }catch(ex:Exception){
                 progress.visibility = View.GONE;imV.visibility = View.VISIBLE
-                val drawable = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    getDrawable(R.drawable.icon_cancel)
-                } else {
-                    @Suppress("DEPRECATION")
-                    resources.getDrawable(R.drawable.icon_cancel)
-                }
+                val drawable = ContextCompat.getDrawable(this, R.drawable.icon_cancel)
                 DrawableCompat.setTint(drawable!!,Color.RED)
                 imV.setImageDrawable(drawable)
                 msg.visibility = View.VISIBLE
@@ -117,11 +126,18 @@ class RemoteParserActivity : AppCompatActivity() {
 
         cancel.setOnClickListener { finish() }
         import.setOnClickListener {
-            msg.visibility = View.GONE;progress.visibility = View.VISIBLE
+            if(spinner.selectedItemPosition == 0){
+                Toast.makeText(this, getString(R.string.device_not_selected_note), Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
+            val selectedDevice = MainActivity.devicePropList[spinner.selectedItemPosition - 1]
+            jsonObject.put("deviceConfigFileName", selectedDevice.deviceConfigFile.name)
+
+            msg.visibility = View.GONE; progress.visibility = View.VISIBLE
             try{
                 val fileName= jsonObject.getString("fileName")
-                var outFile = File(filesDir.absolutePath + File.separator + MainActivity.REMOTE_CONFIG_DIR,fileName)
-                val parent = outFile.parentFile
+                var outFile = File(filesDir.absolutePath + File.separator + MainActivity.REMOTE_CONFIG_DIR, fileName)
+                val parent = outFile.parentFile!!
                 if(!parent.exists()) parent.mkdirs()
                 var count = 1
                 if(outFile.exists()){
@@ -133,7 +149,7 @@ class RemoteParserActivity : AppCompatActivity() {
                                 count++
                             }
                             outFile.createNewFile()
-                            jsonObject.put("fileName",outFile.name)
+                            jsonObject.put("fileName", outFile.name)
                             writeFile(outFile,jsonObject)
                             configFile = outFile
                             onSuccess(progress,imV,msg,import)
@@ -151,19 +167,14 @@ class RemoteParserActivity : AppCompatActivity() {
                         .show()
                 }else{
                     outFile.createNewFile()
-                    writeFile(outFile,jsonObject)
+                    writeFile(outFile, jsonObject)
                     configFile = outFile
                     onSuccess(progress,imV,msg,import)
                 }
 
             }catch(ex:Exception){
                 progress.visibility = View.GONE;imV.visibility = View.VISIBLE
-                val drawable = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    getDrawable(R.drawable.icon_cancel)
-                } else {
-                    @Suppress("DEPRECATION")
-                    resources.getDrawable(R.drawable.icon_cancel)
-                }
+                val drawable = ContextCompat.getDrawable(this, R.drawable.icon_cancel)
                 DrawableCompat.setTint(drawable!!,Color.RED)
                 imV.setImageDrawable(drawable)
                 msg.visibility = View.VISIBLE
@@ -175,12 +186,7 @@ class RemoteParserActivity : AppCompatActivity() {
 
     private fun onSuccess(progress:ProgressBar,imV:ImageView,msg:TextView,btn:Button){
         progress.visibility = View.GONE;imV.visibility = View.VISIBLE
-        val drawable = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getDrawable(R.drawable.icon_check_circle)
-        } else {
-            @Suppress("DEPRECATION")
-            resources.getDrawable(R.drawable.icon_check_circle)
-        }
+        val drawable =ContextCompat.getDrawable(this, R.drawable.icon_check_circle)
         DrawableCompat.setTint(drawable!!,Color.GREEN)
         imV.setImageDrawable(drawable)
 

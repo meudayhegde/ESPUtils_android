@@ -18,6 +18,7 @@ import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.irware.remote.ButtonWidgetProvider
 import com.irware.remote.MainActivity
@@ -34,7 +35,8 @@ import org.json.JSONException
 import org.json.JSONObject
 
 
-class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>,private val remoteDialog:RemoteDialog) :RecyclerView.Adapter<ButtonsGridAdapter.ViewHolder>(),
+class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>, private val remoteDialog:RemoteDialog, private val address: String,
+                         private  val userName: String, private val password: String) :RecyclerView.Adapter<ButtonsGridAdapter.ViewHolder>(),
     View.OnDragListener,View.OnLongClickListener{
 
     class ViewHolder(var container: com.irware.remote.ui.adapters.LinearLayout,var button:RemoteButton):RecyclerView.ViewHolder(container)
@@ -55,7 +57,7 @@ class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>,priv
         btn.setOnClickListener{
             when(remoteDialog.mode){
                 RemoteDialog.MODE_EDIT ->{
-                    val dialog = ButtonPropertiesDialog(context, remoteDialog,ButtonPropertiesDialog.MODE_SINGLE)
+                    val dialog = ButtonPropertiesDialog(context, remoteDialog,ButtonPropertiesDialog.MODE_SINGLE, "", "", "")
                     dialog.show()
                     dialog.onIrRead(JSONObject((it as RemoteButton).getProperties().jsonObj.toString()))
                 }
@@ -68,7 +70,7 @@ class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>,priv
                             vibrate(50)
                         }
                     }
-                    SocketClient.sendIrCode(context,(it as RemoteButton).getProperties().jsonObj, object : IrSendListener {
+                    SocketClient.sendIrCode(address, userName , password,(it as RemoteButton).getProperties().jsonObj, object : IrSendListener {
                         override fun onIrSend(result: String) {
                             MainActivity.activity?.runOnUiThread {
                                 try {
@@ -171,7 +173,7 @@ class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>,priv
             DragEvent.ACTION_DRAG_ENTERED ->{
                 v.background = when{
                     v.getChildAt(0)?.visibility == View.VISIBLE -> null
-                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP->v.context.getDrawable(R.drawable.round_corner)
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP-> ContextCompat.getDrawable(v.context, R.drawable.round_corner)
                     else -> with(v) {
                         @Suppress("DEPRECATION")
                         context.resources.getDrawable(R.drawable.round_corner)

@@ -25,17 +25,27 @@ import com.irware.remote.MainActivity
 import com.irware.remote.OnSocketReadListener
 import com.irware.remote.R
 import com.irware.remote.SettingsItem
+import com.irware.remote.net.ARPTable
 import com.irware.remote.holders.DeviceProperties
+import com.irware.remote.holders.OnStatusUpdateListener
 import com.irware.remote.net.SocketClient
 import com.irware.remote.ui.fragments.DevicesFragment
 import org.json.JSONArray
 import org.json.JSONObject
-import java.net.InetAddress
 import kotlin.math.min
 
 class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>, private val devicesFragment: DevicesFragment) : RecyclerView.Adapter<DeviceListAdapter.MyViewHolder>(){
     
-    class MyViewHolder(val cardView: CardView) : RecyclerView.ViewHolder(cardView)
+    class MyViewHolder(val cardView: CardView) : RecyclerView.ViewHolder(cardView){
+        val deviceNameView: TextView = cardView.findViewById(R.id.name_device)
+        val deviceMacAddrView: TextView = cardView.findViewById(R.id.mac_addr)
+        val deviceDescView: TextView = cardView.findViewById(R.id.device_desc)
+        val icOnline: ImageView = cardView.findViewById(R.id.img_online)
+        val icOffline: ImageView = cardView.findViewById(R.id.img_offline)
+        val refresh: ProgressBar = cardView.findViewById(R.id.progress_status)
+        val status: TextView = cardView.findViewById(R.id.status_text)
+        val ipText: TextView = cardView.findViewById(R.id.ip_addr)
+    }
 
     val context = devicesFragment.context
     override fun onCreateViewHolder(parent: ViewGroup,
@@ -46,54 +56,37 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>, priva
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val prop = propList[position]
-        setViewProps(holder.cardView, prop)
+        setViewProps(holder, prop)
     }
 
     @SuppressLint("SetTextI18n", "UseCompatLoadingForDrawables", "InflateParams")
-    private fun setViewProps(cardView: CardView, prop: DeviceProperties){
-        cardView.findViewById<TextView>(R.id.name_device).text = prop.nickName
-        cardView.findViewById<TextView>(R.id.mac_addr).text = "(${prop.macAddr})"
-        cardView.findViewById<TextView>(R.id.device_desc).text = prop.description
+    private fun setViewProps(holder: MyViewHolder, prop: DeviceProperties){
+        holder.deviceNameView.text = prop.nickName
+        holder.deviceMacAddrView.text = "(${prop.macAddr})"
+        holder.deviceDescView.text = prop.description
 
-        val icOnline = cardView.findViewById<ImageView>(R.id.img_online)
-        val icOffline = cardView.findViewById<ImageView>(R.id.img_offline)
-        val refresh = cardView.findViewById<ProgressBar>(R.id.progress_status)
-        val status = cardView.findViewById<TextView>(R.id.status_text)
-        val ipText = cardView.findViewById<TextView>(R.id.ip_addr)
+        holder.refresh.visibility = View.VISIBLE
+        holder.icOnline.visibility = View.GONE
+        holder.icOffline.visibility = View.GONE
+        holder.status.text = context?.getString(R.string.connecting)
+        holder.ipText.text = ""
+        holder.cardView.setOnClickListener {
+            prop.updateStatus(context!!)
+        }
+        prop.addOnStatusUpdateListener(object: OnStatusUpdateListener{
+            override var listenerParent: Any? = this@DeviceListAdapter.javaClass
 
-        refresh.visibility = View.VISIBLE
-        icOnline.visibility = View.GONE
-        icOffline.visibility = View.GONE
-        status.text = context?.getString(R.string.connecting)
-        ipText.text = ""
-        cardView.setOnClickListener {  }
-        Thread{
-            var connected = false
-            for(i: Int in 0..prop.ipAddr!!.length()){
-                try {
-                    val addr = prop.ipAddr!!.get(i) as String
-                    if(!InetAddress.getByName(addr.split(":")[0]).isReachable(100)) continue
-                    val connector = SocketClient.Connector(addr)
-                    connector.sendLine("{\"request\":\"ping\"}")
-                    val response = connector.readLine()
-                    val macAddr = JSONObject(response).getString("MAC")
-                    if(macAddr != prop.macAddr) throw Exception()
-                    prop.ipAddr!!.remove(i)
-                    prop.ipAddr!!.insert(0, addr)
-                    prop.update()
-                    connected = true; break
-                }catch(ex: Exception){ }
-            }
-            (context as Activity).runOnUiThread{
-                refresh.visibility = View.GONE
-                icOnline.visibility = if(connected) View.VISIBLE else View.GONE
-                icOffline.visibility = if(connected) View.GONE else View.VISIBLE
-                status.text = context.getString(if(connected) R.string.online else R.string.offline)
-                ipText.text = prop.ipAddr!!.get(0) as String
+            override fun onStatusUpdate(connected: Boolean) {
+                holder.refresh.visibility = View.GONE
+                holder.icOnline.visibility = if(connected) View.VISIBLE else View.GONE
+                holder.icOffline.visibility = if(connected) View.GONE else View.VISIBLE
+                holder.status.text = context!!.getString(if(connected) R.string.online else R.string.offline)
+                val ip = (MainActivity.arpTable ?: ARPTable(context, 1)).getIpFromMac(prop.macAddr) ?: ""
+                holder.ipText.text = ip
                 val settingsIcon = context.getDrawable(R.drawable.ic_settings)
                 settingsIcon?.setTint(MainActivity.colorOnBackground)
                 if (connected){
-                    cardView.setOnClickListener {
+                    holder.cardView.setOnClickListener {
                         val settingsDialog = AlertDialog.Builder(context)
                             .setPositiveButton("Done") { p0, _ -> p0.dismiss() }
                             .setTitle("Settings for ${prop.nickName}")
@@ -104,13 +97,13 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>, priva
                         settingsDialog.window?.setBackgroundDrawableResource(R.drawable.layout_border_round_corner)
                         settingsDialog.window?.setLayout((MainActivity.size.x*0.9).toInt(), (MainActivity.size.y*0.9).toInt())
 
-
+                        val addr = (MainActivity.arpTable ?: ARPTable(context, 1)).getIpFromMac(prop.macAddr) ?: ""
                         val viewManager = LinearLayoutManager(context)
                         val viewAdapter = SettingsAdapter(arrayListOf(
                             SettingsItem("Wireless Settings","Wi-Fi/Hotspot SSID and passwords",
-                                wirelessSettingsDialog(context, prop.ipAddr!!.get(0) as String, prop.userName, prop.password), R.drawable.icon_wifi),
+                                wirelessSettingsDialog(context, addr, prop.userName, prop.password), R.drawable.icon_wifi),
                             SettingsItem("User Settings","User credentials (username and password)",
-                                userSettingsDialog(context, prop.ipAddr!!.get(0) as String), R.drawable.ic_user)
+                                userSettingsDialog(context, addr), R.drawable.ic_user)
                         ))
                         settingsDialog.findViewById<RecyclerView>(R.id.settings_list)?.apply {
                             setHasFixedSize(true)
@@ -119,8 +112,8 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>, priva
                         }
                     }
 
-                    cardView.setOnLongClickListener {
-                        val content = LayoutInflater.from(context).inflate(R.layout.add_new_device,null) as ScrollView
+                    holder.cardView.setOnLongClickListener {
+                        val content = LayoutInflater.from(context).inflate(R.layout.add_new_device,null) as LinearLayout
                         val btnCancel = content.findViewById<Button>(R.id.cancel)
 
                         val dialog = Dialog(context)
@@ -128,25 +121,27 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>, priva
                         btnCancel.setOnClickListener { dialog.dismiss() }
                         dialog.show()
                         dialog.findViewById<TextView>(R.id.title_add_new_device).text = context.getString(
-                                                    R.string.set_dev_props)
+                            R.string.set_dev_props)
                         val width = min(MainActivity.size.x,MainActivity.size.y)
                         dialog.window?.setLayout(width*7/8, WindowManager.LayoutParams.WRAP_CONTENT)
                         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-                        devicesFragment.onAddressVerified(dialog, prop.ipAddr?.get(0) as String, prop.macAddr!!)
+                        devicesFragment.onAddressVerified(dialog, (MainActivity.arpTable ?: ARPTable(context, 1)).getIpFromMac(prop.macAddr) ?: "", prop.macAddr)
                         true
                     }
                 }else {
-                    cardView.setOnClickListener{
+                    holder.cardView.setOnClickListener{
+                        prop.updateStatus(context)
                         Toast.makeText(context, "Device Offline!", Toast.LENGTH_SHORT).show()
                     }
-                    cardView.setOnLongClickListener {
+                    holder.cardView.setOnLongClickListener {
+                        prop.updateStatus(context)
                         Toast.makeText(context, "Device Offline!", Toast.LENGTH_SHORT).show()
                         true
                     }
                 }
             }
-
-        }.start()
+        })
+        prop.updateStatus(context!!)
     }
 
     override fun getItemCount() = propList.size
@@ -314,11 +309,9 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>, priva
                             Thread {
                                 try {
                                     val connector = SocketClient.Connector(address)
-                                    connector.sendLine("{\"request\":\"set_wireless\",\"username\":\""
-                                            + MainActivity.USERNAME + "\",\"password\":\""
-                                            + MainActivity.PASSWORD + "\",\"wireless_mode\":\""+mode+"\",\"new_ssid\":\""
-                                            + ssid.text.toString()+"\",\"new_pass\":\""
-                                            +pass.text.toString() + "\"}"
+                                    connector.sendLine("{\"request\":\"set_wireless\",\"username\":\"$userName\",\"password\":\""
+                                            + "$password\",\"wireless_mode\":\""+mode+"\",\"new_ssid\":\""
+                                            + "${ssid.text.toString()}\",\"new_pass\":\"${pass.text.toString()}\"}"
                                     )
                                     val result = connector.readLine()
                                     val resultObj = JSONObject(result)
@@ -372,10 +365,10 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>, priva
             }
         }.start()
     }
-
 }
 
-private fun JSONArray.insert(position: Int, value: Any){
+fun JSONArray.insert(position: Int, value: Any){
+    if(length() > 0)
     for (i in length() downTo position + 1) {
         put(i, get(i - 1))
     }

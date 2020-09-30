@@ -4,9 +4,9 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
 import android.content.Context
+import android.content.DialogInterface
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.net.InetAddresses
 import android.os.Bundle
 import android.os.Handler
 import android.view.LayoutInflater
@@ -14,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -23,8 +24,12 @@ import com.google.android.material.textfield.TextInputEditText
 import com.irware.remote.MainActivity
 import com.irware.remote.R
 import com.irware.remote.holders.DeviceProperties
+import com.irware.remote.net.ARPItem
+import com.irware.remote.net.ARPTable
 import com.irware.remote.net.SocketClient
 import com.irware.remote.ui.adapters.DeviceListAdapter
+import com.irware.remote.ui.adapters.OnARPItemSelectedListener
+import com.irware.remote.ui.adapters.ScanDeviceListAdapter
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
@@ -36,10 +41,13 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
     private var rootView: RelativeLayout? = null
+    lateinit var manageMenu: FloatingActionMenu
 
+    @SuppressLint("InflateParams")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         if(rootView == null ){
             rootView = inflater.inflate(R.layout.fragment_devices, container, false) as RelativeLayout
+            manageMenu = rootView!!.findViewById(R.id.fam_manage_gpio)
             viewManager = LinearLayoutManager(context)
             viewAdapter = DeviceListAdapter(MainActivity.devicePropList, this)
             recyclerView = rootView!!.findViewById<RecyclerView>(R.id.manage_remotes_recycler_view).apply {
@@ -47,7 +55,7 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
                 layoutManager = viewManager
                 adapter = viewAdapter
             }
-            rootView!!.findViewById<FloatingActionMenu>(R.id.fam_manage_gpio).setClosedOnTouchOutside(true)
+            manageMenu.setClosedOnTouchOutside(true)
 
             val refreshLayout = rootView!!.findViewById<SwipeRefreshLayout>(R.id.refresh_layout)
             refreshLayout.setOnRefreshListener {
@@ -59,16 +67,52 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
             val fabScan = rootView!!.findViewById<FloatingActionButton>(R.id.fab_scan_device)
             val fabEnterAddress = rootView!!.findViewById<FloatingActionButton>(R.id.fab_enter_address)
 
-            fabScan.setOnClickListener {  }
-            fabEnterAddress.setOnClickListener { newDeviceEnterAddress() }
+            fabScan.setOnClickListener {
+                val content = LayoutInflater.from(context).inflate(R.layout.add_new_device,null) as LinearLayout
+                val scrollView = content.findViewById<ScrollView>(R.id.add_new_device_scroll)
+                val recyclerView = content.findViewById<RecyclerView>(R.id.device_list_add_new_device)
+                val btnCancel = content.findViewById<Button>(R.id.cancel)
+                val btnNext = content.findViewById<Button>(R.id.button_done)
 
+                scrollView.visibility = View.GONE
+                recyclerView.visibility = View.VISIBLE
+                val viewAdapter = ScanDeviceListAdapter((MainActivity.arpTable?: ARPTable(context!!, 1)).getARPItemList())
+                recyclerView.apply {
+                    setHasFixedSize(true)
+                    layoutManager = LinearLayoutManager(context)
+                    adapter = viewAdapter
+                }
+
+                val dialog = Dialog(context!!)
+                dialog.setContentView(content)
+                btnCancel.setOnClickListener { dialog.cancel() }
+                btnNext.visibility = View.GONE
+
+                dialog.show()
+                val width = min(MainActivity.size.x,MainActivity.size.y)
+                dialog.window?.setLayout(width - width/8, WindowManager.LayoutParams.WRAP_CONTENT)
+                dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                manageMenu.close(true)
+
+                viewAdapter.setOnARPItemSelectedListener(object: OnARPItemSelectedListener{
+                    override fun onARPItemSelected(arpItem: ARPItem) {
+                        recyclerView.visibility = View.GONE
+                        scrollView.visibility = View.VISIBLE
+                        btnNext.visibility = View.VISIBLE
+                        onAddressVerified(dialog, arpItem.ipAddress, arpItem.macAddress)
+                    }
+
+                })
+            }
+            fabEnterAddress.setOnClickListener { newDeviceEnterAddress() }
         }
-        val manageMenu = rootView!!.findViewById<FloatingActionMenu>(R.id.fam_manage_gpio)
         if(!manageMenu.isOpened)
             manageMenu.hideMenuButton(false)
+        @Suppress("DEPRECATION")
         Handler().postDelayed({
             if(manageMenu.isMenuButtonHidden)
                 manageMenu.showMenuButton(true)
+            @Suppress("DEPRECATION")
             if(MainActivity.remotePropList.isEmpty())
                 Handler().postDelayed({manageMenu.showMenu(true)},400)
         },400)
@@ -77,7 +121,7 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
 
     @SuppressLint("InflateParams")
     fun newDeviceEnterAddress(){
-        val content = LayoutInflater.from(context).inflate(R.layout.add_new_device,null) as ScrollView
+        val content = LayoutInflater.from(context).inflate(R.layout.add_new_device,null) as LinearLayout
         val btnCancel = content.findViewById<Button>(R.id.cancel)
         val btnNext = content.findViewById<Button>(R.id.button_done)
         val devAddr = content.findViewById<TextInputEditText>(R.id.device_address)
@@ -108,7 +152,7 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
         val width = min(MainActivity.size.x,MainActivity.size.y)
         dialog.window?.setLayout(width - width/8, WindowManager.LayoutParams.WRAP_CONTENT)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        rootView!!.findViewById<FloatingActionMenu>(R.id.fam_manage_gpio).close(true)
+        manageMenu.close(true)
     }
 
     fun onAddressVerified(dialog: Dialog, address: String, macAddr: String){
@@ -123,7 +167,7 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
         btnAdd.text = MainActivity.activity?.getString(R.string.add_device)
 
         var devProp: DeviceProperties? = null
-        var devExist: Boolean = false
+        var devExist = false
         for(prop: DeviceProperties in MainActivity.devicePropList){
             if(prop.macAddr == macAddr){ devProp = prop; devExist = true; break }
         }
@@ -135,12 +179,6 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
         (devAddr.parent as FrameLayout).visibility = View.GONE
         devPropertiesLayout.visibility = View.VISIBLE
 
-        var addresses = devProp?.ipAddr
-        if(addresses == null){
-            addresses = JSONArray(arrayOf(address))
-        }else{
-            addresses.insert(0, address)
-        }
         devName.setText(devProp?.nickName?: macAddr.replace(":", "_"))
         devDescription.setText(devProp?.description?: "")
 
@@ -159,7 +197,6 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
                     }
                     devProp!!.nickName = devName.text.toString()
                     devProp!!.macAddr = macAddr
-                    devProp!!.ipAddr = addresses
                     devProp!!.description = devDescription.text.toString()
                     devProp!!.userName = userName.text.toString()
                     devProp!!.password = password.text.toString()

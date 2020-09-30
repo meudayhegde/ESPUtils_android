@@ -80,7 +80,9 @@ class GPIOControllerFragment : androidx.fragment.app.Fragment()  {
                     context!!.getString(R.string.pin), "GPIO0 (D3)", "GPIO1 (TX)", "GPIO2 (D4)", "GPIO3 (RX)", "GPIO4 (D2)", "GPIO5 (D1)",
                     "GPIO9 (SD2)", "GPIO10 (SD3)", "GPIO12 (D6)", "GPIO13 (D7)", "GPIO14 (D5)", "GPIO15 (D8)", "GPIO16 (D0)"
                 ))
-                devicesSpinner.adapter = ArrayAdapter(context!!, android.R.layout.simple_list_item_1, arrayListOf<Any>(context!!.getString(R.string.select_device), MainActivity.devicePropList))
+                val devicePropList = arrayListOf<Any>(context!!.getString(R.string.select_device))
+                devicePropList.addAll(MainActivity.devicePropList)
+                devicesSpinner.adapter = ArrayAdapter(context!!, android.R.layout.simple_list_item_1, devicePropList)
                 dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener {
                     val nameText = dialog.findViewById<TextInputEditText>(R.id.edit_text_switch_name)!!
                     val description = dialog.findViewById<TextInputEditText>(R.id.switch_desc)!!

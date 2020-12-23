@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
 import android.content.Context
-import android.content.DialogInterface
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -14,7 +13,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.*
-import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -30,6 +28,7 @@ import com.irware.remote.net.SocketClient
 import com.irware.remote.ui.adapters.DeviceListAdapter
 import com.irware.remote.ui.adapters.OnARPItemSelectedListener
 import com.irware.remote.ui.adapters.ScanDeviceListAdapter
+import com.nikhilpanju.recyclerviewenhanced.RecyclerTouchListener
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
@@ -55,6 +54,19 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
                 layoutManager = viewManager
                 adapter = viewAdapter
             }
+
+            val onTouchListener = RecyclerTouchListener(context as Activity, recyclerView)
+                .setSwipeOptionViews(R.id.card_device_delete, R.id.card_device_settings)
+                .setSwipeable(R.id.device_list_item_foreground, R.id.device_list_item_options){ viewId, position ->
+                    when(viewId){
+                        R.id.card_device_delete -> {}
+                        R.id.card_device_settings -> {}
+                    }
+                    Toast.makeText(context, position.toString(), Toast.LENGTH_LONG).show()
+                }
+
+            recyclerView.addOnItemTouchListener(onTouchListener)
+
             manageMenu.setClosedOnTouchOutside(true)
 
             val refreshLayout = rootView!!.findViewById<SwipeRefreshLayout>(R.id.refresh_layout)

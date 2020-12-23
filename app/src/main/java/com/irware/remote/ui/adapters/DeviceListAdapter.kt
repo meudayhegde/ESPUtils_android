@@ -36,7 +36,8 @@ import kotlin.math.min
 
 class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>, private val devicesFragment: DevicesFragment) : RecyclerView.Adapter<DeviceListAdapter.MyViewHolder>(){
     
-    class MyViewHolder(val cardView: CardView) : RecyclerView.ViewHolder(cardView){
+    class MyViewHolder(listItem: RelativeLayout) : RecyclerView.ViewHolder(listItem){
+        val cardView: CardView = listItem.findViewById(R.id.device_list_item_foreground)
         val deviceNameView: TextView = cardView.findViewById(R.id.name_device)
         val deviceMacAddrView: TextView = cardView.findViewById(R.id.mac_addr)
         val deviceDescView: TextView = cardView.findViewById(R.id.device_desc)
@@ -50,8 +51,8 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>, priva
     val context = devicesFragment.context
     override fun onCreateViewHolder(parent: ViewGroup,
                                     viewType: Int): MyViewHolder {
-        val cardView = LayoutInflater.from(parent.context).inflate(R.layout.device_list_item, parent, false) as CardView
-        return MyViewHolder(cardView)
+        val listItem = LayoutInflater.from(parent.context).inflate(R.layout.device_list_item, parent, false) as RelativeLayout
+        return MyViewHolder(listItem)
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
@@ -103,7 +104,9 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>, priva
                             SettingsItem("Wireless Settings","Wi-Fi/Hotspot SSID and passwords",
                                 wirelessSettingsDialog(context, addr, prop.userName, prop.password), R.drawable.icon_wifi),
                             SettingsItem("User Settings","User credentials (username and password)",
-                                userSettingsDialog(context, addr), R.drawable.ic_user)
+                                userSettingsDialog(context, addr), R.drawable.ic_user),
+                            SettingsItem("Reboot","Restart the micro controller",
+                                restartConfirmDialog(context, addr, prop.userName, prop.password), R.drawable.icon_power)
                         ))
                         settingsDialog.findViewById<RecyclerView>(R.id.settings_list)?.apply {
                             setHasFixedSize(true)
@@ -145,6 +148,30 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>, priva
     }
 
     override fun getItemCount() = propList.size
+
+    private fun restartConfirmDialog(context: Context, address: String?, userName: String?, password: String?): Dialog{
+        return AlertDialog.Builder(context)
+            .setTitle("Confirm Restart")
+            .setMessage("Are you sure you want to restart the device?")
+            .setNegativeButton("Cancel"){ dialog, _ -> dialog.dismiss()}
+            .setPositiveButton("Restart"){
+                    dialog, _ -> dialog.dismiss()
+                Thread{
+                    try {
+                        val connector = SocketClient.Connector("$address")
+                        connector.sendLine("{\"request\":\"restart\",\"username\":\"$userName\",\"password\":\"$password\"}")
+                        (context as Activity).runOnUiThread {
+                            Toast.makeText(context, "Restart command successfully sent.", Toast.LENGTH_SHORT).show()
+                        }
+                    }catch(ex: Exception){
+                        (context as Activity).runOnUiThread {
+                            Toast.makeText(context, "Failed to send Restart command!", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }.start()
+            }
+            .create()
+    }
 
     @SuppressLint("InflateParams")
     private fun userSettingsDialog(context: Context, address: String):AlertDialog{

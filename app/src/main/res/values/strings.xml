@@ -114,4 +114,6 @@
     <string name="loading">Loading</string>
     <string name="select_the_device_to_use_this_remote_configuration">Select the device to use this remote configuration.</string>
     <string name="device_not_selected_note">Note: Device not selected!</string>
+    <string name="delete">Delete</string>
+    <string name="settings">Settings</string>
 </resources>

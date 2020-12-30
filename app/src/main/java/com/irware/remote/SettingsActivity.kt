@@ -7,14 +7,21 @@ import android.content.DialogInterface
 import android.os.Build
 import android.os.Bundle
 import android.view.*
+import android.widget.Adapter
 import android.widget.RadioGroup
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.view.menu.MenuBuilder
+import androidx.recyclerview.widget.AdapterListUpdateCallback
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.radiobutton.MaterialRadioButton
 import com.irware.remote.ui.adapters.SettingsAdapter
 import org.json.JSONObject
+import java.lang.reflect.Constructor
+
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -22,7 +29,7 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
 
-    @SuppressLint("UseCompatLoadingForDrawables")
+    @SuppressLint("UseCompatLoadingForDrawables", "RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -31,18 +38,25 @@ class SettingsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_settings)
 
         viewManager = LinearLayoutManager(this)
-        viewAdapter = SettingsAdapter(arrayListOf(
-            SettingsItem("Application Theme","UI theme for iRWaRE Application",themeSelectionDialog(), R.drawable.icon_theme)
-        ))
 
-//        supportActionBar?.setBackgroundDrawable(
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//                getDrawable(R.mipmap.ic_launcher_background)
-//            }else{
-//                @Suppress("DEPRECATION")
-//                resources.getDrawable(R.mipmap.ic_launcher_background)
-//            }
-//        )
+
+        val fragmentList = ArrayList<String>()
+        val menu = MenuBuilder(this)
+        MenuInflater(this).inflate(R.menu.activity_main_drawer, menu)
+
+        menu.visibleItems.forEach {
+            fragmentList.add(it.title.toString())
+        }
+        for(i in 0..1) if(fragmentList.size != 0 ) fragmentList.removeAt(fragmentList.size - 1)
+
+        viewAdapter = SettingsAdapter(arrayListOf(
+            SettingsItem("Application Theme","UI theme for iRWaRE Application", selectionDialog("Application Theme", R.drawable.icon_theme, "application_theme", arrayListOf("Follow System Theme", "Light Theme", "Dark Theme"),
+                Runnable {
+                    themeChanged = true
+                    AppCompatDelegate.setDefaultNightMode(when(getSharedPreferences("settings", Context.MODE_PRIVATE).getInt("application_theme", 0)){1 -> {AppCompatDelegate.MODE_NIGHT_NO} 2 -> {AppCompatDelegate.MODE_NIGHT_YES} else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM })
+                }), R.drawable.icon_theme),
+            SettingsItem("Home Fragment","Fragment that opens on app launch", selectionDialog("Home Fragment", R.drawable.icon_home, "home_fragment", fragmentList, null), R.drawable.icon_home)
+        ))
 
         recyclerView = findViewById<RecyclerView>(R.id.settings_list).apply {
             setHasFixedSize(true)
@@ -61,38 +75,38 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     @SuppressLint("ApplySharedPref", "InflateParams")
-    private fun themeSelectionDialog():AlertDialog{
-        val pref = getSharedPreferences("theme_setting", Context.MODE_PRIVATE)
+    private fun selectionDialog(title: String, icon: Int, prefName: String, optList: List<String>, action: Runnable?):AlertDialog{
+        val pref = getSharedPreferences("settings", Context.MODE_PRIVATE)
         val editor = pref.edit()
 
-        val content = LayoutInflater.from(this).inflate(R.layout.theme_settings,null) as RadioGroup
+
+
+        val content = RadioGroup(this)
+        content.setPaddingRelative(24, 0,0,0)
+        optList.forEach {
+            val radioButton = MaterialRadioButton(this)
+            radioButton.text = it
+            radioButton.id = optList.indexOf(it)
+            content.addView(radioButton)
+        }
 
         val dialog = AlertDialog.Builder(this)
-            .setTitle("Application Theme")
+            .setTitle(title)
             .setView(content)
+            .setIcon(icon)
             .setNegativeButton("Cancel"){_,_->}
-            .setPositiveButton("Apply"){_,_-> }
+            .setPositiveButton("Apply"){_,_->
+                editor.putInt(prefName, content.checkedRadioButtonId)
+                editor.apply()
+                action?.run()
+            }
             .create()
 
         dialog.setOnShowListener {
             dialog.window?.setBackgroundDrawableResource(R.drawable.layout_border_round_corner)
             dialog.window?.setLayout((MainActivity.size.x * 0.8).toInt(), WindowManager.LayoutParams.WRAP_CONTENT)
 
-            content.check(when(getSharedPreferences("theme_setting", Context.MODE_PRIVATE).getInt("application_theme",0)){1->R.id.rb_light_theme;2->R.id.rb_dark_theme;else->R.id.rb_system_theme})
-            val positiveButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
-            positiveButton.setOnClickListener {
-                AlertDialog.Builder(this)
-                    .setTitle("Confirm")
-                    .setNegativeButton("Cancel"){_,_->}
-                    .setMessage("Confirm to Apply Theme")
-                    .setPositiveButton("Confirm"){_,_-> dialog.dismiss()
-                        editor.putInt("application_theme",when(content.checkedRadioButtonId){R.id.rb_light_theme->1;R.id.rb_dark_theme->2;else -> 0 })
-                        editor.commit()
-                        themeChanged = true
-                        AppCompatDelegate.setDefaultNightMode(when(content.checkedRadioButtonId){R.id.rb_light_theme->AppCompatDelegate.MODE_NIGHT_NO;R.id.rb_dark_theme->AppCompatDelegate.MODE_NIGHT_YES;else->AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM})
-                    }
-                    .show()
-            }
+            content.check(pref.getInt(prefName,0))
         }
 
         return dialog

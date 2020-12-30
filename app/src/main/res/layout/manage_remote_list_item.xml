@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -12,9 +13,11 @@
         <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="?android:attr/selectableItemBackground"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:background="@drawable/layout_border_round_corner"
                 android:layout_gravity="center_vertical"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                tools:ignore="UnusedAttribute">
 
             <LinearLayout
                     android:id="@+id/layout_vendor"
@@ -87,8 +90,8 @@
                     android:layout_marginTop="4sp"
                     android:layout_marginEnd="10sp"
                     android:contentDescription="@string/icon_to_share_remote"
-                    android:tint="?attr/colorOnBackground"
-                    app:srcCompat="@drawable/icon_share" />
+                    app:srcCompat="@drawable/icon_share"
+                    app:tint="?attr/colorOnBackground" />
 
             <TextView
                     android:id="@+id/btn_count"

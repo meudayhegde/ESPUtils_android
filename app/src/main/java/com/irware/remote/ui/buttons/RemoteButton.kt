@@ -2,6 +2,7 @@ package com.irware.remote.ui.buttons
 
 import android.content.Context
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.StateListDrawable
 import android.os.Build
@@ -9,9 +10,8 @@ import android.util.AttributeSet
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.LinearLayout
-import android.widget.RelativeLayout
+import android.widget.*
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import com.irware.remote.MainActivity
 import com.irware.remote.holders.ButtonProperties
@@ -19,15 +19,32 @@ import com.irware.remote.holders.OnModificationListener
 import kotlin.math.min
 
 
-class RemoteButton : Button {
+class RemoteButton : LinearLayout {
     private var properties:ButtonProperties?=null
     private val gd = GradientDrawable()
     private val gdPressed = GradientDrawable()
     private val stateDrawable = StateListDrawable()
 
     constructor(context:Context):super(context){ visibility = View.GONE }
-    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs){ visibility = View.GONE }
-    constructor(context: Context?, attrs: AttributeSet?, int:Int) : super(context, attrs,int){visibility = View.GONE}
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs){ visibility = View.GONE }
+    constructor(context: Context, attrs: AttributeSet?, int:Int) : super(context, attrs,int){visibility = View.GONE}
+
+    private var icon: ImageView = ImageView(context)
+    private var textView: TextView = TextView(context)
+
+    var text: CharSequence?
+    set(value) {
+        textView.text = value
+        textView.visibility = if(value.isNullOrEmpty()) View.GONE else View.VISIBLE
+    }
+    get(){ return textView.text}
+
+    init{
+        orientation = HORIZONTAL
+        gravity = Gravity.CENTER
+        addView(icon)
+        addView(textView)
+    }
 
     fun initialize(properties:ButtonProperties?){
         this.properties=properties
@@ -36,12 +53,12 @@ class RemoteButton : Button {
             return
         }
         visibility = View.VISIBLE
-        setTextColor(Color.WHITE)
+        textView.setTextColor(Color.WHITE)
         setButtonProperties(properties)
 
         properties.setOnModificationListener(object:OnModificationListener{
             override fun onTextColorChanged() {
-                setTextColor(properties.textColor)
+                textView.setTextColor(properties.textColor)
                 onIconModified()
             }
 
@@ -75,8 +92,7 @@ class RemoteButton : Button {
         if(parent is RelativeLayout) setType(btnProperties.iconType,RelativeLayout.CENTER_IN_PARENT)
         else setType(btnProperties.iconType)
         text = btnProperties.text
-        gravity = Gravity.CENTER
-        setTextSize(AUTO_SIZE_TEXT_TYPE_UNIFORM, 12F)
+        textView.setTextSize(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) Button.AUTO_SIZE_TEXT_TYPE_UNIFORM else 1, 12F)
 
         gd.cornerRadius = 100F;gd.orientation = GradientDrawable.Orientation.BOTTOM_TOP
         gdPressed.cornerRadius = 100F;gdPressed.orientation = GradientDrawable.Orientation.BOTTOM_TOP
@@ -87,7 +103,7 @@ class RemoteButton : Button {
 
         background = stateDrawable
 
-        setTextColor(btnProperties.textColor)
+        textView.setTextColor(btnProperties.textColor)
         setIcon(MainActivity.iconDrawableList[btnProperties.icon])
     }
 
@@ -102,23 +118,22 @@ class RemoteButton : Button {
 
     fun setIcon(drawable_resid:Int){
         if(drawable_resid != MainActivity.iconDrawableList[0]){
-            var drawable = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) context.getDrawable(drawable_resid)
+            var drawable = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) ContextCompat.getDrawable(context, drawable_resid)
             else with(context) {
                 @Suppress("DEPRECATION")
                 resources.getDrawable(drawable_resid)
             }
             drawable = drawable?.mutate()
             DrawableCompat.setTint(drawable!!,properties!!.textColor)
-            if(properties!!.iconType == TYPE_RECT_VER) {
-                setCompoundDrawablesWithIntrinsicBounds(null, drawable, null, null)
-                setPadding(0,10,0,0)
+            icon.setImageDrawable(drawable)
+            if(properties!!.iconType == TYPE_RECT_HOR) {
+                orientation = HORIZONTAL
             }
             else {
-                setCompoundDrawablesWithIntrinsicBounds(drawable,null,null,null)
-                setPadding(10,0,0,0)
+                orientation = VERTICAL
             }
         }else{
-            setCompoundDrawablesWithIntrinsicBounds(null,null,null,null)
+            icon.setImageDrawable(ColorDrawable(Color.TRANSPARENT))
         }
 
     }
@@ -126,37 +141,41 @@ class RemoteButton : Button {
     fun setType(type:Int,vararg params:Int){
         when(type){
             TYPE_RECT_HOR -> {
+                orientation = HORIZONTAL
                 layoutParams = when (parent) {
-                    is LinearLayout -> LinearLayout.LayoutParams(BTN_WIDTH, MIN_HEIGHT)
+                    is LinearLayout -> LayoutParams(BTN_WIDTH, MIN_HEIGHT)
                     is RelativeLayout -> RelativeLayout.LayoutParams(BTN_WIDTH, MIN_HEIGHT)
                     else -> ViewGroup.LayoutParams(BTN_WIDTH, MIN_HEIGHT)
                 }
             }
             TYPE_ROUND_MINI -> {
+                orientation = VERTICAL
                 layoutParams = when (parent) {
-                    is LinearLayout -> LinearLayout.LayoutParams(MIN_HEIGHT, MIN_HEIGHT)
+                    is LinearLayout -> LayoutParams(MIN_HEIGHT, MIN_HEIGHT)
                     is RelativeLayout -> RelativeLayout.LayoutParams(MIN_HEIGHT, MIN_HEIGHT)
                     else -> ViewGroup.LayoutParams(MIN_HEIGHT, MIN_HEIGHT)
                 }
             }
             TYPE_ROUND_MEDIUM -> {
+                orientation = VERTICAL
                 layoutParams = when (parent) {
-                    is LinearLayout -> LinearLayout.LayoutParams(BTN_WIDTH, BTN_WIDTH)
+                    is LinearLayout -> LayoutParams(BTN_WIDTH, BTN_WIDTH)
                     is RelativeLayout -> RelativeLayout.LayoutParams(BTN_WIDTH, BTN_WIDTH)
                     else -> ViewGroup.LayoutParams(BTN_WIDTH, BTN_WIDTH)
                 }
             }
             TYPE_RECT_VER -> {
+                orientation = VERTICAL
                 layoutParams = when (parent) {
-                    is LinearLayout -> LinearLayout.LayoutParams(MIN_HEIGHT, BTN_WIDTH)
+                    is LinearLayout -> LayoutParams(MIN_HEIGHT, BTN_WIDTH)
                     is RelativeLayout -> RelativeLayout.LayoutParams(MIN_HEIGHT, BTN_WIDTH)
                     else -> ViewGroup.LayoutParams(MIN_HEIGHT, BTN_WIDTH)
                 }
             }
         }
 
-        if(layoutParams is LinearLayout.LayoutParams){
-            (layoutParams as LinearLayout.LayoutParams).setMargins(12,12,12,12)
+        if(layoutParams is LayoutParams){
+            (layoutParams as LayoutParams).setMargins(12,12,12,12)
             params.forEach { (layoutParams as RelativeLayout.LayoutParams).addRule(it) }
         }else{
             (layoutParams as RelativeLayout.LayoutParams).setMargins(12,12,12,12)

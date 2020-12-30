@@ -26,7 +26,7 @@ import kotlinx.android.synthetic.main.create_remote_layout.*
 import org.json.JSONException
 import org.json.JSONObject
 
-class RemoteDialog(context: Context, private val properties:RemoteProperties, val mode:Int) : Dialog(context,R.style.AppTheme),OnSelectedListener,View.OnDragListener {
+class RemoteDialog(context: Context,val properties:RemoteProperties, val mode:Int) : Dialog(context,R.style.AppTheme),OnSelectedListener,View.OnDragListener {
     private val arrayList:ArrayList<ButtonProperties?> = ArrayList()
     private val adapter:ButtonsGridAdapter
 
@@ -88,7 +88,8 @@ class RemoteDialog(context: Context, private val properties:RemoteProperties, va
 
     private fun setOnFabClickListener(fab:FloatingActionButton,mode:Int){
         fab.setOnClickListener {
-            val dialog = ButtonPropertiesDialog(context, this, mode, "", "", "")
+            val dialog = ButtonPropertiesDialog(context, this, mode, (MainActivity.arpTable ?: ARPTable(context, 1)).getIpFromMac(properties.deviceProperties.macAddr) ?: "",
+                properties.deviceProperties.userName, properties.deviceProperties.password)
             dialog.show()
             dialog.captureInit(null)
             fam_manage_button_actions.close(true)

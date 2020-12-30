@@ -24,7 +24,8 @@
                 <ImageView
                         android:id="@+id/device_delete_icon" android:layout_width="wrap_content"
                         android:layout_height="wrap_content" android:src="@drawable/icon_delete"
-                        android:layout_centerInParent="true" app:tint="?attr/colorOnBackground" />
+                        android:layout_centerInParent="true" app:tint="?attr/colorOnBackground"
+                        android:contentDescription="@string/icon" />
 
                 <TextView
                         android:layout_width="wrap_content" android:layout_height="wrap_content"
@@ -50,7 +51,8 @@
                 <ImageView
                         android:id="@+id/device_settings_icon" android:layout_width="wrap_content"
                         android:layout_height="wrap_content" android:src="@drawable/ic_settings"
-                        app:tint="?attr/colorOnBackground" android:layout_centerInParent="true"/>
+                        app:tint="?attr/colorOnBackground" android:layout_centerInParent="true"
+                        android:contentDescription="@string/icon" />
 
                 <TextView
                         android:layout_width="wrap_content" android:layout_height="wrap_content"

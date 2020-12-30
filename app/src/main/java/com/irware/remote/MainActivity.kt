@@ -5,6 +5,7 @@ import android.app.Dialog
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ApplicationInfo
 import android.content.res.Configuration
 import android.graphics.BitmapFactory
 import android.graphics.Color
@@ -13,6 +14,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.os.Handler
 import android.util.Log
 import android.util.TypedValue
@@ -25,10 +27,14 @@ import android.widget.*
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.FileProvider
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.navigation.NavigationView
-import com.irware.remote.holders.*
+import com.irware.remote.holders.DeviceProperties
+import com.irware.remote.holders.GPIOConfig
+import com.irware.remote.holders.GPIOObject
+import com.irware.remote.holders.RemoteProperties
 import com.irware.remote.listeners.OnValidationListener
 import com.irware.remote.net.ARPTable
 import com.irware.remote.ui.BlurBuilder
@@ -37,7 +43,6 @@ import com.irware.remote.ui.fragments.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import java.io.*
-import kotlin.collections.ArrayList
 import kotlin.math.min
 import kotlin.math.roundToInt
 
@@ -47,12 +52,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     OnFragmentInteractionListener {
     override fun onFragmentInteraction(uri: Uri) {}
 
-    var devicesFragment: DevicesFragment? = null
-    var irFragment:IRFragment? = null
-    var gpioFragment:GPIOControllerFragment? = null
-    private var aboutFragment: AboutFragment? = null
+    var devicesFragment: DevicesFragment = DevicesFragment()
+    var irFragment:IRFragment = IRFragment()
+    var gpioFragment:GPIOControllerFragment = GPIOControllerFragment()
+    private var aboutFragment: AboutFragment = AboutFragment()
     private var splash: Dialog? = null
-    private var authenticated=false
+    private var authenticated = false
     private val onConfigChangeListeners:ArrayList<OnConfigurationChangeListener> = ArrayList()
 
     @SuppressLint("InflateParams")
@@ -279,11 +284,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         nav_view.setNavigationItemSelectedListener(this)
         supportFragmentManager.beginTransaction().commitAllowingStateLoss()
-        nav_view.setCheckedItem(R.id.device_drawer_item)
-        if(devicesFragment == null)
-            devicesFragment = DevicesFragment()
 
-        replaceFragment(devicesFragment as Fragment)
+        val homeFragment = getSharedPreferences("settings", Context.MODE_PRIVATE).getInt("home_fragment", 0)
+        replaceFragment(when(homeFragment){1 -> irFragment 2-> gpioFragment 3 -> aboutFragment else-> devicesFragment})
+        nav_view.setCheckedItem(when(homeFragment){1 -> R.id.home_drawer 2-> R.id.gpio_drawer 3 -> R.id.info_drawer else-> R.id.device_drawer_item})
+
     }
 
     private fun replaceFragment(fragment: Fragment){
@@ -328,27 +333,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         when (item.itemId) {
             R.id.device_drawer_item -> {
-                if(devicesFragment==null)
-                    devicesFragment=DevicesFragment()
                 replaceFragment(devicesFragment as Fragment)
             }
             R.id.home_drawer -> {
-                if(irFragment==null)
-                    irFragment=IRFragment()
                 replaceFragment(irFragment as Fragment)
             }
             R.id.gpio_drawer -> {
-                if(gpioFragment==null)
-                    gpioFragment=GPIOControllerFragment()
                 replaceFragment(gpioFragment as Fragment)
             }
             R.id.info_drawer -> {
-                if(aboutFragment==null)
-                    aboutFragment=AboutFragment()
                 replaceFragment(aboutFragment as Fragment)
             }
             R.id.share_drawer -> {
-
+                shareApplication()
             }
             R.id.nav_action_settings -> {
                 val intent = Intent(this,SettingsActivity :: class.java )
@@ -361,6 +358,42 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    private fun shareApplication(){
+        try{
+            val app: ApplicationInfo = applicationContext.applicationInfo
+            val filePath: String = app.sourceDir
+
+            val intent = Intent(Intent.ACTION_SEND)
+            intent.type = "*/*"
+
+            val originalApk = File(filePath)
+
+            val tempFile = File("${(externalCacheDir?: if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {Environment.getStorageDirectory()} else Environment.getExternalStorageDirectory()).absolutePath}${File.separator}${getString(app.labelRes)}.apk")
+            if (tempFile.exists()) {
+                tempFile.delete()
+            }
+            tempFile.createNewFile()
+
+            val `in`: InputStream = FileInputStream(originalApk)
+            val out: OutputStream = FileOutputStream(tempFile)
+
+            val buf = ByteArray(1024)
+            var len: Int
+            while (`in`.read(buf).also { len = it } > 0) {
+                out.write(buf, 0, len)
+            }
+            `in`.close()
+            out.close()
+            println("File copied.")
+            val uri: Uri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".provider", tempFile)
+            intent.putExtra(Intent.EXTRA_STREAM, uri);
+
+            startActivity(Intent.createChooser(intent, "Share app via"))
+        }catch(ex: java.lang.Exception){
+            Toast.makeText(this, "Error while sharing application.\n${ex.message}", Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun hideSystemUI(view:View) {

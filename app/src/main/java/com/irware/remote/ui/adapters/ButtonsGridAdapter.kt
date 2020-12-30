@@ -25,6 +25,7 @@ import com.irware.remote.MainActivity
 import com.irware.remote.R
 import com.irware.remote.WidgetConfiguratorActivity
 import com.irware.remote.holders.ButtonProperties
+import com.irware.remote.net.ARPTable
 import com.irware.remote.net.IrSendListener
 import com.irware.remote.net.SocketClient
 import com.irware.remote.ui.buttons.RemoteButton
@@ -44,6 +45,8 @@ class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>, pri
 
     private val anim = AnimationUtils.loadAnimation(remoteDialog.context, R.anim.anim_button_show)
 
+    private val properties = remoteDialog.properties
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val context = parent.context
         val container = com.irware.remote.ui.adapters.LinearLayout(context)
@@ -57,7 +60,8 @@ class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>, pri
         btn.setOnClickListener{
             when(remoteDialog.mode){
                 RemoteDialog.MODE_EDIT ->{
-                    val dialog = ButtonPropertiesDialog(context, remoteDialog,ButtonPropertiesDialog.MODE_SINGLE, "", "", "")
+                    val dialog = ButtonPropertiesDialog(context, remoteDialog,ButtonPropertiesDialog.MODE_SINGLE, (MainActivity.arpTable ?: ARPTable(context, 1)).getIpFromMac(properties.deviceProperties.macAddr) ?: "",
+                        properties.deviceProperties.userName, properties.deviceProperties.password)
                     dialog.show()
                     dialog.onIrRead(JSONObject((it as RemoteButton).getProperties().jsonObj.toString()))
                 }

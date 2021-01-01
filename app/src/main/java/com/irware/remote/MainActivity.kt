@@ -43,6 +43,7 @@ import com.irware.remote.ui.fragments.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import java.io.*
+import java.net.InetAddress
 import kotlin.math.min
 import kotlin.math.roundToInt
 
@@ -52,9 +53,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     OnFragmentInteractionListener {
     override fun onFragmentInteraction(uri: Uri) {}
 
-    var devicesFragment: DevicesFragment = DevicesFragment()
-    var irFragment:IRFragment = IRFragment()
-    var gpioFragment:GPIOControllerFragment = GPIOControllerFragment()
+    private val devicesFragment: DevicesFragment = DevicesFragment()
+    val irFragment:IRFragment = IRFragment()
+    val gpioFragment:GPIOControllerFragment = GPIOControllerFragment()
     private var aboutFragment: AboutFragment = AboutFragment()
     private var splash: Dialog? = null
     private var authenticated = false
@@ -367,7 +368,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
             val intent = Intent(Intent.ACTION_SEND)
             intent.type = "*/*"
-
             val originalApk = File(filePath)
 
             val tempFile = File("${(externalCacheDir?: if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {Environment.getStorageDirectory()} else Environment.getExternalStorageDirectory()).absolutePath}${File.separator}${getString(app.labelRes)}.apk")

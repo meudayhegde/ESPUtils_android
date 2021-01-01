@@ -87,6 +87,8 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>, priva
                 val settingsIcon = context.getDrawable(R.drawable.ic_settings)
                 settingsIcon?.setTint(MainActivity.colorOnBackground)
                 if (connected){
+                    holder.cardView.getChildAt(0).background = context.getDrawable(R.drawable.round_corner_success)
+
                     holder.cardView.setOnClickListener {
                         val settingsDialog = AlertDialog.Builder(context)
                             .setPositiveButton("Done") { p0, _ -> p0.dismiss() }
@@ -132,6 +134,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>, priva
                         true
                     }
                 }else {
+                    holder.cardView.getChildAt(0).background = context.getDrawable(R.drawable.round_corner_error)
                     holder.cardView.setOnClickListener{
                         prop.updateStatus(context)
                         Toast.makeText(context, "Device Offline!", Toast.LENGTH_SHORT).show()
@@ -142,6 +145,8 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>, priva
                         true
                     }
                 }
+                MainActivity.activity?.gpioFragment?.notifyDataChanged()
+                MainActivity.activity?.irFragment?.notifyDataChanged()
             }
         })
         prop.updateStatus(context!!)

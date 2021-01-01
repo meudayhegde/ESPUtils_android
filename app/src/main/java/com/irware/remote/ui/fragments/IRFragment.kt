@@ -29,9 +29,9 @@ import kotlin.math.min
 
 class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
     private var listener: OnFragmentInteractionListener? = null
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var viewAdapter: RecyclerView.Adapter<*>
-    private lateinit var viewManager: RecyclerView.LayoutManager
+    private var recyclerView: RecyclerView? = null
+    private var viewAdapter: RecyclerView.Adapter<*>? = null
+    private var viewManager: RecyclerView.LayoutManager? = null
     private var rootView:RelativeLayout? = null
 
     @SuppressLint("DefaultLocale", "InflateParams")
@@ -57,16 +57,13 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
                 Thread{
                     MainActivity.remotePropList.clear()
                     val files = File(MainActivity.remoteConfigPath).listFiles { pathname ->
-                        pathname!!.isFile and (pathname.name.endsWith(
-                            ".json",
-                            true
-                        )) and pathname.canWrite()
+                        pathname!!.isFile and (pathname.name.endsWith(".json", true)) and pathname.canWrite()
                     }
                     files!!.forEach {
                         MainActivity.remotePropList.add(RemoteProperties(it, null))
                     }
                     MainActivity.activity?.runOnUiThread{
-                        viewAdapter.notifyDataSetChanged()
+                        viewAdapter?.notifyDataSetChanged()
                         refreshLayout.isRefreshing = false
                     }
                 }.start()
@@ -102,7 +99,7 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
     }
 
     fun notifyDataChanged(){
-        viewAdapter.notifyDataSetChanged()
+        viewAdapter?.notifyDataSetChanged()
     }
 
     @SuppressLint("InflateParams", "DefaultLocale")
@@ -155,8 +152,8 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
             remoteProperties.description = desc.text.toString()
             remoteProperties.deviceConfigFileName = selectedDevice.deviceConfigFile.name
             MainActivity.remotePropList.add(remoteProperties)
-            viewAdapter.notifyDataSetChanged()
-            RemoteDialog(context!!, remoteProperties,RemoteDialog.MODE_EDIT).show()
+            viewAdapter?.notifyDataSetChanged()
+            RemoteDialog(context!!, remoteProperties,RemoteDialog.MODE_VIEW_EDIT).show()
             dialog.dismiss()
         }
         dialog.show()

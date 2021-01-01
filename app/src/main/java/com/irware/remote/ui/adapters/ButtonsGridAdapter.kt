@@ -25,11 +25,9 @@ import com.irware.remote.MainActivity
 import com.irware.remote.R
 import com.irware.remote.WidgetConfiguratorActivity
 import com.irware.remote.holders.ButtonProperties
-import com.irware.remote.net.ARPTable
 import com.irware.remote.net.IrSendListener
 import com.irware.remote.net.SocketClient
 import com.irware.remote.ui.buttons.RemoteButton
-import com.irware.remote.ui.dialogs.ButtonPropertiesDialog
 import com.irware.remote.ui.dialogs.RemoteDialog
 import kotlinx.android.synthetic.main.create_remote_layout.*
 import org.json.JSONException
@@ -45,8 +43,6 @@ class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>, pri
 
     private val anim = AnimationUtils.loadAnimation(remoteDialog.context, R.anim.anim_button_show)
 
-    private val properties = remoteDialog.properties
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val context = parent.context
         val container = com.irware.remote.ui.adapters.LinearLayout(context)
@@ -54,39 +50,31 @@ class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>, pri
         container.layoutParams = LinearLayout.LayoutParams(RemoteButton.BTN_WIDTH+20, LinearLayout.LayoutParams.WRAP_CONTENT)
         container.minimumHeight = RemoteButton.MIN_HEIGHT
         val btn = RemoteButton(context)
-        if(remoteDialog.mode == RemoteDialog.MODE_EDIT){
+        if(remoteDialog.mode == RemoteDialog.MODE_VIEW_EDIT){
             btn.setOnLongClickListener(this)
         }
         btn.setOnClickListener{
-            when(remoteDialog.mode){
-                RemoteDialog.MODE_EDIT ->{
-                    val dialog = ButtonPropertiesDialog(context, remoteDialog,ButtonPropertiesDialog.MODE_SINGLE, (MainActivity.arpTable ?: ARPTable(context, 1)).getIpFromMac(properties.deviceProperties.macAddr) ?: "",
-                        properties.deviceProperties.userName, properties.deviceProperties.password)
-                    dialog.show()
-                    dialog.onIrRead(JSONObject((it as RemoteButton).getProperties().jsonObj.toString()))
-                }
-                RemoteDialog.MODE_VIEW_ONLY -> {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        vibe.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE))
-                    }else{
-                        with(vibe) {
-                            @Suppress("DEPRECATION")
-                            vibrate(50)
-                        }
+            if(remoteDialog.mode == RemoteDialog.MODE_VIEW_EDIT){
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    vibe.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE))
+                }else{
+                    with(vibe) {
+                        @Suppress("DEPRECATION")
+                        vibrate(50)
                     }
-                    SocketClient.sendIrCode(address, userName , password,(it as RemoteButton).getProperties().jsonObj, object : IrSendListener {
-                        override fun onIrSend(result: String) {
-                            MainActivity.activity?.runOnUiThread {
-                                try {
-                                    val jsonObj = JSONObject(result)
-                                    Toast.makeText(context, jsonObj.getString("response"), Toast.LENGTH_SHORT).show()
-                                } catch (ex: JSONException) {
-                                    Toast.makeText(context, result, Toast.LENGTH_SHORT).show()
-                                }
+                }
+                SocketClient.sendIrCode(address, userName , password,(it as RemoteButton).getProperties().jsonObj, object : IrSendListener {
+                    override fun onIrSend(result: String) {
+                        MainActivity.activity?.runOnUiThread {
+                            try {
+                                val jsonObj = JSONObject(result)
+                                Toast.makeText(context, jsonObj.getString("response"), Toast.LENGTH_SHORT).show()
+                            } catch (ex: JSONException) {
+                                Toast.makeText(context, result, Toast.LENGTH_SHORT).show()
                             }
                         }
-                    })
-                }
+                    }
+                })
             }
         }
         container.addView(btn)
@@ -137,7 +125,7 @@ class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>, pri
         return arrayList.size-1
     }
 
-    fun notifyItemChanged(position:Int,animation:Boolean){
+    private fun notifyItemChanged(position:Int, animation:Boolean){
         arrayList[position]?.buttonShowAnimation = animation
         notifyItemChanged(position)
     }
@@ -149,17 +137,17 @@ class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>, pri
         notifyDataSetChanged()
     }
 
-    override fun onDrag(v: View, event: DragEvent): Boolean {
-        v as com.irware.remote.ui.adapters.LinearLayout
+    override fun onDrag(lin: View, event: DragEvent): Boolean {
+        lin as com.irware.remote.ui.adapters.LinearLayout
         when (event.action) {
             DragEvent.ACTION_DROP -> {
-                val orig = event.localState as RemoteButton
-                v.post {
-                    val prop = orig.getProperties()
-                    if(arrayList[v.position] == null) {
-                        arrayList[v.position] = prop
+                val origBtn = event.localState as RemoteButton
+                lin.post {
+                    val prop = origBtn.getProperties()
+                    if(arrayList[lin.position] == null) {
+                        arrayList[lin.position] = prop
                         arrayList[prop.btnPosition] = null
-                        prop.btnPosition = v.position
+                        prop.btnPosition = lin.position
                         notifyDataSetChanged(false)
                     }
                 }
@@ -168,25 +156,28 @@ class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>, pri
             DragEvent.ACTION_DRAG_ENDED ->{
                 val view = event.localState as RemoteButton?
                 notifyItemChanged(view?.getProperties()?.btnPosition?:0,false)
-                v.background = null
+                lin.background = null
                 remoteDialog.image_view_delete.visibility = View.INVISIBLE
                 remoteDialog.image_view_home.visibility = View.INVISIBLE
+                remoteDialog.image_view_btn_settings.visibility = View.INVISIBLE
                 remoteDialog.create_remote_info_layout.visibility = View.VISIBLE
             }
 
             DragEvent.ACTION_DRAG_ENTERED ->{
-                v.background = when{
-                    v.getChildAt(0)?.visibility == View.VISIBLE -> null
-                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP-> ContextCompat.getDrawable(v.context, R.drawable.round_corner)
-                    else -> with(v) {
+                lin.background = when{
+                    lin.getChildAt(0)?.visibility == View.VISIBLE -> null
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP-> ContextCompat.getDrawable(lin.context, R.drawable.round_corner)
+                    else -> with(lin) {
                         @Suppress("DEPRECATION")
                         context.resources.getDrawable(R.drawable.round_corner)
                     }
                 }
+
+
             }
 
             DragEvent.ACTION_DRAG_EXITED -> {
-                v.background = null
+                lin.background = null
             }
         }
         return true
@@ -204,6 +195,7 @@ class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>, pri
         view?.visibility = View.INVISIBLE
         remoteDialog.image_view_delete.visibility = View.VISIBLE
         remoteDialog.image_view_home.visibility = View.VISIBLE
+        remoteDialog.image_view_btn_settings.visibility = View.VISIBLE
         remoteDialog.create_remote_info_layout.visibility = View.INVISIBLE
         return true
     }

@@ -23,6 +23,7 @@ import com.irware.remote.holders.GPIOObject
 import com.irware.remote.holders.OnStatusUpdateListener
 import com.irware.remote.net.SocketClient
 import org.json.JSONObject
+import kotlin.contracts.contract
 
 class GPIOListAdapter(private val propList: ArrayList<GPIOObject>) : RecyclerView.Adapter<GPIOListAdapter.MyViewHolder>(){
 
@@ -65,6 +66,8 @@ class GPIOListAdapter(private val propList: ArrayList<GPIOObject>) : RecyclerVie
         progressImg.visibility = View.GONE
         progressText.text = cardView.context.getString(R.string.loading)
 
+        cardView.getChildAt(0).background = cardView.context.getDrawable(if(prop.deviceProperties?.isConnected == true) R.drawable.round_corner_success else R.drawable.round_corner_error)
+
         Thread{
             try{
                 (cardView.context as Activity).runOnUiThread {
@@ -72,7 +75,6 @@ class GPIOListAdapter(private val propList: ArrayList<GPIOObject>) : RecyclerVie
 
                     gpioSwitch.visibility = View.VISIBLE
                     statusLayout.visibility = View.GONE
-
 
                     if(prop.pinValue == 1){
                         gpioSwitch.isChecked = true

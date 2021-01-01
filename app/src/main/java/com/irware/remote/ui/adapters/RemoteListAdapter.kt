@@ -79,7 +79,7 @@ class RemoteListAdapter(private val propList: ArrayList<RemoteProperties>, priva
             }
 
             holder.cardView.setOnClickListener {
-                RemoteDialog(holder.cardView.context, prop, RemoteDialog.MODE_VIEW_ONLY).show()
+                RemoteDialog(holder.cardView.context, prop, RemoteDialog.MODE_VIEW_EDIT).show()
             }
         }else{
             holder.cardView.setOnClickListener {
@@ -92,6 +92,7 @@ class RemoteListAdapter(private val propList: ArrayList<RemoteProperties>, priva
         cardView.findViewById<TextView>(R.id.mac_addr).text = prop.remoteVendor
         cardView.findViewById<TextView>(R.id.model_name_text).text = prop.remoteName
         cardView.findViewById<TextView>(R.id.remote_desc).text = prop.description
+        cardView.getChildAt(0).background = ContextCompat.getDrawable(cardView.context, if(prop.deviceProperties.isConnected) R.drawable.round_corner_success else R.drawable.round_corner_error)
     }
 
     override fun getItemCount() = propList.size
@@ -139,7 +140,6 @@ class RemoteListAdapter(private val propList: ArrayList<RemoteProperties>, priva
         val desc = inputLayout.findViewById<TextInputEditText>(R.id.remote_desc)
         desc.setText(prop.description)
 
-        val btnEdit = inputLayout.findViewById<Button>(R.id._edit_buttons)
         val btnDelete = inputLayout.findViewById<Button>(R.id.delete_remote)
         val btnCancel = inputLayout.findViewById<Button>(R.id.cancel)
         val btnFinish = inputLayout.findViewById<Button>(R.id.button_done)
@@ -172,14 +172,6 @@ class RemoteListAdapter(private val propList: ArrayList<RemoteProperties>, priva
             prop.description = desc.text.toString()
             prop.deviceConfigFileName = selectedDevice.deviceConfigFile.name
             setViewProps(card, prop)
-            dialog.dismiss()
-        }
-        btnEdit.setOnClickListener {
-            prop.remoteVendor = vendor.text.toString()
-            prop.remoteName = name.text.toString()
-            prop.description = desc.text.toString()
-            setViewProps(card, prop)
-            RemoteDialog(card.context, prop, RemoteDialog.MODE_EDIT).show()
             dialog.dismiss()
         }
 

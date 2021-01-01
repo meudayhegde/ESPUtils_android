@@ -5,6 +5,7 @@ import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Handler
 import android.view.DragEvent
@@ -34,7 +35,7 @@ class RemoteDialog(context: Context,val properties:RemoteProperties, val mode:In
         window?.attributes?.windowAnimations = R.style.DialogAnimationTheme
         setContentView(R.layout.create_remote_layout)
         when(mode) {
-            MODE_VIEW_ONLY, MODE_SELECT_BUTTON ->{
+            MODE_SELECT_BUTTON ->{
                 fam_manage_button_actions.visibility = View.GONE
                 create_remote_info_layout.visibility = View.GONE
             }
@@ -61,10 +62,11 @@ class RemoteDialog(context: Context,val properties:RemoteProperties, val mode:In
             button_refresh_layout.isRefreshing = false
         }
 
-        if(mode == MODE_EDIT){
+        if(mode == MODE_VIEW_EDIT){
             layout_add_to_home.layoutParams.width = MainActivity.size.x/2
             layout_del_button.setOnDragListener(this)
             layout_add_to_home.setOnDragListener(HomeButtonDropListener(this))
+            layout_button_settings.setOnDragListener(SettingsButtonDropListener(this))
         }
 
 
@@ -74,7 +76,7 @@ class RemoteDialog(context: Context,val properties:RemoteProperties, val mode:In
             buttons_layout_recycler_view.adapter = adapter
         },200)
 
-        if(mode == MODE_EDIT) {
+        if(mode == MODE_VIEW_EDIT) {
             fam_manage_button_actions.hideMenuButton(false)
             @Suppress("DEPRECATION")
             Handler().postDelayed({
@@ -148,9 +150,8 @@ class RemoteDialog(context: Context,val properties:RemoteProperties, val mode:In
     }
 
     companion object{
-        const val MODE_SELECT_BUTTON = 2
-        const val MODE_EDIT = 1
-        const val MODE_VIEW_ONLY = 0
+        const val MODE_SELECT_BUTTON = 1
+        const val MODE_VIEW_EDIT = 0
     }
 }
 
@@ -200,7 +201,34 @@ class HomeButtonDropListener(private val remoteDialog:RemoteDialog):View.OnDragL
             Toast.makeText(remoteDialog.context,"Your Android version doesn't support this feature",Toast.LENGTH_LONG).show()
         }
     }
-
-
 }
 
+class SettingsButtonDropListener(private val remoteDialog:RemoteDialog):View.OnDragListener{
+    override fun onDrag(v: View?, event: DragEvent?): Boolean {
+        when (event?.action) {
+            DragEvent.ACTION_DROP -> {
+                val view = event.localState as RemoteButton
+                view.visibility = View.VISIBLE
+                val btnProp = view.getProperties()
+                val properties = remoteDialog.properties
+                val dialog = ButtonPropertiesDialog(view.context, remoteDialog,ButtonPropertiesDialog.MODE_SINGLE, (MainActivity.arpTable ?: ARPTable(view.context, 1)).getIpFromMac(properties.deviceProperties.macAddr) ?: "",
+                    properties.deviceProperties.userName, properties.deviceProperties.password)
+                dialog.show()
+                dialog.onIrRead(JSONObject(btnProp.jsonObj.toString()))
+            }
+            DragEvent.ACTION_DRAG_ENDED ->{
+                remoteDialog.image_view_btn_settings.visibility = View.INVISIBLE
+                DrawableCompat.setTint(remoteDialog.image_view_btn_settings.drawable,MainActivity.colorOnBackground)
+                remoteDialog.create_remote_info_layout.visibility = View.VISIBLE
+            }
+            DragEvent.ACTION_DRAG_ENTERED ->{
+                @Suppress("DEPRECATION")
+                DrawableCompat.setTint(remoteDialog.image_view_btn_settings.drawable, if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) { remoteDialog.context.getColor(R.color.colorPrimary)} else remoteDialog.context.resources.getColor(R.color.colorPrimary))
+            }
+            DragEvent.ACTION_DRAG_EXITED -> {
+                DrawableCompat.setTint(remoteDialog.image_view_btn_settings.drawable, MainActivity.colorOnBackground)
+            }
+        }
+        return true
+    }
+}

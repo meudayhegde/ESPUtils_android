@@ -32,9 +32,9 @@ import kotlin.math.min
 
 class GPIOControllerFragment : androidx.fragment.app.Fragment()  {
     private var listener: OnFragmentInteractionListener? = null
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var viewAdapter: RecyclerView.Adapter<*>
-    private lateinit var viewManager: RecyclerView.LayoutManager
+    private var recyclerView: RecyclerView? = null
+    private var viewAdapter: RecyclerView.Adapter<*>? = null
+    private var viewManager: RecyclerView.LayoutManager? = null
     private var rootView: RelativeLayout? = null
 
     @SuppressLint("UseCompatLoadingForDrawables")
@@ -53,7 +53,7 @@ class GPIOControllerFragment : androidx.fragment.app.Fragment()  {
             val refreshLayout = rootView!!.findViewById<SwipeRefreshLayout>(R.id.refresh_layout)
             refreshLayout.setOnRefreshListener {
                 refreshLayout.isRefreshing = true
-                viewAdapter.notifyDataSetChanged()
+                viewAdapter?.notifyDataSetChanged()
                 Thread{
                     Thread.sleep(2000)
                     refreshLayout.isRefreshing = false
@@ -104,7 +104,7 @@ class GPIOControllerFragment : androidx.fragment.app.Fragment()  {
                             jsonObj.put("macAddr", MainActivity.devicePropList[devicesSpinner.selectedItemPosition - 1].macAddr)
                             jsonObj.put("gpioNumber", gpioSpinner.selectedItem.toString().split(" ")[0].filter { it.isDigit() }.toInt())
                             MainActivity.gpioObjectList.add(GPIOObject(jsonObj, MainActivity.gpioConfig!!))
-                            viewAdapter.notifyDataSetChanged()
+                            viewAdapter?.notifyDataSetChanged()
                             dialog.dismiss()
                         }
                     }
@@ -121,6 +121,10 @@ class GPIOControllerFragment : androidx.fragment.app.Fragment()  {
                 Handler().postDelayed({manageMenu.showMenu(true)},400)
         },400)
         return rootView
+    }
+
+    fun notifyDataChanged(){
+        viewAdapter?.notifyDataSetChanged()
     }
 
     override fun onAttach(context: Context) {

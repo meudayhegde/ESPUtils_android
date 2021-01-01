@@ -19,7 +19,7 @@ class DeviceProperties(val deviceConfigFile: File)  {
 
     private var jsonObj : JSONObject = getJSONObject()
     private var onStatusUpdateListeners = ArrayList<OnStatusUpdateListener>()
-    private var isConnected = false
+    var isConnected = false
 
     var nickName: String = jsonObj.optString("nickName", "")
         get() { return jsonObj.optString("nickName", "")}

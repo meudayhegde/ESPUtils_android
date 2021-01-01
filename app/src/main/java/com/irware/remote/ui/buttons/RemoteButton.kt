@@ -7,9 +7,11 @@ import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.StateListDrawable
 import android.os.Build
 import android.util.AttributeSet
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewParent
 import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
@@ -63,7 +65,7 @@ class RemoteButton : LinearLayout {
             }
 
             override fun onTypeModified() {
-                if(parent is RelativeLayout) setType(properties.iconType,RelativeLayout.CENTER_IN_PARENT)
+                if(parent is RelativeLayout) setType(properties.iconType, RelativeLayout.CENTER_IN_PARENT)
                 else setType(properties.iconType)
                 onIconModified()
             }
@@ -126,12 +128,7 @@ class RemoteButton : LinearLayout {
             drawable = drawable?.mutate()
             DrawableCompat.setTint(drawable!!,properties!!.textColor)
             icon.setImageDrawable(drawable)
-            if(properties!!.iconType == TYPE_RECT_HOR) {
-                orientation = HORIZONTAL
-            }
-            else {
-                orientation = VERTICAL
-            }
+            orientation = if(properties!!.iconType == TYPE_RECT_HOR) HORIZONTAL else VERTICAL
         }else{
             icon.setImageDrawable(ColorDrawable(Color.TRANSPARENT))
         }
@@ -139,48 +136,13 @@ class RemoteButton : LinearLayout {
     }
 
     fun setType(type:Int,vararg params:Int){
-        when(type){
-            TYPE_RECT_HOR -> {
-                orientation = HORIZONTAL
-                layoutParams = when (parent) {
-                    is LinearLayout -> LayoutParams(BTN_WIDTH, MIN_HEIGHT)
-                    is RelativeLayout -> RelativeLayout.LayoutParams(BTN_WIDTH, MIN_HEIGHT)
-                    else -> ViewGroup.LayoutParams(BTN_WIDTH, MIN_HEIGHT)
-                }
-            }
-            TYPE_ROUND_MINI -> {
-                orientation = VERTICAL
-                layoutParams = when (parent) {
-                    is LinearLayout -> LayoutParams(MIN_HEIGHT, MIN_HEIGHT)
-                    is RelativeLayout -> RelativeLayout.LayoutParams(MIN_HEIGHT, MIN_HEIGHT)
-                    else -> ViewGroup.LayoutParams(MIN_HEIGHT, MIN_HEIGHT)
-                }
-            }
-            TYPE_ROUND_MEDIUM -> {
-                orientation = VERTICAL
-                layoutParams = when (parent) {
-                    is LinearLayout -> LayoutParams(BTN_WIDTH, BTN_WIDTH)
-                    is RelativeLayout -> RelativeLayout.LayoutParams(BTN_WIDTH, BTN_WIDTH)
-                    else -> ViewGroup.LayoutParams(BTN_WIDTH, BTN_WIDTH)
-                }
-            }
-            TYPE_RECT_VER -> {
-                orientation = VERTICAL
-                layoutParams = when (parent) {
-                    is LinearLayout -> LayoutParams(MIN_HEIGHT, BTN_WIDTH)
-                    is RelativeLayout -> RelativeLayout.LayoutParams(MIN_HEIGHT, BTN_WIDTH)
-                    else -> ViewGroup.LayoutParams(MIN_HEIGHT, BTN_WIDTH)
-                }
-            }
-        }
-
-        if(layoutParams is LayoutParams){
-            (layoutParams as LayoutParams).setMargins(12,12,12,12)
-            params.forEach { (layoutParams as RelativeLayout.LayoutParams).addRule(it) }
-        }else{
-            (layoutParams as RelativeLayout.LayoutParams).setMargins(12,12,12,12)
-            params.forEach { (layoutParams as RelativeLayout.LayoutParams).addRule(it) }
-        }
+        orientation = if(type == TYPE_RECT_HOR) HORIZONTAL else VERTICAL
+        layoutParams = Class.forName(parent.javaClass.name).classes[0].getConstructor(Int::class.java, Int::class.java).newInstance(
+            when(type){TYPE_RECT_HOR, TYPE_ROUND_MEDIUM -> BTN_WIDTH else -> MIN_HEIGHT},
+            when(type){TYPE_RECT_HOR, TYPE_ROUND_MINI -> MIN_HEIGHT else -> BTN_WIDTH}
+        ) as ViewGroup.LayoutParams?
+        layoutParams.javaClass.getMethod("setMargins", Int::class.java, Int::class.java, Int::class.java, Int::class.java).invoke(layoutParams,12, 12, 12, 12)
+        params.forEach { layoutParams.javaClass.getMethod("addRule", Int::class.java).invoke(layoutParams, it) }
     }
 
     companion object{

@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import com.irware.remote.MainActivity
 import com.irware.remote.R
@@ -206,7 +207,7 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
             val popup = PopupMenu(context, remote_model_button)
             popup.menuInflater.inflate(R.menu.btn_style_menu, popup.menu)
             popup.setOnMenuItemClickListener {
-                buttonProperties?.iconType = arrayOf(R.id.round_button_small,R.id.button_horizontal,R.id.button_vertical,R.id.round_button_large).indexOf(it.itemId)
+                buttonProperties?.iconType = arrayOf(R.id.round_button_small, R.id.button_horizontal, R.id.button_vertical, R.id.round_button_large).indexOf(it.itemId)
                 true
             }
             popup.show()
@@ -218,7 +219,7 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
         btn_icon.setOnClickListener {
             val iconAdapter = object:ArrayAdapter<Int>(context,R.layout.drawable_layout,MainActivity.iconDrawableList.toTypedArray()){
                 override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-                    val drawable = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) context.getDrawable(getItem(position)!!)
+                    val drawable = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) ContextCompat.getDrawable(context, getItem(position)!!)
                         else with(context) {
                         @Suppress("DEPRECATION")
                         resources.getDrawable(getItem(position)!!)

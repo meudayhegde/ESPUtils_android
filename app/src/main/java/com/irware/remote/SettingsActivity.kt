@@ -88,6 +88,8 @@ class SettingsActivity : AppCompatActivity() {
             radioButton.text = it
             radioButton.id = optList.indexOf(it)
             content.addView(radioButton)
+            radioButton.layoutParams =
+                Class.forName(radioButton.parent.javaClass.name).classes[1].getConstructor(Int::class.java, Int::class.java).newInstance(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT) as ViewGroup.LayoutParams?
         }
 
         val dialog = AlertDialog.Builder(this)
@@ -107,6 +109,8 @@ class SettingsActivity : AppCompatActivity() {
             dialog.window?.setLayout((MainActivity.size.x * 0.8).toInt(), WindowManager.LayoutParams.WRAP_CONTENT)
 
             content.check(pref.getInt(prefName,0))
+            content.layoutParams =
+                Class.forName(content.parent.javaClass.name).classes[0].getConstructor(Int::class.java, Int::class.java).newInstance(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT) as ViewGroup.LayoutParams?
         }
 
         return dialog

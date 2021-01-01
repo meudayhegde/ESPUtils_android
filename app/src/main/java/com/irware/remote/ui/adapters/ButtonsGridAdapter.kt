@@ -38,17 +38,18 @@ class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>, pri
                          private  val userName: String, private val password: String) :RecyclerView.Adapter<ButtonsGridAdapter.ViewHolder>(),
     View.OnDragListener,View.OnLongClickListener{
 
-    class ViewHolder(var container: com.irware.remote.ui.adapters.LinearLayout,var button:RemoteButton):RecyclerView.ViewHolder(container)
+    class ViewHolder(var container: LinearLayout,var button:RemoteButton):RecyclerView.ViewHolder(container)
     private val vibe = remoteDialog.context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
     private val anim = AnimationUtils.loadAnimation(remoteDialog.context, R.anim.anim_button_show)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val context = parent.context
-        val container = com.irware.remote.ui.adapters.LinearLayout(context)
+        val container = LinearLayout(context)
         container.gravity = Gravity.CENTER
         container.layoutParams = LinearLayout.LayoutParams(RemoteButton.BTN_WIDTH+20, LinearLayout.LayoutParams.WRAP_CONTENT)
         container.minimumHeight = RemoteButton.MIN_HEIGHT
+        container.id = 0
         val btn = RemoteButton(context)
         if(remoteDialog.mode == RemoteDialog.MODE_VIEW_EDIT){
             btn.setOnLongClickListener(this)
@@ -88,7 +89,7 @@ class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>, pri
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val container = holder.container
-        container.position = position
+        container.id = position
         val context = holder.container.context
         val buttonProp = arrayList[position]
         holder.button.initialize(buttonProp)
@@ -138,16 +139,16 @@ class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>, pri
     }
 
     override fun onDrag(lin: View, event: DragEvent): Boolean {
-        lin as com.irware.remote.ui.adapters.LinearLayout
+        lin as LinearLayout
         when (event.action) {
             DragEvent.ACTION_DROP -> {
                 val origBtn = event.localState as RemoteButton
                 lin.post {
                     val prop = origBtn.getProperties()
-                    if(arrayList[lin.position] == null) {
-                        arrayList[lin.position] = prop
+                    if(arrayList[lin.id] == null) {
+                        arrayList[lin.id] = prop
                         arrayList[prop.btnPosition] = null
-                        prop.btnPosition = lin.position
+                        prop.btnPosition = lin.id
                         notifyDataSetChanged(false)
                     }
                 }
@@ -213,8 +214,4 @@ class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>, pri
         WidgetConfiguratorActivity.activity!!.setResult(Activity.RESULT_OK, resultValue)
         WidgetConfiguratorActivity.activity!!.finish()
     }
-}
-
-class LinearLayout(context:Context):LinearLayout(context){
-    var position = 0
 }

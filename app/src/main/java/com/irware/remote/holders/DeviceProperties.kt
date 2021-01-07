@@ -20,6 +20,7 @@ class DeviceProperties(val deviceConfigFile: File)  {
     private var jsonObj : JSONObject = getJSONObject()
     private var onStatusUpdateListeners = ArrayList<OnStatusUpdateListener>()
     var isConnected = false
+    var isStatusUpdated = true
 
     var nickName: String = jsonObj.optString("nickName", "")
         get() { return jsonObj.optString("nickName", "")}
@@ -33,9 +34,6 @@ class DeviceProperties(val deviceConfigFile: File)  {
     var macAddr: String = jsonObj.optString("macAddr")
         get() { return jsonObj.optString("macAddr", "")}
         set(value){ field = value; jsonObj.put("macAddr", value); update() }
-//    var ipAddr: JSONArray = jsonObj.optJSONArray("ipAddr") ?: JSONArray()
-//        get() { return jsonObj.optJSONArray("ipAddr") ?: JSONArray()}
-//        set(value){ field = value; jsonObj.put("ipAddr", value); update() }
     var description: String = jsonObj.optString("description", "")
         get() { return jsonObj.optString("description", "")}
         set(value){ field = value; jsonObj.put("description", value); update() }
@@ -91,11 +89,12 @@ class DeviceProperties(val deviceConfigFile: File)  {
                     Log.d("PinInfo", "Error: Failed to get pin info, $ex")
                 }
 
-                (context as Activity).runOnUiThread {
+                MainActivity.threadHandler?.runOnUiThread {
                     onStatusUpdateListeners.forEach {
                         it.onStatusUpdate(isConnected)
                     }
                 }
+                isStatusUpdated = true
             }
         })
     }

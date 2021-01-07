@@ -3,7 +3,9 @@ package com.irware.remote.net
 import android.app.Activity
 import android.content.Context
 import android.text.TextUtils
+import com.irware.ThreadHandler
 import com.irware.getIPAddress
+import com.irware.remote.MainActivity
 import com.irware.remote.ui.adapters.insert
 import org.json.JSONArray
 import org.json.JSONException
@@ -30,7 +32,7 @@ class ARPTable(private val context: Context, private val scanCount: Int = -1) {
 
     fun getIpFromMac(mac: String, listener: OnIpListener){
         val addresses = jsonObj.optJSONArray(mac) ?: JSONArray()
-        Thread{
+        MainActivity.threadHandler?.runOnThread(ThreadHandler.ESP_MESSAGE){
             for(i in 0 until addresses.length()){
                 val address = addresses.getString(i)
                 if(InetAddress.getByName(address).isReachable(50)){
@@ -47,7 +49,7 @@ class ARPTable(private val context: Context, private val scanCount: Int = -1) {
                                 listener.onIpResult(address)
                             }
                             else listener.onIpResult(address)
-                            return@Thread
+                            return@runOnThread
                         }
                     }catch(ex: Exception){}
                 }
@@ -55,7 +57,7 @@ class ARPTable(private val context: Context, private val scanCount: Int = -1) {
             if(listener.uiThread) (context as Activity).runOnUiThread {
                 listener.onIpResult(null)
             } else listener.onIpResult(null)
-        }.start()
+        }
 
     }
 

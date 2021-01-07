@@ -34,11 +34,11 @@ class SettingsAdapter(private val list: ArrayList<SettingsItem>) : RecyclerView.
         holder.subTitleView.text = list[position].subtitle
         if(list[position].iconRes != 0) holder.iconView.setImageResource(list[position].iconRes)
         holder.cardView.setOnClickListener{
-            list[position].dialog.setTitle(list[position].title)
-            list[position].dialog.show()
-            list[position].dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            list[position].dialog.window?.setLayout((MainActivity.size.x*0.9).toInt(),WindowManager.LayoutParams.WRAP_CONTENT)
-
+            list[position].dialog?.setTitle(list[position].title)
+            list[position].dialog?.show()
+            list[position].dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            list[position].dialog?.window?.setLayout((MainActivity.size.x*0.9).toInt(),WindowManager.LayoutParams.WRAP_CONTENT)
+            list[position].clickAction?.run()
         }
     }
 

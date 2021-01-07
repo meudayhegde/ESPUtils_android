@@ -18,6 +18,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.github.clans.fab.FloatingActionButton
 import com.github.clans.fab.FloatingActionMenu
 import com.google.android.material.textfield.TextInputEditText
+import com.irware.ThreadHandler
 import com.irware.remote.MainActivity
 import com.irware.remote.R
 import com.irware.remote.holders.DeviceProperties
@@ -33,7 +34,7 @@ import kotlin.math.min
 class GPIOControllerFragment : androidx.fragment.app.Fragment()  {
     private var listener: OnFragmentInteractionListener? = null
     private var recyclerView: RecyclerView? = null
-    private var viewAdapter: RecyclerView.Adapter<*>? = null
+    private var viewAdapter: GPIOListAdapter? = null
     private var viewManager: RecyclerView.LayoutManager? = null
     private var rootView: RelativeLayout? = null
 
@@ -53,11 +54,13 @@ class GPIOControllerFragment : androidx.fragment.app.Fragment()  {
             val refreshLayout = rootView!!.findViewById<SwipeRefreshLayout>(R.id.refresh_layout)
             refreshLayout.setOnRefreshListener {
                 refreshLayout.isRefreshing = true
-                viewAdapter?.notifyDataSetChanged()
-                Thread{
-                    Thread.sleep(2000)
-                    refreshLayout.isRefreshing = false
-                }.start()
+                viewAdapter?.notifyDataChanged()
+                MainActivity.threadHandler?.runOnFreeThread{
+                    Thread.sleep(100)
+                    MainActivity.threadHandler?.runOnThread(ThreadHandler.ESP_MESSAGE) {
+                        refreshLayout.isRefreshing = false
+                    }
+                }
             }
 
             val dialog = AlertDialog.Builder(context!!)

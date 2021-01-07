@@ -31,19 +31,20 @@ import androidx.core.content.FileProvider
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.navigation.NavigationView
+import com.irware.ThreadHandler
 import com.irware.remote.holders.DeviceProperties
 import com.irware.remote.holders.GPIOConfig
 import com.irware.remote.holders.GPIOObject
 import com.irware.remote.holders.RemoteProperties
 import com.irware.remote.listeners.OnValidationListener
 import com.irware.remote.net.ARPTable
+import com.irware.remote.net.EspOta
 import com.irware.remote.ui.BlurBuilder
 import com.irware.remote.ui.buttons.RemoteButton
 import com.irware.remote.ui.fragments.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import java.io.*
-import java.net.InetAddress
 import kotlin.math.min
 import kotlin.math.roundToInt
 
@@ -71,6 +72,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         remotePropList.clear()
         devicePropList.clear()
         gpioObjectList.clear()
+
+        threadHandler = ThreadHandler(this)
 
         activity = this
         val arr = resources.obtainTypedArray(R.array.icons)
@@ -191,16 +194,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
         })
 
-        Thread{
+        threadHandler?.runOnFreeThread{
             val files = File(remoteConfigPath).listFiles { pathname ->
-                pathname!!.isFile and (pathname.name.endsWith(
-                    ".json",
-                    true
-                )) and pathname.canWrite()
+                pathname!!.isFile and (pathname.name.endsWith(".json", true)) and pathname.canWrite()
             }
             for (file in files!!)
                 remotePropList.add(RemoteProperties(file, null))
-        }.start()
+        }
 
         if(pref.getString("username", "") != "" && pref.getString("password", "") != "") authenticated = true
 
@@ -421,8 +421,25 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 Toast.LENGTH_SHORT
             ).show()
         }
+    }
 
+    var updateSelectedListener: ((File) -> Unit)? = null
+    fun startUpdateChooser(block: ((File) -> Unit)){
+        this.updateSelectedListener = block
 
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
+        intent.type = "application/zip"
+        intent.addCategory(Intent.CATEGORY_OPENABLE)
+
+        try {
+            startActivityForResult(
+                Intent.createChooser(intent, "Select Update zip file containing firmware files."), UPDATE_SELECT_CODE)
+        } catch (ex: ActivityNotFoundException) {
+            Toast.makeText(
+                this, "Please install a File Manager.",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
     }
 
     override fun onActivityResult(requestCode:Int, resultCode:Int, data:Intent?) {
@@ -441,8 +458,25 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
-
                 }
+            UPDATE_SELECT_CODE ->
+                if (resultCode == RESULT_OK) {
+                    val isr = contentResolver.openInputStream(data?.data?:return)?: return
+
+                    val update = File((externalCacheDir?:filesDir).absolutePath + File.separator + "Update.zip")
+                    if(update.exists()) update.delete()
+                    update.createNewFile()
+
+                    update.outputStream().use {
+                        it.write(isr.readBytes())
+                        it.flush()
+                    }
+                    isr.close()
+
+                    updateSelectedListener?.invoke(update)
+                    updateSelectedListener = null
+                }
+
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
@@ -483,6 +517,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         const val REMOTE_CONFIG_DIR = "remotes"
         const val DEVICE_CONFIG_DIR = "devices"
         const val FILE_SELECT_CODE = 0
+        const val UPDATE_SELECT_CODE = EspOta.OTA_PORT
         var gpioConfig: GPIOConfig? = null
         val remotePropList = ArrayList<RemoteProperties>()
         val devicePropList = ArrayList<DeviceProperties>()
@@ -496,6 +531,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         var activity:MainActivity? = null
         var colorOnBackground = Color.BLACK
         var iconDrawableList:IntArray = intArrayOf()
+
+        var threadHandler: ThreadHandler? = null
     }
 
     private var restart = false

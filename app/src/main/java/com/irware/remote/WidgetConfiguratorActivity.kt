@@ -91,7 +91,7 @@ class WidgetConfiguratorActivity : AppCompatActivity(),SwipeRefreshLayout.OnRefr
                     true
                 )) and pathname.canWrite()
             }
-            files.forEach {
+            files?.forEach {
                 remotePropList.add(RemoteProperties(it, null))
             }
             runOnUiThread{

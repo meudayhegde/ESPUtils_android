@@ -121,7 +121,7 @@ class SettingsActivity : AppCompatActivity() {
     }
 }
 
-class SettingsItem(var title: String, var subtitle: String, var dialog:Dialog, var iconRes: Int = 0)
+class SettingsItem(var title: String, var subtitle: String, var dialog:Dialog?, var iconRes: Int = 0, var clickAction: Runnable? = null)
 
 interface OnSocketReadListener{
     fun onSocketRead(data:JSONObject)

@@ -54,7 +54,7 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
             val refreshLayout = rootView!!.findViewById<SwipeRefreshLayout>(R.id.refresh_layout)
             refreshLayout.setOnRefreshListener {
                 refreshLayout.isRefreshing = true
-                Thread{
+                MainActivity.threadHandler?.runOnFreeThread{
                     MainActivity.remotePropList.clear()
                     val files = File(MainActivity.remoteConfigPath).listFiles { pathname ->
                         pathname!!.isFile and (pathname.name.endsWith(".json", true)) and pathname.canWrite()
@@ -62,11 +62,11 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
                     files!!.forEach {
                         MainActivity.remotePropList.add(RemoteProperties(it, null))
                     }
-                    MainActivity.activity?.runOnUiThread{
+                    MainActivity.threadHandler?.runOnUiThread{
                         viewAdapter?.notifyDataSetChanged()
                         refreshLayout.isRefreshing = false
                     }
-                }.start()
+                }
             }
 
             rootView!!.findViewById<FloatingActionButton>(R.id.fab_new_remote).setOnClickListener(this)

@@ -19,6 +19,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.github.clans.fab.FloatingActionButton
 import com.github.clans.fab.FloatingActionMenu
 import com.google.android.material.textfield.TextInputEditText
+import com.irware.ThreadHandler
 import com.irware.remote.MainActivity
 import com.irware.remote.R
 import com.irware.remote.holders.DeviceProperties
@@ -73,7 +74,11 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
             refreshLayout.setOnRefreshListener {
                 refreshLayout.isRefreshing = true
                 viewAdapter.notifyDataSetChanged()
-                refreshLayout.isRefreshing = false
+                MainActivity.threadHandler?.runOnThread(ThreadHandler.ESP_MESSAGE){
+                    MainActivity.threadHandler?.runOnUIThread {
+                        refreshLayout.isRefreshing = false
+                    }
+                }
             }
 
             val fabScan = rootView!!.findViewById<FloatingActionButton>(R.id.fab_scan_device)
@@ -143,21 +148,21 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
         btnCancel.setOnClickListener { dialog.cancel() }
         btnNext.setOnClickListener {
             val address = devAddr.text.toString()
-            Thread{
+            MainActivity.threadHandler?.runOnThread(ThreadHandler.ESP_MESSAGE){
                 try {
                     val connector = SocketClient.Connector(address)
                     connector.sendLine("{\"request\":\"ping\"}")
                     val response = connector.readLine()
                     val macAddr = JSONObject(response).getString("MAC")
-                    (context as Activity).runOnUiThread{
+                    MainActivity.threadHandler?.runOnUiThread{
                         onAddressVerified(dialog, address, macAddr)
                     }
                 }catch(ex: Exception){
-                    (context as Activity).runOnUiThread{
+                    MainActivity.threadHandler?.runOnUiThread{
                         Toast.makeText(context, "Err: Failed to contact $address", Toast.LENGTH_LONG).show()
                     }
                 }
-            }.start()
+            }
         }
 
         dialog.show()
@@ -195,7 +200,7 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
         devDescription.setText(devProp?.description?: "")
 
         btnAdd.setOnClickListener{
-            Thread{
+            MainActivity.threadHandler?.runOnThread(ThreadHandler.ESP_MESSAGE){
                 try{
                     val connector = SocketClient.Connector(address)
                     connector.sendLine("{\"request\":\"authenticate\",\"username\":\"${userName.text.toString()}\",\"password\":\"${password.text.toString()}\",\"data\":\"__\",\"length\":\"0\"}")
@@ -213,7 +218,7 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
                     devProp!!.userName = userName.text.toString()
                     devProp!!.password = password.text.toString()
 
-                    (context as Activity).runOnUiThread{
+                    MainActivity.threadHandler?.runOnUiThread{
                         if(devExist){
                             viewAdapter.notifyItemChanged(MainActivity.devicePropList.indexOf(devProp!!))
                             Toast.makeText(context, "Device Preferences Updated", Toast.LENGTH_LONG).show()
@@ -225,11 +230,11 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
                         dialog.cancel()
                     }
                 }catch(ex:Exception){
-                    (context as Activity).runOnUiThread{
+                    MainActivity.threadHandler?.runOnUiThread{
                         Toast.makeText(context, "Err: Authentication Failed", Toast.LENGTH_LONG).show()
                     }
                 }
-            }.start()
+            }
         }
     }
 

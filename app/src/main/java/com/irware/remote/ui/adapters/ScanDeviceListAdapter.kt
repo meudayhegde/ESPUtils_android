@@ -1,39 +1,12 @@
 package com.irware.remote.ui.adapters
 
-import android.annotation.SuppressLint
-import android.app.Activity
-import android.app.Dialog
-import android.content.Context
-import android.content.DialogInterface
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
-import android.widget.*
-import android.widget.LinearLayout
-import androidx.appcompat.app.AlertDialog
+import android.widget.TextView
 import androidx.cardview.widget.CardView
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.textfield.TextInputEditText
-import com.google.android.material.textfield.TextInputLayout
-import com.irware.remote.MainActivity
-import com.irware.remote.OnSocketReadListener
 import com.irware.remote.R
-import com.irware.remote.SettingsItem
-import com.irware.remote.net.ARPTable
-import com.irware.remote.holders.DeviceProperties
-import com.irware.remote.holders.OnStatusUpdateListener
 import com.irware.remote.net.ARPItem
-import com.irware.remote.net.SocketClient
-import com.irware.remote.ui.fragments.DevicesFragment
-import org.json.JSONArray
-import org.json.JSONObject
-import kotlin.math.min
 
 class ScanDeviceListAdapter(private val arpItemList: ArrayList<ARPItem>) : RecyclerView.Adapter<ScanDeviceListAdapter.MyViewHolder>() {
 

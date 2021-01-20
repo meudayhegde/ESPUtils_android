@@ -2,6 +2,7 @@ package com.irware.remote.net
 
 import android.content.Context
 import android.content.DialogInterface
+import com.irware.ThreadHandler
 import com.irware.remote.MainActivity
 import com.irware.remote.R
 import com.irware.remote.ui.dialogs.ButtonPropertiesDialog
@@ -92,8 +93,8 @@ object SocketClient{
         }.start()
     }
 
-    fun sendIrCode(address: String, userName: String, password: String, jsonObj:JSONObject, irSendListener: IrSendListener) {
-        Thread {
+    fun sendIrCode(address: String, userName: String, password: String, jsonObj:JSONObject, irSendListener: ((result: String) -> Unit)) {
+        MainActivity.threadHandler?.runOnThread(ThreadHandler.ESP_MESSAGE) {
             try {
                 val connector = Connector(address)
                 connector.sendLine(
@@ -102,11 +103,11 @@ object SocketClient{
                             + jsonObj.getString("irCode") + "\"}")
                 val result = connector.readLine()
                 connector.close()
-                irSendListener.onIrSend(result)
+                irSendListener.invoke(result)
             }catch(ex:Exception){
-                irSendListener.onIrSend(ex.toString())
+                irSendListener.invoke(ex.toString())
             }
-        }.start()
+        }
     }
 
 }
@@ -118,8 +119,4 @@ interface IrCodeListener{
     fun onTimeout()
     fun onDeny(err_info:String?)
     fun onProgress(value:Int)
-}
-
-interface IrSendListener{
-    fun onIrSend(result:String)
 }

@@ -3,24 +3,22 @@ package com.irware.remote
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
-import android.content.DialogInterface
 import android.os.Build
 import android.os.Bundle
-import android.view.*
-import android.widget.Adapter
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.RadioGroup
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.view.menu.MenuBuilder
-import androidx.recyclerview.widget.AdapterListUpdateCallback
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.radiobutton.MaterialRadioButton
 import com.irware.remote.ui.adapters.SettingsAdapter
 import org.json.JSONObject
-import java.lang.reflect.Constructor
 
 
 class SettingsActivity : AppCompatActivity() {
@@ -122,7 +120,3 @@ class SettingsActivity : AppCompatActivity() {
 }
 
 class SettingsItem(var title: String, var subtitle: String, var dialog:Dialog?, var iconRes: Int = 0, var clickAction: Runnable? = null)
-
-interface OnSocketReadListener{
-    fun onSocketRead(data:JSONObject)
-}

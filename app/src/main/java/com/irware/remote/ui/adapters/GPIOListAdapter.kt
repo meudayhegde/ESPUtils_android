@@ -68,14 +68,13 @@ class GPIOListAdapter(private val propList: ArrayList<GPIOObject>) : RecyclerVie
 
         holder.cardView.getChildAt(0).background = ContextCompat.getDrawable(holder.cardView.context, R.drawable.round_corner)
         prop.deviceProperties?.addOnStatusUpdateListener(object: OnStatusUpdateListener{
-            override var listenerParent: Any? = this@GPIOListAdapter.javaClass
+            override var listenerParent: Any? = prop
 
             override fun onStatusUpdate(connected: Boolean) {
                 updateItemStatus(connected, prop, holder)
             }
         })
-        if(prop.deviceProperties?.isStatusUpdated == false) prop.deviceProperties?.updateStatus(holder.cardView.context)
-        else updateItemStatus(prop.deviceProperties?.isConnected == true, prop, holder)
+        prop.deviceProperties?.updateStatus()
     }
 
     fun updateItemStatus(connected: Boolean, prop: GPIOObject, holder: MyViewHolder){
@@ -116,7 +115,7 @@ class GPIOListAdapter(private val propList: ArrayList<GPIOObject>) : RecyclerVie
                                                  checkedChangedListener: CompoundButton.OnCheckedChangeListener){
         MainActivity.threadHandler?.runOnThread(ThreadHandler.ESP_MESSAGE){
             val success = try{
-                val connector = SocketClient.Connector((MainActivity.arpTable ?: ARPTable(compoundButton.context, 1)).getIpFromMac(prop.macAddr) ?: "")
+                val connector = SocketClient.Connector((MainActivity.arpTable ?: ARPTable(1)).getIpFromMac(prop.macAddr) ?: "")
                 connector.sendLine("{\"request\":\"gpio_set\",\"username\":\"${prop.deviceProperties!!.userName}\", " +
                         "\"password\": \"${prop.deviceProperties!!.password}\", \"pinMode\": \"OUTPUT\", \"pinNumber\":" +
                         " ${prop.gpioNumber}, \"pinValue\": ${if(compoundButton.isChecked) 1 else 0}}")
@@ -136,11 +135,4 @@ class GPIOListAdapter(private val propList: ArrayList<GPIOObject>) : RecyclerVie
     }
 
     override fun getItemCount() = propList.size
-
-    fun notifyDataChanged(){
-        propList.forEach {
-            it.deviceProperties?.isStatusUpdated = false
-        }
-        notifyDataSetChanged()
-    }
 }

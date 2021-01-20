@@ -25,7 +25,6 @@ import com.google.android.material.textfield.TextInputLayout
 import com.irware.ThreadHandler
 import com.irware.md5
 import com.irware.remote.MainActivity
-import com.irware.remote.OnSocketReadListener
 import com.irware.remote.R
 import com.irware.remote.SettingsItem
 import com.irware.remote.holders.DeviceProperties
@@ -91,7 +90,7 @@ class DeviceListAdapter(
         holder.status.text = context?.getString(R.string.connecting)
         holder.ipText.text = ""
         holder.cardView.setOnClickListener {
-            prop.updateStatus(context!!)
+            prop.updateStatus()
         }
         prop.addOnStatusUpdateListener(object : OnStatusUpdateListener {
             override var listenerParent: Any? = this@DeviceListAdapter.javaClass
@@ -103,7 +102,7 @@ class DeviceListAdapter(
                 holder.status.text =
                     context!!.getString(if (connected) R.string.online else R.string.offline)
                 val ip =
-                    (MainActivity.arpTable ?: ARPTable(context, 1)).getIpFromMac(prop.macAddr) ?: ""
+                    (MainActivity.arpTable ?: ARPTable(1)).getIpFromMac(prop.macAddr) ?: ""
                 holder.ipText.text = ip
                 val settingsIcon = context.getDrawable(R.drawable.ic_settings)
                 settingsIcon?.setTint(MainActivity.colorOnBackground)
@@ -125,10 +124,7 @@ class DeviceListAdapter(
                             (MainActivity.size.y * 0.9).toInt()
                         )
 
-                        val addr = (MainActivity.arpTable ?: ARPTable(
-                            context,
-                            1
-                        )).getIpFromMac(prop.macAddr) ?: ""
+                        val addr = (MainActivity.arpTable ?: ARPTable(1)).getIpFromMac(prop.macAddr) ?: ""
                         val viewManager = LinearLayoutManager(context)
                         val viewAdapter = SettingsAdapter(
                             arrayListOf(
@@ -176,22 +172,18 @@ class DeviceListAdapter(
                         )
                         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
                         devicesFragment.onAddressVerified(
-                            dialog, (MainActivity.arpTable ?: ARPTable(
-                                context,
-                                1
-                            )).getIpFromMac(prop.macAddr) ?: "", prop.macAddr
-                        )
+                            dialog, (MainActivity.arpTable ?: ARPTable(1)).getIpFromMac(prop.macAddr) ?: "", prop.macAddr)
                         true
                     }
                 } else {
                     holder.cardView.getChildAt(0).background =
                         context.getDrawable(R.drawable.round_corner_error)
                     holder.cardView.setOnClickListener {
-                        prop.updateStatus(context)
+                        prop.updateStatus()
                         Toast.makeText(context, "Device Offline!", Toast.LENGTH_SHORT).show()
                     }
                     holder.cardView.setOnLongClickListener {
-                        prop.updateStatus(context)
+                        prop.updateStatus()
                         Toast.makeText(context, "Device Offline!", Toast.LENGTH_SHORT).show()
                         true
                     }
@@ -199,7 +191,7 @@ class DeviceListAdapter(
                 MainActivity.activity?.irFragment?.notifyDataChanged()
             }
         })
-        prop.updateStatus(context!!)
+        prop.updateStatus()
     }
 
     override fun getItemCount() = propList.size
@@ -628,13 +620,7 @@ class DeviceListAdapter(
                 WindowManager.LayoutParams.WRAP_CONTENT
             )
             progressBar.visibility = View.VISIBLE
-            getWirelessSettings(
-                context,
-                address,
-                userName,
-                password,
-                object : OnSocketReadListener {
-                    override fun onSocketRead(data: JSONObject) {
+            getWirelessSettings(address, userName, password) { data ->
                         progressBar.visibility = View.GONE
                         val wirelessMode = data.optString("wireless_mode")
                         if (!wirelessMode.isNullOrEmpty()) {
@@ -647,24 +633,14 @@ class DeviceListAdapter(
                                 }, true
                             )
                             ssid.setText(
-                                wirelessData?.optString(
-                                    when (mode) {
-                                        "WIFI" -> "station"
-                                        else -> "ap"
-                                    } + "_ssid"
-                                )
+                                wirelessData?.optString(when (mode) { "WIFI" -> "station" else -> "ap" } + "_ssid" )
                             )
                             pass.setText(
-                                wirelessData?.optString(
-                                    when (mode) {
-                                        "WIFI" -> "station"
-                                        else -> "ap"
-                                    } + "_psk"
+                                wirelessData?.optString(when (mode) { "WIFI" -> "station" else -> "ap" } + "_psk"
                                 )
                             )
                         }
                     }
-                })
             val positiveButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
 
             positiveButton.setOnClickListener {
@@ -727,13 +703,7 @@ class DeviceListAdapter(
         return dialog
     }
 
-    private fun getWirelessSettings(
-        context: Context,
-        address: String,
-        userName: String?,
-        password: String?,
-        onReadWiFiConfig: OnSocketReadListener
-    ){
+    private fun getWirelessSettings(address: String, userName: String?, password: String?, onReadWiFiConfig: ((data: JSONObject) -> Unit)){
         MainActivity.threadHandler?.runOnThread(ThreadHandler.ESP_MESSAGE){
             try {
                 val connector = SocketClient.Connector(address)
@@ -745,12 +715,12 @@ class DeviceListAdapter(
                 val result = connector.readLine()
                 val resultObj = JSONObject(result)
                 MainActivity.threadHandler?.runOnUiThread{
-                    onReadWiFiConfig.onSocketRead(resultObj)
+                    onReadWiFiConfig.invoke(resultObj)
                 }
                 connector.close()
             }catch (ex: Exception){
                 MainActivity.threadHandler?.runOnUiThread{
-                    onReadWiFiConfig.onSocketRead(JSONObject())
+                    onReadWiFiConfig.invoke(JSONObject())
                 }
             }
         }

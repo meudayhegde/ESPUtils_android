@@ -1,12 +1,10 @@
 package com.irware.remote.holders
 
-import android.app.Activity
 import android.content.Context
 import android.text.TextUtils
 import android.util.Log
 import com.irware.remote.MainActivity
 import com.irware.remote.net.ARPTable
-import com.irware.remote.net.OnIpListener
 import com.irware.remote.net.SocketClient
 import org.json.JSONArray
 import org.json.JSONException
@@ -20,7 +18,6 @@ class DeviceProperties(val deviceConfigFile: File)  {
     private var jsonObj : JSONObject = getJSONObject()
     private var onStatusUpdateListeners = ArrayList<OnStatusUpdateListener>()
     var isConnected = false
-    var isStatusUpdated = true
 
     var nickName: String = jsonObj.optString("nickName", "")
         get() { return jsonObj.optString("nickName", "")}
@@ -61,42 +58,37 @@ class DeviceProperties(val deviceConfigFile: File)  {
         return nickName
     }
 
-    fun updateStatus(context: Context){
-        val arpTable = MainActivity.arpTable ?: ARPTable(context, 1)
-        arpTable.getIpFromMac(macAddr, object: OnIpListener {
-            override val uiThread: Boolean = false
+    fun updateStatus(){
+        val arpTable = MainActivity.arpTable ?: ARPTable(1)
+        arpTable.getIpFromMac(macAddr) { address ->
+            isConnected = ( address != null )
+            try{
+                if (isConnected){
+                    val connector = SocketClient.Connector(address!!)
+                    connector.sendLine("{\"request\":\"gpio_get\",\"username\":\"$userName\", \"password\": \"$password\", \"pinNumber\": -1}")
+                    val response = connector.readLine()
+                    connector.close()
+                    val pinJson = JSONArray(response)
 
-            override fun onIpResult(address: String?) {
-                isConnected = ( address != null )
-                try{
-                    if (isConnected){
-                        val connector = SocketClient.Connector(address!!)
-                        connector.sendLine("{\"request\":\"gpio_get\",\"username\":\"$userName\", \"password\": \"$password\", \"pinNumber\": -1}")
-                        val response = connector.readLine()
-                        connector.close()
-                        val pinJson = JSONArray(response)
-
-                        for(j in 0 until pinJson.length()){
-                            val gpioObj = pinJson.getJSONObject(j)
-                            for(gpio in pinConfig){
-                                if(gpio.gpioNumber == gpioObj.getInt("pinNumber")){
-                                    gpio.pinValue = gpioObj.getInt("pinValue")
-                                }
+                    for(j in 0 until pinJson.length()){
+                        val gpioObj = pinJson.getJSONObject(j)
+                        for(gpio in pinConfig){
+                            if(gpio.gpioNumber == gpioObj.getInt("pinNumber")){
+                                gpio.pinValue = gpioObj.getInt("pinValue")
                             }
                         }
                     }
-                }catch(ex: Exception){
-                    Log.d("PinInfo", "Error: Failed to get pin info, $ex")
                 }
-
-                MainActivity.threadHandler?.runOnUiThread {
-                    onStatusUpdateListeners.forEach {
-                        it.onStatusUpdate(isConnected)
-                    }
-                }
-                isStatusUpdated = true
+            }catch(ex: Exception){
+                Log.d("PinInfo", "Error: Failed to get pin info, $ex")
             }
-        })
+
+            MainActivity.threadHandler?.runOnUiThread {
+                onStatusUpdateListeners.forEach {
+                    it.onStatusUpdate(isConnected)
+                }
+            }
+        }
     }
 
     fun addOnStatusUpdateListener(onStatusUpdateListener: OnStatusUpdateListener){

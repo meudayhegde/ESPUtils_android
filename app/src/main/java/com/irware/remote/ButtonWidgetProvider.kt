@@ -11,9 +11,7 @@ import android.widget.RemoteViews
 import android.widget.Toast
 import com.irware.remote.net.ARPTable
 import com.irware.remote.holders.ButtonProperties
-import com.irware.remote.net.OnIpListener
 import com.irware.remote.holders.RemoteProperties
-import com.irware.remote.net.IrSendListener
 import com.irware.remote.net.SocketClient
 import org.json.JSONObject
 import java.io.File
@@ -69,29 +67,22 @@ class ButtonWidgetProvider: AppWidgetProvider() {
             val buttonProp = objList[1] as ButtonProperties
             val handler = Handler()
 
-            (MainActivity.arpTable ?: ARPTable(context, 1)).getIpFromMac(remoteProp.deviceProperties.macAddr, object:
-                OnIpListener {
-                override val uiThread: Boolean = true
-
-                override fun onIpResult(address: String?) {
+            (MainActivity.arpTable ?: ARPTable(1)).getIpFromMac(remoteProp.deviceProperties.macAddr) { address ->
                     val userName = remoteProp.deviceProperties.userName
                     val password = remoteProp.deviceProperties.password
                     if (address  == null){
                         Toast.makeText(context, "Err: Device not reachable", Toast.LENGTH_LONG).show()
                         manager.updateAppWidget(watchWidget, remoteViews)
-                        return
+                        return@getIpFromMac
                     }
-                    SocketClient.sendIrCode(address, userName, password, buttonProp.jsonObj, object:IrSendListener{
-                        override fun onIrSend(result: String) {
+                    SocketClient.sendIrCode(address, userName, password, buttonProp.jsonObj) { result ->
                             handler.post {
                                 if(result.contains("success")) Toast.makeText(context,buttonProp.text + ": " + JSONObject(result).getString("response"),Toast.LENGTH_LONG).show()
                                 else Toast.makeText(context,context.getString(R.string.device_not_connected),Toast.LENGTH_LONG).show()
                             }
                         }
-                    })
                     manager.updateAppWidget(watchWidget,remoteViews)
                 }
-            })
         }
     }
 

@@ -54,7 +54,9 @@ class GPIOControllerFragment : androidx.fragment.app.Fragment()  {
             val refreshLayout = rootView!!.findViewById<SwipeRefreshLayout>(R.id.refresh_layout)
             refreshLayout.setOnRefreshListener {
                 refreshLayout.isRefreshing = true
-                viewAdapter?.notifyDataChanged()
+                MainActivity.devicePropList.forEach {
+                    it.updateStatus()
+                }
                 MainActivity.threadHandler?.runOnFreeThread{
                     Thread.sleep(100)
                     MainActivity.threadHandler?.runOnThread(ThreadHandler.ESP_MESSAGE) {

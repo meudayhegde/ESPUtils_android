@@ -74,8 +74,9 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
             refreshLayout.setOnRefreshListener {
                 refreshLayout.isRefreshing = true
                 viewAdapter.notifyDataSetChanged()
-                MainActivity.threadHandler?.runOnThread(ThreadHandler.ESP_MESSAGE){
-                    MainActivity.threadHandler?.runOnUIThread {
+                MainActivity.threadHandler?.runOnFreeThread{
+                    Thread.sleep(100)
+                    MainActivity.threadHandler?.runOnThread(ThreadHandler.ESP_MESSAGE) {
                         refreshLayout.isRefreshing = false
                     }
                 }
@@ -93,7 +94,7 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
 
                 scrollView.visibility = View.GONE
                 recyclerView.visibility = View.VISIBLE
-                val viewAdapter = ScanDeviceListAdapter((MainActivity.arpTable?: ARPTable(context!!, 1)).getARPItemList())
+                val viewAdapter = ScanDeviceListAdapter((MainActivity.arpTable?: ARPTable(1)).getARPItemList())
                 recyclerView.apply {
                     setHasFixedSize(true)
                     layoutManager = LinearLayoutManager(context)

@@ -65,7 +65,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     @SuppressLint("InflateParams")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arpTable = ARPTable(this, -1)
+
+        threadHandler = ThreadHandler(this)
+        activity = this
+        arpTable = ARPTable(-1)
+        
         when(getSharedPreferences("theme_setting", Context.MODE_PRIVATE).getInt("application_theme",if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) { 0 }else{ 2 }))
         {1-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);2-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)}
 
@@ -73,9 +77,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         devicePropList.clear()
         gpioObjectList.clear()
 
-        threadHandler = ThreadHandler(this)
-
-        activity = this
         val arr = resources.obtainTypedArray(R.array.icons)
         iconDrawableList = IntArray(arr.length())
         for(i in 0 until arr.length())
@@ -508,7 +509,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onResume() {
         super.onResume()
-        devicePropList.forEach { it.updateStatus(this) }
+        devicePropList.forEach { it.updateStatus() }
     }
 
     companion object {

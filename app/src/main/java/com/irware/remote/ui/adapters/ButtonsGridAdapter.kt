@@ -25,7 +25,6 @@ import com.irware.remote.MainActivity
 import com.irware.remote.R
 import com.irware.remote.WidgetConfiguratorActivity
 import com.irware.remote.holders.ButtonProperties
-import com.irware.remote.net.IrSendListener
 import com.irware.remote.net.SocketClient
 import com.irware.remote.ui.buttons.RemoteButton
 import com.irware.remote.ui.dialogs.RemoteDialog
@@ -64,18 +63,16 @@ class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>, pri
                         vibrate(50)
                     }
                 }
-                SocketClient.sendIrCode(address, userName , password,(it as RemoteButton).getProperties().jsonObj, object : IrSendListener {
-                    override fun onIrSend(result: String) {
-                        MainActivity.activity?.runOnUiThread {
-                            try {
-                                val jsonObj = JSONObject(result)
-                                Toast.makeText(context, jsonObj.getString("response"), Toast.LENGTH_SHORT).show()
-                            } catch (ex: JSONException) {
-                                Toast.makeText(context, result, Toast.LENGTH_SHORT).show()
-                            }
+                SocketClient.sendIrCode(address, userName , password,(it as RemoteButton).getProperties().jsonObj) { result ->
+                    MainActivity.threadHandler?.runOnUiThread {
+                        try {
+                            val jsonObj = JSONObject(result)
+                            Toast.makeText(context, jsonObj.getString("response"), Toast.LENGTH_SHORT).show()
+                        } catch (ex: JSONException) {
+                            Toast.makeText(context, result, Toast.LENGTH_SHORT).show()
                         }
                     }
-                })
+                }
             }
         }
         container.addView(btn)

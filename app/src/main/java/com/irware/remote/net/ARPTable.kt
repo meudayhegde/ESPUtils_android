@@ -1,7 +1,5 @@
 package com.irware.remote.net
 
-import android.app.Activity
-import android.content.Context
 import android.text.TextUtils
 import com.irware.ThreadHandler
 import com.irware.getIPAddress
@@ -15,8 +13,8 @@ import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 import java.net.InetAddress
 
-class ARPTable(private val context: Context, private val scanCount: Int = -1) {
-    private var arpTableFile: File = File(context.filesDir.absolutePath + File.separator + ARP_TABLE_FILE)
+class ARPTable(private val scanCount: Int = -1) {
+    private var arpTableFile: File = File(MainActivity.activity?.filesDir?.absolutePath + File.separator + ARP_TABLE_FILE)
     private var jsonObj: JSONObject = getJSONObject()
 
     init{
@@ -30,7 +28,7 @@ class ARPTable(private val context: Context, private val scanCount: Int = -1) {
         return arpItemList
     }
 
-    fun getIpFromMac(mac: String, listener: OnIpListener){
+    fun getIpFromMac(mac: String, listener: ((address: String?) -> Unit)){
         val addresses = jsonObj.optJSONArray(mac) ?: JSONArray()
         MainActivity.threadHandler?.runOnThread(ThreadHandler.ESP_MESSAGE){
             for(i in 0 until addresses.length()){
@@ -45,18 +43,13 @@ class ARPTable(private val context: Context, private val scanCount: Int = -1) {
                                 addresses.insert(0, address)
                                 update()
                             }
-                            if(listener.uiThread) (context as Activity).runOnUiThread {
-                                listener.onIpResult(address)
-                            }
-                            else listener.onIpResult(address)
+                            listener.invoke(address)
                             return@runOnThread
                         }
                     }catch(ex: Exception){}
                 }
             }
-            if(listener.uiThread) (context as Activity).runOnUiThread {
-                listener.onIpResult(null)
-            } else listener.onIpResult(null)
+            listener.invoke(null)
         }
 
     }
@@ -150,11 +143,6 @@ private operator fun JSONArray.contains(obj: String?): Boolean {
     if(index(obj) == -1)
         return false
     return true
-}
-
-interface OnIpListener{
-    val uiThread:Boolean
-    fun onIpResult(address: String?)
 }
 
 class ARPItem(var macAddress: String, var ipAddress:String)

@@ -54,7 +54,7 @@ class RemoteDialog(context: Context,val properties:RemoteProperties, val mode:In
         }
 
         adapter = ButtonsGridAdapter(arrayList,this,
-            (MainActivity.arpTable ?: ARPTable(context, 1)).getIpFromMac(properties.deviceProperties.macAddr) ?: "",
+            (MainActivity.arpTable ?: ARPTable(1)).getIpFromMac(properties.deviceProperties.macAddr) ?: "",
             properties.deviceProperties.userName, properties.deviceProperties.password)
         button_refresh_layout.setOnRefreshListener {
             button_refresh_layout.isRefreshing = true
@@ -90,7 +90,7 @@ class RemoteDialog(context: Context,val properties:RemoteProperties, val mode:In
 
     private fun setOnFabClickListener(fab:FloatingActionButton,mode:Int){
         fab.setOnClickListener {
-            val dialog = ButtonPropertiesDialog(context, this, mode, (MainActivity.arpTable ?: ARPTable(context, 1)).getIpFromMac(properties.deviceProperties.macAddr) ?: "",
+            val dialog = ButtonPropertiesDialog(context, this, mode, (MainActivity.arpTable ?: ARPTable(1)).getIpFromMac(properties.deviceProperties.macAddr) ?: "",
                 properties.deviceProperties.userName, properties.deviceProperties.password)
             dialog.show()
             dialog.captureInit(null)
@@ -211,7 +211,7 @@ class SettingsButtonDropListener(private val remoteDialog:RemoteDialog):View.OnD
                 view.visibility = View.VISIBLE
                 val btnProp = view.getProperties()
                 val properties = remoteDialog.properties
-                val dialog = ButtonPropertiesDialog(view.context, remoteDialog,ButtonPropertiesDialog.MODE_SINGLE, (MainActivity.arpTable ?: ARPTable(view.context, 1)).getIpFromMac(properties.deviceProperties.macAddr) ?: "",
+                val dialog = ButtonPropertiesDialog(view.context, remoteDialog,ButtonPropertiesDialog.MODE_SINGLE, (MainActivity.arpTable ?: ARPTable(1)).getIpFromMac(properties.deviceProperties.macAddr) ?: "",
                     properties.deviceProperties.userName, properties.deviceProperties.password)
                 dialog.show()
                 dialog.onIrRead(JSONObject(btnProp.jsonObj.toString()))

@@ -1,6 +1,7 @@
 package com.irware.remote
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.Dialog
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -15,6 +16,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.os.Environment.getExternalStorageDirectory
 import android.os.Handler
 import android.util.Log
 import android.util.TypedValue
@@ -24,6 +26,9 @@ import android.view.View
 import android.view.ViewTreeObserver
 import android.view.animation.AnimationUtils
 import android.widget.*
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -371,7 +376,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             intent.type = "*/*"
             val originalApk = File(filePath)
 
-            val tempFile = File("${(externalCacheDir?: if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {Environment.getStorageDirectory()} else Environment.getExternalStorageDirectory()).absolutePath}${File.separator}${getString(app.labelRes)}.apk")
+            @Suppress("DEPRECATION") val tempFile = File("${(externalCacheDir?: if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {Environment.getStorageDirectory()} else getExternalStorageDirectory()).absolutePath}${File.separator}${getString(app.labelRes)}.apk")
             if (tempFile.exists()) {
                 tempFile.delete()
             }
@@ -405,81 +410,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                 or View.SYSTEM_UI_FLAG_FULLSCREEN
                 or View.SYSTEM_UI_FLAG_IMMERSIVE)
-    }
-
-
-    fun startConfigChooser(){
-        val intent = Intent(Intent.ACTION_GET_CONTENT)
-        intent.type = "application/json"
-        intent.addCategory(Intent.CATEGORY_OPENABLE)
-
-        try {
-            startActivityForResult(
-                    Intent.createChooser(intent, "Select a remote controller configuration file"), FILE_SELECT_CODE)
-        } catch (ex: ActivityNotFoundException) {
-            Toast.makeText(
-                this, "Please install a File Manager.",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-    }
-
-    var updateSelectedListener: ((File) -> Unit)? = null
-    fun startUpdateChooser(block: ((File) -> Unit)){
-        this.updateSelectedListener = block
-
-        val intent = Intent(Intent.ACTION_GET_CONTENT)
-        intent.type = "application/zip"
-        intent.addCategory(Intent.CATEGORY_OPENABLE)
-
-        try {
-            startActivityForResult(
-                Intent.createChooser(intent, "Select Update zip file containing firmware files."), UPDATE_SELECT_CODE)
-        } catch (ex: ActivityNotFoundException) {
-            Toast.makeText(
-                this, "Please install a File Manager.",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-    }
-
-    override fun onActivityResult(requestCode:Int, resultCode:Int, data:Intent?) {
-        when (requestCode) {
-            FILE_SELECT_CODE ->
-                if (resultCode == RESULT_OK) {
-                    // Get the Uri of the selected file
-                    val uri = data?.data
-                    Log.d("CONFIG_SELECTOR", "File Uri: " + uri.toString())
-                    try {
-                        val mIntent = Intent(Intent.ACTION_VIEW)
-
-                        mIntent.setDataAndType(uri, "application/json")
-                        mIntent.setPackage(packageName)
-                        startActivity(Intent.createChooser(mIntent, "Import Config File"))
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
-                }
-            UPDATE_SELECT_CODE ->
-                if (resultCode == RESULT_OK) {
-                    val isr = contentResolver.openInputStream(data?.data?:return)?: return
-
-                    val update = File((externalCacheDir?:filesDir).absolutePath + File.separator + "Update.zip")
-                    if(update.exists()) update.delete()
-                    update.createNewFile()
-
-                    update.outputStream().use {
-                        it.write(isr.readBytes())
-                        it.flush()
-                    }
-                    isr.close()
-
-                    updateSelectedListener?.invoke(update)
-                    updateSelectedListener = null
-                }
-
-        }
-        super.onActivityResult(requestCode, resultCode, data)
     }
 
     private fun addOnConfigurationChangeListener(listener: OnConfigurationChangeListener){

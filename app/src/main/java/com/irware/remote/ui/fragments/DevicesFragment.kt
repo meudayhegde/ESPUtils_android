@@ -4,15 +4,18 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.*
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -42,6 +45,25 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
     private lateinit var viewManager: RecyclerView.LayoutManager
     private var rootView: RelativeLayout? = null
     lateinit var manageMenu: FloatingActionMenu
+
+    var updateSelectedListener: ((File) -> Unit)? = null
+    val espOtaChooser = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if(result.resultCode == Activity.RESULT_OK) {
+            val isr = requireContext().contentResolver.openInputStream(result?.data?.data?: return@registerForActivityResult)?: return@registerForActivityResult
+            val update = File((requireContext().externalCacheDir?:requireContext().filesDir).absolutePath + File.separator + "Update.zip")
+            if(update.exists()) update.delete()
+            update.createNewFile()
+
+            update.outputStream().use {
+                it.write(isr.readBytes())
+                it.flush()
+            }
+            isr.close()
+
+            updateSelectedListener?.invoke(update)
+            updateSelectedListener = null
+        }
+    }
 
     @SuppressLint("InflateParams")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -101,7 +123,7 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
                     adapter = viewAdapter
                 }
 
-                val dialog = Dialog(context!!)
+                val dialog = Dialog(requireContext())
                 dialog.setContentView(content)
                 btnCancel.setOnClickListener { dialog.cancel() }
                 btnNext.visibility = View.GONE
@@ -144,7 +166,7 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
         val btnNext = content.findViewById<Button>(R.id.button_done)
         val devAddr = content.findViewById<TextInputEditText>(R.id.device_address)
 
-        val dialog = Dialog(context!!)
+        val dialog = Dialog(requireContext())
         dialog.setContentView(content)
         btnCancel.setOnClickListener { dialog.cancel() }
         btnNext.setOnClickListener {

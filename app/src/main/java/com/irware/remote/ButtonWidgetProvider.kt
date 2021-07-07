@@ -36,7 +36,6 @@ class ButtonWidgetProvider: AppWidgetProvider() {
             val remoteViews = RemoteViews(context.packageName, R.layout.widget_layout)
             val objList = getJSONObject(context,widgetId,remoteViews)
             if(objList.isEmpty()) return
-            val remoteProp = objList[0] as RemoteProperties
             val buttonProp = objList[1] as ButtonProperties
 
             remoteViews.setTextViewText(R.id.widget_button,buttonProp.text)
@@ -65,7 +64,7 @@ class ButtonWidgetProvider: AppWidgetProvider() {
             if(objList.isEmpty()) return
             val remoteProp = objList[0] as RemoteProperties
             val buttonProp = objList[1] as ButtonProperties
-            val handler = Handler()
+            @Suppress("DEPRECATION") val handler = Handler()
 
             (MainActivity.arpTable ?: ARPTable(1)).getIpFromMac(remoteProp.deviceProperties.macAddr) { address ->
                     val userName = remoteProp.deviceProperties.userName

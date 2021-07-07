@@ -1,17 +1,22 @@
 package com.irware.remote.ui.fragments
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.Dialog
+import android.content.ActivityNotFoundException
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.*
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -24,6 +29,7 @@ import com.irware.remote.holders.RemoteProperties
 import com.irware.remote.ui.adapters.RemoteListAdapter
 import com.irware.remote.ui.dialogs.RemoteDialog
 import java.io.File
+import java.util.*
 import kotlin.math.min
 
 
@@ -33,6 +39,23 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
     private var viewAdapter: RecyclerView.Adapter<*>? = null
     private var viewManager: RecyclerView.LayoutManager? = null
     private var rootView:RelativeLayout? = null
+    private val configChooser = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if(result.resultCode == Activity.RESULT_OK) {
+            val uri = result?.data?.data
+            Log.d("CONFIG_SELECTOR", "File Uri: " + uri.toString())
+            try {
+                val mIntent = Intent(Intent.ACTION_VIEW)
+
+                mIntent.setDataAndType(uri, "application/json")
+                mIntent.setPackage(context?.packageName)
+                startActivity(Intent.createChooser(mIntent, "Import Config File"))
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
 
     @SuppressLint("DefaultLocale", "InflateParams")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -47,7 +70,18 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
             }
             rootView!!.findViewById<FloatingActionMenu>(R.id.fam_manage_remotes).setClosedOnTouchOutside(true)
             rootView!!.findViewById<FloatingActionButton>(R.id.fab_import_remote).setOnClickListener {
-                MainActivity.activity?.startConfigChooser()
+                val intent = Intent(Intent.ACTION_GET_CONTENT)
+                intent.type = "application/json"
+                intent.addCategory(Intent.CATEGORY_OPENABLE)
+
+                try {
+                    configChooser.launch(Intent.createChooser(intent, "Select a remote controller configuration file"))
+                } catch (ex: ActivityNotFoundException) {
+                    Toast.makeText(
+                        context, "Please install a File Manager.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
                 rootView!!.findViewById<FloatingActionMenu>(R.id.fam_manage_remotes).close(true)
             }
 
@@ -113,26 +147,27 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
 
         val devicePropList = arrayListOf<Any>(getString(R.string.select_device))
         devicePropList.addAll(MainActivity.devicePropList)
-        spinner.adapter = ArrayAdapter(context!!, android.R.layout.simple_list_item_1, devicePropList)
+        spinner.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, devicePropList)
 
         btnDelete.visibility = View.GONE
         btnEdit.visibility = View.GONE
         inputLayout.findViewById<TextView>(R.id.title_new_remote_confirm).text = getString(R.string.enter_remote_details)
 
-        val dialog = Dialog(context!!)
+        val dialog = Dialog(requireContext())
         dialog.setContentView(inputLayout)
         btnCancel.setOnClickListener { dialog.cancel() }
         btnFinish.setOnClickListener {
 
             if(spinner.selectedItemPosition == 0){
-                Toast.makeText(context!!, getString(R.string.device_not_selected_note), Toast.LENGTH_LONG).show()
+                Toast.makeText(requireContext(), getString(R.string.device_not_selected_note), Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             }
             val selectedDevice = MainActivity.devicePropList[spinner.selectedItemPosition - 1]
 
             val vendor = inputLayout.findViewById<TextInputEditText>(R.id.vendor_name).text.toString()
             val model = inputLayout.findViewById<TextInputEditText>(R.id.model_name).text.toString()
-            var id = ("$vendor $model").toLowerCase().replace(" ", "_").replace("\n", "").replace("/","_")
+            var id = ("$vendor $model").lowercase(Locale.getDefault())
+                .replace(" ", "_").replace("\n", "").replace("/","_")
 
             val desc = inputLayout.findViewById<TextInputEditText>(R.id.remote_desc)
             var configFile = File(MainActivity.remoteConfigPath + File.separator + id + ".json")
@@ -153,7 +188,7 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
             remoteProperties.deviceConfigFileName = selectedDevice.deviceConfigFile.name
             MainActivity.remotePropList.add(remoteProperties)
             viewAdapter?.notifyDataSetChanged()
-            RemoteDialog(context!!, remoteProperties,RemoteDialog.MODE_VIEW_EDIT).show()
+            RemoteDialog(requireContext(), remoteProperties,RemoteDialog.MODE_VIEW_EDIT).show()
             dialog.dismiss()
         }
         dialog.show()

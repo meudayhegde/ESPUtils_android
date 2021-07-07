@@ -3,8 +3,10 @@ package com.irware.remote.ui.adapters
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.text.Editable
@@ -366,39 +368,47 @@ class DeviceListAdapter(
 
             updateDialog.show()
             updateDialog.cancel()
-            if(context is MainActivity){
-                context.startUpdateChooser{ updateFile ->
-                    updateDialog.show()
-                    positiveButton?.setOnClickListener {
-                        positiveButton?.isEnabled = false
-                        positiveButton?.text = context.getString(R.string.done)
-                        negativeButton?.isEnabled = false
-                        MainActivity.threadHandler?.runOnFreeThread{
-                            val updateDir = extractUpdate(updateFile, updateIntermediateListener)
-                            if(updateDir != null){
-                                if(!verifyUpdate(updateDir, updateIntermediateListener)){
-                                    updateDir.deleteRecursively()
-                                }
 
-                                val espOta = EspOta(prop, remoteAddress)
-                                val system = updateDir.listFiles{ _, name -> name.endsWith(".bin")}?.find { it.name.toLowerCase(Locale.ROOT).startsWith("system") }
-                                system?.let {
-                                    espOta.installUpdate(it, EspOta.SYSTEM, updateIntermediateListener)
-                                    return@runOnFreeThread
-                                }
-
-                                val spiffs = updateDir.listFiles{ _, name -> name.endsWith(".bin")}?.find { it.name.toLowerCase(Locale.ROOT).startsWith("spiffs") }
-                                spiffs?.let {
-                                    espOta.installUpdate(it, EspOta.SPIFFS, updateIntermediateListener)
-                                    return@runOnFreeThread
-                                }
-
+            devicesFragment.updateSelectedListener = { updateFile ->
+                updateDialog.show()
+                positiveButton?.setOnClickListener {
+                    positiveButton?.isEnabled = false
+                    positiveButton?.text = context.getString(R.string.done)
+                    negativeButton?.isEnabled = false
+                    MainActivity.threadHandler?.runOnFreeThread{
+                        val updateDir = extractUpdate(updateFile, updateIntermediateListener)
+                        if(updateDir != null){
+                            if(!verifyUpdate(updateDir, updateIntermediateListener)){
+                                updateDir.deleteRecursively()
                             }
+
+                            val espOta = EspOta(prop, remoteAddress)
+                            val system = updateDir.listFiles{ _, name -> name.endsWith(".bin")}?.find { it.name.lowercase(Locale.ROOT).startsWith("system") }
+                            system?.let {
+                                espOta.installUpdate(it, EspOta.SYSTEM, updateIntermediateListener)
+                                return@runOnFreeThread
+                            }
+
+                            val spiffs = updateDir.listFiles{ _, name -> name.endsWith(".bin")}?.find { it.name.lowercase(Locale.ROOT).startsWith("spiffs") }
+                            spiffs?.let {
+                                espOta.installUpdate(it, EspOta.SPIFFS, updateIntermediateListener)
+                                return@runOnFreeThread
+                            }
+
                         }
                     }
                 }
-            }else{
-                Toast.makeText(context, "Unknown Error.\nPlease restart the application.", Toast.LENGTH_LONG).show()
+            }
+            val intent = Intent(Intent.ACTION_GET_CONTENT)
+            intent.type = "application/zip"
+            intent.addCategory(Intent.CATEGORY_OPENABLE)
+            try {
+                devicesFragment.espOtaChooser.launch(Intent.createChooser(intent, "Select Update zip file containing firmware files."))
+            } catch (ex: ActivityNotFoundException) {
+                Toast.makeText(
+                    context, "Please install a File Manager.",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }

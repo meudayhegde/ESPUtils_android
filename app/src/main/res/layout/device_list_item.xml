@@ -6,66 +6,6 @@
         android:layout_height="wrap_content"
         android:layout_width="match_parent">
 
-    <LinearLayout
-            android:layout_width="wrap_content" android:layout_height="match_parent" android:id="@+id/device_list_item_options"
-            android:orientation="horizontal" android:gravity="center_vertical" android:layout_alignParentEnd="true">
-
-        <androidx.cardview.widget.CardView
-                android:orientation="vertical" android:layout_width="wrap_content"
-                android:layout_height="match_parent" app:cardUseCompatPadding="true"
-                app:cardElevation="4dp" app:cardCornerRadius="12sp"
-                android:id="@+id/card_device_delete" android:descendantFocusability="blocksDescendants">
-
-            <RelativeLayout
-                    android:layout_width="wrap_content" android:layout_height="match_parent"
-                    android:foreground="?android:attr/selectableItemBackground" android:background="@drawable/layout_border_round_corner"
-                    android:orientation="vertical" tools:ignore="UnusedAttribute" android:clickable="true" android:focusable="true">
-
-                <ImageView
-                        android:id="@+id/device_delete_icon" android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" android:src="@drawable/icon_delete"
-                        android:layout_centerInParent="true" app:tint="?attr/colorOnBackground"
-                        android:contentDescription="@string/icon" />
-
-                <TextView
-                        android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:textSize="12sp" android:text="@string/delete"
-                        android:layout_marginStart="8sp" android:layout_marginEnd="8sp"
-                        android:layout_below="@id/device_delete_icon" android:layout_centerInParent="true"/>
-
-            </RelativeLayout>
-
-        </androidx.cardview.widget.CardView>
-
-        <androidx.cardview.widget.CardView
-                android:orientation="vertical" android:layout_width="wrap_content"
-                android:layout_height="match_parent" app:cardUseCompatPadding="true"
-                app:cardElevation="4dp" app:cardCornerRadius="12sp"
-                android:id="@+id/card_device_settings" android:descendantFocusability="blocksDescendants">
-
-            <RelativeLayout
-                    android:layout_width="wrap_content" android:layout_height="match_parent"
-                    android:foreground="?android:attr/selectableItemBackground" android:background="@drawable/layout_border_round_corner"
-                    android:orientation="vertical" tools:ignore="UnusedAttribute" android:clickable="true" android:focusable="true">
-
-                <ImageView
-                        android:id="@+id/device_settings_icon" android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" android:src="@drawable/ic_settings"
-                        app:tint="?attr/colorOnBackground" android:layout_centerInParent="true"
-                        android:contentDescription="@string/icon" />
-
-                <TextView
-                        android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:textSize="12sp" android:text="@string/settings"
-                        android:layout_marginStart="8sp" android:layout_marginEnd="8sp"
-                        android:layout_below="@id/device_settings_icon" android:layout_centerInParent="true"/>
-
-            </RelativeLayout>
-
-        </androidx.cardview.widget.CardView>
-
-    </LinearLayout>
-
     <androidx.cardview.widget.CardView
             android:orientation="vertical"
             android:layout_width="match_parent"

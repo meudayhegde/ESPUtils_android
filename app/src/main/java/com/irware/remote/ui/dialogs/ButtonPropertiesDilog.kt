@@ -266,7 +266,9 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
     }
 
 
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
+        super.onBackPressed()
         Toast.makeText(context,"Click on cancel to quit...",Toast.LENGTH_SHORT).show()
     }
 

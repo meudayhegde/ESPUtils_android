@@ -107,6 +107,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         splash = object: Dialog(this,android.R.style.Theme_Light_NoTitleBar_Fullscreen){
             var exit = false
+            @Deprecated("Deprecated in Java")
             override fun onBackPressed() {
                 if(exit) finish()
                 else Toast.makeText(this@MainActivity,"Press back again to exit", Toast.LENGTH_LONG).show()
@@ -303,6 +304,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private var backPressed = false
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         when {
             drawer_layout.isDrawerOpen(GravityCompat.START) -> drawer_layout.closeDrawer(GravityCompat.START)

@@ -5,7 +5,6 @@ import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Handler
 import android.view.DragEvent
@@ -223,7 +222,7 @@ class SettingsButtonDropListener(private val remoteDialog:RemoteDialog):View.OnD
             }
             DragEvent.ACTION_DRAG_ENTERED ->{
                 @Suppress("DEPRECATION")
-                DrawableCompat.setTint(remoteDialog.image_view_btn_settings.drawable, if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) { remoteDialog.context.getColor(R.color.colorPrimary)} else remoteDialog.context.resources.getColor(R.color.colorPrimary))
+                DrawableCompat.setTint(remoteDialog.image_view_btn_settings.drawable, if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) { remoteDialog.context.getColor(R.color.sky_blue)} else remoteDialog.context.resources.getColor(R.color.sky_blue))
             }
             DragEvent.ACTION_DRAG_EXITED -> {
                 DrawableCompat.setTint(remoteDialog.image_view_btn_settings.drawable, MainActivity.colorOnBackground)

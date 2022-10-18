@@ -74,9 +74,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         threadHandler = ThreadHandler(this)
         activity = this
         arpTable = ARPTable(-1)
-        
-        when(getSharedPreferences("theme_setting", Context.MODE_PRIVATE).getInt("application_theme",if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) { 0 }else{ 2 }))
-        {1-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);2-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)}
 
         remotePropList.clear()
         devicePropList.clear()
@@ -129,7 +126,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //        val originalBitmap = BitmapFactory.decodeResource(resources, R.drawable.splash_bg)
 //        val blurredBitmap = BlurBuilder.blur(this, originalBitmap)
 //        splashView.background = BitmapDrawable(resources, blurredBitmap)
-        splashView.background = getDrawable(R.drawable.splash_bg)
+        splashView.setBackgroundResource(R.drawable.splash_bg)
         splash?.window?.attributes?.windowAnimations = R.style.ActivityStartAnimationTheme
         splash?.show()
         hideSystemUI(splashView)
@@ -282,6 +279,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     fun setNavView(){
+        when(getSharedPreferences("theme_setting", Context.MODE_PRIVATE).getInt("application_theme", if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) { 0 }else{ 2 })) {
+            1-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            2-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        }
         setContentView(R.layout.activity_main)
 
         setSupportActionBar(toolbar)

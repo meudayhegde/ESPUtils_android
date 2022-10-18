@@ -30,7 +30,7 @@
                     android:contentDescription="@string/ir_capture_error_logo_description" android:visibility="gone"/>
 
             <ImageView android:layout_width="60sp" android:layout_height="60sp" android:id="@+id/ir_capture_success_logo"
-                    android:layout_margin="20dp" app:srcCompat="@drawable/icon_check_circle" android:tint="@color/success"
+                    android:layout_margin="20dp" app:srcCompat="@drawable/icon_check_circle" android:tint="@color/green"
                     android:contentDescription="@string/ir_capture_error_logo_description" android:visibility="gone"/>
 
             <TextView android:text="@string/waiting_for_ir_signal" android:layout_width="wrap_content" android:layout_height="wrap_content"

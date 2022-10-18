@@ -138,7 +138,7 @@
                         android:contentDescription="@string/icon_device_online"
                         android:visibility="gone"
                         app:srcCompat="@drawable/icon_check_circle"
-                        app:tint="@color/color_fab" />
+                        app:tint="@color/sky_blue" />
 
                 <ImageView
                         android:id="@+id/img_offline"

@@ -1,21 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#03A9F4</color>
-    <color name="colorPrimaryDark">#00107B</color>
-    <color name="colorAccent">#7890FB</color>
-    <color name="btn_border_dark">#000000</color>
-    <color name="color_fab">@color/colorPrimary</color>
-    <color name="color_fab_ripple">@color/colorPrimaryDark</color>
-    <color name="blue_fab_normal">#0096FF</color>
-    <color name="blue_fab_ripple">#01D3FF</color>
-    <color name="transparent" >#00ffffff</color>
-    <color name="color_white">#fff</color>
-    <color name="error">#f00</color>
-    <color name="success" >#0c0</color>
-    <!--colors for modern ui-->
-    <color name="whiteTextColor">#fff</color>
-    <color name="primaryTextColor">#00a5ff</color>
-
-    <!--colros for card-->
+    <color name="transparent" >#00FFFFFF</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="sky_blue_light">#47D4FF</color>
+    <color name="sky_blue">#00B0FF</color>
+    <color name="sky_blue_dark">#008BCA</color>
+    <color name="blue_light">#7D7DFF</color>
+    <color name="blue">#0000FF</color>
+    <color name="blue_dark">#00008F</color>
+    <color name="green_light" >#59D659</color>
+    <color name="green" >#00D600</color>
+    <color name="green_dark" >#008E00</color>
+    <color name="yellow_light" >#FFFF46</color>
+    <color name="yellow" >#F4F400</color>
+    <color name="yellow_dark" >#D5AE00</color>
+    <color name="red_light">#FF4747</color>
+    <color name="red">#FF0000</color>
+    <color name="red_dark">#BF0000</color>
 
 </resources>

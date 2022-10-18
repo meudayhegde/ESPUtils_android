@@ -1,5 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE resources [
+        <!ENTITY app_name "ESP Utils">
+        <!ENTITY author "Uday Hegde">
+        ]>
 <resources>
-    <string name="app_name">iR WaRE Fusion</string>
+    <string name="app_name">&app_name;</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_subtitle">A universal infrared remote control solution</string>
@@ -55,8 +60,8 @@
     <string name="import_">Import</string>
     <string name="import_error">Sorry, Something went wrong and import action couldn\'t be completed</string>
     <string name="import_success">Import remote controller configuration successful</string>
-    <string name="start_app">start iRWaRE</string>
-    <string name="about_irware">About iRWaRE</string>
+    <string name="start_app">start &app_name;</string>
+    <string name="about_app">About &app_name;</string>
     <string name="libraries_used">Libraries Used</string>
     <string name="wireless_mode">Wireless Mode</string>
     <string name="wifi_name">WiFi Name</string>

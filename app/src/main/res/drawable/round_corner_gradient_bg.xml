@@ -4,8 +4,8 @@
     <corners android:radius="12sp"/>
     <stroke android:color="?attr/colorOnBackground"
             android:width="2sp"/>
-    <gradient android:startColor="@color/blue_fab_normal"
-        android:endColor="@color/blue_fab_normal"
-        android:centerColor="@color/blue_fab_ripple"
+    <gradient android:startColor="@color/sky_blue"
+        android:endColor="@color/sky_blue"
+        android:centerColor="@color/sky_blue_light"
         />
 </shape>

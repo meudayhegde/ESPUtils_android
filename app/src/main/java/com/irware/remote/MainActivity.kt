@@ -126,9 +126,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val splashView=layoutInflater.inflate(R.layout.splash_screen,null)
         splash?.setContentView(splashView)
 
-        val originalBitmap = BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher_background)
-        val blurredBitmap = BlurBuilder.blur(this, originalBitmap)
-        splashView.background = BitmapDrawable(resources, blurredBitmap)
+//        val originalBitmap = BitmapFactory.decodeResource(resources, R.drawable.splash_bg)
+//        val blurredBitmap = BlurBuilder.blur(this, originalBitmap)
+//        splashView.background = BitmapDrawable(resources, blurredBitmap)
+        splashView.background = getDrawable(R.drawable.splash_bg)
         splash?.window?.attributes?.windowAnimations = R.style.ActivityStartAnimationTheme
         splash?.show()
         hideSystemUI(splashView)
@@ -141,7 +142,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val file = File(filesDir.absolutePath+File.separator+ REMOTE_CONFIG_DIR)
         if(!file.exists()) file.mkdir()
 
-        val lparams = RelativeLayout.LayoutParams((min(size.x,size.y)*0.6F).roundToInt(),(min(size.x,size.y)*0.6F).roundToInt())
+        val lparams = RelativeLayout.LayoutParams((min(size.x,size.y)),(min(size.x,size.y)))
         lparams.addRule(RelativeLayout.CENTER_IN_PARENT)
         splash?.findViewById<ImageView>(R.id.splash_logo)?.layoutParams = lparams
 
@@ -214,7 +215,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         @Suppress("DEPRECATION")
         Handler().postDelayed({
             if(splash?.isShowing == true) {
-                splash!!.findViewById<RelativeLayout>(R.id.splash_restart_layout).visibility = View.VISIBLE
                 val loginCard = splash!!.findViewById<LinearLayout>(R.id.login_view)
 
                 loginCard.visibility = View.VISIBLE

@@ -18,7 +18,7 @@
                 android:layout_height="104dp"
                 android:layout_marginTop="22sp"
                 android:contentDescription="@string/about_irware"
-                android:src="@mipmap/ic_launcher_round" />
+                android:src="@drawable/circuit_dark" />
 
         <com.google.android.material.card.MaterialCardView
                 android:layout_width="wrap_content"

@@ -1,41 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         xmlns:tools="http://schemas.android.com/tools"
-        android:background="@mipmap/ic_launcher_background"
+        android:background="@drawable/splash_bg"
         tools:context=".MainActivity"
         android:orientation="vertical">
-
-    <RelativeLayout
-            android:id="@+id/splash_restart_layout"
-            android:visibility="gone"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-        <ImageButton
-                android:layout_width="22sp"
-                android:layout_height="22sp"
-                android:onClick="onRestartClicked"
-                android:layout_marginEnd="18sp"
-                android:background="@color/transparent"
-                app:srcCompat="@drawable/icon_power"
-                android:layout_alignParentEnd="true"
-                android:layout_marginTop="14sp"
-                android:contentDescription="@string/restart_app_from_splash_screen" />
-
-    </RelativeLayout>
 
     <ImageView
             android:id="@+id/splash_logo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_above="@id/login_view"
-            android:contentDescription="@string/splash_logo_desc"
             android:layout_centerInParent="true"
-            android:src="@drawable/logo_large" />
-
+            android:contentDescription="@string/splash_logo_desc"
+            android:src="@drawable/circuit_light" />
 
     <include
             android:id="@+id/login_view"

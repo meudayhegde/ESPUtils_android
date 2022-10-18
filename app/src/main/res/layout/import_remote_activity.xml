@@ -19,7 +19,7 @@
             android:textStyle="bold"
             android:textColor="?attr/colorOnBackground"
             android:text="@string/app_name"
-            app:drawableStartCompat="@mipmap/ic_launcher_round" />
+            app:drawableStartCompat="@drawable/circuit_light" />
 
     <LinearLayout
             android:layout_width="match_parent"

@@ -5,13 +5,16 @@ import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.*
+import android.widget.ArrayAdapter
+import android.widget.RelativeLayout
+import android.widget.Spinner
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -21,14 +24,9 @@ import com.google.android.material.textfield.TextInputEditText
 import com.irware.ThreadHandler
 import com.irware.remote.MainActivity
 import com.irware.remote.R
-import com.irware.remote.holders.DeviceProperties
 import com.irware.remote.holders.GPIOObject
-import com.irware.remote.holders.RemoteProperties
-import com.irware.remote.net.SocketClient
 import com.irware.remote.ui.adapters.GPIOListAdapter
-import com.irware.remote.ui.adapters.RemoteListAdapter
 import org.json.JSONObject
-import java.io.File
 import kotlin.math.min
 
 class GPIOControllerFragment : androidx.fragment.app.Fragment()  {
@@ -65,7 +63,7 @@ class GPIOControllerFragment : androidx.fragment.app.Fragment()  {
                 }
             }
 
-            val dialog = AlertDialog.Builder(context!!)
+            val dialog = AlertDialog.Builder(requireContext())
                 .setIcon(R.drawable.icon_lamp)
                 .setTitle("Add new GPIO switch")
                 .setNegativeButton("Cancel") { p0, _ -> p0.dismiss() }
@@ -81,23 +79,23 @@ class GPIOControllerFragment : androidx.fragment.app.Fragment()  {
                 val devicesSpinner = dialog.findViewById<Spinner>(R.id.select_device)!!
                 val gpioSpinner = dialog.findViewById<Spinner>(R.id.pin_number)!!
 
-                gpioSpinner.adapter = ArrayAdapter(context!!, android.R.layout.simple_list_item_1, arrayListOf(
-                    context!!.getString(R.string.pin), "GPIO0 (D3)", "GPIO1 (TX)", "GPIO2 (D4)", "GPIO3 (RX)", "GPIO4 (D2)", "GPIO5 (D1)",
+                gpioSpinner.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, arrayListOf(
+                    requireContext().getString(R.string.pin), "GPIO0 (D3)", "GPIO1 (TX)", "GPIO2 (D4)", "GPIO3 (RX)", "GPIO4 (D2)", "GPIO5 (D1)",
                     "GPIO9 (SD2)", "GPIO10 (SD3)", "GPIO12 (D6)", "GPIO13 (D7)", "GPIO14 (D5)", "GPIO15 (D8)", "GPIO16 (D0)"
                 ))
-                val devicePropList = arrayListOf<Any>(context!!.getString(R.string.select_device))
+                val devicePropList = arrayListOf<Any>(requireContext().getString(R.string.select_device))
                 devicePropList.addAll(MainActivity.devicePropList)
-                devicesSpinner.adapter = ArrayAdapter(context!!, android.R.layout.simple_list_item_1, devicePropList)
+                devicesSpinner.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, devicePropList)
                 dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener {
                     val nameText = dialog.findViewById<TextInputEditText>(R.id.edit_text_switch_name)!!
                     val description = dialog.findViewById<TextInputEditText>(R.id.switch_desc)!!
 
                     when {
                         devicesSpinner.selectedItemPosition == 0 -> {
-                            Toast.makeText(context!!, "Please select Device", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(), "Please select Device", Toast.LENGTH_SHORT).show()
                         }
                         gpioSpinner.selectedItemPosition == 0 -> {
-                            Toast.makeText(context!!, "Please select GPIO Pin number", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(), "Please select GPIO Pin number", Toast.LENGTH_SHORT).show()
                         }
                         nameText.text?.isEmpty()?: false -> {
                             nameText.error = "Name field cannot be empty"
@@ -119,11 +117,11 @@ class GPIOControllerFragment : androidx.fragment.app.Fragment()  {
         val manageMenu = rootView!!.findViewById<FloatingActionMenu>(R.id.fam_manage_gpio)
         if(!manageMenu.isOpened)
             manageMenu.hideMenuButton(false)
-        Handler().postDelayed({
+        Handler(Looper.getMainLooper()).postDelayed({
             if(manageMenu.isMenuButtonHidden)
                 manageMenu.showMenuButton(true)
             if(MainActivity.remotePropList.isEmpty())
-                Handler().postDelayed({manageMenu.showMenu(true)},400)
+                Handler(Looper.getMainLooper()).postDelayed({manageMenu.showMenu(true)},400)
         },400)
         return rootView
     }

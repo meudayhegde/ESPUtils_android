@@ -1,24 +1,16 @@
 package com.irware.remote
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.Dialog
-import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.res.Configuration
-import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Point
-import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
-import android.os.Build
-import android.os.Bundle
-import android.os.Environment
+import android.os.*
 import android.os.Environment.getExternalStorageDirectory
-import android.os.Handler
-import android.util.Log
 import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
@@ -26,9 +18,6 @@ import android.view.View
 import android.view.ViewTreeObserver
 import android.view.animation.AnimationUtils
 import android.widget.*
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.ActivityResultCallback
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -44,14 +33,12 @@ import com.irware.remote.holders.RemoteProperties
 import com.irware.remote.listeners.OnValidationListener
 import com.irware.remote.net.ARPTable
 import com.irware.remote.net.EspOta
-import com.irware.remote.ui.BlurBuilder
 import com.irware.remote.ui.buttons.RemoteButton
 import com.irware.remote.ui.fragments.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import java.io.*
 import kotlin.math.min
-import kotlin.math.roundToInt
 
 
 @Suppress("NAME_SHADOWING")
@@ -109,8 +96,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 if(exit) finish()
                 else Toast.makeText(this@MainActivity,"Press back again to exit", Toast.LENGTH_LONG).show()
                 exit = true
-                @Suppress("DEPRECATION")
-                Handler().postDelayed({
+                Handler(Looper.getMainLooper()).postDelayed({
                     exit = false
                 },2000)
             }
@@ -209,8 +195,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         if(pref.getString("username", "") != "" && pref.getString("password", "") != "") authenticated = true
 
-        @Suppress("DEPRECATION")
-        Handler().postDelayed({
+        Handler(Looper.getMainLooper()).postDelayed({
             if(splash?.isShowing == true) {
                 val loginCard = splash!!.findViewById<LinearLayout>(R.id.login_view)
 
@@ -314,8 +299,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 backPressed = true
                 Toast.makeText(this,"press back button again to exit",Toast.LENGTH_SHORT).show()
 
-                @Suppress("DEPRECATION")
-                Handler().postDelayed({
+                Handler(Looper.getMainLooper()).postDelayed({
                     backPressed = false
                 },2000)
 
@@ -397,7 +381,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             out.close()
             println("File copied.")
             val uri: Uri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".provider", tempFile)
-            intent.putExtra(Intent.EXTRA_STREAM, uri);
+            intent.putExtra(Intent.EXTRA_STREAM, uri)
 
             startActivity(Intent.createChooser(intent, "Share app via"))
         }catch(ex: java.lang.Exception){
@@ -476,8 +460,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         else Toast.makeText(this, "Press again to Restart",Toast.LENGTH_SHORT).show()
         restart = true
 
-        @Suppress("DEPRECATION")
-        Handler().postDelayed({ restart = false },1400)
+        Handler(Looper.getMainLooper()).postDelayed({ restart = false },1400)
     }
 }
 

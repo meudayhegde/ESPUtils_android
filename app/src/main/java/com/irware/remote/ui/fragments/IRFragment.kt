@@ -10,6 +10,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -108,12 +109,12 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
         val manageMenu = rootView!!.findViewById<FloatingActionMenu>(R.id.fam_manage_remotes)
         if(!manageMenu.isOpened)
             manageMenu.hideMenuButton(false)
-        @Suppress("DEPRECATION")
-        Handler().postDelayed({
+
+        Handler(Looper.getMainLooper()).postDelayed({
             if(manageMenu.isMenuButtonHidden)
                 manageMenu.showMenuButton(true)
             if(MainActivity.remotePropList.isEmpty())
-                Handler().postDelayed({manageMenu.showMenu(true)},400)
+                Handler(Looper.getMainLooper()).postDelayed({manageMenu.showMenu(true)},400)
         },400)
         return rootView
     }

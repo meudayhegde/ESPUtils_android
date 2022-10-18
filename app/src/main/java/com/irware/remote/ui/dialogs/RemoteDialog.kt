@@ -7,6 +7,7 @@ import android.content.Context
 import android.graphics.Color
 import android.os.Build
 import android.os.Handler
+import android.os.Looper
 import android.view.DragEvent
 import android.view.View
 import android.widget.Toast
@@ -70,15 +71,13 @@ class RemoteDialog(context: Context,val properties:RemoteProperties, val mode:In
 
 
         buttons_layout_recycler_view.layoutManager = GridLayoutManager(context,MainActivity.NUM_COLUMNS)
-        @Suppress("DEPRECATION")
-        Handler().postDelayed({
+        Handler(Looper.getMainLooper()).postDelayed({
             buttons_layout_recycler_view.adapter = adapter
         },200)
 
         if(mode == MODE_VIEW_EDIT) {
             fam_manage_button_actions.hideMenuButton(false)
-            @Suppress("DEPRECATION")
-            Handler().postDelayed({
+            Handler(Looper.getMainLooper()).postDelayed({
                 fam_manage_button_actions.showMenuButton(true)
             },800)
             fam_manage_button_actions.setClosedOnTouchOutside(true)

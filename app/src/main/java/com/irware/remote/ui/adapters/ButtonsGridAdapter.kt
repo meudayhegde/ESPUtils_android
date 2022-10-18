@@ -7,10 +7,7 @@ import android.content.ClipData
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.os.Build
-import android.os.Handler
-import android.os.VibrationEffect
-import android.os.Vibrator
+import android.os.*
 import android.view.DragEvent
 import android.view.Gravity
 import android.view.View
@@ -110,7 +107,7 @@ class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>, pri
         editor.putString(WidgetConfiguratorActivity.activity?.widgetId.toString(),buttonProp.parent?.remoteConfigFile?.name+","+buttonProp.buttonId)
         editor.commit()
         updateWidgets()
-        Handler().postDelayed({
+        Handler(Looper.getMainLooper()).postDelayed({
             WidgetConfiguratorActivity.activity?.finish()
         },20)
     }
@@ -135,6 +132,7 @@ class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>, pri
         notifyDataSetChanged()
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     override fun onDrag(lin: View, event: DragEvent): Boolean {
         lin as LinearLayout
         when (event.action) {
@@ -164,7 +162,7 @@ class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>, pri
             DragEvent.ACTION_DRAG_ENTERED ->{
                 lin.background = when{
                     lin.getChildAt(0)?.visibility == View.VISIBLE -> null
-                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP-> ContextCompat.getDrawable(lin.context, R.drawable.round_corner)
+                    true -> ContextCompat.getDrawable(lin.context, R.drawable.round_corner)
                     else -> with(lin) {
                         @Suppress("DEPRECATION")
                         context.resources.getDrawable(R.drawable.round_corner)

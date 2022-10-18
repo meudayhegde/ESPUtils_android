@@ -6,6 +6,7 @@ import android.content.DialogInterface
 import android.graphics.Color
 import android.os.Build
 import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -45,7 +46,7 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
     private val clrPkr: ColorPicker
     private var capturedCount = 0
     private var buttonProperties:ButtonProperties? = null
-    private val handler = Handler()
+    private val handler = Handler(Looper.getMainLooper())
 
     init{
         parentDialog = this
@@ -219,11 +220,7 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
         btn_icon.setOnClickListener {
             val iconAdapter = object:ArrayAdapter<Int>(context,R.layout.drawable_layout,MainActivity.iconDrawableList.toTypedArray()){
                 override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-                    val drawable = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) ContextCompat.getDrawable(context, getItem(position)!!)
-                        else with(context) {
-                        @Suppress("DEPRECATION")
-                        resources.getDrawable(getItem(position)!!)
-                    }
+                    val drawable = ContextCompat.getDrawable(context, getItem(position)!!)
                     DrawableCompat.setTint(drawable!!,MainActivity.colorOnBackground)
                     var returnView = convertView
                     if(returnView==null){

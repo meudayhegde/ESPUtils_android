@@ -10,6 +10,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -58,7 +59,7 @@ class RemoteListAdapter(private val propList: ArrayList<RemoteProperties>, priva
             prop.getButtons().length().toString()
         val context = holder.cardView.context
         holder.cardView.visibility = View.GONE
-        Handler().postDelayed({
+        Handler(Looper.getMainLooper()).postDelayed({
             holder.cardView.visibility = View.VISIBLE
             holder.cardView.startAnimation(
                 AnimationUtils.loadAnimation(
@@ -176,12 +177,8 @@ class RemoteListAdapter(private val propList: ArrayList<RemoteProperties>, priva
         }
 
         btnDelete.setOnClickListener {
-            val icon = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            val icon =
                 ContextCompat.getDrawable(dialog.context, R.drawable.icon_delete)
-            } else {
-                @Suppress("DEPRECATION")
-                dialog.context.resources.getDrawable(R.drawable.icon_delete)
-            }
             DrawableCompat.setTint(icon!!, Color.RED)
             AlertDialog.Builder(dialog.context)
                 .setNegativeButton("No,Quit") { dialog, _ -> dialog.dismiss() }

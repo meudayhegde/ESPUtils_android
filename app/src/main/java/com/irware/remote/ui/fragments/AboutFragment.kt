@@ -12,7 +12,6 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatDelegate
 import com.irware.remote.R
 
 class AboutFragment : androidx.fragment.app.Fragment() {
@@ -23,10 +22,7 @@ class AboutFragment : androidx.fragment.app.Fragment() {
         if(rootView == null ){
             rootView = inflater.inflate(R.layout.fragment_about, container, false) as ScrollView
             rootView?.findViewById<TextView>(R.id.about_app)?.text = TextUtils.join(" ",context?.resources?.getStringArray(R.array.about)?: arrayOf(" "))
-            rootView?.findViewById<ImageView>(R.id.icon_app_about)?.setImageResource(
-                if(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_NO) R.drawable.circuit_dark
-                else R.drawable.circuit_light
-            )
+            rootView?.findViewById<ImageView>(R.id.icon_app_about)?.setImageResource(R.drawable.circuit_light_dark_auto)
             val onClickListener = View.OnClickListener {
                 val browserIntent = Intent(
                     Intent.ACTION_VIEW,

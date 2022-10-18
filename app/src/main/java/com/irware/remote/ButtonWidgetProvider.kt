@@ -6,7 +6,9 @@ import android.appwidget.AppWidgetProvider
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Handler
+import android.os.Looper
 import android.widget.RemoteViews
 import android.widget.Toast
 import com.irware.remote.net.ARPTable
@@ -45,7 +47,10 @@ class ButtonWidgetProvider: AppWidgetProvider() {
             intent.action = BUTTON_CLICK
             intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds)
             intent.putExtra("WidgetID", widgetId)
-            val pendingIntent = PendingIntent.getBroadcast(context, widgetId, intent, 0)
+            val pendingIntent = PendingIntent.getBroadcast(context, widgetId, intent,
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE
+                    else 0
+                )
             remoteViews.setOnClickPendingIntent(R.id.widget_button, pendingIntent)
 
             appWidgetManager.updateAppWidget(widgetId, remoteViews)
@@ -64,20 +69,22 @@ class ButtonWidgetProvider: AppWidgetProvider() {
             if(objList.isEmpty()) return
             val remoteProp = objList[0] as RemoteProperties
             val buttonProp = objList[1] as ButtonProperties
-            @Suppress("DEPRECATION") val handler = Handler()
+            val handler = Handler(Looper.getMainLooper())
 
             (MainActivity.arpTable ?: ARPTable(1)).getIpFromMac(remoteProp.deviceProperties.macAddr) { address ->
                     val userName = remoteProp.deviceProperties.userName
                     val password = remoteProp.deviceProperties.password
                     if (address  == null){
-                        Toast.makeText(context, "Err: Device not reachable", Toast.LENGTH_LONG).show()
-                        manager.updateAppWidget(watchWidget, remoteViews)
+                        handler.post {
+                            Toast.makeText(context, "Err: Device not reachable", Toast.LENGTH_LONG).show()
+                            manager.updateAppWidget(watchWidget, remoteViews)
+                        }
                         return@getIpFromMac
                     }
                     SocketClient.sendIrCode(address, userName, password, buttonProp.jsonObj) { result ->
                             handler.post {
                                 if(result.contains("success")) Toast.makeText(context,buttonProp.text + ": " + JSONObject(result).getString("response"),Toast.LENGTH_LONG).show()
-                                else Toast.makeText(context,context.getString(R.string.device_not_connected),Toast.LENGTH_LONG).show()
+                                else Toast.makeText(context,context.getString(R.string.device_not_connected), Toast.LENGTH_LONG).show()
                             }
                         }
                     manager.updateAppWidget(watchWidget,remoteViews)
@@ -136,7 +143,10 @@ class ButtonWidgetProvider: AppWidgetProvider() {
     private fun setConfigureOnClick(context:Context,widgetID: Int,views: RemoteViews){
         val intent = Intent(context,WidgetConfiguratorActivity::class.java)
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,widgetID)
-        val pendingIntent = PendingIntent.getActivity(context, widgetID, intent, 0)
+        val pendingIntent = PendingIntent.getActivity(context, widgetID, intent,
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE
+            else 0
+        )
         views.setOnClickPendingIntent(R.id.widget_button,pendingIntent)
     }
 

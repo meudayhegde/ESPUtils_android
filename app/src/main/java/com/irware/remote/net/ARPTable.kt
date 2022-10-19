@@ -30,7 +30,7 @@ class ARPTable(private val scanCount: Int = -1) {
 
     fun getIpFromMac(mac: String, listener: ((address: String?) -> Unit)){
         val addresses = jsonObj.optJSONArray(mac) ?: JSONArray()
-        MainActivity.threadHandler?.runOnThread(ThreadHandler.ESP_MESSAGE){
+        ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE){
             for(i in 0 until addresses.length()){
                 val address = addresses.getString(i)
                 if(InetAddress.getByName(address).isReachable(50)){
@@ -46,7 +46,7 @@ class ARPTable(private val scanCount: Int = -1) {
                             listener.invoke(address)
                             return@runOnThread
                         }
-                    }catch(ex: Exception){}
+                    }catch(_: Exception){}
                 }
             }
             listener.invoke(null)
@@ -122,7 +122,7 @@ class ARPTable(private val scanCount: Int = -1) {
                 jsonObj.put(macAddress, ipList)
                 update()
                 return true
-            }catch(ex: Exception){}
+            }catch(_: Exception){}
         }
         return false
     }

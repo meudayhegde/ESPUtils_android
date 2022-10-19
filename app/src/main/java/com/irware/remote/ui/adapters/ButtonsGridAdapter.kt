@@ -18,7 +18,6 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.irware.remote.ButtonWidgetProvider
-import com.irware.remote.MainActivity
 import com.irware.remote.R
 import com.irware.remote.WidgetConfiguratorActivity
 import com.irware.remote.holders.ButtonProperties
@@ -61,7 +60,7 @@ class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>, pri
                     }
                 }
                 SocketClient.sendIrCode(address, userName , password,(it as RemoteButton).getProperties().jsonObj) { result ->
-                    MainActivity.threadHandler?.runOnUiThread {
+                    Handler(Looper.getMainLooper()).post{
                         try {
                             val jsonObj = JSONObject(result)
                             Toast.makeText(context, jsonObj.getString("response"), Toast.LENGTH_SHORT).show()

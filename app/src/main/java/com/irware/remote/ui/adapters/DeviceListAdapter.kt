@@ -9,6 +9,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -40,6 +41,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.io.*
 import java.util.*
+import android.os.Handler
 import java.util.zip.ZipFile
 import kotlin.collections.ArrayList
 import kotlin.math.min
@@ -205,11 +207,11 @@ class DeviceListAdapter(
                 .setMessage("Are you sure you want to restart the device?")
                 .setNegativeButton("Cancel"){ dialog, _ -> dialog.dismiss()}
                 .setPositiveButton("Restart"){ dialog, _ -> dialog.dismiss()
-                    MainActivity.threadHandler?.runOnThread(ThreadHandler.ESP_MESSAGE){
+                    ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE){
                         try {
                             val connector = SocketClient.Connector("$address")
                             connector.sendLine("{\"request\":\"restart\",\"username\":\"$userName\",\"password\":\"$password\"}")
-                            MainActivity.threadHandler?.runOnUiThread {
+                            Handler(Looper.getMainLooper()).post{
                                 Toast.makeText(
                                     context,
                                     "Restart command successfully sent.",
@@ -217,7 +219,7 @@ class DeviceListAdapter(
                                 ).show()
                             }
                         }catch (ex: Exception){
-                            MainActivity.threadHandler?.runOnUiThread {
+                            Handler(Looper.getMainLooper()).post{
                                 Toast.makeText(
                                     context,
                                     "Failed to send Restart command!",
@@ -325,7 +327,7 @@ class DeviceListAdapter(
                             positiveButton?.isEnabled = false
                         } else progressBar?.visibility = View.GONE
                         messageView?.text = status
-                        if(status.toLowerCase(Locale.ROOT).contains("success")){
+                        if(status.lowercase(Locale.ROOT).contains("success")){
                             positiveButton?.isEnabled = true
                             positiveButton?.setOnClickListener {
                                 updateDialog.dismiss()
@@ -375,7 +377,7 @@ class DeviceListAdapter(
                     positiveButton?.isEnabled = false
                     positiveButton?.text = context.getString(R.string.done)
                     negativeButton?.isEnabled = false
-                    MainActivity.threadHandler?.runOnFreeThread{
+                    ThreadHandler.runOnFreeThread{
                         val updateDir = extractUpdate(updateFile, updateIntermediateListener)
                         if(updateDir != null){
                             if(!verifyUpdate(updateDir, updateIntermediateListener)){
@@ -507,7 +509,7 @@ class DeviceListAdapter(
                                     )
                                     val result = connector.readLine()
                                     val resultObj = JSONObject(result)
-                                    MainActivity.threadHandler?.runOnUiThread{
+                                    Handler(Looper.getMainLooper()).post{
                                         AlertDialog.Builder(context)
                                             .setTitle(
                                                 if (resultObj.getString("response").contains(
@@ -522,7 +524,7 @@ class DeviceListAdapter(
                                     }
                                     connector.close()
                                 }catch (ex: Exception){
-                                    MainActivity.threadHandler?.runOnUiThread{
+                                    Handler(Looper.getMainLooper()).post{
                                         AlertDialog.Builder(context)
                                             .setTitle("Failed")
                                             .setMessage("Failed to apply user settings\n$ex")
@@ -656,9 +658,9 @@ class DeviceListAdapter(
             positiveButton.setOnClickListener {
                 if(ssid.text.isNullOrEmpty())
                     (ssid.parent.parent as TextInputLayout).error = context.getString(R.string.empty_ssid)
-                if(pass.text?.length?:8 < 8)
+                if((pass.text?.length ?: 8) < 8)
                     (pass.parent.parent as TextInputLayout).error = context.getString(R.string.empty_password)
-                if(ssid.text!!.isNotEmpty() and (pass.text?.length?:0 >= 8)){
+                if(ssid.text!!.isNotEmpty() and ((pass.text?.length ?: 0) >= 8)){
                     AlertDialog.Builder(context)
                         .setTitle("Confirm")
                         .setMessage(
@@ -678,7 +680,7 @@ class DeviceListAdapter(
                                     )
                                     val result = connector.readLine()
                                     val resultObj = JSONObject(result)
-                                    MainActivity.threadHandler?.runOnUiThread{
+                                    Handler(Looper.getMainLooper()).post{
                                         AlertDialog.Builder(context)
                                             .setTitle(
                                                 if (resultObj.getString("response").contains(
@@ -693,7 +695,7 @@ class DeviceListAdapter(
                                     }
                                     connector.close()
                                 }catch (ex: Exception){
-                                    MainActivity.threadHandler?.runOnUiThread{
+                                    Handler(Looper.getMainLooper()).post{
                                         AlertDialog.Builder(context)
                                             .setTitle("Failed")
                                             .setMessage("Failed to apply wireless settings\n$ex")
@@ -714,7 +716,7 @@ class DeviceListAdapter(
     }
 
     private fun getWirelessSettings(address: String, userName: String?, password: String?, onReadWiFiConfig: ((data: JSONObject) -> Unit)){
-        MainActivity.threadHandler?.runOnThread(ThreadHandler.ESP_MESSAGE){
+        ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE){
             try {
                 val connector = SocketClient.Connector(address)
                 connector.sendLine(
@@ -724,12 +726,12 @@ class DeviceListAdapter(
                 )
                 val result = connector.readLine()
                 val resultObj = JSONObject(result)
-                MainActivity.threadHandler?.runOnUiThread{
+                Handler(Looper.getMainLooper()).post{
                     onReadWiFiConfig.invoke(resultObj)
                 }
                 connector.close()
             }catch (ex: Exception){
-                MainActivity.threadHandler?.runOnUiThread{
+                Handler(Looper.getMainLooper()).post{
                     onReadWiFiConfig.invoke(JSONObject())
                 }
             }
@@ -738,8 +740,7 @@ class DeviceListAdapter(
 }
 
 fun JSONArray.insert(position: Int, value: Any){
-    if(length() > 0)
-    for (i in length() downTo position + 1) {
+    if(length() > 0) for (i in length() downTo position + 1) {
         put(i, get(i - 1))
     }
     put(position, value)

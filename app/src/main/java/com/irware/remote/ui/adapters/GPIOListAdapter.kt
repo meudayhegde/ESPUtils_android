@@ -8,11 +8,7 @@ import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CompoundButton
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.TextView
-import android.widget.LinearLayout
+import android.widget.*
 import androidx.appcompat.widget.SwitchCompat
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
@@ -20,12 +16,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.irware.ThreadHandler
 import com.irware.remote.MainActivity
 import com.irware.remote.R
-import com.irware.remote.net.ARPTable
 import com.irware.remote.holders.GPIOObject
 import com.irware.remote.holders.OnStatusUpdateListener
+import com.irware.remote.net.ARPTable
 import com.irware.remote.net.SocketClient
 import org.json.JSONObject
-import kotlin.contracts.contract
 
 class GPIOListAdapter(private val propList: ArrayList<GPIOObject>) : RecyclerView.Adapter<GPIOListAdapter.MyViewHolder>(){
 
@@ -55,7 +50,6 @@ class GPIOListAdapter(private val propList: ArrayList<GPIOObject>) : RecyclerVie
 
         holder.title.text = prop.title
         holder.subTitle.text = "Device: ${prop.deviceProperties?.nickName?: "Unknown"}\n${prop.subTitle}"
-
         holder.iconDrawable?.setTint(MainActivity.colorOnBackground)
 
         holder.cardView.isEnabled = false
@@ -113,7 +107,7 @@ class GPIOListAdapter(private val propList: ArrayList<GPIOObject>) : RecyclerVie
 
     private fun gpioSwitchCheckedCHangedListener(prop: GPIOObject, compoundButton: CompoundButton, iconDrawable: Drawable?,
                                                  checkedChangedListener: CompoundButton.OnCheckedChangeListener){
-        MainActivity.threadHandler?.runOnThread(ThreadHandler.ESP_MESSAGE){
+        ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE){
             val success = try{
                 val connector = SocketClient.Connector((MainActivity.arpTable ?: ARPTable(1)).getIpFromMac(prop.macAddr) ?: "")
                 connector.sendLine("{\"request\":\"gpio_set\",\"username\":\"${prop.deviceProperties!!.userName}\", " +

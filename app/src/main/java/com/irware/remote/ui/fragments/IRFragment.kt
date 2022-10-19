@@ -24,6 +24,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.github.clans.fab.FloatingActionButton
 import com.github.clans.fab.FloatingActionMenu
 import com.google.android.material.textfield.TextInputEditText
+import com.irware.ThreadHandler
 import com.irware.remote.MainActivity
 import com.irware.remote.R
 import com.irware.remote.holders.RemoteProperties
@@ -40,20 +41,17 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
     private var viewAdapter: RecyclerView.Adapter<*>? = null
     private var viewManager: RecyclerView.LayoutManager? = null
     private var rootView:RelativeLayout? = null
-    private val configChooser = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
+    private val configChooser = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if(result.resultCode == Activity.RESULT_OK) {
             val uri = result?.data?.data
             Log.d("CONFIG_SELECTOR", "File Uri: " + uri.toString())
             try {
                 val mIntent = Intent(Intent.ACTION_VIEW)
-
                 mIntent.setDataAndType(uri, "application/json")
                 mIntent.setPackage(context?.packageName)
                 startActivity(Intent.createChooser(mIntent, "Import Config File"))
-            } catch (e: Exception) {
-                e.printStackTrace()
+            } catch (ex: Exception) {
+                Log.e("CONFIG_SELECTOR", "${ ex.message }")
             }
         }
     }
@@ -89,7 +87,7 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
             val refreshLayout = rootView!!.findViewById<SwipeRefreshLayout>(R.id.refresh_layout)
             refreshLayout.setOnRefreshListener {
                 refreshLayout.isRefreshing = true
-                MainActivity.threadHandler?.runOnFreeThread{
+                ThreadHandler.runOnFreeThread{
                     MainActivity.remotePropList.clear()
                     val files = File(MainActivity.remoteConfigPath).listFiles { pathname ->
                         pathname!!.isFile and (pathname.name.endsWith(".json", true)) and pathname.canWrite()
@@ -97,7 +95,7 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
                     files!!.forEach {
                         MainActivity.remotePropList.add(RemoteProperties(it, null))
                     }
-                    MainActivity.threadHandler?.runOnUiThread{
+                    Handler(Looper.getMainLooper()).post{
                         viewAdapter?.notifyDataSetChanged()
                         refreshLayout.isRefreshing = false
                     }

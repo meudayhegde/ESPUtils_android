@@ -50,16 +50,18 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
             val isr = requireContext().contentResolver.openInputStream(result?.data?.data?: return@registerForActivityResult)?: return@registerForActivityResult
             val update = File((requireContext().externalCacheDir?:requireContext().filesDir).absolutePath + File.separator + "Update.zip")
             if(update.exists()) update.delete()
-            update.createNewFile()
+            ThreadHandler.runOnFreeThread{
+                update.createNewFile()
 
-            update.outputStream().use {
-                it.write(isr.readBytes())
-                it.flush()
+                update.outputStream().use {
+                    it.write(isr.readBytes())
+                    it.flush()
+                }
+                isr.close()
+
+                updateSelectedListener?.invoke(update)
+                updateSelectedListener = null
             }
-            isr.close()
-
-            updateSelectedListener?.invoke(update)
-            updateSelectedListener = null
         }
     }
 
@@ -82,9 +84,9 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
             refreshLayout.setOnRefreshListener {
                 refreshLayout.isRefreshing = true
                 viewAdapter.notifyDataSetChanged()
-                MainActivity.threadHandler?.runOnFreeThread{
+                ThreadHandler.runOnFreeThread{
                     Thread.sleep(100)
-                    MainActivity.threadHandler?.runOnThread(ThreadHandler.ESP_MESSAGE) {
+                    ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE) {
                         refreshLayout.isRefreshing = false
                     }
                 }
@@ -155,17 +157,17 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
         btnCancel.setOnClickListener { dialog.cancel() }
         btnNext.setOnClickListener {
             val address = devAddr.text.toString()
-            MainActivity.threadHandler?.runOnThread(ThreadHandler.ESP_MESSAGE){
+            ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE){
                 try {
                     val connector = SocketClient.Connector(address)
                     connector.sendLine("{\"request\":\"ping\"}")
                     val response = connector.readLine()
                     val macAddr = JSONObject(response).getString("MAC")
-                    MainActivity.threadHandler?.runOnUiThread{
+                    Handler(Looper.getMainLooper()).post{
                         onAddressVerified(dialog, address, macAddr)
                     }
                 }catch(ex: Exception){
-                    MainActivity.threadHandler?.runOnUiThread{
+                    Handler(Looper.getMainLooper()).post{
                         Toast.makeText(context, "Err: Failed to contact $address", Toast.LENGTH_LONG).show()
                     }
                 }
@@ -207,7 +209,7 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
         devDescription.setText(devProp?.description?: "")
 
         btnAdd.setOnClickListener{
-            MainActivity.threadHandler?.runOnThread(ThreadHandler.ESP_MESSAGE){
+            ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE){
                 try{
                     val connector = SocketClient.Connector(address)
                     connector.sendLine("{\"request\":\"authenticate\",\"username\":\"${userName.text.toString()}\",\"password\":\"${password.text.toString()}\",\"data\":\"__\",\"length\":\"0\"}")
@@ -219,13 +221,14 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
                         File(filePath).createNewFile()
                         devProp = DeviceProperties(File(filePath))
                     }
+
                     devProp!!.nickName = devName.text.toString()
                     devProp!!.macAddr = macAddr
                     devProp!!.description = devDescription.text.toString()
                     devProp!!.userName = userName.text.toString()
                     devProp!!.password = password.text.toString()
 
-                    MainActivity.threadHandler?.runOnUiThread{
+                    Handler(Looper.getMainLooper()).post{
                         if(devExist){
                             viewAdapter.notifyItemChanged(MainActivity.devicePropList.indexOf(devProp!!))
                             Toast.makeText(context, "Device Preferences Updated", Toast.LENGTH_LONG).show()
@@ -237,7 +240,7 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
                         dialog.cancel()
                     }
                 }catch(ex:Exception){
-                    MainActivity.threadHandler?.runOnUiThread{
+                    Handler(Looper.getMainLooper()).post{
                         Toast.makeText(context, "Err: Authentication Failed", Toast.LENGTH_LONG).show()
                     }
                 }

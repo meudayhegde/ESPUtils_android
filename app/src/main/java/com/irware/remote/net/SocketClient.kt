@@ -1,6 +1,5 @@
 package com.irware.remote.net
 
-import android.content.Context
 import android.content.DialogInterface
 import com.irware.ThreadHandler
 import com.irware.remote.MainActivity
@@ -94,7 +93,7 @@ object SocketClient{
     }
 
     fun sendIrCode(address: String, userName: String, password: String, jsonObj:JSONObject, irSendListener: ((result: String) -> Unit)) {
-        MainActivity.threadHandler?.runOnThread(ThreadHandler.ESP_MESSAGE) {
+        ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE) {
             try {
                 val connector = Connector(address)
                 connector.sendLine(

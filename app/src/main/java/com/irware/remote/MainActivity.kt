@@ -57,8 +57,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     @SuppressLint("InflateParams")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        threadHandler = ThreadHandler(this)
         activity = this
         arpTable = ARPTable(-1)
 
@@ -185,7 +183,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
         })
 
-        threadHandler?.runOnFreeThread{
+        ThreadHandler.runOnFreeThread {
             val files = File(remoteConfigPath).listFiles { pathname ->
                 pathname!!.isFile and (pathname.name.endsWith(".json", true)) and pathname.canWrite()
             }
@@ -449,8 +447,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         var activity:MainActivity? = null
         var colorOnBackground = Color.BLACK
         var iconDrawableList:IntArray = intArrayOf()
-
-        var threadHandler: ThreadHandler? = null
     }
 
     private var restart = false

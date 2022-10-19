@@ -1,19 +1,14 @@
 package com.irware
 
-import android.app.Activity
-import java.util.*
-import kotlin.collections.ArrayList
-
-
 /**
  *
  * @author hegdeuday
  */
-class ThreadHandler(val activity: Activity, vararg threadNames: String, threadCunt: Int = CPU_CORE_COUNT - 1) {
+class ThreadHandler {
     private val threadList = ArrayList<InfiniteThread>()
     private var maxThreadCount = MAX_THREAD_COUNT
 
-    init {
+    private constructor(vararg threadNames: String, threadCunt: Int = CPU_CORE_COUNT - 1){
         threadNames.forEach {
             val thread = InfiniteThread()
             thread.name = it
@@ -22,7 +17,7 @@ class ThreadHandler(val activity: Activity, vararg threadNames: String, threadCu
         if(threadCunt > threadNames.size) for(i in threadNames.size until threadCunt) add(InfiniteThread())
     }
 
-    constructor(activity: Activity): this(activity, PRIMARY, ESP_MESSAGE)
+    private constructor(): this(PRIMARY, ESP_MESSAGE)
 
     private fun add(thread: InfiniteThread, position: Int, name: String?) {
         thread.name = name?:thread.name
@@ -33,35 +28,35 @@ class ThreadHandler(val activity: Activity, vararg threadNames: String, threadCu
         threadList.add(thread)
     }
 
-    fun getThreadByPosition(position: Int): InfiniteThread {
+    private fun getThreadByPosition(position: Int): InfiniteThread {
         return threadList[position]
     }
 
-    fun getThreadByName(name: String): InfiniteThread? {
+    private fun getThreadByName(name: String): InfiniteThread? {
         threadList.forEach {
             if(it.name == name) return it
         }
         return null
     }
 
-    fun runOnThread(pos: Int, task: Runnable) {
+    private fun runOnThread(pos: Int, task: Runnable) {
         getThreadByPosition(pos).enqueueTask(task)
     }
 
-    fun runOnThread(pos: Int, task: (() -> Unit)) {
+    private fun runOnThread(pos: Int, task: (() -> Unit)) {
         getThreadByPosition(pos).enqueueTask(task)
     }
 
-    fun runOnThread(name: String, task: Runnable) {
+    private fun runOnThread(name: String, task: Runnable) {
         getThreadByName(name)?.enqueueTask(task)
     }
 
-    fun runOnThread(name: String, task: (() -> Unit)) {
+    private fun runOnThread(name: String, task: (() -> Unit)) {
         getThreadByName(name)?.enqueueTask(task)
     }
 
 
-    fun runOnFreeThread(task: Runnable): Int {
+    private fun runOnFreeThread(task: Runnable): Int {
         threadList.forEach {
             if(it.isFree){
                 it.enqueueTask(task)
@@ -78,7 +73,7 @@ class ThreadHandler(val activity: Activity, vararg threadNames: String, threadCu
         }
     }
 
-    fun runOnFreeThread(task: (() -> Unit)): Int {
+    private fun runOnFreeThread(task: (() -> Unit)): Int {
         threadList.forEach {
             if(it.isFree){
                 it.enqueueTask(task)
@@ -95,19 +90,15 @@ class ThreadHandler(val activity: Activity, vararg threadNames: String, threadCu
         }
     }
 
-    fun runOnPrimaryThread(run: Runnable) {
+    private fun runOnPrimaryThread(run: Runnable) {
         runOnThread(0, run)
     }
 
-    fun runOnUIThread(task: (() -> Unit)){
-        activity.runOnUiThread(task)
-    }
-
-    fun getThreadCount() : Int{
+    private fun getThreadCount() : Int{
         return threadList.size
     }
 
-    fun setMaxThreadCount(count: Int){
+    private fun setMaxThreadCount(count: Int){
         if(count < maxThreadCount)
             for(i in threadList.size -1 until count) {
                 threadList[i].finish()
@@ -116,15 +107,7 @@ class ThreadHandler(val activity: Activity, vararg threadNames: String, threadCu
         maxThreadCount = count
     }
 
-    fun runOnUiThread(task: Runnable){
-        activity.runOnUiThread(task)
-    }
-
-    fun runOnUiThread(task: (() -> Unit)){
-        activity.runOnUiThread(task)
-    }
-
-    fun finishAll() {
+    private fun finishAll() {
         threadList.forEach { it.finish() }
     }
 
@@ -196,10 +179,24 @@ class ThreadHandler(val activity: Activity, vararg threadNames: String, threadCu
 
     companion object {
         private val CPU_CORE_COUNT = Runtime.getRuntime().availableProcessors()
-        val MAX_THREAD_COUNT = ( CPU_CORE_COUNT- 1) * 2;
+        val MAX_THREAD_COUNT = ( CPU_CORE_COUNT- 1) * 2
 
         const val PRIMARY = "PRIMARY"
         const val ESP_MESSAGE = "ESP"
+
+        private val instance = ThreadHandler()
+        fun getThreadByPosition(position: Int): InfiniteThread { return instance.getThreadByPosition(position) }
+        fun getThreadByName(name: String): InfiniteThread? { return instance.getThreadByName(name) }
+        fun runOnThread(pos: Int, task: Runnable) { return instance.runOnThread(pos, task) }
+        fun runOnThread(pos: Int, task: (() -> Unit)) { return instance.runOnThread(pos, task) }
+        fun runOnThread(name: String, task: Runnable) { return instance.runOnThread(name, task) }
+        fun runOnThread(name: String, task: (() -> Unit)) { return instance.runOnThread(name, task) }
+        fun runOnFreeThread(task: Runnable): Int { return instance.runOnFreeThread(task) }
+        fun runOnFreeThread(task: (() -> Unit)): Int { return instance.runOnFreeThread(task) }
+        fun runOnPrimaryThread(run: Runnable) { return instance.runOnPrimaryThread(run) }
+        fun getThreadCount() : Int{ return instance.getThreadCount() }
+        fun setMaxThreadCount(count: Int){ return instance.setMaxThreadCount(count) }
+        fun finishAll() { return instance.finishAll() }
     }
 }
 

@@ -1,6 +1,7 @@
 package com.irware.remote.holders
 
-import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import android.text.TextUtils
 import android.util.Log
 import com.irware.remote.MainActivity
@@ -82,8 +83,7 @@ class DeviceProperties(val deviceConfigFile: File)  {
             }catch(ex: Exception){
                 Log.d("PinInfo", "Error: Failed to get pin info, $ex")
             }
-
-            MainActivity.threadHandler?.runOnUiThread {
+            Handler(Looper.getMainLooper()).post {
                 onStatusUpdateListeners.forEach {
                     it.onStatusUpdate(isConnected)
                 }

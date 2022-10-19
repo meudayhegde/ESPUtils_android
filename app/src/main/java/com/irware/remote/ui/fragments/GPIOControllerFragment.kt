@@ -55,9 +55,9 @@ class GPIOControllerFragment : androidx.fragment.app.Fragment()  {
                 MainActivity.devicePropList.forEach {
                     it.updateStatus()
                 }
-                MainActivity.threadHandler?.runOnFreeThread{
+                ThreadHandler.runOnFreeThread{
                     Thread.sleep(100)
-                    MainActivity.threadHandler?.runOnThread(ThreadHandler.ESP_MESSAGE) {
+                    ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE) {
                         refreshLayout.isRefreshing = false
                     }
                 }

@@ -18,7 +18,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.radiobutton.MaterialRadioButton
 import com.irware.remote.ui.adapters.SettingsAdapter
-import org.json.JSONObject
 
 
 class SettingsActivity : AppCompatActivity() {
@@ -48,11 +47,16 @@ class SettingsActivity : AppCompatActivity() {
         for(i in 0..1) if(fragmentList.size != 0 ) fragmentList.removeAt(fragmentList.size - 1)
 
         viewAdapter = SettingsAdapter(arrayListOf(
-            SettingsItem("Application Theme","UI theme for iRWaRE Application", selectionDialog("Application Theme", R.drawable.icon_theme, "application_theme", arrayListOf("Follow System Theme", "Light Theme", "Dark Theme"),
-                Runnable {
-                    themeChanged = true
-                    AppCompatDelegate.setDefaultNightMode(when(getSharedPreferences("settings", Context.MODE_PRIVATE).getInt("application_theme", 0)){1 -> {AppCompatDelegate.MODE_NIGHT_NO} 2 -> {AppCompatDelegate.MODE_NIGHT_YES} else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM })
-                }), R.drawable.icon_theme),
+            SettingsItem("Application Theme","UI theme for iRWaRE Application", selectionDialog("Application Theme", R.drawable.icon_theme, "application_theme", arrayListOf("Follow System Theme", "Light Theme", "Dark Theme")) {
+                themeChanged = true
+                AppCompatDelegate.setDefaultNightMode(
+                    when (getSharedPreferences("settings", Context.MODE_PRIVATE).getInt("application_theme", 0)) {
+                        1 -> { AppCompatDelegate.MODE_NIGHT_NO }
+                        2 -> { AppCompatDelegate.MODE_NIGHT_YES }
+                        else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                    }
+                )
+            }, R.drawable.icon_theme),
             SettingsItem("Home Fragment","Fragment that opens on app launch", selectionDialog("Home Fragment", R.drawable.icon_home, "home_fragment", fragmentList, null), R.drawable.icon_home)
         ))
 
@@ -76,8 +80,6 @@ class SettingsActivity : AppCompatActivity() {
     private fun selectionDialog(title: String, icon: Int, prefName: String, optList: List<String>, action: Runnable?):AlertDialog{
         val pref = getSharedPreferences("settings", Context.MODE_PRIVATE)
         val editor = pref.edit()
-
-
 
         val content = RadioGroup(this)
         content.setPaddingRelative(24, 0,0,0)

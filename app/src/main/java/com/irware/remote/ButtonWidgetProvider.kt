@@ -83,11 +83,11 @@ class ButtonWidgetProvider: AppWidgetProvider() {
                     }
                     SocketClient.sendIrCode(address, userName, password, buttonProp.jsonObj) { result ->
                             handler.post {
-                                if(result.contains("success")) Toast.makeText(context,buttonProp.text + ": " + JSONObject(result).getString("response"),Toast.LENGTH_LONG).show()
-                                else Toast.makeText(context,context.getString(R.string.device_not_connected), Toast.LENGTH_LONG).show()
+                                if(result.contains("success")) Toast.makeText(context, buttonProp.text + ": " + JSONObject(result).getString("response"), Toast.LENGTH_LONG).show()
+                                else Toast.makeText(context, context.getString(R.string.device_not_connected), Toast.LENGTH_LONG).show()
                             }
                         }
-                    manager.updateAppWidget(watchWidget,remoteViews)
+                    manager.updateAppWidget(watchWidget, remoteViews)
                 }
         }
     }
@@ -95,28 +95,28 @@ class ButtonWidgetProvider: AppWidgetProvider() {
     override fun onDeleted(context: Context?, appWidgetIds: IntArray?) {
         super.onDeleted(context, appWidgetIds)
         appWidgetIds?.forEach {
-            val pref = context?.getSharedPreferences("widget_associations",Context.MODE_PRIVATE)
+            val pref = context?.getSharedPreferences("widget_associations", Context.MODE_PRIVATE)
             val editor = pref?.edit()
             editor?.remove(it.toString())
             editor?.apply()
         }
     }
 
-    private fun getJSONObject(context:Context,widgetID:Int,views:RemoteViews):ArrayList<Any>{
-        val pref = context.getSharedPreferences("widget_associations",Context.MODE_PRIVATE)
+    private fun getJSONObject(context:Context,widgetID:Int,views:RemoteViews): ArrayList<Any>{
+        val pref = context.getSharedPreferences("widget_associations", Context.MODE_PRIVATE)
         val editor = pref.edit()
         var buttonInfo = pref.getString(widgetID.toString(),"")
         if(buttonInfo.isNullOrEmpty()){
             val queuedButton = pref.getString("queued_button","")
-            Toast.makeText(context,queuedButton,Toast.LENGTH_LONG).show()
+            Toast.makeText(context, queuedButton, Toast.LENGTH_LONG).show()
             if(!queuedButton.isNullOrEmpty()){
-                editor.putString(widgetID.toString(),queuedButton)
-                editor.putString("queued_button","")
+                editor.putString(widgetID.toString(), queuedButton)
+                editor.putString("queued_button", "")
                 editor.apply()
                 buttonInfo = pref.getString(widgetID.toString(),"")
             }else{
             //    Toast.makeText(context,"Button Not configured, Click to configure",Toast.LENGTH_LONG).show()
-                setConfigureOnClick(context,widgetID,views)
+                setConfigureOnClick(context, widgetID, views)
                 return ArrayList()
             }
         }
@@ -131,18 +131,18 @@ class ButtonWidgetProvider: AppWidgetProvider() {
                 }
             }
         }catch(ex:FileNotFoundException){
-            Toast.makeText(context,"Remote Configuration Deleted, click button to configure. $ex",Toast.LENGTH_LONG).show()
-            setConfigureOnClick(context,widgetID,views)
+            Toast.makeText(context,"Remote Configuration Deleted, click button to configure. $ex", Toast.LENGTH_LONG).show()
+            setConfigureOnClick(context, widgetID, views)
             return ArrayList()
         }
-        Toast.makeText(context,"Button is deleted from Remote Configuration, click widget to configure.",Toast.LENGTH_LONG).show()
-        setConfigureOnClick(context,widgetID,views)
+        Toast.makeText(context, "Button is deleted from Remote Configuration, click widget to configure.", Toast.LENGTH_LONG).show()
+        setConfigureOnClick(context, widgetID, views)
         return ArrayList()
     }
 
     private fun setConfigureOnClick(context:Context,widgetID: Int,views: RemoteViews){
-        val intent = Intent(context,WidgetConfiguratorActivity::class.java)
-        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,widgetID)
+        val intent = Intent(context, WidgetConfiguratorActivity::class.java)
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetID)
         val pendingIntent = PendingIntent.getActivity(context, widgetID, intent,
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE
             else 0

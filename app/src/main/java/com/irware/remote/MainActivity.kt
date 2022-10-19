@@ -48,11 +48,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private val devicesFragment: DevicesFragment = DevicesFragment()
     val irFragment:IRFragment = IRFragment()
-    val gpioFragment:GPIOControllerFragment = GPIOControllerFragment()
+    private val gpioFragment: GPIOControllerFragment = GPIOControllerFragment()
     private var aboutFragment: AboutFragment = AboutFragment()
     private var splash: Dialog? = null
     private var authenticated = false
-    private val onConfigChangeListeners:ArrayList<OnConfigurationChangeListener> = ArrayList()
+    private val onConfigChangeListeners: ArrayList<OnConfigurationChangeListener> = ArrayList()
 
     @SuppressLint("InflateParams")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -107,18 +107,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val splashView=layoutInflater.inflate(R.layout.splash_screen,null)
         splash?.setContentView(splashView)
 
-//        val originalBitmap = BitmapFactory.decodeResource(resources, R.drawable.splash_bg)
+//        val originalBitmap = BitmapFactory.decodeResource(resources, R.mipmap.background_circuit)
 //        val blurredBitmap = BlurBuilder.blur(this, originalBitmap)
 //        splashView.background = BitmapDrawable(resources, blurredBitmap)
-        splashView.setBackgroundResource(R.drawable.splash_bg)
+//        splashView.setBackgroundResource(R.drawable.splash_bg)
         splash?.window?.attributes?.windowAnimations = R.style.ActivityStartAnimationTheme
         splash?.show()
         hideSystemUI(splashView)
 
         @Suppress("DEPRECATION")
         windowManager.defaultDisplay.getSize(size)
-        val x = min(size.x,size.y)
-        NUM_COLUMNS = when{x>920->5;x<720->3;else->4}
+        val x = min(size.x, size.y)
+        NUM_COLUMNS = when{(x > 920) -> 5; x < 720 -> 3; else -> 4}
 
         val file = File(filesDir.absolutePath+File.separator+ REMOTE_CONFIG_DIR)
         if(!file.exists()) file.mkdir()
@@ -220,11 +220,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }, 1100)
     }
 
-    private fun splashPortrait(splash:Dialog){
+    private fun splashPortrait(splash: Dialog){
+        splash.findViewById<RelativeLayout>(R.id.splash_screen).setBackgroundResource(R.mipmap.background_circuit_portrait)
         val login = splash.findViewById<LinearLayout>(R.id.login_view)
         login.clearAnimation()
-        login.setPadding(size.x/14,0,size.x/12,size.y/22)
-        val lparams = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,RelativeLayout.LayoutParams.WRAP_CONTENT)
+        login.setPadding(size.x / 14,0,size.x / 12,size.y / 22)
+        val lparams = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT)
         lparams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
         login.layoutParams = lparams
         splash.findViewById<ImageView>(R.id.splash_logo).clearAnimation()
@@ -233,11 +234,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             login.viewTreeObserver.addOnGlobalLayoutListener(object:ViewTreeObserver.OnGlobalLayoutListener{
                 override fun onGlobalLayout() {
                     login.viewTreeObserver.removeOnGlobalLayoutListener(this)
-                    val height = size.y-login.height
-                    val logoParams = RelativeLayout.LayoutParams(height/2,height/2)
+                    val height = size.y - login.height
+                    val logoParams = RelativeLayout.LayoutParams(height / 2,height / 2)
                     logoParams.addRule(RelativeLayout.ALIGN_PARENT_TOP)
                     logoParams.addRule(RelativeLayout.CENTER_HORIZONTAL)
-                    logoParams.topMargin = height/4
+                    logoParams.topMargin = height / 4
                     splash.findViewById<ImageView>(R.id.splash_logo).layoutParams = logoParams
                 }
             })
@@ -245,6 +246,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun splashLandscape(splash:Dialog){
+        splash.findViewById<RelativeLayout>(R.id.splash_screen).setBackgroundResource(R.mipmap.background_circuit_landscape)
         val login = splash.findViewById<LinearLayout>(R.id.login_view)
         val lparams = RelativeLayout.LayoutParams(size.x*11/20,RelativeLayout.LayoutParams.WRAP_CONTENT)
         lparams.addRule(RelativeLayout.ALIGN_PARENT_END)
@@ -272,15 +274,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val toggle = ActionBarDrawerToggle(this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawer_layout.addDrawerListener(toggle)
 
+        val navHeader: LinearLayout = nav_view.getHeaderView(0) as LinearLayout
+        navHeader.post{
+            navHeader.layoutParams = LinearLayout.LayoutParams(navHeader.width, navHeader.width)
+            navHeader.findViewById<ImageView>(R.id.app_icon).layoutParams =
+                LinearLayout.LayoutParams((navHeader.width * 0.7).toInt(), (navHeader.width * 0.7).toInt())
+            navHeader.findViewById<TextView>(R.id.app_name).textSize = (navHeader.width / 18).toFloat()
+            navHeader.findViewById<TextView>(R.id.app_description).textSize = (navHeader.width / 26).toFloat()
+        }
         toggle.syncState()
-
         nav_view.setNavigationItemSelectedListener(this)
         supportFragmentManager.beginTransaction().commitAllowingStateLoss()
 
         val homeFragment = getSharedPreferences("settings", Context.MODE_PRIVATE).getInt("home_fragment", 0)
         replaceFragment(when(homeFragment){1 -> irFragment 2-> gpioFragment 3 -> aboutFragment else-> devicesFragment})
         nav_view.setCheckedItem(when(homeFragment){1 -> R.id.home_drawer 2-> R.id.gpio_drawer 3 -> R.id.info_drawer else-> R.id.device_drawer_item})
-
     }
 
     private fun replaceFragment(fragment: Fragment){

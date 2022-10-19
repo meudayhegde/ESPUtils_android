@@ -9,6 +9,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
@@ -39,11 +40,9 @@ import com.irware.remote.net.SocketClient
 import com.irware.remote.ui.fragments.DevicesFragment
 import org.json.JSONArray
 import org.json.JSONObject
-import java.io.*
+import java.io.File
 import java.util.*
-import android.os.Handler
 import java.util.zip.ZipFile
-import kotlin.collections.ArrayList
 import kotlin.math.min
 
 
@@ -120,30 +119,32 @@ class DeviceListAdapter(
                             .setTitle("Settings for ${prop.nickName}")
                             .setView(R.layout.activity_settings)
                             .setIcon(settingsIcon)
-                            .create()
-                        settingsDialog.show()
+                            .show()
                         settingsDialog.window?.setBackgroundDrawableResource(R.drawable.layout_border_round_corner)
-                        settingsDialog.window?.setLayout(
-                            (MainActivity.size.x * 0.9).toInt(),
-                            (MainActivity.size.y * 0.9).toInt()
-                        )
+                        settingsDialog.window?.setLayout((MainActivity.size.x * 0.9).toInt(), (MainActivity.size.y * 0.9).toInt())
 
                         val addr = (MainActivity.arpTable ?: ARPTable(1)).getIpFromMac(prop.macAddr) ?: ""
                         val viewManager = LinearLayoutManager(context)
                         val viewAdapter = SettingsAdapter(
                             arrayListOf(
                                 SettingsItem("Wireless Settings", "Wi-Fi/Hotspot SSID and passwords",
-                                    wirelessSettingsDialog(context, addr, prop.userName, prop.password), R.drawable.icon_wifi
+                                    null, R.drawable.icon_wifi, wirelessSettingsClickAction(context, addr, prop.userName, prop.password)
                                 ),
                                 SettingsItem(
                                     "User Settings", "User credentials (username and password)",
-                                    userSettingsDialog(context, addr), R.drawable.ic_user
+                                    null, R.drawable.ic_user, userSettingsClickAction(context, addr)
                                 ),
                                 SettingsItem("Reboot", "Restart the micro controller", null,
-                                    R.drawable.icon_power, restartConfirmDialog(context, addr, prop.userName, prop.password)
+                                    R.drawable.icon_power, restartConfirmClickAction(context, addr, prop.userName, prop.password)
                                 ),
                                 SettingsItem("Install Update", "install update on esp device",
-                                    null, R.drawable.ic__system_update, updateClickAction(prop, addr)
+                                    null, R.drawable.ic_system_update, updateClickAction(context, prop, addr)
+                                ),
+                                SettingsItem("Remove Device", "Remove ESP device from device list",
+                                    null, R.drawable.icon_delete, deleteClickAction(context, prop)
+                                ),
+                                SettingsItem("Edit Properties", "Edit device properties",
+                                    null, R.drawable.icon_edit, editClickAction(context, prop)
                                 )
                             )
                         )
@@ -200,7 +201,7 @@ class DeviceListAdapter(
 
     override fun getItemCount() = propList.size
 
-    private fun restartConfirmDialog(context: Context, address: String?, userName: String?, password: String?): Runnable{
+    private fun restartConfirmClickAction(context: Context, address: String?, userName: String?, password: String?): Runnable{
         return Runnable{
             val rebootDialog = AlertDialog.Builder(context)
                 .setTitle("Confirm Restart")
@@ -212,19 +213,11 @@ class DeviceListAdapter(
                             val connector = SocketClient.Connector("$address")
                             connector.sendLine("{\"request\":\"restart\",\"username\":\"$userName\",\"password\":\"$password\"}")
                             Handler(Looper.getMainLooper()).post{
-                                Toast.makeText(
-                                    context,
-                                    "Restart command successfully sent.",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                                Toast.makeText(context, "Restart command successfully sent.", Toast.LENGTH_SHORT).show()
                             }
                         }catch (ex: Exception){
                             Handler(Looper.getMainLooper()).post{
-                                Toast.makeText(
-                                    context,
-                                    "Failed to send Restart command!",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                                Toast.makeText(context, "Failed to send Restart command!", Toast.LENGTH_SHORT).show()
                             }
                         }
                     }
@@ -234,6 +227,29 @@ class DeviceListAdapter(
                 rebootDialog.window?.setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.round_corner))
                 rebootDialog.window?.setDimAmount(0.7F)
             }
+        }
+    }
+
+    private fun deleteClickAction(context: Context, prop: DeviceProperties): Runnable{
+        return Runnable{
+            val dialog = AlertDialog.Builder(context)
+                .setTitle("Confirm Delete")
+                .setMessage("Are you sure you want to remove the device?")
+                .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
+                .setPositiveButton("Remove") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .show()
+            dialog.setOnShowListener {
+                dialog.window?.setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.round_corner))
+                dialog.window?.setDimAmount(0.7F)
+            }
+        }
+    }
+
+    private fun editClickAction(context: Context, prop: DeviceProperties): Runnable{
+        return Runnable{
+
         }
     }
 
@@ -281,7 +297,7 @@ class DeviceListAdapter(
     }
 
     @SuppressLint("InflateParams")
-    private fun updateClickAction(prop: DeviceProperties, remoteAddress: String): Runnable{
+    private fun updateClickAction(context: Context, prop: DeviceProperties, remoteAddress: String): Runnable{
         return Runnable{
 
             var positiveButton: Button? = null
@@ -293,10 +309,10 @@ class DeviceListAdapter(
             var errorLayout: LinearLayout? = null
             var errorView: TextView? = null
 
-            val updateDialog = AlertDialog.Builder(context!!)
+            val updateDialog = AlertDialog.Builder(context)
                 .setTitle("Esp Ota Update")
                 .setView(R.layout.esp_ota_layout)
-                .setIcon(R.drawable.ic__system_update)
+                .setIcon(R.drawable.ic_system_update)
                 .setNegativeButton("Cancel"){ _, _ -> }
                 .setPositiveButton("Update"){ _, _ -> }
                 .create()
@@ -313,7 +329,7 @@ class DeviceListAdapter(
                 errorView = updateDialog.findViewById(R.id.error_content)
 
                 updateDialog.window?.setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.round_corner))
-                updateDialog.window?.setLayout((MainActivity.size.x*0.9).toInt(),WindowManager.LayoutParams.WRAP_CONTENT)
+                updateDialog.window?.setLayout((MainActivity.size.x * 0.9).toInt(), WindowManager.LayoutParams.WRAP_CONTENT)
             }
 
 
@@ -333,12 +349,10 @@ class DeviceListAdapter(
                                 updateDialog.dismiss()
                             }
                         }
-
                     }
                 }
 
                 override fun onProgressUpdate(progress: Float) {
-
                     runOnUiThread {
                         negativeButton?.isEnabled = false
                         positiveButton?.isEnabled = false
@@ -435,284 +449,254 @@ class DeviceListAdapter(
     }
 
     @SuppressLint("InflateParams")
-    private fun userSettingsDialog(context: Context, address: String):AlertDialog{
-        val content = LayoutInflater.from(context).inflate(R.layout.user_settings, null) as LinearLayout
-        val cUname = content.findViewById<TextInputEditText>(R.id.cur_user_name)
-        val cPass = content.findViewById<TextInputEditText>(R.id.cur_user_passwd)
-        val nUname = content.findViewById<TextInputEditText>(R.id.til_user_name)
-        val nPass = content.findViewById<TextInputEditText>(R.id.til_user_passwd)
-        val nPassCon = content.findViewById<TextInputEditText>(R.id.til_user_confirm_passwd)
+    private fun userSettingsClickAction(context: Context, address: String): Runnable{
+        return Runnable{
+            val dialog = AlertDialog.Builder(context)
+                .setTitle("User Settings")
+                .setView(R.layout.user_settings)
+                .setIcon(R.drawable.ic_user)
+                .setNegativeButton("Cancel"){ dialog, _ -> dialog.dismiss()}
+                .setPositiveButton(context.getString(R.string.apply)){ _, _->}
+                .create()
 
-        val dialog = AlertDialog.Builder(context)
-            .setTitle("User Settings")
-            .setView(content)
-            .setIcon(R.drawable.ic_user)
-            .setNegativeButton("Cancel"){ dialog, _ -> dialog.dismiss()}
-            .setPositiveButton(context.getString(R.string.apply)){ _, _->}
-            .create()
+            dialog.setOnShowListener {
+                dialog.window?.setBackgroundDrawableResource(R.drawable.layout_border_round_corner)
+                dialog.window?.setLayout(
+                    (MainActivity.size.x * 0.8).toInt(),
+                    WindowManager.LayoutParams.WRAP_CONTENT
+                )
+                val cUname = dialog.findViewById<TextInputEditText>(R.id.cur_user_name)!!
+                val cPass = dialog.findViewById<TextInputEditText>(R.id.cur_user_passwd)!!
+                val nUname = dialog.findViewById<TextInputEditText>(R.id.til_user_name)!!
+                val nPass = dialog.findViewById<TextInputEditText>(R.id.til_user_passwd)!!
+                val nPassCon = dialog.findViewById<TextInputEditText>(R.id.til_user_confirm_passwd)!!
 
-        for(item in listOf<TextInputEditText>(cUname, cPass, nUname, nPass, nPassCon)){
-            item.addTextChangedListener(object : TextWatcher {
-                override fun afterTextChanged(s: Editable?) {}
-                override fun beforeTextChanged(
-                    s: CharSequence?,
-                    start: Int,
-                    count: Int,
-                    after: Int
-                ) {
+                for(item in listOf(cUname, cPass, nUname, nPass, nPassCon)){
+                    item.addTextChangedListener(object : TextWatcher {
+                        override fun afterTextChanged(s: Editable?) {}
+                        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                            (item.parent.parent as TextInputLayout).error = null
+                        }
+                    })
                 }
 
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                    (item.parent.parent as TextInputLayout).error = null
-                }
-            })
-        }
-
-        dialog.setOnShowListener {
-            dialog.window?.setBackgroundDrawableResource(R.drawable.layout_border_round_corner)
-            dialog.window?.setLayout(
-                (MainActivity.size.x * 0.8).toInt(),
-                WindowManager.LayoutParams.WRAP_CONTENT
-            )
-            val positiveButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
-            positiveButton.setOnClickListener {
-                var hasError = false
-                for( tiet in listOf<TextInputEditText>(cUname, cPass, nUname, nPass, nPassCon)){
-                    if (tiet.text.isNullOrEmpty()) {
-                        (tiet.parent.parent as TextInputLayout).error = context.getString(R.string.empty_field)
+                val positiveButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
+                positiveButton.setOnClickListener {
+                    var hasError = false
+                    for( tiet in listOf(cUname, cPass, nUname, nPass, nPassCon)){
+                        if (tiet.text.isNullOrEmpty()) {
+                            (tiet.parent.parent as TextInputLayout).error = context.getString(R.string.empty_field)
+                            hasError = true
+                        }
+                    }
+                    if(nPassCon.text != nPass.text){
+                        (nPassCon.parent.parent as TextInputLayout).error = context.getString(R.string.passwd_mismatch)
                         hasError = true
                     }
-                }
-                if(nPassCon.text != nPass.text){
-                    (nPassCon.parent.parent as TextInputLayout).error = context.getString(R.string.passwd_mismatch)
-                    hasError = true
-                }
-                if(!hasError){
-                    AlertDialog.Builder(context)
-                        .setTitle("Confirm")
-                        .setMessage(
-                            "Wrong settings may result in inaccessibility of iRWaRE device (full reset will be required to recover))."
-                                    + "Make Sure UserName and password are correct"
-                        )
-                        .setNegativeButton("Cancel"){ dg, _->dg.dismiss()}
-                        .setPositiveButton("Confirm"){ _, _->
-                            dialog.dismiss()
-                            Thread {
-                                try {
-                                    val connector = SocketClient.Connector(address)
-                                    connector.sendLine(
-                                        "{\"request\":\"set_user\",\"username\":\""
-                                                + cUname.text.toString() + "\",\"password\":\""
-                                                + cPass.text.toString() + "\",\"new_username\":\""
-                                                + nUname.text.toString() + "\",\"new_password\":\""
-                                                + nPass.text.toString() + "\"}"
-                                    )
-                                    val result = connector.readLine()
-                                    val resultObj = JSONObject(result)
-                                    Handler(Looper.getMainLooper()).post{
-                                        AlertDialog.Builder(context)
-                                            .setTitle(
-                                                if (resultObj.getString("response").contains(
-                                                        "success",
-                                                        true
-                                                    )
-                                                ) "Success" else "Failed"
-                                            )
-                                            .setMessage(resultObj.getString("response"))
-                                            .setPositiveButton("Done"){ dg, _->dg.dismiss()}
-                                            .show()
-                                    }
-                                    connector.close()
-                                }catch (ex: Exception){
-                                    Handler(Looper.getMainLooper()).post{
-                                        AlertDialog.Builder(context)
-                                            .setTitle("Failed")
-                                            .setMessage("Failed to apply user settings\n$ex")
-                                            .setPositiveButton("Close"){ dg, _->dg.dismiss()}
-                                            .show()
+                    if(!hasError){
+                        AlertDialog.Builder(context)
+                            .setTitle("Confirm")
+                            .setMessage(
+                                "Wrong settings may result in inaccessibility of iRWaRE device (full reset will be required to recover))."
+                                        + "Make Sure UserName and password are correct"
+                            )
+                            .setNegativeButton("Cancel"){ dg, _->dg.dismiss()}
+                            .setPositiveButton("Confirm"){ _, _->
+                                dialog.dismiss()
+                                ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE) {
+                                    try {
+                                        val connector = SocketClient.Connector(address)
+                                        connector.sendLine(
+                                            "{\"request\":\"set_user\",\"username\":\""
+                                                    + cUname.text.toString() + "\",\"password\":\""
+                                                    + cPass.text.toString() + "\",\"new_username\":\""
+                                                    + nUname.text.toString() + "\",\"new_password\":\""
+                                                    + nPass.text.toString() + "\"}"
+                                        )
+                                        val result = connector.readLine()
+                                        val resultObj = JSONObject(result)
+                                        Handler(Looper.getMainLooper()).post{
+                                            AlertDialog.Builder(context)
+                                                .setTitle(
+                                                    if (resultObj.getString("response").contains(
+                                                            "success",
+                                                            true
+                                                        )
+                                                    ) "Success" else "Failed"
+                                                )
+                                                .setMessage(resultObj.getString("response"))
+                                                .setPositiveButton("Done"){ dg, _->dg.dismiss()}
+                                                .show()
+                                        }
+                                        connector.close()
+                                    }catch (ex: Exception){
+                                        Handler(Looper.getMainLooper()).post{
+                                            AlertDialog.Builder(context)
+                                                .setTitle("Failed")
+                                                .setMessage("Failed to apply user settings\n$ex")
+                                                .setPositiveButton("Close"){ dg, _->dg.dismiss()}
+                                                .show()
+                                        }
                                     }
                                 }
-                            }.start()
-                        }
-                        .show()
+                            }
+                            .show()
+                    }
                 }
             }
+            dialog.show()
         }
-
-        return dialog
     }
 
     @SuppressLint("InflateParams")
-    private fun wirelessSettingsDialog(
-        context: Context,
-        address: String,
-        userName: String?,
-        password: String?
-    ):AlertDialog{
-        val content = LayoutInflater.from(context).inflate(R.layout.wireless_settings, null) as LinearLayout
-        val ssid = content.findViewById<TextInputEditText>(R.id.til_wifi_name)
-        val pass = content.findViewById<TextInputEditText>(R.id.til_wifi_passwd)
-        val progressBar = content.findViewById<ProgressBar>(R.id.get_wireless_loading)
-        val spinner = content.findViewById<Spinner>(R.id.spinner_wireless_mode)
-        var wirelessData: JSONObject? = null
-        spinner.adapter = ArrayAdapter(
-            context, android.R.layout.simple_list_item_1, arrayListOf(
-                "Station (WiFi)",
-                "Access Point (Hotspot)"
-            )
-        )
-        var mode = if(spinner.selectedItemPosition == 0) "WIFI" else "AP"
-        spinner.onItemSelectedListener = object:AdapterView.OnItemSelectedListener{
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                mode = if(position ==0 ) "WIFI" else "AP"
-                ssid.setText(
-                    wirelessData?.optString(
-                        when (mode) {
-                            "WIFI" -> "station"
-                            else -> "ap"
-                        } + "_ssid"
+    private fun wirelessSettingsClickAction(context: Context, address: String, userName: String?, password: String?): Runnable{
+        return Runnable {
+            val dialog = AlertDialog.Builder(context)
+                .setTitle("Wireless Settings")
+                .setView(R.layout.wireless_settings)
+                .setNegativeButton("Cancel"){ dialog, _ -> dialog.dismiss()}
+                .setPositiveButton(context.getString(R.string.apply)){ _, _->}
+                .setIcon(R.drawable.icon_wifi)
+                .show()
+            dialog.setOnShowListener {
+                dialog.window?.setBackgroundDrawableResource(R.drawable.layout_border_round_corner)
+                dialog.window?.setLayout((MainActivity.size.x * 0.9).toInt(), WindowManager.LayoutParams.WRAP_CONTENT)
+                val ssid = dialog.findViewById<TextInputEditText>(R.id.til_wifi_name)!!
+                val pass = dialog.findViewById<TextInputEditText>(R.id.til_wifi_passwd)!!
+                val progressBar = dialog.findViewById<ProgressBar>(R.id.get_wireless_loading)!!
+                val spinner = dialog.findViewById<Spinner>(R.id.spinner_wireless_mode)!!
+                var wirelessData: JSONObject? = null
+                spinner.adapter = ArrayAdapter(
+                    context, android.R.layout.simple_list_item_1, arrayListOf(
+                        "Station (WiFi)",
+                        "Access Point (Hotspot)"
                     )
                 )
-                pass.setText(
-                    wirelessData?.optString(
-                        when (mode) {
-                            "WIFI" -> "station"
-                            else -> "ap"
-                        } + "_psk"
-                    )
-                )
-                (ssid.parent.parent as TextInputLayout).hint = "$mode Name"
-                (pass.parent.parent as TextInputLayout).hint = "$mode Password"
-            }
-        }
-
-        for(item in listOf<TextInputEditText>(ssid, pass)){
-            item.addTextChangedListener(object : TextWatcher {
-                override fun afterTextChanged(s: Editable?) {}
-                override fun beforeTextChanged(
-                    s: CharSequence?,
-                    start: Int,
-                    count: Int,
-                    after: Int
-                ) {
+                var mode = if(spinner.selectedItemPosition == 0) "WIFI" else "AP"
+                spinner.onItemSelectedListener = object:AdapterView.OnItemSelectedListener{
+                    override fun onNothingSelected(parent: AdapterView<*>?) {}
+                    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                        mode = if(position ==0 ) "WIFI" else "AP"
+                        ssid.setText(wirelessData?.optString(
+                            when (mode) {
+                                "WIFI" -> "station"
+                                else -> "ap"
+                            } + "_ssid"
+                        )
+                        )
+                        pass.setText(wirelessData?.optString(
+                            when (mode) {
+                                "WIFI" -> "station"
+                                else -> "ap"
+                            } + "_psk"
+                        )
+                        )
+                        (ssid.parent?.parent as TextInputLayout).hint = "$mode Name"
+                        (pass.parent?.parent as TextInputLayout).hint = "$mode Password"
+                    }
                 }
 
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                    (item.parent.parent as TextInputLayout).error = null
-                    wirelessData?.put(
-                        when (mode) {
-                            "WIFI" -> "station"
-                            else -> "ap"
-                        } + "_" + when (item.id) {
-                            R.id.til_wifi_name -> "ssid"
-                            else -> "psk"
-                        }, s
-                    )
-                }
-            })
-        }
-
-        val dialog = AlertDialog.Builder(context)
-            .setTitle("Wireless Settings")
-            .setView(content)
-            .setNegativeButton("Cancel"){ dialog, _ -> dialog.dismiss()}
-            .setPositiveButton(context.getString(R.string.apply)){ _, _->}
-            .setIcon(R.drawable.icon_wifi)
-            .create()
-        dialog.setOnShowListener {
-            dialog.window?.setBackgroundDrawableResource(R.drawable.layout_border_round_corner)
-            dialog.window?.setLayout(
-                (MainActivity.size.x * 0.8).toInt(),
-                WindowManager.LayoutParams.WRAP_CONTENT
-            )
-            progressBar.visibility = View.VISIBLE
-            getWirelessSettings(address, userName, password) { data ->
-                        progressBar.visibility = View.GONE
-                        val wirelessMode = data.optString("wireless_mode")
-                        if (!wirelessMode.isNullOrEmpty()) {
-                            wirelessData = data
-                            mode = wirelessMode
-                            spinner.setSelection(
+                for(item in listOf(ssid, pass)){
+                    item.addTextChangedListener(object : TextWatcher {
+                        override fun afterTextChanged(s: Editable?) {}
+                        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                            (item.parent.parent as TextInputLayout).error = null
+                            wirelessData?.put(
                                 when (mode) {
-                                    "WIFI" -> 0
-                                    else -> 1
-                                }, true
-                            )
-                            ssid.setText(
-                                wirelessData?.optString(when (mode) { "WIFI" -> "station" else -> "ap" } + "_ssid" )
-                            )
-                            pass.setText(
-                                wirelessData?.optString(when (mode) { "WIFI" -> "station" else -> "ap" } + "_psk"
-                                )
+                                    "WIFI" -> "station"
+                                    else -> "ap"
+                                } + "_" + when (item.id) {
+                                    R.id.til_wifi_name -> "ssid"
+                                    else -> "psk"
+                                }, s
                             )
                         }
-                    }
-            val positiveButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
+                    })
+                }
 
-            positiveButton.setOnClickListener {
-                if(ssid.text.isNullOrEmpty())
-                    (ssid.parent.parent as TextInputLayout).error = context.getString(R.string.empty_ssid)
-                if((pass.text?.length ?: 8) < 8)
-                    (pass.parent.parent as TextInputLayout).error = context.getString(R.string.empty_password)
-                if(ssid.text!!.isNotEmpty() and ((pass.text?.length ?: 0) >= 8)){
-                    AlertDialog.Builder(context)
-                        .setTitle("Confirm")
-                        .setMessage(
-                            "Wrong settings may result in inaccessibility of iRWaRE device (full reset will be required to recover))."
-                                    + "\nMake Sure All SSID and password are correct"
+                progressBar.visibility = View.VISIBLE
+                getWirelessSettings(address, userName, password) { data ->
+                    progressBar.visibility = View.GONE
+                    val wirelessMode = data.optString("wireless_mode")
+                    if (!wirelessMode.isNullOrEmpty()) {
+                        wirelessData = data
+                        mode = wirelessMode
+                        spinner.setSelection(
+                            when (mode) {
+                                "WIFI" -> 0
+                                else -> 1
+                            }, true
                         )
-                        .setNegativeButton("Cancel"){ dg, _->dg.dismiss()}
-                        .setPositiveButton("Confirm"){ _, _->
-                            dialog.dismiss()
-                            Thread {
-                                try {
-                                    val connector = SocketClient.Connector(address)
-                                    connector.sendLine(
-                                        "{\"request\":\"set_wireless\",\"username\":\"$userName\",\"password\":\""
-                                                + "$password\",\"wireless_mode\":\"" + mode + "\",\"new_ssid\":\""
-                                                + "${ssid.text.toString()}\",\"new_pass\":\"${pass.text.toString()}\"}"
-                                    )
-                                    val result = connector.readLine()
-                                    val resultObj = JSONObject(result)
-                                    Handler(Looper.getMainLooper()).post{
-                                        AlertDialog.Builder(context)
-                                            .setTitle(
-                                                if (resultObj.getString("response").contains(
-                                                        "success",
-                                                        true
-                                                    )
-                                                ) "Success" else "Failed"
-                                            )
-                                            .setMessage(resultObj.getString("response"))
-                                            .setPositiveButton("Done"){ dg, _->dg.dismiss()}
-                                            .show()
-                                    }
-                                    connector.close()
-                                }catch (ex: Exception){
-                                    Handler(Looper.getMainLooper()).post{
-                                        AlertDialog.Builder(context)
-                                            .setTitle("Failed")
-                                            .setMessage("Failed to apply wireless settings\n$ex")
-                                            .setPositiveButton("Close"){ dg, _->dg.dismiss()}
-                                            .show()
+                        ssid.setText(
+                            wirelessData?.optString(when (mode) { "WIFI" -> "station" else -> "ap" } + "_ssid" )
+                        )
+                        pass.setText(
+                            wirelessData?.optString(when (mode) { "WIFI" -> "station" else -> "ap" } + "_psk"
+                            )
+                        )
+                    }
+                }
+                val positiveButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
+
+                positiveButton.setOnClickListener {
+                    if(ssid.text.isNullOrEmpty())
+                        (ssid.parent.parent as TextInputLayout).error = context.getString(R.string.empty_ssid)
+                    if((pass.text?.length ?: 8) < 8)
+                        (pass.parent.parent as TextInputLayout).error = context.getString(R.string.empty_password)
+                    if(ssid.text!!.isNotEmpty() and ((pass.text?.length ?: 0) >= 8)){
+                        AlertDialog.Builder(context)
+                            .setTitle("Confirm")
+                            .setMessage(
+                                "Wrong settings may result in inaccessibility of iRWaRE device (full reset will be required to recover))."
+                                        + "\nMake Sure SSID and password are correct"
+                            )
+                            .setNegativeButton("Cancel"){ dg, _->dg.dismiss()}
+                            .setPositiveButton("Confirm"){ _, _->
+                                dialog.dismiss()
+                                ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE) {
+                                    try {
+                                        val connector = SocketClient.Connector(address)
+                                        connector.sendLine(
+                                            "{\"request\":\"set_wireless\",\"username\":\"$userName\",\"password\":\""
+                                                    + "$password\",\"wireless_mode\":\"" + mode + "\",\"new_ssid\":\""
+                                                    + "${ssid.text.toString()}\",\"new_pass\":\"${pass.text.toString()}\"}"
+                                        )
+                                        val result = connector.readLine()
+                                        val resultObj = JSONObject(result)
+                                        Handler(Looper.getMainLooper()).post{
+                                            AlertDialog.Builder(context)
+                                                .setTitle(
+                                                    if (resultObj.getString("response").contains(
+                                                            "success",
+                                                            true
+                                                        )
+                                                    ) "Success" else "Failed"
+                                                )
+                                                .setMessage(resultObj.getString("response"))
+                                                .setPositiveButton("Done"){ dg, _->dg.dismiss()}
+                                                .show()
+                                        }
+                                        connector.close()
+                                    }catch (ex: Exception){
+                                        Handler(Looper.getMainLooper()).post{
+                                            AlertDialog.Builder(context)
+                                                .setTitle("Failed")
+                                                .setMessage("Failed to apply wireless settings\n$ex")
+                                                .setPositiveButton("Close"){ dg, _->dg.dismiss()}
+                                                .show()
+                                        }
                                     }
                                 }
-                            }.start()
 
-                            dialog.dismiss()
-                        }
-                        .show()
+                                dialog.dismiss()
+                            }
+                            .show()
+                    }
                 }
             }
         }
-
-        return dialog
     }
 
     private fun getWirelessSettings(address: String, userName: String?, password: String?, onReadWiFiConfig: ((data: JSONObject) -> Unit)){

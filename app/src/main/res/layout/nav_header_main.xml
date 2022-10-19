@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:background="@drawable/splash_bg" android:theme="@style/ThemeOverlay.AppCompat.Dark" android:orientation="vertical"
+        android:background="@mipmap/background_circuit_square" android:orientation="vertical"
         android:gravity="center">
 
     <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:paddingTop="@dimen/nav_header_vertical_spacing"
-               android:src="@drawable/circuit_light" android:contentDescription="@string/nav_header_desc" android:id="@+id/imageView" android:layout_marginTop="20dp"/>
+               android:src="@drawable/circuit_light" android:contentDescription="@string/nav_header_desc"
+            android:id="@+id/app_icon" />
 
     <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-              android:paddingTop="@dimen/nav_header_vertical_spacing" android:textStyle="bold" android:textSize="16sp"
-              android:text="@string/app_name" android:layout_gravity="center_horizontal"
-              android:gravity="center_horizontal|center" android:textColor="@color/white"/>
+              android:paddingTop="@dimen/nav_header_vertical_spacing" android:textStyle="bold" android:textSize="18sp"
+              android:text="@string/app_name" android:id="@+id/app_name"
+              android:gravity="center_horizontal" android:textColor="@color/white"/>
 
-    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="14sp"
-              android:text="@string/nav_header_subtitle" android:layout_marginStart="10sp" android:layout_marginEnd="10sp"
-              android:id="@+id/textView" android:layout_gravity="center_horizontal" android:gravity="center_horizontal"
-              android:layout_marginBottom="10dp" android:textColor="@color/white"/>
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="16sp"
+              android:text="@string/nav_header_subtitle" android:layout_marginStart="6sp" android:layout_marginEnd="6sp"
+              android:id="@+id/app_description" android:gravity="center_horizontal"
+              android:layout_marginBottom="6sp" android:textColor="@color/white" android:textStyle="bold"/>
 
 </LinearLayout>

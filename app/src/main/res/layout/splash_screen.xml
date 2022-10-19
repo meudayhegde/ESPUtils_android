@@ -3,7 +3,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         xmlns:tools="http://schemas.android.com/tools"
-        android:background="@drawable/splash_bg"
+        android:background="@mipmap/background_circuit_portrait"
+        android:id="@+id/splash_screen"
         tools:context=".MainActivity"
         android:orientation="vertical">
 
@@ -14,7 +15,8 @@
             android:layout_above="@id/login_view"
             android:layout_centerInParent="true"
             android:contentDescription="@string/splash_logo_desc"
-            android:src="@drawable/circuit_light" />
+            android:src="@drawable/circuit_light"
+            android:scaleType="centerCrop"/>
 
     <include
             android:id="@+id/login_view"

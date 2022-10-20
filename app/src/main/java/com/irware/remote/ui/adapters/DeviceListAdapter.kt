@@ -141,7 +141,7 @@ class DeviceListAdapter(
                                     null, R.drawable.ic_system_update, updateClickAction(context, prop, addr)
                                 ),
                                 SettingsItem("Remove Device", "Remove ESP device from device list",
-                                    null, R.drawable.icon_delete, deleteClickAction(context, prop)
+                                    null, R.drawable.icon_delete, deleteClickAction(context, holder.adapterPosition, settingsDialog)
                                 ),
                                 SettingsItem("Edit Properties", "Edit device properties",
                                     null, R.drawable.icon_edit, editClickAction(context, prop)
@@ -230,14 +230,19 @@ class DeviceListAdapter(
         }
     }
 
-    private fun deleteClickAction(context: Context, prop: DeviceProperties): Runnable{
+    private fun deleteClickAction(context: Context, position: Int, settingsDialog: AlertDialog): Runnable{
         return Runnable{
             val dialog = AlertDialog.Builder(context)
-                .setTitle("Confirm Delete")
-                .setMessage("Are you sure you want to remove the device?")
-                .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
-                .setPositiveButton("Remove") { dialog, _ ->
+                .setTitle(context.resources.getString(R.string.confirm_delete))
+                .setMessage(context.resources.getString(R.string.confirm_delete_note))
+                .setNegativeButton(context.resources.getString(R.string.cancel)) { dialog, _ -> dialog.dismiss() }
+                .setPositiveButton(context.resources.getString(R.string.remove)) { dialog, _ ->
                     dialog.dismiss()
+                    propList[position].deviceConfigFile.delete()
+                    propList.removeAt(position)
+                    notifyItemRemoved(position)
+                    settingsDialog.dismiss()
+                    Toast.makeText(context, "Device successfully removed.", Toast.LENGTH_SHORT).show()
                 }
                 .show()
             dialog.setOnShowListener {

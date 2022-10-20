@@ -70,6 +70,8 @@
     <string name="new_password">New Password</string>
     <string name="confirm_password">Confirm Password</string>
     <string name="confirm">Confirm</string>
+    <string name="confirm_delete">Confirm Delete</string>
+    <string name="confirm_delete_note">Are you sure you want to remove the device?</string>
     <string name="button_to_delete_remotebutton">button to delete RemoteButton</string>
     <string name="title">Title</string>
     <string name="subtitle">Subtitle</string>
@@ -122,5 +124,6 @@
     <string name="device_not_selected_note">Note: Device not selected!</string>
     <string name="delete">Delete</string>
     <string name="settings">Settings</string>
+    <string name="remove">Remove</string>
     <string name="confirm_update_device">Are you sure you want to update this device?</string>
 </resources>

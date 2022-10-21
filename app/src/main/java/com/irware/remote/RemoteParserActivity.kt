@@ -184,15 +184,16 @@ class RemoteParserActivity : AppCompatActivity() {
 
     }
 
-    private fun onSuccess(progress:ProgressBar,imV:ImageView,msg:TextView,btn:Button){
-        progress.visibility = View.GONE;imV.visibility = View.VISIBLE
+    private fun onSuccess(progress:ProgressBar, imV:ImageView, msg:TextView, btn:Button){
+        progress.visibility = View.GONE
+        imV.visibility = View.VISIBLE
         val drawable =ContextCompat.getDrawable(this, R.drawable.icon_check_circle)
-        DrawableCompat.setTint(drawable!!,Color.GREEN)
+        DrawableCompat.setTint(drawable!!, Color.GREEN)
         imV.setImageDrawable(drawable)
 
         msg.text = getString(R.string.import_success)
 
-        if(MainActivity.activity!=null && !MainActivity.activity!!.isDestroyed){
+        if(MainActivity.activity != null && !MainActivity.activity!!.isDestroyed){
             if(configFile!=null){
                 MainActivity.remotePropList.add(RemoteProperties(configFile!!,null))
                 MainActivity.activity?.irFragment?.notifyDataChanged()

@@ -29,6 +29,9 @@ class SettingsAdapter(private val list: ArrayList<SettingsItem>) : RecyclerView.
         holder.titleView.text = list[position].title
         holder.subTitleView.text = list[position].subtitle
         if(list[position].iconRes != 0) holder.iconView.setImageResource(list[position].iconRes)
+        val background = if(list[position].prop == null) R.drawable.layout_border_round_corner else
+            if(list[position].prop!!.isConnected) R.drawable.round_corner_success else R.drawable.round_corner_error
+        holder.cardView.getChildAt(0).setBackgroundResource(background)
         holder.cardView.setOnClickListener{
             list[position].dialog?.setTitle(list[position].title)
             list[position].dialog?.show()

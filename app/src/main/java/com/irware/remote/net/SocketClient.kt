@@ -1,6 +1,8 @@
 package com.irware.remote.net
 
 import android.content.DialogInterface
+import android.os.Handler
+import android.os.Looper
 import com.irware.ThreadHandler
 import com.irware.remote.MainActivity
 import com.irware.remote.R
@@ -36,12 +38,12 @@ object SocketClient{
         }
     }
 
-    fun readIrCode(address: String, userName: String, password: String, irlistener:IrCodeListener,jsonObj:JSONObject?) {
-        Thread {
+    fun readIrCode(address: String, userName: String, password: String, irlistener:IrCodeListener, jsonObj:JSONObject?) {
+        ThreadHandler.runOnFreeThread {
             var canceled = false
             try {
                 val connector = Connector(address)
-                MainActivity.activity?.runOnUiThread {
+                Handler(Looper.getMainLooper()).post {
                     irlistener.parentDialog?.setButton(DialogInterface.BUTTON_NEGATIVE,"Cancel") { dialog, _ ->
                         canceled = true
                         connector.close()
@@ -76,7 +78,7 @@ object SocketClient{
                         }
                         "timeout" -> irlistener.onTimeout()
                         "progress" -> {
-                            MainActivity.activity?.runOnUiThread {
+                            Handler(Looper.getMainLooper()).post  {
                                 irlistener.onProgress(result.getInt("value"))
                             }
                         }
@@ -89,7 +91,7 @@ object SocketClient{
             }catch(ex:IllegalStateException){
                  //irlistener.onTimeout()
             }
-        }.start()
+        }
     }
 
     fun sendIrCode(address: String, userName: String, password: String, jsonObj:JSONObject, irSendListener: ((result: String) -> Unit)) {

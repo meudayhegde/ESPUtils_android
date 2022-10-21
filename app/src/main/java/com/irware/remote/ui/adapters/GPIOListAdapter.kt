@@ -68,7 +68,7 @@ class GPIOListAdapter(private val propList: ArrayList<GPIOObject>) : RecyclerVie
                 updateItemStatus(connected, prop, holder)
             }
         })
-        prop.deviceProperties?.updateStatus()
+        prop.deviceProperties?.refreshGPIOStatus()
     }
 
     fun updateItemStatus(connected: Boolean, prop: GPIOObject, holder: MyViewHolder){

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
 import android.content.Context
+import android.content.DialogInterface
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -15,6 +16,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -59,8 +61,10 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
                 }
                 isr.close()
 
-                updateSelectedListener?.invoke(update)
-                updateSelectedListener = null
+                Handler(Looper.getMainLooper()).post{
+                    updateSelectedListener?.invoke(update)
+                    updateSelectedListener = null
+                }
             }
         }
     }
@@ -127,7 +131,7 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
                         recyclerView.visibility = View.GONE
                         scrollView.visibility = View.VISIBLE
                         btnNext.visibility = View.VISIBLE
-                        onAddressVerified(dialog, arpItem.ipAddress, arpItem.macAddress)
+                        onAddressVerified(requireContext(), arpItem.ipAddress, arpItem.macAddress)
                     }
 
                 })
@@ -164,7 +168,7 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
                     val response = connector.readLine()
                     val macAddr = JSONObject(response).getString("MAC")
                     Handler(Looper.getMainLooper()).post{
-                        onAddressVerified(dialog, address, macAddr)
+                        onAddressVerified(requireContext(), address, macAddr)
                     }
                 }catch(ex: Exception){
                     Handler(Looper.getMainLooper()).post{
@@ -181,71 +185,79 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
         manageMenu.close(true)
     }
 
-    fun onAddressVerified(dialog: Dialog, address: String, macAddr: String){
-        val btnAdd = dialog.findViewById<Button>(R.id.button_done)
-        val devAddr = dialog.findViewById<TextInputEditText>(R.id.device_address)
-        val devPropertiesLayout = dialog.findViewById<LinearLayout>(R.id.new_device_properties_layout)
-        val userName = dialog.findViewById<TextInputEditText>(R.id.device_user_name)
-        val password = dialog.findViewById<TextInputEditText>(R.id.device_password)
-        val devName = dialog.findViewById<TextInputEditText>(R.id.device_name)
-        val devDescription = dialog.findViewById<TextInputEditText>(R.id.device_desc)
+    fun onAddressVerified(context: Context, address: String, macAddr: String){
+        val dialog = AlertDialog.Builder(context)
+            .setView(R.layout.device_properties)
+            .setIcon(R.drawable.icon_edit)
+            .setTitle(context.resources.getString(R.string.set_dev_props))
+            .setNegativeButton(context.resources.getString(R.string.cancel)){ dialog, _ -> dialog.dismiss()}
+            .setPositiveButton(context.resources.getString(R.string.apply)){ dialog, _ -> dialog.dismiss() }
+            .create()
+        dialog.setOnShowListener {
+            dialog.window?.setBackgroundDrawableResource(R.drawable.layout_border_round_corner)
+            dialog.window?.setLayout((MainActivity.size.x * 0.8).toInt(), WindowManager.LayoutParams.WRAP_CONTENT)
 
-        btnAdd.text = MainActivity.activity?.getString(R.string.add_device)
+            val btnAdd = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
 
-        var devProp: DeviceProperties? = null
-        var devExist = false
-        for(prop: DeviceProperties in MainActivity.devicePropList){
-            if(prop.macAddr == macAddr){ devProp = prop; devExist = true; break }
-        }
+            val userName = dialog.findViewById<TextInputEditText>(R.id.device_user_name)!!
+            val password = dialog.findViewById<TextInputEditText>(R.id.device_password)!!
+            val devName = dialog.findViewById<TextInputEditText>(R.id.device_name)!!
+            val devDescription = dialog.findViewById<TextInputEditText>(R.id.device_desc)!!
 
-        val pref = context?.getSharedPreferences("login",0)
-        userName.setText(devProp?.userName?: pref?.getString("username", ""))
-        password.setText(devProp?.password?: pref?.getString("password", ""))
+            var devProp: DeviceProperties? = null
+            var devExist = false
+            for(prop: DeviceProperties in MainActivity.devicePropList){
+                if(prop.macAddr == macAddr){ devProp = prop; devExist = true; break }
+            }
 
-        (devAddr.parent as FrameLayout).visibility = View.GONE
-        devPropertiesLayout.visibility = View.VISIBLE
+            val pref = context.getSharedPreferences("login",0)
+            userName.setText(devProp?.userName?: pref?.getString("username", ""))
+            password.setText(devProp?.password?: pref?.getString("password", ""))
 
-        devName.setText(devProp?.nickName?: macAddr.replace(":", "_"))
-        devDescription.setText(devProp?.description?: "")
 
-        btnAdd.setOnClickListener{
-            ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE){
-                try{
-                    val connector = SocketClient.Connector(address)
-                    connector.sendLine("{\"request\":\"authenticate\",\"username\":\"${userName.text.toString()}\",\"password\":\"${password.text.toString()}\",\"data\":\"__\",\"length\":\"0\"}")
-                    val response=connector.readLine()
-                    if(JSONObject(response)["response"] != "authenticated") throw Exception()
+            devName.setText(devProp?.nickName?: macAddr.replace(":", "_"))
+            devDescription.setText(devProp?.description?: "")
 
-                    if (!devExist) {
-                        val filePath = MainActivity.deviceConfigPath + File.separator + devName.text.toString().replace(" ", "_") + ".json"
-                        File(filePath).createNewFile()
-                        devProp = DeviceProperties(File(filePath))
-                    }
+            btnAdd.setOnClickListener{
+                ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE){
+                    try{
+                        val connector = SocketClient.Connector(address)
+                        connector.sendLine("{\"request\":\"authenticate\",\"username\":\"${userName.text.toString()}\",\"password\":\"${password.text.toString()}\",\"data\":\"__\",\"length\":\"0\"}")
+                        val response=connector.readLine()
+                        if(JSONObject(response)["response"] != "authenticated") throw Exception()
 
-                    devProp!!.nickName = devName.text.toString()
-                    devProp!!.macAddr = macAddr
-                    devProp!!.description = devDescription.text.toString()
-                    devProp!!.userName = userName.text.toString()
-                    devProp!!.password = password.text.toString()
-
-                    Handler(Looper.getMainLooper()).post{
-                        if(devExist){
-                            viewAdapter.notifyItemChanged(MainActivity.devicePropList.indexOf(devProp!!))
-                            Toast.makeText(context, "Device Preferences Updated", Toast.LENGTH_LONG).show()
-                        }else{
-                            MainActivity.devicePropList.add(devProp!!)
-                            viewAdapter.notifyDataSetChanged()
-                            Toast.makeText(context, "Device successfully Added", Toast.LENGTH_LONG).show()
+                        if (!devExist) {
+                            val filePath = MainActivity.deviceConfigPath + File.separator + devName.text.toString().replace(" ", "_") + ".json"
+                            File(filePath).createNewFile()
+                            devProp = DeviceProperties(File(filePath))
                         }
-                        dialog.cancel()
-                    }
-                }catch(ex:Exception){
-                    Handler(Looper.getMainLooper()).post{
-                        Toast.makeText(context, "Err: Authentication Failed", Toast.LENGTH_LONG).show()
+
+                        devProp!!.nickName = devName.text.toString()
+                        devProp!!.macAddr = macAddr
+                        devProp!!.description = devDescription.text.toString()
+                        devProp!!.userName = userName.text.toString()
+                        devProp!!.password = password.text.toString()
+
+                        Handler(Looper.getMainLooper()).post{
+                            if(devExist){
+                                viewAdapter.notifyItemChanged(MainActivity.devicePropList.indexOf(devProp!!))
+                                Toast.makeText(context, "Device Preferences Updated", Toast.LENGTH_LONG).show()
+                            }else{
+                                MainActivity.devicePropList.add(devProp!!)
+                                viewAdapter.notifyItemInserted(MainActivity.devicePropList.indexOf(devProp!!))
+                                Toast.makeText(context, "Device successfully Added", Toast.LENGTH_LONG).show()
+                            }
+                            dialog.dismiss()
+                        }
+                    }catch(ex:Exception){
+                        Handler(Looper.getMainLooper()).post{
+                            Toast.makeText(context, "Err: Authentication Failed", Toast.LENGTH_LONG).show()
+                        }
                     }
                 }
             }
         }
+        dialog.show()
     }
 
     override fun onAttach(context: Context) {

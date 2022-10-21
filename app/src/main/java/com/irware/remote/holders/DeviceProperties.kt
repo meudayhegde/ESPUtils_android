@@ -59,7 +59,8 @@ class DeviceProperties(val deviceConfigFile: File)  {
         return nickName
     }
 
-    fun updateStatus(){
+
+    fun refreshGPIOStatus(){
         val arpTable = MainActivity.arpTable ?: ARPTable(1)
         arpTable.getIpFromMac(macAddr) { address ->
             isConnected = ( address != null )

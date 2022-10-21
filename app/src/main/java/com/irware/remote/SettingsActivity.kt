@@ -17,6 +17,7 @@ import androidx.appcompat.view.menu.MenuBuilder
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.radiobutton.MaterialRadioButton
+import com.irware.remote.holders.DeviceProperties
 import com.irware.remote.ui.adapters.SettingsAdapter
 
 
@@ -121,4 +122,6 @@ class SettingsActivity : AppCompatActivity() {
     }
 }
 
-class SettingsItem(var title: String, var subtitle: String, var dialog:Dialog?, var iconRes: Int = 0, var clickAction: Runnable? = null)
+class SettingsItem(var title: String, var subtitle: String, var dialog:Dialog?,
+                   var iconRes: Int = 0, var clickAction: Runnable? = null, var prop: DeviceProperties? = null){
+}

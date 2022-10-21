@@ -13,7 +13,7 @@ import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 import java.net.InetAddress
 
-class ARPTable(private val scanCount: Int = -1) {
+class ARPTable(private val scanCount: Int = 1) {
     private var arpTableFile: File = File(MainActivity.activity?.filesDir?.absolutePath + File.separator + ARP_TABLE_FILE)
     private var jsonObj: JSONObject = getJSONObject()
 
@@ -46,7 +46,9 @@ class ARPTable(private val scanCount: Int = -1) {
                             listener.invoke(address)
                             return@runOnThread
                         }
-                    }catch(_: Exception){}
+                    }catch(_: Exception){
+                        listener.invoke(null)
+                    }
                 }
             }
             listener.invoke(null)
@@ -85,7 +87,7 @@ class ARPTable(private val scanCount: Int = -1) {
     }
 
     private fun startScan(){
-        Thread{
+        ThreadHandler.runOnFreeThread{
             var currentScanCount = 0
             while((scanCount == -1) or (currentScanCount < scanCount)){
                 for(myIp in getIPAddress()){
@@ -100,9 +102,9 @@ class ARPTable(private val scanCount: Int = -1) {
                     }
                 }
                 currentScanCount ++
-                Thread.sleep(2000)
+                Thread.sleep(200)
             }
-        }.start()
+        }
     }
 
     private fun verifyAddress(address: String): Boolean{

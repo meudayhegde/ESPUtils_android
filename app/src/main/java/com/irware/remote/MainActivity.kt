@@ -83,11 +83,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         if (!gpioConfigFile.exists()) gpioConfigFile.createNewFile()
         gpioConfig = GPIOConfig(gpioConfigFile)
         val gpioObjectArray = gpioConfig!!.gpioObjectArray
-        if(gpioObjectArray.length()> 0)for(i: Int in 0 until gpioObjectArray.length()){
+        if(gpioObjectArray.length() >  0)for(i: Int in 0 until gpioObjectArray.length()){
             gpioObjectList.add(GPIOObject(gpioObjectArray.getJSONObject(i), gpioConfig!!))
         }
 
-        splash = object: Dialog(this,android.R.style.Theme_Light_NoTitleBar_Fullscreen){
+        splash = object: Dialog(this, android.R.style.Theme_Light_NoTitleBar_Fullscreen){
             var exit = false
             @Deprecated("Deprecated in Java")
             override fun onBackPressed() {
@@ -432,12 +432,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onResume() {
         super.onResume()
-        devicePropList.forEach { it.updateStatus() }
+        devicePropList.forEach { it.refreshGPIOStatus() }
     }
 
     companion object {
-        val size:Point=Point()
-        const val PORT=48321
+        val size:  Point = Point()
+        const val PORT = 48321
         const val REMOTE_CONFIG_DIR = "remotes"
         const val DEVICE_CONFIG_DIR = "devices"
         const val FILE_SELECT_CODE = 0
@@ -452,9 +452,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         var USERNAME = ""
         var PASSWORD = ""
         var NUM_COLUMNS = 5
-        var activity:MainActivity? = null
         var colorOnBackground = Color.BLACK
         var iconDrawableList:IntArray = intArrayOf()
+        var activity: MainActivity? = null
     }
 
     private var restart = false

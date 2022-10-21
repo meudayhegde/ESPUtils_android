@@ -45,8 +45,8 @@
     <string name="close">Close</string>
     <string name="communicate">Communicate</string>
     <string name="share">Share</string>
-    <string name="long_press_remote_item_card_to_edit_remote_controller_information">Long press remote item card to edit Remote controller information</string>
-    <string name="long_press_gpio_item">Long press GPIO item to edit configuration</string>
+    <string name="long_press_remote_item_card_to_edit_remote_controller_information">Long press item to edit config.</string>
+    <string name="long_press_gpio_item">Long press item to edit.</string>
     <string name="length_of_captured_ir_signal">Length of captured IR signal :</string>
     <string name="edit_buttons">Edit Buttons</string>
     <string name="delete_remote">Delete Remote</string>
@@ -106,6 +106,7 @@
     <string name="online">Online</string>
     <string name="offline">Offline</string>
     <string name="icon_device_offline">icon device offline</string>
+    <string name="device_offline">Device not reachable</string>
     <string name="scanning">Scanning</string>
     <string name="device_address">Device Address (ip:port/url)</string>
     <string name="user_name">User Name</string>

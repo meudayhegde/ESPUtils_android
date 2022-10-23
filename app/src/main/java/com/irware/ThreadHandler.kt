@@ -56,9 +56,9 @@ class ThreadHandler {
     }
 
 
-    private fun runOnFreeThread(task: Runnable): Int {
+    private fun runOnFreeThread(task: Runnable, vararg except: String): Int {
         threadList.forEach {
-            if(it.isFree){
+            if(it.isFree and !(except.contains(it.name))){
                 it.enqueueTask(task)
                 return threadList.indexOf(it)
             }
@@ -73,9 +73,9 @@ class ThreadHandler {
         }
     }
 
-    private fun runOnFreeThread(task: (() -> Unit)): Int {
+    private fun runOnFreeThread(task: (() -> Unit), vararg except: String): Int {
         threadList.forEach {
-            if(it.isFree){
+            if(it.isFree and !(except.contains(it.name))){
                 it.enqueueTask(task)
                 return threadList.indexOf(it)
             }
@@ -191,8 +191,8 @@ class ThreadHandler {
         fun runOnThread(pos: Int, task: (() -> Unit)) { return instance.runOnThread(pos, task) }
         fun runOnThread(name: String, task: Runnable) { return instance.runOnThread(name, task) }
         fun runOnThread(name: String, task: (() -> Unit)) { return instance.runOnThread(name, task) }
-        fun runOnFreeThread(task: Runnable): Int { return instance.runOnFreeThread(task) }
-        fun runOnFreeThread(task: (() -> Unit)): Int { return instance.runOnFreeThread(task) }
+        fun runOnFreeThread(vararg except: String = arrayOf(ESP_MESSAGE), task: Runnable): Int { return instance.runOnFreeThread(task, *except) }
+        fun runOnFreeThread(vararg except: String = arrayOf(ESP_MESSAGE), task: (() -> Unit)): Int { return instance.runOnFreeThread(task, *except) }
         fun runOnPrimaryThread(run: Runnable) { return instance.runOnPrimaryThread(run) }
         fun getThreadCount() : Int{ return instance.getThreadCount() }
         fun setMaxThreadCount(count: Int){ return instance.setMaxThreadCount(count) }

@@ -1,6 +1,7 @@
 package com.irware.remote.net
 
 import android.text.TextUtils
+import android.util.Log
 import com.irware.ThreadHandler
 import com.irware.getIPAddress
 import com.irware.remote.MainActivity
@@ -31,26 +32,27 @@ class ARPTable(private val scanCount: Int = 1) {
     fun getIpFromMac(mac: String, listener: ((address: String?) -> Unit)){
         val addresses = jsonObj.optJSONArray(mac) ?: JSONArray()
         ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE){
-            for(i in 0 until addresses.length()){
-                val address = addresses.getString(i)
-                if(InetAddress.getByName(address).isReachable(50)){
-                    try{
-                        val connector = SocketClient.Connector(address)
-                        connector.sendLine("{\"request\":\"ping\"}")
-                        if(JSONObject(connector.readLine()).getString("MAC") == mac) {
-                            if(i!=0){
-                                addresses.remove(i)
-                                addresses.insert(0, address)
-                                update()
+            for(j in 0 until MAX_RETRY)
+                for(i in 0 until addresses.length()){
+                    val address = addresses.getString(i)
+                    if(InetAddress.getByName(address).isReachable(50)){
+                        try{
+                            val connector = SocketClient.Connector(address)
+                            connector.sendLine("{\"request\":\"ping\"}")
+                            if(JSONObject(connector.readLine()).getString("MAC") == mac) {
+                                if(i != 0){
+                                    addresses.remove(i)
+                                    addresses.insert(0, address)
+                                    update()
+                                }
+                                listener.invoke(address)
+                                return@runOnThread
                             }
-                            listener.invoke(address)
-                            return@runOnThread
+                        }catch(ex: Exception){
+                            Log.d(javaClass.name, ex.toString() + ex.message)
                         }
-                    }catch(_: Exception){
-                        listener.invoke(null)
                     }
                 }
-            }
             listener.invoke(null)
         }
 
@@ -87,7 +89,7 @@ class ARPTable(private val scanCount: Int = 1) {
     }
 
     private fun startScan(){
-        ThreadHandler.runOnFreeThread{
+        ThreadHandler.runOnFreeThread {
             var currentScanCount = 0
             while((scanCount == -1) or (currentScanCount < scanCount)){
                 for(myIp in getIPAddress()){
@@ -131,6 +133,7 @@ class ARPTable(private val scanCount: Int = 1) {
 
     companion object{
         const val ARP_TABLE_FILE = "ARPTable.json"
+        const val MAX_RETRY = 3
     }
 }
 

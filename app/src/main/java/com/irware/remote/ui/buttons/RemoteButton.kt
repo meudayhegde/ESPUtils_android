@@ -7,11 +7,9 @@ import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.StateListDrawable
 import android.os.Build
 import android.util.AttributeSet
-import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewParent
 import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
@@ -120,11 +118,7 @@ class RemoteButton : LinearLayout {
 
     fun setIcon(drawable_resid:Int){
         if(drawable_resid != MainActivity.iconDrawableList[0]){
-            var drawable = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) ContextCompat.getDrawable(context, drawable_resid)
-            else with(context) {
-                @Suppress("DEPRECATION")
-                resources.getDrawable(drawable_resid)
-            }
+            var drawable = ContextCompat.getDrawable(context, drawable_resid)
             drawable = drawable?.mutate()
             DrawableCompat.setTint(drawable!!,properties!!.textColor)
             icon.setImageDrawable(drawable)
@@ -156,7 +150,7 @@ class RemoteButton : LinearLayout {
         var MIN_HEIGHT=80
 
         fun onConfigChanged(){
-            val x = min(MainActivity.size.x,MainActivity.size.y)
+            val x = min(MainActivity.layoutParams.width, MainActivity.layoutParams.height)
             BTN_WIDTH = ((x-x/(1.3*MainActivity.NUM_COLUMNS)) / MainActivity.NUM_COLUMNS).toInt()
             MIN_HEIGHT = BTN_WIDTH / 2
         }

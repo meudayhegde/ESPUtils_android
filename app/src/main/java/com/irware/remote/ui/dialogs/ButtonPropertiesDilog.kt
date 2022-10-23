@@ -33,8 +33,9 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 
 
-class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedListener, override var mode:Int,
-                             private val address: String, private val userName: String, private val password: String): AlertDialog(context),IrCodeListener {
+class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedListener,
+                             override var mode:Int, private val address: String, private val userName: String,
+                             private val password: String): AlertDialog(context, R.style.AppTheme_AlertDialog), IrCodeListener {
 
     override var parentDialog: AlertDialog? = null
 
@@ -62,21 +63,20 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
         buttonNeutral = getButton(DialogInterface.BUTTON_NEUTRAL)
 
         val colorPickerLayout = findViewById<RelativeLayout>(R.id.layout_color_picker)!!
-
-        window?.setBackgroundDrawableResource(R.drawable.layout_border_round_corner)
-        window?.setLayout((min(MainActivity.size.x,MainActivity.size.y)*0.86).toInt(),WindowManager.LayoutParams.WRAP_CONTENT)
+        val width = min(MainActivity.layoutParams.width, MainActivity.layoutParams.height)
+        window?.setLayout((width * 0.86).toInt(), WindowManager.LayoutParams.WRAP_CONTENT)
 
         colorPicker = HSLColorPicker(context)
         colorPickerLayout.addView(colorPicker)
 
-        val layoutParam = RelativeLayout.LayoutParams((min(MainActivity.size.x,MainActivity.size.y)*0.8F).roundToInt(),(min(MainActivity.size.x,MainActivity.size.y)*0.8F).roundToInt())
+        val layoutParam = RelativeLayout.LayoutParams((width * 0.8F).roundToInt(), (width * 0.8F).roundToInt())
         layoutParam.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE)
         colorPicker.layoutParams = layoutParam
 
         clrPkr = RGBColorPicker(context)
         colorPickerLayout.addView(clrPkr)
 
-        val lparam = RelativeLayout.LayoutParams((min(MainActivity.size.x,MainActivity.size.y)*0.55F).roundToInt(),(min(MainActivity.size.x,MainActivity.size.y)*0.55F).roundToInt())
+        val lparam = RelativeLayout.LayoutParams((width * 0.55F).roundToInt(), (width * 0.55F).roundToInt())
         lparam.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE)
         clrPkr.layoutParams = lparam
 
@@ -227,7 +227,7 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
                         returnView = layoutInflater.inflate(R.layout.drawable_layout,null)
                     }
                     val iv = (returnView as LinearLayout).findViewById<ImageView>(R.id.btn_icon_grid)
-                    val lparam = LinearLayout.LayoutParams(MainActivity.size.x/(MainActivity.NUM_COLUMNS+2),MainActivity.size.x/(MainActivity.NUM_COLUMNS+2))
+                    val lparam = LinearLayout.LayoutParams(MainActivity.layoutParams.width / (MainActivity.NUM_COLUMNS + 2), MainActivity.layoutParams.width / (MainActivity.NUM_COLUMNS + 2))
                     iv.setImageDrawable(drawable)
                     iv.layoutParams = lparam
                     return returnView
@@ -238,7 +238,7 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
             iconGrid.adapter = iconAdapter
             buttonProperties?.icon?.let { it1 -> iconGrid.setSelection(it1) }
             val dialog = Builder(context).setView(iconGridLayout).setTitle("Button Icon").show()
-            dialog.window?.setLayout((MainActivity.size.x*0.85).toInt(),WindowManager.LayoutParams.WRAP_CONTENT)
+            dialog.window?.setLayout((MainActivity.layoutParams.width * 0.85).toInt(),WindowManager.LayoutParams.WRAP_CONTENT)
             dialog.window?.setBackgroundDrawableResource(R.drawable.layout_border_round_corner)
 
             iconGrid.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->

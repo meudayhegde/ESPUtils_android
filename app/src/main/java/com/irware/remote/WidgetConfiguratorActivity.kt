@@ -55,11 +55,13 @@ class WidgetConfiguratorActivity : AppCompatActivity(),SwipeRefreshLayout.OnRefr
         lWindowParams.height = WindowManager.LayoutParams.MATCH_PARENT
         window?.attributes = lWindowParams
 
-        windowManager.defaultDisplay.getSize(MainActivity.size)
-        val x = min(MainActivity.size.x, MainActivity.size.y)
-        MainActivity.NUM_COLUMNS = when{x>920->5;x<720->3;else->4}
-        lWindowParams.width = MainActivity.size.x*7/8
-        lWindowParams.height = MainActivity.size.y*6/8
+        MainActivity.layoutParams.width = resources.displayMetrics.widthPixels
+        MainActivity.layoutParams.height = resources.displayMetrics.heightPixels
+
+        val width = min(MainActivity.layoutParams.width, MainActivity.layoutParams.height)
+        MainActivity.NUM_COLUMNS = when{width > 920 -> 5; width < 720 -> 3; else -> 4}
+        lWindowParams.width = MainActivity.layoutParams.width * 7 / 8
+        lWindowParams.height = MainActivity.layoutParams.height * 6 / 8
         window?.attributes = lWindowParams
         RemoteButton.onConfigChanged()
 

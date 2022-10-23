@@ -182,7 +182,7 @@ class ThreadHandler {
         val MAX_THREAD_COUNT = ( CPU_CORE_COUNT- 1) * 2
 
         const val PRIMARY = "PRIMARY"
-        const val ESP_MESSAGE = "ESP"
+        const val ESP_MESSAGE = "ESP_MESSAGE"
 
         private val instance = ThreadHandler()
         fun getThreadByPosition(position: Int): InfiniteThread { return instance.getThreadByPosition(position) }

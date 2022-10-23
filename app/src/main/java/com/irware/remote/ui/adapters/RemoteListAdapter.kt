@@ -177,15 +177,15 @@ class RemoteListAdapter(private val propList: ArrayList<RemoteProperties>, priva
         }
 
         btnDelete.setOnClickListener {
-            val icon =
-                ContextCompat.getDrawable(dialog.context, R.drawable.icon_delete)
+            val icon = ContextCompat.getDrawable(dialog.context, R.drawable.icon_delete)
             DrawableCompat.setTint(icon!!, Color.RED)
             AlertDialog.Builder(dialog.context)
                 .setNegativeButton("No,Quit") { dialog, _ -> dialog.dismiss() }
                 .setPositiveButton("Yes,Delete") { _, _ ->
                     prop.remoteConfigFile.delete()
+                    val index = propList.indexOf(prop)
                     propList.remove(prop)
-                    notifyDataSetChanged()
+                    notifyItemRemoved(index)
                     dialog.dismiss()
                 }
                 .setMessage("This action cannot be unDone\nAre you sure you want to delete " + prop.remoteVendor + " " + prop.remoteName + " ?")
@@ -196,7 +196,7 @@ class RemoteListAdapter(private val propList: ArrayList<RemoteProperties>, priva
 
         dialog.show()
 
-        val width = min(MainActivity.size.x, MainActivity.size.y)
+        val width = min(MainActivity.layoutParams.width, MainActivity.layoutParams.height)
         dialog.window?.setLayout(width - width / 8, WindowManager.LayoutParams.WRAP_CONTENT)
 
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))

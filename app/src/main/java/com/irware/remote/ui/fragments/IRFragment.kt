@@ -191,8 +191,8 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
             dialog.dismiss()
         }
         dialog.show()
-        val width = min(MainActivity.size.x,MainActivity.size.y)
-        dialog.window?.setLayout(width - width/8,WindowManager.LayoutParams.WRAP_CONTENT)
+        val width = min(MainActivity.layoutParams.width, MainActivity.layoutParams.height)
+        dialog.window?.setLayout(width * 7 / 8, WindowManager.LayoutParams.WRAP_CONTENT)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         rootView!!.findViewById<FloatingActionMenu>(R.id.fam_manage_remotes).close(true)
     }

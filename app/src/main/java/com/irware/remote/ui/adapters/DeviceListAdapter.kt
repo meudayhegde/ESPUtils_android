@@ -13,11 +13,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.cardview.widget.CardView
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -29,7 +27,6 @@ import com.irware.remote.MainActivity
 import com.irware.remote.R
 import com.irware.remote.SettingsItem
 import com.irware.remote.holders.DeviceProperties
-import com.irware.remote.holders.OnStatusUpdateListener
 import com.irware.remote.net.ARPTable
 import com.irware.remote.net.EspOta
 import com.irware.remote.net.OnUpdateIntermediateListener
@@ -96,16 +93,13 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
             }
         }
         holder.cardView.setOnClickListener {
-            val settingsDialog = AlertDialog.Builder(context)
+            val settingsDialog = AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
                 .setPositiveButton(context.resources.getString(R.string.done)) { p0, _ -> p0.dismiss() }
                 .setTitle("Settings for ${prop.nickName}")
                 .setView(R.layout.activity_settings)
                 .setIcon(R.drawable.ic_settings)
                 .create()
             settingsDialog.setOnShowListener {
-                settingsDialog.window?.setBackgroundDrawableResource(R.drawable.layout_border_round_corner)
-                settingsDialog.window?.setLayout((MainActivity.size.x * 0.9).toInt(), (MainActivity.size.y * 0.9).toInt())
-
                 val addr = (MainActivity.arpTable ?: ARPTable(1)).getIpFromMac(prop.macAddr) ?: ""
                 val viewManager = LinearLayoutManager(context)
                 val viewAdapter = SettingsAdapter(
@@ -156,44 +150,28 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
     private fun restartConfirmClickAction(context: Context, address: String?, prop: DeviceProperties): Runnable{
         return Runnable{
             if(prop.isConnected) {
-                val rebootDialog = AlertDialog.Builder(context)
-                    .setTitle("Confirm Restart")
-                    .setMessage("Are you sure you want to restart the device?")
-                    .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
-                    .setPositiveButton("Restart") { dialog, _ ->
+                AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
+                    .setTitle(context.resources.getString(R.string.confirm_restart))
+                    .setIcon(R.drawable.icon_power)
+                    .setMessage(context.resources.getString(R.string.confirm_restart_note))
+                    .setNegativeButton(context.resources.getString(R.string.cancel)) { dialog, _ -> dialog.dismiss() }
+                    .setPositiveButton(context.resources.getString(R.string.restart)) { dialog, _ ->
                         dialog.dismiss()
                         ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE) {
                             try {
                                 val connector = SocketClient.Connector("$address")
                                 connector.sendLine("{\"request\":\"restart\",\"username\":\"${prop.userName}\",\"password\":\"${prop.password}\"}")
                                 Handler(Looper.getMainLooper()).post {
-                                    Toast.makeText(
-                                        context,
-                                        "Restart command successfully sent.",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                    Toast.makeText(context, "Restart command successfully sent.", Toast.LENGTH_SHORT).show()
                                 }
                             } catch (ex: Exception) {
                                 Handler(Looper.getMainLooper()).post {
-                                    Toast.makeText(
-                                        context,
-                                        "Failed to send Restart command!",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                    Toast.makeText(context, "Failed to send Restart command!", Toast.LENGTH_SHORT).show()
                                 }
                             }
                         }
                     }
                     .show()
-                rebootDialog.setOnShowListener {
-                    rebootDialog.window?.setBackgroundDrawable(
-                        ContextCompat.getDrawable(
-                            context,
-                            R.drawable.round_corner
-                        )
-                    )
-                    rebootDialog.window?.setDimAmount(0.7F)
-                }
             }
             else Toast.makeText(context, context.resources.getString(R.string.device_offline), Toast.LENGTH_SHORT).show()
         }
@@ -201,7 +179,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
 
     private fun deleteClickAction(context: Context, position: Int, settingsDialog: AlertDialog): Runnable{
         return Runnable{
-            val dialog = AlertDialog.Builder(context)
+            AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
                 .setIcon(R.drawable.icon_delete)
                 .setTitle(context.resources.getString(R.string.confirm_delete))
                 .setMessage(context.resources.getString(R.string.confirm_delete_note))
@@ -215,10 +193,6 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                     Toast.makeText(context, "Device successfully removed.", Toast.LENGTH_SHORT).show()
                 }
                 .show()
-            dialog.setOnShowListener {
-                dialog.window?.setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.round_corner))
-                dialog.window?.setDimAmount(0.7F)
-            }
         }
     }
 
@@ -271,7 +245,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
         return Runnable{
             if(prop.isConnected) {
                 devicesFragment.updateSelectedListener = { updateFile ->
-                    val updateDialog = AlertDialog.Builder(context)
+                    val updateDialog = AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
                         .setTitle("Esp Ota Update")
                         .setView(R.layout.esp_ota_layout)
                         .setIcon(R.drawable.ic_system_update)
@@ -280,16 +254,6 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                         .create()
                     updateDialog.setCancelable(false)
                     updateDialog.setOnShowListener {
-                        updateDialog.window?.setBackgroundDrawable(
-                            ContextCompat.getDrawable(
-                                context,
-                                R.drawable.layout_border_round_corner
-                            )
-                        )
-                        updateDialog.window?.setLayout(
-                            (MainActivity.size.x * 0.9).toInt(),
-                            WindowManager.LayoutParams.WRAP_CONTENT
-                        )
 
                         val positiveButton = updateDialog.getButton(DialogInterface.BUTTON_POSITIVE)
                         val negativeButton = updateDialog.getButton(DialogInterface.BUTTON_NEGATIVE)
@@ -441,7 +405,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
     private fun userSettingsClickAction(context: Context, address: String, prop: DeviceProperties): Runnable{
         return Runnable{
             if(prop.isConnected) {
-                val dialog = AlertDialog.Builder(context)
+                val userDialog = AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
                     .setTitle("User Settings")
                     .setView(R.layout.user_settings)
                     .setIcon(R.drawable.ic_user)
@@ -449,18 +413,13 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                     .setPositiveButton(context.getString(R.string.apply)) { _, _ -> }
                     .create()
 
-                dialog.setOnShowListener {
-                    dialog.window?.setBackgroundDrawableResource(R.drawable.layout_border_round_corner)
-                    dialog.window?.setLayout(
-                        (MainActivity.size.x * 0.8).toInt(),
-                        WindowManager.LayoutParams.WRAP_CONTENT
-                    )
-                    val cUname = dialog.findViewById<TextInputEditText>(R.id.cur_user_name)!!
-                    val cPass = dialog.findViewById<TextInputEditText>(R.id.cur_user_passwd)!!
-                    val nUname = dialog.findViewById<TextInputEditText>(R.id.til_user_name)!!
-                    val nPass = dialog.findViewById<TextInputEditText>(R.id.til_user_passwd)!!
+                userDialog.setOnShowListener {
+                    val cUname = userDialog.findViewById<TextInputEditText>(R.id.cur_user_name)!!
+                    val cPass = userDialog.findViewById<TextInputEditText>(R.id.cur_user_passwd)!!
+                    val nUname = userDialog.findViewById<TextInputEditText>(R.id.til_user_name)!!
+                    val nPass = userDialog.findViewById<TextInputEditText>(R.id.til_user_passwd)!!
                     val nPassCon =
-                        dialog.findViewById<TextInputEditText>(R.id.til_user_confirm_passwd)!!
+                        userDialog.findViewById<TextInputEditText>(R.id.til_user_confirm_passwd)!!
 
                     for (item in listOf(cUname, cPass, nUname, nPass, nPassCon)) {
                         item.addTextChangedListener(object : TextWatcher {
@@ -484,7 +443,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                         })
                     }
 
-                    val positiveButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
+                    val positiveButton = userDialog.getButton(DialogInterface.BUTTON_POSITIVE)
                     positiveButton.setOnClickListener {
                         var hasError = false
                         for (tiet in listOf(cUname, cPass, nUname, nPass, nPassCon)) {
@@ -500,7 +459,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                             hasError = true
                         }
                         if (!hasError) {
-                            AlertDialog.Builder(context)
+                            AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
                                 .setTitle("Confirm")
                                 .setMessage(
                                     "Wrong settings may result in inaccessibility of iRWaRE device (full reset will be required to recover))."
@@ -508,7 +467,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                                 )
                                 .setNegativeButton("Cancel") { dg, _ -> dg.dismiss() }
                                 .setPositiveButton("Confirm") { _, _ ->
-                                    dialog.dismiss()
+                                    userDialog.dismiss()
                                     ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE) {
                                         try {
                                             val connector = SocketClient.Connector(address)
@@ -522,7 +481,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                                             val result = connector.readLine()
                                             val resultObj = JSONObject(result)
                                             Handler(Looper.getMainLooper()).post {
-                                                AlertDialog.Builder(context)
+                                                AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
                                                     .setTitle(
                                                         if (resultObj.getString("response")
                                                                 .contains(
@@ -538,7 +497,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                                             connector.close()
                                         } catch (ex: Exception) {
                                             Handler(Looper.getMainLooper()).post {
-                                                AlertDialog.Builder(context)
+                                                AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
                                                     .setTitle("Failed")
                                                     .setMessage("Failed to apply user settings\n$ex")
                                                     .setPositiveButton("Close") { dg, _ -> dg.dismiss() }
@@ -551,7 +510,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                         }
                     }
                 }
-                dialog.show()
+                userDialog.show()
             }
             else Toast.makeText(context, context.resources.getString(R.string.device_offline), Toast.LENGTH_SHORT).show()
         }
@@ -561,7 +520,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
     private fun wirelessSettingsClickAction(context: Context, address: String, prop: DeviceProperties): Runnable{
         return Runnable {
             if(prop.isConnected) {
-                val dialog = AlertDialog.Builder(context)
+                val dialog = AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
                     .setTitle("Wireless Settings")
                     .setView(R.layout.wireless_settings)
                     .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
@@ -569,11 +528,6 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                     .setIcon(R.drawable.icon_wifi)
                     .create()
                 dialog.setOnShowListener {
-                    dialog.window?.setBackgroundDrawableResource(R.drawable.layout_border_round_corner)
-                    dialog.window?.setLayout(
-                        (MainActivity.size.x * 0.8).toInt(),
-                        WindowManager.LayoutParams.WRAP_CONTENT
-                    )
                     val ssid = dialog.findViewById<TextInputEditText>(R.id.til_wifi_name)!!
                     val pass = dialog.findViewById<TextInputEditText>(R.id.til_wifi_passwd)!!
                     val progressBar = dialog.findViewById<ProgressBar>(R.id.get_wireless_loading)!!
@@ -688,7 +642,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                             (pass.parent.parent as TextInputLayout).error =
                                 context.getString(R.string.empty_password)
                         if (ssid.text!!.isNotEmpty() and ((pass.text?.length ?: 0) >= 8)) {
-                            AlertDialog.Builder(context)
+                            AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
                                 .setTitle("Confirm")
                                 .setMessage(
                                     "Wrong settings may result in inaccessibility of iRWaRE device (full reset will be required to recover))."
@@ -708,7 +662,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                                             val result = connector.readLine()
                                             val resultObj = JSONObject(result)
                                             Handler(Looper.getMainLooper()).post {
-                                                AlertDialog.Builder(context)
+                                                AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
                                                     .setTitle(
                                                         if (resultObj.getString("response")
                                                                 .contains(
@@ -724,7 +678,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                                             connector.close()
                                         } catch (ex: Exception) {
                                             Handler(Looper.getMainLooper()).post {
-                                                AlertDialog.Builder(context)
+                                                AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
                                                     .setTitle("Failed")
                                                     .setMessage("Failed to apply wireless settings\n$ex")
                                                     .setPositiveButton("Close") { dg, _ -> dg.dismiss() }

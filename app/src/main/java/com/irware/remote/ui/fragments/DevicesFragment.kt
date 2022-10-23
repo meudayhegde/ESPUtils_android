@@ -44,7 +44,7 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
     private var rootView: RelativeLayout? = null
-    lateinit var manageMenu: FloatingActionMenu
+    private lateinit var manageMenu: FloatingActionMenu
 
     var updateSelectedListener: ((File) -> Unit)? = null
     val espOtaChooser = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -121,7 +121,7 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
                 btnNext.visibility = View.GONE
 
                 dialog.show()
-                val width = min(MainActivity.size.x,MainActivity.size.y)
+                val width = min(MainActivity.layoutParams.width, MainActivity.layoutParams.height)
                 dialog.window?.setLayout(width - width/8, WindowManager.LayoutParams.WRAP_CONTENT)
                 dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
                 manageMenu.close(true)
@@ -179,14 +179,14 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
         }
 
         dialog.show()
-        val width = min(MainActivity.size.x,MainActivity.size.y)
+        val width = min(MainActivity.layoutParams.width, MainActivity.layoutParams.height)
         dialog.window?.setLayout(width - width/8, WindowManager.LayoutParams.WRAP_CONTENT)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         manageMenu.close(true)
     }
 
     fun onAddressVerified(context: Context, address: String, macAddr: String){
-        val dialog = AlertDialog.Builder(context)
+        val dialog = AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
             .setView(R.layout.device_properties)
             .setIcon(R.drawable.icon_edit)
             .setTitle(context.resources.getString(R.string.set_dev_props))
@@ -194,9 +194,6 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
             .setPositiveButton(context.resources.getString(R.string.apply)){ dialog, _ -> dialog.dismiss() }
             .create()
         dialog.setOnShowListener {
-            dialog.window?.setBackgroundDrawableResource(R.drawable.layout_border_round_corner)
-            dialog.window?.setLayout((MainActivity.size.x * 0.8).toInt(), WindowManager.LayoutParams.WRAP_CONTENT)
-
             val btnAdd = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
 
             val userName = dialog.findViewById<TextInputEditText>(R.id.device_user_name)!!

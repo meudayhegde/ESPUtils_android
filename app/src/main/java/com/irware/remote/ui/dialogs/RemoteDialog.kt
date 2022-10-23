@@ -40,7 +40,7 @@ class RemoteDialog(context: Context,val properties:RemoteProperties, val mode:In
                 create_remote_info_layout.visibility = View.GONE
             }
         }
-        var length = MainActivity.NUM_COLUMNS*MainActivity.size.y/(RemoteButton.MIN_HEIGHT+12)
+        var length = MainActivity.NUM_COLUMNS * MainActivity.layoutParams.width / (RemoteButton.MIN_HEIGHT + 12)
         arrayList.addAll(arrayOfNulls(length))
         val buttons = properties.getButtons()
         for(i in 0 until buttons.length()){
@@ -63,7 +63,7 @@ class RemoteDialog(context: Context,val properties:RemoteProperties, val mode:In
         }
 
         if(mode == MODE_VIEW_EDIT){
-            layout_add_to_home.layoutParams.width = MainActivity.size.x/2
+            layout_add_to_home.layoutParams.width = MainActivity.layoutParams.width / 2
             layout_del_button.setOnDragListener(this)
             layout_add_to_home.setOnDragListener(HomeButtonDropListener(this))
             layout_button_settings.setOnDragListener(SettingsButtonDropListener(this))
@@ -99,19 +99,21 @@ class RemoteDialog(context: Context,val properties:RemoteProperties, val mode:In
     override fun onSelected(prop: JSONObject) {
         try{
             var pos = prop.getInt("btnPosition")
-            if(pos<0){
+            if(pos < 0){
                 pos = adapter.getGetEmptyPosition()
-                prop.put("btnPosition",pos)
+                prop.put("btnPosition", pos)
             }
-            val btnProp = ButtonProperties(prop,properties)
+            val btnProp = ButtonProperties(prop, properties)
             arrayList[pos] = btnProp
-            adapter.notifyDataSetChanged(false)
+            adapter.notifyItemChanged(pos)
+//            adapter.notifyDataSetChanged(false)
         }catch(ex:JSONException){
             val pos= adapter.getGetEmptyPosition()
             prop.put("btnPosition",pos)
             val btnProp = ButtonProperties(prop,properties)
             arrayList[pos] = btnProp
-            adapter.notifyDataSetChanged(false)
+            adapter.notifyItemChanged(pos)
+//            adapter.notifyDataSetChanged(false)
         }
     }
 

@@ -72,7 +72,7 @@ class GPIOControllerFragment : androidx.fragment.app.Fragment()  {
                 .create()
             rootView!!.findViewById<FloatingActionButton>(R.id.fab_new_switch).setOnClickListener { dialog.show() }
             dialog.setOnShowListener {
-                val width = min(MainActivity.size.x,MainActivity.size.y)
+                val width = min(MainActivity.layoutParams.width, MainActivity.layoutParams.height)
                 dialog.window?.setLayout(width*7/8, WindowManager.LayoutParams.WRAP_CONTENT)
                 dialog.window?.setBackgroundDrawableResource(R.drawable.layout_border_round_corner)
 

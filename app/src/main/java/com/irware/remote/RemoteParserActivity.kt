@@ -44,12 +44,10 @@ class RemoteParserActivity : AppCompatActivity() {
         window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         val lWindowParams = WindowManager.LayoutParams()
         lWindowParams.copyFrom(window?.attributes)
-        lWindowParams.width = WindowManager.LayoutParams.MATCH_PARENT
         lWindowParams.height = WindowManager.LayoutParams.WRAP_CONTENT
-        window?.attributes = lWindowParams
-
-        windowManager.defaultDisplay.getSize(MainActivity.size)
-        lWindowParams.width = MainActivity.size.x*7/8
+        MainActivity.layoutParams.width = resources.displayMetrics.widthPixels
+        MainActivity.layoutParams.height = resources.displayMetrics.heightPixels
+        lWindowParams.width = MainActivity.layoutParams.width * 7 / 8
         window?.attributes = lWindowParams
 
         val msg = findViewById<TextView>(R.id.message_text)
@@ -241,8 +239,9 @@ class RemoteParserActivity : AppCompatActivity() {
         lWindowParams.height = WindowManager.LayoutParams.WRAP_CONTENT
         window?.attributes = lWindowParams
 
-        windowManager.defaultDisplay.getSize(MainActivity.size)
-        lWindowParams.width = MainActivity.size.x - MainActivity.size.x/8
+        MainActivity.layoutParams.width = resources.displayMetrics.widthPixels
+        MainActivity.layoutParams.height = resources.displayMetrics.heightPixels
+        lWindowParams.width = MainActivity.layoutParams.width * 7 / 8
         window?.attributes = lWindowParams
     }
 

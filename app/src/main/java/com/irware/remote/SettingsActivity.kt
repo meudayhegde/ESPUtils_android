@@ -78,7 +78,7 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     @SuppressLint("ApplySharedPref", "InflateParams")
-    private fun selectionDialog(title: String, icon: Int, prefName: String, optList: List<String>, action: Runnable?):AlertDialog{
+    private fun selectionDialog(title: String, icon: Int, prefName: String, optList: List<String>, action: Runnable?): AlertDialog{
         val pref = getSharedPreferences("settings", Context.MODE_PRIVATE)
         val editor = pref.edit()
 
@@ -93,7 +93,7 @@ class SettingsActivity : AppCompatActivity() {
                 Class.forName(radioButton.parent.javaClass.name).classes[1].getConstructor(Int::class.java, Int::class.java).newInstance(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT) as ViewGroup.LayoutParams?
         }
 
-        val dialog = AlertDialog.Builder(this)
+        val dialog = AlertDialog.Builder(this, R.style.AppTheme_AlertDialog)
             .setTitle(title)
             .setView(content)
             .setIcon(icon)
@@ -106,9 +106,6 @@ class SettingsActivity : AppCompatActivity() {
             .create()
 
         dialog.setOnShowListener {
-            dialog.window?.setBackgroundDrawableResource(R.drawable.layout_border_round_corner)
-            dialog.window?.setLayout((MainActivity.size.x * 0.8).toInt(), WindowManager.LayoutParams.WRAP_CONTENT)
-
             content.check(pref.getInt(prefName,0))
             content.layoutParams =
                 Class.forName(content.parent.javaClass.name).classes[0].getConstructor(Int::class.java, Int::class.java).newInstance(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT) as ViewGroup.LayoutParams?

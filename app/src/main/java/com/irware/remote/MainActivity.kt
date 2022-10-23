@@ -7,7 +7,6 @@ import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.res.Configuration
 import android.graphics.Color
-import android.graphics.Point
 import android.net.Uri
 import android.os.*
 import android.os.Environment.getExternalStorageDirectory
@@ -15,6 +14,7 @@ import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup.LayoutParams
 import android.view.ViewTreeObserver
 import android.view.animation.AnimationUtils
 import android.widget.*
@@ -58,6 +58,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activity = this
+        layoutParams.width = resources.displayMetrics.widthPixels
+        layoutParams.height = resources.displayMetrics.heightPixels
+
         arpTable = ARPTable(-1)
 
         remotePropList.clear()
@@ -96,7 +99,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 exit = true
                 Handler(Looper.getMainLooper()).postDelayed({
                     exit = false
-                },2000)
+                }, 2000)
             }
         }
 
@@ -114,16 +117,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         splash?.window?.attributes?.windowAnimations = R.style.ActivityStartAnimationTheme
         splash?.show()
         hideSystemUI(splashView)
+        val width = min(layoutParams.width, layoutParams.width)
+        NUM_COLUMNS = when{(width > 920) -> 5; width < 720 -> 3; else -> 4}
 
-        @Suppress("DEPRECATION")
-        windowManager.defaultDisplay.getSize(size)
-        val x = min(size.x, size.y)
-        NUM_COLUMNS = when{(x > 920) -> 5; x < 720 -> 3; else -> 4}
-
-        val file = File(filesDir.absolutePath+File.separator+ REMOTE_CONFIG_DIR)
+        val file = File(filesDir.absolutePath + File.separator+ REMOTE_CONFIG_DIR)
         if(!file.exists()) file.mkdir()
 
-        val lparams = RelativeLayout.LayoutParams((min(size.x,size.y)),(min(size.x,size.y)))
+        val lparams = RelativeLayout.LayoutParams(width, width)
         lparams.addRule(RelativeLayout.CENTER_IN_PARENT)
         splash?.findViewById<ImageView>(R.id.splash_logo)?.layoutParams = lparams
 
@@ -199,11 +199,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
                 loginCard.visibility = View.VISIBLE
                 if(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                    val lparams = RelativeLayout.LayoutParams(size.x*11/20,RelativeLayout.LayoutParams.WRAP_CONTENT)
+                    val lparams = RelativeLayout.LayoutParams(layoutParams.width * 11/20, RelativeLayout.LayoutParams.WRAP_CONTENT)
                     lparams.addRule(RelativeLayout.ALIGN_PARENT_END)
                     lparams.addRule(RelativeLayout.CENTER_VERTICAL)
                     loginCard.layoutParams = lparams
-                    loginCard.setPadding(size.y/14,size.y/10,size.y/14,0)
+                    loginCard.setPadding(layoutParams.height / 14, layoutParams.height / 10, layoutParams.height / 14, 0)
                     loginCard.startAnimation(AnimationUtils.loadAnimation(this, R.anim.expand_landscape))
                     splash!!.findViewById<ImageView>(R.id.splash_logo).startAnimation(AnimationUtils.loadAnimation(this, R.anim.move_landscape))
                 }else{
@@ -224,7 +224,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         splash.findViewById<RelativeLayout>(R.id.splash_screen).setBackgroundResource(R.mipmap.background_circuit_portrait)
         val login = splash.findViewById<LinearLayout>(R.id.login_view)
         login.clearAnimation()
-        login.setPadding(size.x / 14,0,size.x / 12,size.y / 22)
+        login.setPadding(layoutParams.width / 14,0,layoutParams.width / 12,layoutParams.width / 22)
         val lparams = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT)
         lparams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
         login.layoutParams = lparams
@@ -234,7 +234,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             login.viewTreeObserver.addOnGlobalLayoutListener(object:ViewTreeObserver.OnGlobalLayoutListener{
                 override fun onGlobalLayout() {
                     login.viewTreeObserver.removeOnGlobalLayoutListener(this)
-                    val height = size.y - login.height
+                    val height = layoutParams.height - login.height
                     val logoParams = RelativeLayout.LayoutParams(height / 2,height / 2)
                     logoParams.addRule(RelativeLayout.ALIGN_PARENT_TOP)
                     logoParams.addRule(RelativeLayout.CENTER_HORIZONTAL)
@@ -248,17 +248,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun splashLandscape(splash:Dialog){
         splash.findViewById<RelativeLayout>(R.id.splash_screen).setBackgroundResource(R.mipmap.background_circuit_landscape)
         val login = splash.findViewById<LinearLayout>(R.id.login_view)
-        val lparams = RelativeLayout.LayoutParams(size.x*11/20,RelativeLayout.LayoutParams.WRAP_CONTENT)
+        val lparams = RelativeLayout.LayoutParams(layoutParams.width * 11 / 20, RelativeLayout.LayoutParams.WRAP_CONTENT)
         lparams.addRule(RelativeLayout.ALIGN_PARENT_END)
         lparams.addRule(RelativeLayout.CENTER_VERTICAL)
         login.layoutParams = lparams
         login.clearAnimation()
-        login.setPadding(size.y/14,size.y/10,size.y/14,0)
+        login.setPadding(layoutParams.height / 14,layoutParams.height / 10,layoutParams.height / 14,0)
 
-        val logoParams = RelativeLayout.LayoutParams(size.x/4,size.x/4)
+        val logoParams = RelativeLayout.LayoutParams(layoutParams.width / 4,layoutParams.width / 4)
         logoParams.addRule(RelativeLayout.ALIGN_PARENT_START)
         logoParams.addRule(RelativeLayout.CENTER_VERTICAL)
-        logoParams.marginStart = size.x/8
+        logoParams.marginStart = layoutParams.width / 8
         splash.findViewById<ImageView>(R.id.splash_logo).clearAnimation()
         splash.findViewById<ImageView>(R.id.splash_logo).layoutParams = logoParams
     }
@@ -412,8 +412,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
 
-        @Suppress("DEPRECATION")
-        windowManager.defaultDisplay.getSize(size)
+        layoutParams.width = resources.displayMetrics.widthPixels
+        layoutParams.height = resources.displayMetrics.heightPixels
         onConfigChangeListeners.iterator().forEach {
             try {
                 it.onConfigurationChanged(newConfig)
@@ -436,7 +436,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     companion object {
-        val size:  Point = Point()
         const val PORT = 48321
         const val REMOTE_CONFIG_DIR = "remotes"
         const val DEVICE_CONFIG_DIR = "devices"
@@ -455,6 +454,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         var colorOnBackground = Color.BLACK
         var iconDrawableList:IntArray = intArrayOf()
         var activity: MainActivity? = null
+        var layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
     }
 
     private var restart = false

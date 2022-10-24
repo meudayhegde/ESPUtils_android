@@ -4,11 +4,13 @@ import android.app.Application
 import android.content.Context
 import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
+import com.irware.remote.net.ARPTable
 
 class ESPUtils: Application() {
     override fun onCreate() {
         super.onCreate()
         FILES_DIR = filesDir.absolutePath
+        arpTable = ARPTable(-1)
 
         when(getSharedPreferences("theme_setting", Context.MODE_PRIVATE).getInt("application_theme", if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) { 0 }else{ 2 })) {
             1-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
@@ -18,6 +20,7 @@ class ESPUtils: Application() {
 
     companion object{
         lateinit var FILES_DIR: String
+        lateinit var arpTable: ARPTable
 
         const val PORT = 48321
         const val REMOTE_CONFIG_DIR = "remotes"

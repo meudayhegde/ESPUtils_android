@@ -10,7 +10,7 @@ import java.net.DatagramSocket
 import java.net.InetAddress
 import java.net.ServerSocket
 
-class EspOta(private val devProp: DeviceProperties, private val remoteAddr: String, private val localPort: Int = OTA_PORT, private val remotePort: Int = OTA_PORT) {
+class EspOta(private val devProp: DeviceProperties, private val localPort: Int = OTA_PORT, private val remotePort: Int = OTA_PORT) {
     private fun sendInvitation(updateFile: File, command: Int = SYSTEM, updateIntermediateListener: OnUpdateIntermediateListener? = null): Boolean{
 
         updateIntermediateListener?.onStatusUpdate("Authenticating...", true)
@@ -19,7 +19,7 @@ class EspOta(private val devProp: DeviceProperties, private val remoteAddr: Stri
         val fileLength = updateFile.length()
         var message = "$command $localPort $fileLength ${fileMD5}\n"
         val sock = DatagramSocket()
-        var pack = DatagramPacket(message.toByteArray(Charsets.UTF_8), message.length, InetAddress.getByName(remoteAddr), remotePort)
+        var pack = DatagramPacket(message.toByteArray(Charsets.UTF_8), message.length, InetAddress.getByName(devProp.ipAddress), remotePort)
         sock.send(pack)
 
         sock.soTimeout = 10
@@ -37,12 +37,12 @@ class EspOta(private val devProp: DeviceProperties, private val remoteAddr: Stri
         if(content != "OK"){
             if(content.startsWith("AUTH")){
                 val nonce = content.split(" ")[1]
-                val cnonce = md5("${updateFile.absolutePath}$fileLength$fileMD5$remoteAddr")
+                val cnonce = md5("${updateFile.absolutePath}$fileLength$fileMD5${devProp.ipAddress}")
                 val passMD5 = md5(devProp.password)
                 val result = md5("$passMD5:$nonce:$cnonce")
 
                 message = "$AUTH $cnonce $result"
-                pack = DatagramPacket(message.toByteArray(Charsets.UTF_8), message.length, InetAddress.getByName(remoteAddr), remotePort)
+                pack = DatagramPacket(message.toByteArray(Charsets.UTF_8), message.length, InetAddress.getByName(devProp.ipAddress), remotePort)
                 sock.send(pack)
 
                 sock.soTimeout = 10

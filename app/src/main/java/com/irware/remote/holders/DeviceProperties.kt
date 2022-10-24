@@ -47,6 +47,7 @@ class DeviceProperties(val deviceConfigFile: File)  {
     }
 
     private fun getJSONObject():JSONObject{
+        if(!deviceConfigFile.exists()) return JSONObject()
         val isr = InputStreamReader(deviceConfigFile.inputStream())
         val content = TextUtils.join("\n",isr.readLines())
         isr.close()
@@ -107,6 +108,14 @@ class DeviceProperties(val deviceConfigFile: File)  {
     }
     fun clearOnStatusUpdateListener(){
         onStatusUpdateListeners.clear()
+    }
+
+    fun delete(){
+        deviceConfigFile.delete()
+        pinConfig.forEach {
+            it.delete()
+            MainActivity.gpioObjectList.remove(it)
+        }
     }
 }
 

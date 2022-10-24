@@ -73,7 +73,8 @@
     <string name="confirm_delete">Confirm Delete</string>
     <string name="confirm_restart">Confirm Restart</string>
     <string name="confirm_restart_note">Are you sure you want to restart the device?</string>
-    <string name="confirm_delete_note">Are you sure you want to remove the device?</string>
+    <string name="confirm_delete_note">Are you sure you want to remove the device?
+        \nNote: All related GPIO settings will be deleted.</string>
     <string name="button_to_delete_remotebutton">button to delete RemoteButton</string>
     <string name="title">Title</string>
     <string name="subtitle">Subtitle</string>

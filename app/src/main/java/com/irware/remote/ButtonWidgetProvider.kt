@@ -71,7 +71,7 @@ class ButtonWidgetProvider: AppWidgetProvider() {
             val buttonProp = objList[1] as ButtonProperties
             val handler = Handler(Looper.getMainLooper())
 
-            (MainActivity.arpTable ?: ARPTable(1)).getIpFromMac(remoteProp.deviceProperties.macAddress) { address ->
+            remoteProp.deviceProperties.getIpAddress { address ->
                     val userName = remoteProp.deviceProperties.userName
                     val password = remoteProp.deviceProperties.password
                     if (address  == null){
@@ -79,7 +79,7 @@ class ButtonWidgetProvider: AppWidgetProvider() {
                             Toast.makeText(context, "Err: Device not reachable", Toast.LENGTH_LONG).show()
                             manager.updateAppWidget(watchWidget, remoteViews)
                         }
-                        return@getIpFromMac
+                        return@getIpAddress
                     }
                     SocketClient.sendIrCode(address, userName, password, buttonProp.jsonObj) { result ->
                             handler.post {

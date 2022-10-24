@@ -24,6 +24,7 @@ import com.github.clans.fab.FloatingActionButton
 import com.github.clans.fab.FloatingActionMenu
 import com.google.android.material.textfield.TextInputEditText
 import com.irware.ThreadHandler
+import com.irware.remote.ESPUtils
 import com.irware.remote.MainActivity
 import com.irware.remote.R
 import com.irware.remote.holders.DeviceProperties
@@ -108,7 +109,7 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
 
                 scrollView.visibility = View.GONE
                 recyclerView.visibility = View.VISIBLE
-                val viewAdapter = ScanDeviceListAdapter((MainActivity.arpTable?: ARPTable(1)).getARPItemList())
+                val viewAdapter = ScanDeviceListAdapter(ESPUtils.arpTable.getARPItemList())
                 recyclerView.apply {
                     setHasFixedSize(true)
                     layoutManager = LinearLayoutManager(context)

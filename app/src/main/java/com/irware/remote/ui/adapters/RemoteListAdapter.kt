@@ -8,7 +8,6 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater

@@ -109,9 +109,9 @@ class GPIOListAdapter(private val propList: ArrayList<GPIOObject>) : RecyclerVie
                                                  checkedChangedListener: CompoundButton.OnCheckedChangeListener){
         ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE){
             val success = try{
-                val connector = SocketClient.Connector((MainActivity.arpTable ?: ARPTable(1)).getIpFromMac(prop.macAddr) ?: "")
-                connector.sendLine("{\"request\":\"gpio_set\",\"username\":\"${prop.deviceProperties!!.userName}\", " +
-                        "\"password\": \"${prop.deviceProperties!!.password}\", \"pinMode\": \"OUTPUT\", \"pinNumber\":" +
+                val connector = SocketClient.Connector(prop.deviceProperties.ipAddress)
+                connector.sendLine("{\"request\":\"gpio_set\",\"username\":\"${prop.deviceProperties.userName}\", " +
+                        "\"password\": \"${prop.deviceProperties.password}\", \"pinMode\": \"OUTPUT\", \"pinNumber\":" +
                         " ${prop.gpioNumber}, \"pinValue\": ${if(compoundButton.isChecked) 1 else 0}}")
                 JSONObject(connector.readLine()).getString("response") == "success"
             }catch(ex: Exception){

@@ -46,4 +46,8 @@ class GPIOObject(var jsonObj: JSONObject) {
         macAddr.intern()
         deviceProperties.pinConfig.add(this)
     }
+
+    fun delete(): Boolean{
+        return parent?.removeGPIO(jsonObj)?: false
+    }
 }

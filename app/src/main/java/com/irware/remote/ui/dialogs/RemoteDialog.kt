@@ -53,8 +53,7 @@ class RemoteDialog(context: Context,val properties:RemoteProperties, val mode:In
             arrayList[btnProp.btnPosition] = btnProp
         }
 
-        adapter = ButtonsGridAdapter(arrayList,this,
-            (MainActivity.arpTable ?: ARPTable(1)).getIpFromMac(properties.deviceProperties.macAddress) ?: "",
+        adapter = ButtonsGridAdapter(arrayList,this, properties.deviceProperties.ipAddress,
             properties.deviceProperties.userName, properties.deviceProperties.password)
         button_refresh_layout.setOnRefreshListener {
             button_refresh_layout.isRefreshing = true
@@ -88,7 +87,7 @@ class RemoteDialog(context: Context,val properties:RemoteProperties, val mode:In
 
     private fun setOnFabClickListener(fab:FloatingActionButton,mode:Int){
         fab.setOnClickListener {
-            val dialog = ButtonPropertiesDialog(context, this, mode, (MainActivity.arpTable ?: ARPTable(1)).getIpFromMac(properties.deviceProperties.macAddress) ?: "",
+            val dialog = ButtonPropertiesDialog(context, this, mode, properties.deviceProperties.ipAddress,
                 properties.deviceProperties.userName, properties.deviceProperties.password)
             dialog.show()
             dialog.captureInit(null)
@@ -203,7 +202,7 @@ class HomeButtonDropListener(private val remoteDialog:RemoteDialog):View.OnDragL
     }
 }
 
-class SettingsButtonDropListener(private val remoteDialog:RemoteDialog):View.OnDragListener{
+class SettingsButtonDropListener(private val remoteDialog: RemoteDialog): View.OnDragListener{
     override fun onDrag(v: View?, event: DragEvent?): Boolean {
         when (event?.action) {
             DragEvent.ACTION_DROP -> {
@@ -211,7 +210,7 @@ class SettingsButtonDropListener(private val remoteDialog:RemoteDialog):View.OnD
                 view.visibility = View.VISIBLE
                 val btnProp = view.getProperties()
                 val properties = remoteDialog.properties
-                val dialog = ButtonPropertiesDialog(view.context, remoteDialog,ButtonPropertiesDialog.MODE_SINGLE, (MainActivity.arpTable ?: ARPTable(1)).getIpFromMac(properties.deviceProperties.macAddress) ?: "",
+                val dialog = ButtonPropertiesDialog(view.context, remoteDialog,ButtonPropertiesDialog.MODE_SINGLE, properties.deviceProperties.ipAddress,
                     properties.deviceProperties.userName, properties.deviceProperties.password)
                 dialog.show()
                 dialog.onIrRead(JSONObject(btnProp.jsonObj.toString()))
@@ -222,7 +221,7 @@ class SettingsButtonDropListener(private val remoteDialog:RemoteDialog):View.OnD
                 remoteDialog.create_remote_info_layout.visibility = View.VISIBLE
             }
             DragEvent.ACTION_DRAG_ENTERED ->{
-                @Suppress("DEPRECATION")
+
                 DrawableCompat.setTint(remoteDialog.image_view_btn_settings.drawable, if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) { remoteDialog.context.getColor(R.color.sky_blue)} else remoteDialog.context.resources.getColor(R.color.sky_blue))
             }
             DragEvent.ACTION_DRAG_EXITED -> {

@@ -77,9 +77,8 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
         holder.icOffline.visibility = View.GONE
         holder.status.text = context.getString(R.string.connecting)
         holder.ipText.text = ""
-        ARPTable().getIpFromMac(prop.macAddress){
+        prop.getIpAddress{
             Handler(Looper.getMainLooper()).post{
-                prop.isConnected = !(it == null || it.isEmpty())
                 holder.refresh.visibility = View.GONE
                 holder.icOnline.visibility = if (prop.isConnected) View.VISIBLE else View.GONE
                 holder.icOffline.visibility = if (prop.isConnected) View.GONE else View.VISIBLE
@@ -102,36 +101,44 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                 .create()
             settingsDialog.setOnShowListener {
                 val addr = prop.ipAddress
-                val viewManager = LinearLayoutManager(context)
-                val viewAdapter = SettingsAdapter(
-                    arrayListOf(
-                        SettingsItem("Wireless Settings", "Wi-Fi/Hotspot SSID and passwords",
-                            null, R.drawable.icon_wifi, wirelessSettingsClickAction(context, addr, prop), prop
-                        ),
-                        SettingsItem(
-                            "User Settings", "User credentials (username and password)",
-                            null, R.drawable.ic_user, userSettingsClickAction(context, addr, prop), prop
-                        ),
-                        SettingsItem("Reboot", "Restart the micro controller", null,
-                            R.drawable.icon_power, restartConfirmClickAction(context, addr, prop), prop
-                        ),
-                        SettingsItem("Install Update", "install update on esp device",
-                            null, R.drawable.ic_system_update, updateClickAction(context, prop, addr), prop
-                        ),
-                        SettingsItem("Remove Device", "Remove ESP device from device list",
-                            null, R.drawable.icon_delete, deleteClickAction(context, holder.adapterPosition, settingsDialog)
-                        ),
-                        SettingsItem("Edit Properties", "Edit device properties",
-                            null, R.drawable.icon_edit, editClickAction(context, prop)
-                        )
+                val settingsList = arrayListOf(
+                    SettingsItem("Wireless Settings", "Wi-Fi/Hotspot SSID and passwords",
+                        null, R.drawable.icon_wifi, wirelessSettingsClickAction(context, prop), prop
+                    ),
+                    SettingsItem(
+                        "User Settings", "User credentials (username and password)",
+                        null, R.drawable.ic_user, userSettingsClickAction(context, prop), prop
+                    ),
+                    SettingsItem("Reboot", "Restart the micro controller", null,
+                        R.drawable.icon_power, restartConfirmClickAction(context, prop), prop
+                    ),
+                    SettingsItem("Install Update", "install update on esp device",
+                        null, R.drawable.ic_system_update, updateClickAction(context, prop), prop
+                    ),
+                    SettingsItem("Remove Device", "Remove ESP device from device list",
+                        null, R.drawable.icon_delete, deleteClickAction(context, holder.adapterPosition, settingsDialog)
+                    ),
+                    SettingsItem("Edit Properties", "Edit device properties",
+                        null, R.drawable.icon_edit, editClickAction(context, prop)
                     )
                 )
+                val viewManager = LinearLayoutManager(context)
+                val viewAdapter = SettingsAdapter(settingsList)
                 val refreshLayout = settingsDialog.findViewById<SwipeRefreshLayout>(R.id.settings_refresh_layout)
                 refreshLayout?.setOnRefreshListener {
                     prop.getIpAddress{
                         Handler(Looper.getMainLooper()).post{
-                            viewAdapter.notifyItemRangeChanged(0, 4)
-                            refreshLayout.isRefreshing = false
+                            for(ind in 0 until settingsList.size){
+                                if(settingsList[ind].prop != null){
+                                    viewAdapter.notifyItemChanged(ind)
+                                }
+                            }
+                            ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE){
+                                Thread.sleep(100)
+                                Handler(Looper.getMainLooper()).post{
+                                    refreshLayout.isRefreshing = false
+                                }
+                            }
                         }
                     }
                 }
@@ -147,7 +154,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
 
     override fun getItemCount() = propList.size
 
-    private fun restartConfirmClickAction(context: Context, address: String?, prop: DeviceProperties): Runnable{
+    private fun restartConfirmClickAction(context: Context, prop: DeviceProperties): Runnable{
         return Runnable{
             if(prop.isConnected) {
                 AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
@@ -159,7 +166,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                         dialog.dismiss()
                         ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE) {
                             try {
-                                val connector = SocketClient.Connector("$address")
+                                val connector = SocketClient.Connector(prop.ipAddress)
                                 connector.sendLine("{\"request\":\"restart\",\"username\":\"${prop.userName}\",\"password\":\"${prop.password}\"}")
                                 Handler(Looper.getMainLooper()).post {
                                     Toast.makeText(context, "Restart command successfully sent.", Toast.LENGTH_SHORT).show()
@@ -186,7 +193,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                 .setNegativeButton(context.resources.getString(R.string.cancel)) { dialog, _ -> dialog.dismiss() }
                 .setPositiveButton(context.resources.getString(R.string.remove)) { dialog, _ ->
                     dialog.dismiss()
-                    propList[position].deviceConfigFile.delete()
+                    propList[position].delete()
                     propList.removeAt(position)
                     notifyItemRemoved(position)
                     settingsDialog.dismiss()
@@ -241,7 +248,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
     }
 
     @SuppressLint("InflateParams")
-    private fun updateClickAction(context: Context, prop: DeviceProperties, remoteAddress: String): Runnable{
+    private fun updateClickAction(context: Context, prop: DeviceProperties): Runnable{
         return Runnable{
             if(prop.isConnected) {
                 devicesFragment.updateSelectedListener = { updateFile ->
@@ -326,7 +333,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                                         updateDir.deleteRecursively()
                                     }
 
-                                    val espOta = EspOta(prop, remoteAddress)
+                                    val espOta = EspOta(prop)
                                     val system =
                                         updateDir.listFiles { _, name -> name.endsWith(".bin") }
                                             ?.find {
@@ -402,7 +409,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
     }
 
     @SuppressLint("InflateParams")
-    private fun userSettingsClickAction(context: Context, address: String, prop: DeviceProperties): Runnable{
+    private fun userSettingsClickAction(context: Context, prop: DeviceProperties): Runnable{
         return Runnable{
             if(prop.isConnected) {
                 val userDialog = AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
@@ -470,7 +477,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                                     userDialog.dismiss()
                                     ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE) {
                                         try {
-                                            val connector = SocketClient.Connector(address)
+                                            val connector = SocketClient.Connector(prop.ipAddress)
                                             connector.sendLine(
                                                 "{\"request\":\"set_user\",\"username\":\""
                                                         + cUname.text.toString() + "\",\"password\":\""
@@ -517,7 +524,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
     }
 
     @SuppressLint("InflateParams")
-    private fun wirelessSettingsClickAction(context: Context, address: String, prop: DeviceProperties): Runnable{
+    private fun wirelessSettingsClickAction(context: Context, prop: DeviceProperties): Runnable{
         return Runnable {
             if(prop.isConnected) {
                 val dialog = AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
@@ -602,7 +609,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                     }
 
                     progressBar.visibility = View.VISIBLE
-                    getWirelessSettings(address, prop.userName, prop.password) { data ->
+                    getWirelessSettings(prop.ipAddress, prop.userName, prop.password) { data ->
                         progressBar.visibility = View.GONE
                         val wirelessMode = data.optString("wireless_mode")
                         if (!wirelessMode.isNullOrEmpty()) {
@@ -653,7 +660,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                                     dialog.dismiss()
                                     ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE) {
                                         try {
-                                            val connector = SocketClient.Connector(address)
+                                            val connector = SocketClient.Connector(prop.ipAddress)
                                             connector.sendLine(
                                                 "{\"request\":\"set_wireless\",\"username\":\"${prop.userName}\",\"password\":\""
                                                         + "${prop.password}\",\"wireless_mode\":\"" + mode + "\",\"new_ssid\":\""

@@ -61,8 +61,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         layoutParams.width = resources.displayMetrics.widthPixels
         layoutParams.height = resources.displayMetrics.heightPixels
 
-        arpTable = ARPTable(-1)
-
         remotePropList.clear()
         devicePropList.clear()
         gpioObjectList.clear()
@@ -437,7 +435,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val remotePropList = ArrayList<RemoteProperties>()
         val devicePropList = ArrayList<DeviceProperties>()
         val gpioObjectList = ArrayList<GPIOObject>()
-        var arpTable: ARPTable? = null
         var remoteConfigPath =""
         var deviceConfigPath =""
         var USERNAME = ""

@@ -47,9 +47,9 @@ class GPIOConfig(private val gpioConfigFile: File)  {
         return gpio
     }
 
-    fun removeGPIO(gpio: JSONObject):Boolean{
+    fun removeGPIO(gpio: JSONObject): Boolean{
         val index = gpioObjectArray.index(gpio)
-        if(index<0) return false
+        if(index < 0) return false
         gpioObjectArray.remove(index)
         update()
         return true
@@ -77,7 +77,7 @@ class GPIOConfig(private val gpioConfigFile: File)  {
     }
 }
 
-private fun JSONArray.index(obj: JSONObject):Int{
+private fun JSONArray.index(obj: JSONObject): Int{
     for(position in 0 until this.length()){
         val curObj = getJSONObject(position)
         if(curObj.optString("macAddr", "") == obj.optString("macAddr", "") &&

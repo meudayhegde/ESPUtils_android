@@ -218,7 +218,7 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
 
 
         btn_icon.setOnClickListener {
-            val iconAdapter = object:ArrayAdapter<Int>(context,R.layout.drawable_layout,MainActivity.iconDrawableList.toTypedArray()){
+            val iconAdapter = object:ArrayAdapter<Int>(context, R.layout.drawable_layout, MainActivity.iconDrawableList.toTypedArray()){
                 override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                     val drawable = ContextCompat.getDrawable(context, getItem(position)!!)
                     DrawableCompat.setTint(drawable!!,MainActivity.colorOnBackground)
@@ -228,18 +228,19 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
                     }
                     val iv = (returnView as LinearLayout).findViewById<ImageView>(R.id.btn_icon_grid)
                     val lparam = LinearLayout.LayoutParams(MainActivity.layoutParams.width / (MainActivity.NUM_COLUMNS + 2), MainActivity.layoutParams.width / (MainActivity.NUM_COLUMNS + 2))
-                    iv.setImageDrawable(drawable)
                     iv.layoutParams = lparam
+                    iv.setImageDrawable(drawable)
                     return returnView
                 }
             }
             val iconGridLayout = layoutInflater.inflate(R.layout.icon_grid_dialog,null) as LinearLayout
             val iconGrid = iconGridLayout.findViewById<GridView>(R.id.icon_grid)
+            iconGrid.post {
+                iconGrid.columnWidth = MainActivity.layoutParams.width * 9 / (iconGrid.numColumns * 10)
+            }
             iconGrid.adapter = iconAdapter
             buttonProperties?.icon?.let { it1 -> iconGrid.setSelection(it1) }
-            val dialog = Builder(context).setView(iconGridLayout).setTitle("Button Icon").show()
-            dialog.window?.setLayout((MainActivity.layoutParams.width * 0.85).toInt(),WindowManager.LayoutParams.WRAP_CONTENT)
-            dialog.window?.setBackgroundDrawableResource(R.drawable.layout_border_round_corner)
+            val dialog = Builder(context, R.style.AppTheme_AlertDialog).setView(iconGridLayout).setTitle("Button Icon").show()
 
             iconGrid.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
                 buttonProperties?.icon = position

@@ -4,7 +4,7 @@ import android.text.TextUtils
 import android.util.Log
 import com.irware.ThreadHandler
 import com.irware.getIPAddress
-import com.irware.remote.MainActivity
+import com.irware.remote.ESPUtils
 import com.irware.remote.ui.adapters.insert
 import org.json.JSONArray
 import org.json.JSONException
@@ -15,7 +15,7 @@ import java.io.OutputStreamWriter
 import java.net.InetAddress
 
 class ARPTable(private val scanCount: Int = 1) {
-    private var arpTableFile: File = File(MainActivity.activity?.filesDir?.absolutePath + File.separator + ARP_TABLE_FILE)
+    private var arpTableFile: File = File(ESPUtils.FILES_DIR + File.separator + ARP_TABLE_FILE)
     private var jsonObj: JSONObject = getJSONObject()
 
     init{
@@ -30,7 +30,7 @@ class ARPTable(private val scanCount: Int = 1) {
     }
 
     fun getIpFromMac(mac: String, listener: ((address: String?) -> Unit)? = null): String?{
-        ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE){
+        if(listener != null) ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE){
             val addresses = jsonObj.optJSONArray(mac) ?: JSONArray()
             for(j in 0 until MAX_RETRY)
                 for(i in 0 until addresses.length()){
@@ -45,7 +45,7 @@ class ARPTable(private val scanCount: Int = 1) {
                                     addresses.insert(0, address)
                                     update()
                                 }
-                                listener?.invoke(address)
+                                listener.invoke(address)
                                 return@runOnThread
                             }
                         }catch(ex: Exception){
@@ -53,7 +53,7 @@ class ARPTable(private val scanCount: Int = 1) {
                         }
                     }
                 }
-            listener?.invoke(null)
+            listener.invoke(null)
         }
 
         val addresses = jsonObj.optJSONArray(mac) ?: JSONArray()

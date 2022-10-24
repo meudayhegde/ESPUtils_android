@@ -33,7 +33,7 @@ class DeviceProperties(val deviceConfigFile: File)  {
         get() { return jsonObj.optString("macAddr", "")}
         set(value){ field = value; jsonObj.put("macAddr", value); update() }
     val ipAddress: String
-        get(){return ARPTable().getIpFromMac(macAddress){ isConnected = !(it == null || it.isEmpty())}?: ""}
+        get(){return ARPTable().getIpFromMac(macAddress)?: ""}
     var description: String = jsonObj.optString("description", "")
         get() { return jsonObj.optString("description", "")}
         set(value){ field = value; jsonObj.put("description", value); update() }

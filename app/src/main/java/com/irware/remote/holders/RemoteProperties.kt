@@ -1,6 +1,7 @@
 package com.irware.remote.holders
 
 import android.text.TextUtils
+import com.irware.remote.ESPUtils
 import com.irware.remote.MainActivity
 import org.json.JSONArray
 import org.json.JSONException
@@ -61,11 +62,11 @@ class RemoteProperties(val remoteConfigFile: File, private val eventListener: Ev
             jsonObj.put("deviceConfigFileName", value)
             update()
             deviceProperties = MainActivity.devicePropList.find { it.deviceConfigFile.name == deviceConfigFileName } ?:
-                    DeviceProperties(File(remoteConfigFile.parent!! + File.separator + MainActivity.DEVICE_CONFIG_DIR, deviceConfigFileName))
+                    DeviceProperties(File(remoteConfigFile.parent!! + File.separator + ESPUtils.DEVICE_CONFIG_DIR, deviceConfigFileName))
         }
 
     var deviceProperties = MainActivity.devicePropList.find { it.deviceConfigFile.name == deviceConfigFileName } ?:
-    DeviceProperties(File(remoteConfigFile.parent!! + File.separator + MainActivity.DEVICE_CONFIG_DIR, deviceConfigFileName))
+    DeviceProperties(File(remoteConfigFile.parent!! + File.separator + ESPUtils.DEVICE_CONFIG_DIR, deviceConfigFileName))
 
     fun addButton(button:JSONObject):JSONObject?{
         val index = buttonArray.index(button)

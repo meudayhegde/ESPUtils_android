@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.irware.ThreadHandler
 import com.irware.remote.holders.RemoteProperties
 import com.irware.remote.ui.adapters.RemoteListAdapter
 import com.irware.remote.ui.buttons.RemoteButton
@@ -85,9 +86,9 @@ class WidgetConfiguratorActivity : AppCompatActivity(),SwipeRefreshLayout.OnRefr
 
     override fun onRefresh() {
         (remote_refresh_layout as SwipeRefreshLayout).isRefreshing = true
-        Thread{
+        ThreadHandler.runOnFreeThread{
             remotePropList.clear()
-            val files = File(filesDir.absolutePath + File.separator + MainActivity.REMOTE_CONFIG_DIR).listFiles { pathname ->
+            val files = File(ESPUtils.FILES_DIR + File.separator + ESPUtils.REMOTE_CONFIG_DIR).listFiles { pathname ->
                 pathname!!.isFile and (pathname.name.endsWith(
                     ".json",
                     true
@@ -100,7 +101,7 @@ class WidgetConfiguratorActivity : AppCompatActivity(),SwipeRefreshLayout.OnRefr
                 viewAdapter.notifyDataSetChanged()
                 (remote_refresh_layout as SwipeRefreshLayout).isRefreshing = false
             }
-        }.start()
+        }
     }
 
     private fun updateAppWidget(){

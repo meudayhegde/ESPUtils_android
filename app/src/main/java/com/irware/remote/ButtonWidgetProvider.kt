@@ -121,8 +121,10 @@ class ButtonWidgetProvider: AppWidgetProvider() {
             }
         }
         try{
-
-            val remoteProp = RemoteProperties(File(context.filesDir.absolutePath + File.separator + MainActivity.REMOTE_CONFIG_DIR + File.separator + buttonInfo!!.split(",")[0]),null)
+            val remoteProp = RemoteProperties(
+                File(ESPUtils.FILES_DIR + File.separator + ESPUtils.REMOTE_CONFIG_DIR + File.separator + buttonInfo!!.split(",")[0]),
+                null
+            )
             val buttonProps = remoteProp.getButtons()
             for(i in 0 until buttonProps.length()){
                 val jsonObj = buttonProps.getJSONObject(i)

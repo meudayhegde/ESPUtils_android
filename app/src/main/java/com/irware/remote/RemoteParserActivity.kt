@@ -61,7 +61,7 @@ class RemoteParserActivity : AppCompatActivity() {
         val spinner = findViewById<Spinner>(R.id.select_device)
 
         if(MainActivity.devicePropList.isEmpty()){
-            MainActivity.deviceConfigPath = filesDir.absolutePath + File.separator + MainActivity.DEVICE_CONFIG_DIR
+            MainActivity.deviceConfigPath = ESPUtils.FILES_DIR + File.separator + ESPUtils.DEVICE_CONFIG_DIR
             val deviceConfigDir = File(MainActivity.deviceConfigPath)
             deviceConfigDir.exists() or deviceConfigDir.mkdirs()
             for(file: File in deviceConfigDir.listFiles { _, name -> name?.endsWith(".json")?: false }!!){
@@ -134,7 +134,7 @@ class RemoteParserActivity : AppCompatActivity() {
             msg.visibility = View.GONE; progress.visibility = View.VISIBLE
             try{
                 val fileName= jsonObject.getString("fileName")
-                var outFile = File(filesDir.absolutePath + File.separator + MainActivity.REMOTE_CONFIG_DIR, fileName)
+                var outFile = File(ESPUtils.FILES_DIR + File.separator + ESPUtils.REMOTE_CONFIG_DIR, fileName)
                 val parent = outFile.parentFile!!
                 if(!parent.exists()) parent.mkdirs()
                 var count = 1

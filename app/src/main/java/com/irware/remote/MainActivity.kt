@@ -73,16 +73,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             iconDrawableList[i] = arr.getResourceId(i,0)
         arr.recycle()
 
-        remoteConfigPath = filesDir.absolutePath + File.separator + REMOTE_CONFIG_DIR
+        remoteConfigPath = ESPUtils.FILES_DIR + File.separator + ESPUtils.REMOTE_CONFIG_DIR
 
-        deviceConfigPath = filesDir.absolutePath + File.separator + DEVICE_CONFIG_DIR
+        deviceConfigPath = ESPUtils.FILES_DIR + File.separator + ESPUtils.DEVICE_CONFIG_DIR
         val deviceConfigDir = File(deviceConfigPath)
         deviceConfigDir.exists() or deviceConfigDir.mkdirs()
         for(file: File in deviceConfigDir.listFiles { _, name -> name?.endsWith(".json")?: false }!!){
             devicePropList.add(DeviceProperties(file))
         }
 
-        val gpioConfigFile = File(filesDir.absolutePath + File.separator + "GPIOConfig.json")
+        val gpioConfigFile = File(ESPUtils.FILES_DIR + File.separator + "GPIOConfig.json")
         if (!gpioConfigFile.exists()) gpioConfigFile.createNewFile()
         gpioConfig = GPIOConfig(gpioConfigFile)
         val gpioObjectArray = gpioConfig!!.gpioObjectArray
@@ -120,7 +120,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val width = min(layoutParams.width, layoutParams.width)
         NUM_COLUMNS = when{(width > 920) -> 5; width < 720 -> 3; else -> 4}
 
-        val file = File(filesDir.absolutePath + File.separator+ REMOTE_CONFIG_DIR)
+        val file = File(ESPUtils.FILES_DIR + File.separator+ ESPUtils.REMOTE_CONFIG_DIR)
         if(!file.exists()) file.mkdir()
 
         val lparams = RelativeLayout.LayoutParams(width, width)
@@ -264,10 +264,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     fun setNavView(){
-        when(getSharedPreferences("theme_setting", Context.MODE_PRIVATE).getInt("application_theme", if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) { 0 }else{ 2 })) {
-            1-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            2-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-        }
         setContentView(R.layout.activity_main)
 
         setSupportActionBar(toolbar)
@@ -436,11 +432,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     companion object {
-        const val PORT = 48321
-        const val REMOTE_CONFIG_DIR = "remotes"
-        const val DEVICE_CONFIG_DIR = "devices"
-        const val FILE_SELECT_CODE = 0
-        const val UPDATE_SELECT_CODE = EspOta.OTA_PORT
+
         var gpioConfig: GPIOConfig? = null
         val remotePropList = ArrayList<RemoteProperties>()
         val devicePropList = ArrayList<DeviceProperties>()

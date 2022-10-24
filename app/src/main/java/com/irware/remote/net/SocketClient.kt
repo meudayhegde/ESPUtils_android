@@ -4,6 +4,7 @@ import android.content.DialogInterface
 import android.os.Handler
 import android.os.Looper
 import com.irware.ThreadHandler
+import com.irware.remote.ESPUtils
 import com.irware.remote.MainActivity
 import com.irware.remote.R
 import com.irware.remote.ui.dialogs.ButtonPropertiesDialog
@@ -15,7 +16,7 @@ object SocketClient{
 
     class Connector(address:String){
         private val adr = address.split(":")
-        private val soc = if(adr.size == 2) Socket(adr[0],adr[1].toInt()) else Socket(address, MainActivity.PORT)
+        private val soc = if(adr.size == 2) Socket(adr[0],adr[1].toInt()) else Socket(address, ESPUtils.PORT)
         private val br = BufferedReader(InputStreamReader(soc.getInputStream()))
         private val bw = BufferedWriter(OutputStreamWriter(soc.getOutputStream()))
 

@@ -29,13 +29,22 @@ class DeviceProperties(val deviceConfigFile: File)  {
     var password: String = jsonObj.optString("password", "")
         get() { return jsonObj.optString("password", "")}
         set(value){ field = value; jsonObj.put("password", value); update() }
-    var macAddr: String = jsonObj.optString("macAddr")
+    var macAddress: String = jsonObj.optString("macAddr")
         get() { return jsonObj.optString("macAddr", "")}
         set(value){ field = value; jsonObj.put("macAddr", value); update() }
+    val ipAddress: String
+        get(){return ARPTable().getIpFromMac(macAddress){ isConnected = !(it == null || it.isEmpty())}?: ""}
     var description: String = jsonObj.optString("description", "")
         get() { return jsonObj.optString("description", "")}
         set(value){ field = value; jsonObj.put("description", value); update() }
     var pinConfig = ArrayList<GPIOObject>()
+
+    fun getIpAddress(listener: ((address: String?) -> Unit)){
+        ARPTable().getIpFromMac(macAddress){
+            isConnected = !(it == null || it.isEmpty())
+            listener.invoke(it)
+        }
+    }
 
     private fun getJSONObject():JSONObject{
         val isr = InputStreamReader(deviceConfigFile.inputStream())
@@ -61,9 +70,7 @@ class DeviceProperties(val deviceConfigFile: File)  {
 
 
     fun refreshGPIOStatus(){
-        val arpTable = MainActivity.arpTable ?: ARPTable(1)
-        arpTable.getIpFromMac(macAddr) { address ->
-            isConnected = ( address != null )
+        getIpAddress{ address ->
             try{
                 if (isConnected){
                     val connector = SocketClient.Connector(address!!)

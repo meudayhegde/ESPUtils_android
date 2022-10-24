@@ -71,7 +71,7 @@ class ButtonWidgetProvider: AppWidgetProvider() {
             val buttonProp = objList[1] as ButtonProperties
             val handler = Handler(Looper.getMainLooper())
 
-            (MainActivity.arpTable ?: ARPTable(1)).getIpFromMac(remoteProp.deviceProperties.macAddr) { address ->
+            (MainActivity.arpTable ?: ARPTable(1)).getIpFromMac(remoteProp.deviceProperties.macAddress) { address ->
                     val userName = remoteProp.deviceProperties.userName
                     val password = remoteProp.deviceProperties.password
                     if (address  == null){

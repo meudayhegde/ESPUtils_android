@@ -204,7 +204,7 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
             var devProp: DeviceProperties? = null
             var devExist = false
             for(prop: DeviceProperties in MainActivity.devicePropList){
-                if(prop.macAddr == macAddr){ devProp = prop; devExist = true; break }
+                if(prop.macAddress == macAddr){ devProp = prop; devExist = true; break }
             }
 
             val pref = context.getSharedPreferences("login",0)
@@ -230,7 +230,7 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
                         }
 
                         devProp!!.nickName = devName.text.toString()
-                        devProp!!.macAddr = macAddr
+                        devProp!!.macAddress = macAddr
                         devProp!!.description = devDescription.text.toString()
                         devProp!!.userName = userName.text.toString()
                         devProp!!.password = password.text.toString()

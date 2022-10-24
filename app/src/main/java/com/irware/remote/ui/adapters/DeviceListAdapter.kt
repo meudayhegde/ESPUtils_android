@@ -13,6 +13,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.cardview.widget.CardView
@@ -68,7 +69,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
     @SuppressLint("SetTextI18n", "UseCompatLoadingForDrawables", "InflateParams")
     private fun setViewProps(holder: MyViewHolder, prop: DeviceProperties){
         holder.deviceNameView.text = prop.nickName
-        holder.deviceMacAddrView.text = "(${prop.macAddr})"
+        holder.deviceMacAddrView.text = "(${prop.macAddress})"
         holder.deviceDescView.text = prop.description
 
         holder.refresh.visibility = View.VISIBLE
@@ -76,7 +77,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
         holder.icOffline.visibility = View.GONE
         holder.status.text = context.getString(R.string.connecting)
         holder.ipText.text = ""
-        ARPTable().getIpFromMac(prop.macAddr){
+        ARPTable().getIpFromMac(prop.macAddress){
             Handler(Looper.getMainLooper()).post{
                 prop.isConnected = !(it == null || it.isEmpty())
                 holder.refresh.visibility = View.GONE
@@ -84,7 +85,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                 holder.icOffline.visibility = if (prop.isConnected) View.GONE else View.VISIBLE
                 holder.status.text =
                     context.resources.getString(if(prop.isConnected) R.string.online else R.string.offline)
-                holder.ipText.text = it?: ARPTable().getIpFromMac(prop.macAddr)
+                holder.ipText.text = it?: ARPTable().getIpFromMac(prop.macAddress)
 
                 holder.cardView.getChildAt(0).background =
                     if(prop.isConnected) context.getDrawable(R.drawable.round_corner_success)
@@ -100,7 +101,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                 .setIcon(R.drawable.ic_settings)
                 .create()
             settingsDialog.setOnShowListener {
-                val addr = (MainActivity.arpTable ?: ARPTable(1)).getIpFromMac(prop.macAddr) ?: ""
+                val addr = prop.ipAddress
                 val viewManager = LinearLayoutManager(context)
                 val viewAdapter = SettingsAdapter(
                     arrayListOf(
@@ -127,8 +128,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                 )
                 val refreshLayout = settingsDialog.findViewById<SwipeRefreshLayout>(R.id.settings_refresh_layout)
                 refreshLayout?.setOnRefreshListener {
-                    ARPTable().getIpFromMac(prop.macAddr){
-                        prop.isConnected = !(it == null || it.isEmpty())
+                    prop.getIpAddress{
                         Handler(Looper.getMainLooper()).post{
                             viewAdapter.notifyItemRangeChanged(0, 4)
                             refreshLayout.isRefreshing = false
@@ -198,7 +198,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
 
     private fun editClickAction(context: Context, prop: DeviceProperties): Runnable{
         return Runnable{
-            devicesFragment.onAddressVerified(context, (MainActivity.arpTable ?: ARPTable(1)).getIpFromMac(prop.macAddr) ?: "", prop.macAddr)
+            devicesFragment.onAddressVerified(context, prop.ipAddress, prop.macAddress)
         }
     }
 

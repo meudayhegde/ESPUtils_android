@@ -16,7 +16,7 @@
     <style name="AppTheme.AlertDialog" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
         <item name="android:windowBackground">@drawable/layout_border_round_corner</item>
         <item name="android:buttonStyle">@style/Widget.MaterialComponents.Button.OutlinedButton</item>
-        <item name="android:buttonBarButtonStyle">?android:buttonStyle</item>
+        <item name="android:buttonBarButtonStyle">@style/Widget.MaterialComponents.Button.OutlinedButton</item>
         <item name="colorPrimary">@color/sky_blue</item>
         <item name="colorPrimaryDark">@color/sky_blue_dark</item>
         <item name="colorPrimaryVariant">@color/blue_dark</item>
@@ -27,7 +27,7 @@
         <item name="colorError">@color/red</item>
         <item name="android:backgroundDimEnabled">true</item>
         <item name="android:backgroundDimAmount">0.7</item>
-        <item name="android:windowEnterAnimation">@anim/fade_in</item>
+        <item name="android:windowEnterAnimation">@anim/expand</item>
         <item name="android:windowExitAnimation">@anim/fade_out</item>
     </style>
 

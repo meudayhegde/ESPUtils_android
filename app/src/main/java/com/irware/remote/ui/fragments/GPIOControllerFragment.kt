@@ -104,7 +104,7 @@ class GPIOControllerFragment : androidx.fragment.app.Fragment()  {
                             val jsonObj = JSONObject()
                             jsonObj.put("title", nameText.text.toString())
                             jsonObj.put("subTitle", description.text.toString())
-                            jsonObj.put("macAddr", MainActivity.devicePropList[devicesSpinner.selectedItemPosition - 1].macAddr)
+                            jsonObj.put("macAddr", MainActivity.devicePropList[devicesSpinner.selectedItemPosition - 1].macAddress)
                             jsonObj.put("gpioNumber", gpioSpinner.selectedItem.toString().split(" ")[0].filter { it.isDigit() }.toInt())
                             MainActivity.gpioObjectList.add(GPIOObject(jsonObj, MainActivity.gpioConfig!!))
                             viewAdapter?.notifyDataSetChanged()

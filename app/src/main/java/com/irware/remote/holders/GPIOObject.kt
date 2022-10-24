@@ -29,7 +29,7 @@ class GPIOObject(var jsonObj: JSONObject) {
     var macAddr: String = jsonObj.optString("macAddr", "")
         get() {
             if (deviceProperties == null) for(prop in MainActivity.devicePropList) {
-                if(prop.macAddr == field) {deviceProperties = prop; break}
+                if(prop.macAddress == field) {deviceProperties = prop; break}
             }
             return jsonObj.optString("macAddr", "")
         }
@@ -38,7 +38,7 @@ class GPIOObject(var jsonObj: JSONObject) {
             jsonObj.put("macAddr", value);
             parent?.update()
             if (deviceProperties == null) for(prop in MainActivity.devicePropList) {
-                if(prop.macAddr == field) {deviceProperties = prop; break}
+                if(prop.macAddress == field) {deviceProperties = prop; break}
             }
         }
     var gpioNumber: Int = jsonObj.optInt("gpioNumber", 0)

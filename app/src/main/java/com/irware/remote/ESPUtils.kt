@@ -12,7 +12,7 @@ class ESPUtils: Application() {
         FILES_DIR = filesDir.absolutePath
         arpTable = ARPTable(-1)
 
-        when(getSharedPreferences("theme_setting", Context.MODE_PRIVATE).getInt("application_theme", if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) { 0 }else{ 2 })) {
+        when(getSharedPreferences("settings", Context.MODE_PRIVATE).getInt("application_theme", if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) { 0 }else{ 2 })) {
             1-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
             2-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         }

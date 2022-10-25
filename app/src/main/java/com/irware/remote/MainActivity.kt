@@ -18,9 +18,9 @@ import android.view.ViewGroup.LayoutParams
 import android.view.ViewTreeObserver
 import android.view.animation.AnimationUtils
 import android.widget.*
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.FileProvider
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
@@ -31,8 +31,6 @@ import com.irware.remote.holders.GPIOConfig
 import com.irware.remote.holders.GPIOObject
 import com.irware.remote.holders.RemoteProperties
 import com.irware.remote.listeners.OnValidationListener
-import com.irware.remote.net.ARPTable
-import com.irware.remote.net.EspOta
 import com.irware.remote.ui.buttons.RemoteButton
 import com.irware.remote.ui.fragments.*
 import kotlinx.android.synthetic.main.activity_main.*
@@ -88,7 +86,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             gpioObjectList.add(GPIOObject(gpioObjectArray.getJSONObject(i), gpioConfig!!))
         }
 
-        splash = object: Dialog(this, android.R.style.Theme_Light_NoTitleBar_Fullscreen){
+        splash = object: Dialog(this, R.style.Theme_MaterialComponents_DayNight_NoActionBar){
             var exit = false
             @Deprecated("Deprecated in Java")
             override fun onBackPressed() {
@@ -105,13 +103,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         theme.resolveAttribute(R.attr.colorOnBackground, value, true)
         colorOnBackground = value.data
 
-        val splashView=layoutInflater.inflate(R.layout.splash_screen,null)
+        val splashView = layoutInflater.inflate(R.layout.splash_screen,null)
         splash?.setContentView(splashView)
-
-//        val originalBitmap = BitmapFactory.decodeResource(resources, R.mipmap.background_circuit)
-//        val blurredBitmap = BlurBuilder.blur(this, originalBitmap)
-//        splashView.background = BitmapDrawable(resources, blurredBitmap)
-//        splashView.setBackgroundResource(R.drawable.splash_bg)
         splash?.window?.attributes?.windowAnimations = R.style.ActivityStartAnimationTheme
         splash?.show()
         hideSystemUI(splashView)
@@ -263,7 +256,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     fun setNavView(){
         setContentView(R.layout.activity_main)
-
         setSupportActionBar(toolbar)
         val toggle = ActionBarDrawerToggle(this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawer_layout.addDrawerListener(toggle)
@@ -283,28 +275,27 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val homeFragment = getSharedPreferences("settings", Context.MODE_PRIVATE).getInt("home_fragment", 0)
         replaceFragment(when(homeFragment){1 -> irFragment 2-> gpioFragment 3 -> aboutFragment else-> devicesFragment})
         nav_view.setCheckedItem(when(homeFragment){1 -> R.id.home_drawer 2-> R.id.gpio_drawer 3 -> R.id.info_drawer else-> R.id.device_drawer_item})
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            private var backPressed = false
+            override fun handleOnBackPressed() {
+                when {
+                    drawer_layout.isDrawerOpen(GravityCompat.START) -> drawer_layout.closeDrawer(GravityCompat.START)
+                    backPressed -> finish()
+                    else -> {
+                        backPressed = true
+                        Toast.makeText(this@MainActivity, "press back button again to exit", Toast.LENGTH_SHORT).show()
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            backPressed = false
+                        },2000)
+                    }
+                }
+            }
+        })
     }
 
     private fun replaceFragment(fragment: Fragment){
         supportFragmentManager.beginTransaction().replace(R.id.include_content,fragment).commitAllowingStateLoss()
-    }
-
-    private var backPressed = false
-    @Deprecated("Deprecated in Java")
-    override fun onBackPressed() {
-        when {
-            drawer_layout.isDrawerOpen(GravityCompat.START) -> drawer_layout.closeDrawer(GravityCompat.START)
-            backPressed -> super.onBackPressed()
-            else -> {
-                backPressed = true
-                Toast.makeText(this,"press back button again to exit",Toast.LENGTH_SHORT).show()
-
-                Handler(Looper.getMainLooper()).postDelayed({
-                    backPressed = false
-                },2000)
-
-            }
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -389,7 +380,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    private fun hideSystemUI(view:View) {
+    private fun hideSystemUI(view: View) {
+
         @Suppress("DEPRECATION")
         view.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                 or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION

@@ -25,11 +25,6 @@ import androidx.core.content.FileProvider
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.navigation.NavigationView
-import com.irware.ThreadHandler
-import com.irware.remote.holders.DeviceProperties
-import com.irware.remote.holders.GPIOConfig
-import com.irware.remote.holders.GPIOObject
-import com.irware.remote.holders.RemoteProperties
 import com.irware.remote.listeners.OnValidationListener
 import com.irware.remote.ui.buttons.RemoteButton
 import com.irware.remote.ui.fragments.*
@@ -58,33 +53,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         activity = this
         layoutParams.width = resources.displayMetrics.widthPixels
         layoutParams.height = resources.displayMetrics.heightPixels
-
-        remotePropList.clear()
-        devicePropList.clear()
-        gpioObjectList.clear()
-
-        val arr = resources.obtainTypedArray(R.array.icons)
-        iconDrawableList = IntArray(arr.length())
-        for(i in 0 until arr.length())
-            iconDrawableList[i] = arr.getResourceId(i,0)
-        arr.recycle()
-
-        remoteConfigPath = ESPUtils.FILES_DIR + File.separator + ESPUtils.REMOTE_CONFIG_DIR
-
-        deviceConfigPath = ESPUtils.FILES_DIR + File.separator + ESPUtils.DEVICE_CONFIG_DIR
-        val deviceConfigDir = File(deviceConfigPath)
-        deviceConfigDir.exists() or deviceConfigDir.mkdirs()
-        for(file: File in deviceConfigDir.listFiles { _, name -> name?.endsWith(".json")?: false }!!){
-            devicePropList.add(DeviceProperties(file))
-        }
-
-        val gpioConfigFile = File(ESPUtils.FILES_DIR + File.separator + "GPIOConfig.json")
-        if (!gpioConfigFile.exists()) gpioConfigFile.createNewFile()
-        gpioConfig = GPIOConfig(gpioConfigFile)
-        val gpioObjectArray = gpioConfig!!.gpioObjectArray
-        if(gpioObjectArray.length() >  0)for(i: Int in 0 until gpioObjectArray.length()){
-            gpioObjectList.add(GPIOObject(gpioObjectArray.getJSONObject(i), gpioConfig!!))
-        }
 
         splash = object: Dialog(this, R.style.Theme_MaterialComponents_DayNight_NoActionBar){
             var exit = false
@@ -152,8 +120,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             PASSWORD = passEdit?.text.toString()
 
             authenticated=true
-            editor.putString("username",USERNAME)
-            editor.putString("password",PASSWORD)
+            editor.putString("username", USERNAME)
+            editor.putString("password", PASSWORD)
             editor.apply()
 
             validatedListener.onValidated(true)
@@ -173,14 +141,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
             }
         })
-
-        ThreadHandler.runOnFreeThread {
-            val files = File(remoteConfigPath).listFiles { pathname ->
-                pathname!!.isFile and (pathname.name.endsWith(".json", true)) and pathname.canWrite()
-            }
-            for (file in files!!)
-                remotePropList.add(RemoteProperties(file, null))
-        }
 
         if(pref.getString("username", "") != "" && pref.getString("password", "") != "") authenticated = true
 
@@ -418,22 +378,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onResume() {
         super.onResume()
-        devicePropList.forEach { it.refreshGPIOStatus() }
+        ESPUtils.devicePropList.forEach { it.refreshGPIOStatus() }
     }
 
     companion object {
-
-        var gpioConfig: GPIOConfig? = null
-        val remotePropList = ArrayList<RemoteProperties>()
-        val devicePropList = ArrayList<DeviceProperties>()
-        val gpioObjectList = ArrayList<GPIOObject>()
-        var remoteConfigPath =""
-        var deviceConfigPath =""
         var USERNAME = ""
         var PASSWORD = ""
         var NUM_COLUMNS = 5
         var colorOnBackground = Color.BLACK
-        var iconDrawableList:IntArray = intArrayOf()
         var activity: MainActivity? = null
         var layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
     }

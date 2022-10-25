@@ -61,11 +61,11 @@ class RemoteProperties(val remoteConfigFile: File, private val eventListener: Ev
             field = value
             jsonObj.put("deviceConfigFileName", value)
             update()
-            deviceProperties = MainActivity.devicePropList.find { it.deviceConfigFile.name == deviceConfigFileName } ?:
+            deviceProperties = ESPUtils.devicePropList.find { it.deviceConfigFile.name == deviceConfigFileName } ?:
                     DeviceProperties(File(remoteConfigFile.parent!! + File.separator + ESPUtils.DEVICE_CONFIG_DIR, deviceConfigFileName))
         }
 
-    var deviceProperties = MainActivity.devicePropList.find { it.deviceConfigFile.name == deviceConfigFileName } ?:
+    var deviceProperties = ESPUtils.devicePropList.find { it.deviceConfigFile.name == deviceConfigFileName } ?:
     DeviceProperties(File(remoteConfigFile.parent!! + File.separator + ESPUtils.DEVICE_CONFIG_DIR, deviceConfigFileName))
 
     fun addButton(button:JSONObject):JSONObject?{

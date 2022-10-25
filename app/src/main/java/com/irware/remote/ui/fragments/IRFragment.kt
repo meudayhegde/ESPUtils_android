@@ -25,6 +25,7 @@ import com.github.clans.fab.FloatingActionButton
 import com.github.clans.fab.FloatingActionMenu
 import com.google.android.material.textfield.TextInputEditText
 import com.irware.ThreadHandler
+import com.irware.remote.ESPUtils
 import com.irware.remote.MainActivity
 import com.irware.remote.R
 import com.irware.remote.holders.RemoteProperties
@@ -61,7 +62,7 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
         if(rootView == null){
             rootView = inflater.inflate(R.layout.fragment_manage_remote, container, false) as RelativeLayout
             viewManager = LinearLayoutManager(context)
-            viewAdapter = RemoteListAdapter(MainActivity.remotePropList,0)
+            viewAdapter = RemoteListAdapter(ESPUtils.remotePropList,0)
             recyclerView = rootView!!.findViewById<RecyclerView>(R.id.manage_remotes_recycler_view).apply {
                 setHasFixedSize(true)
                 layoutManager = viewManager
@@ -88,12 +89,12 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
             refreshLayout.setOnRefreshListener {
                 refreshLayout.isRefreshing = true
                 ThreadHandler.runOnFreeThread{
-                    MainActivity.remotePropList.clear()
-                    val files = File(MainActivity.remoteConfigPath).listFiles { pathname ->
+                    ESPUtils.remotePropList.clear()
+                    val files = File(ESPUtils.remoteConfigPath).listFiles { pathname ->
                         pathname!!.isFile and (pathname.name.endsWith(".json", true)) and pathname.canWrite()
                     }
                     files!!.forEach {
-                        MainActivity.remotePropList.add(RemoteProperties(it, null))
+                        ESPUtils.remotePropList.add(RemoteProperties(it, null))
                     }
                     Handler(Looper.getMainLooper()).post{
                         viewAdapter?.notifyDataSetChanged()
@@ -111,7 +112,7 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
         Handler(Looper.getMainLooper()).postDelayed({
             if(manageMenu.isMenuButtonHidden)
                 manageMenu.showMenuButton(true)
-            if(MainActivity.remotePropList.isEmpty())
+            if(ESPUtils.remotePropList.isEmpty())
                 Handler(Looper.getMainLooper()).postDelayed({manageMenu.showMenu(true)},400)
         },400)
         return rootView
@@ -145,7 +146,7 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
         val spinner = inputLayout.findViewById<Spinner>(R.id.select_device)
 
         val devicePropList = arrayListOf<Any>(getString(R.string.select_device))
-        devicePropList.addAll(MainActivity.devicePropList)
+        devicePropList.addAll(ESPUtils.devicePropList)
         spinner.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, devicePropList)
 
         btnDelete.visibility = View.GONE
@@ -161,7 +162,7 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
                 Toast.makeText(requireContext(), getString(R.string.device_not_selected_note), Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             }
-            val selectedDevice = MainActivity.devicePropList[spinner.selectedItemPosition - 1]
+            val selectedDevice = ESPUtils.devicePropList[spinner.selectedItemPosition - 1]
 
             val vendor = inputLayout.findViewById<TextInputEditText>(R.id.vendor_name).text.toString()
             val model = inputLayout.findViewById<TextInputEditText>(R.id.model_name).text.toString()
@@ -169,10 +170,10 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
                 .replace(" ", "_").replace("\n", "").replace("/","_")
 
             val desc = inputLayout.findViewById<TextInputEditText>(R.id.remote_desc)
-            var configFile = File(MainActivity.remoteConfigPath + File.separator + id + ".json")
+            var configFile = File(ESPUtils.remoteConfigPath + File.separator + id + ".json")
             var incr = 1
             while(configFile.exists()) {
-                configFile = File(MainActivity.remoteConfigPath + File.separator + id + "_" + incr + ".json")
+                configFile = File(ESPUtils.remoteConfigPath + File.separator + id + "_" + incr + ".json")
                 incr++
             }
             if(incr>1) id += "_" + (incr-1)
@@ -185,7 +186,7 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
             remoteProperties.remoteID = id
             remoteProperties.description = desc.text.toString()
             remoteProperties.deviceConfigFileName = selectedDevice.deviceConfigFile.name
-            MainActivity.remotePropList.add(remoteProperties)
+            ESPUtils.remotePropList.add(remoteProperties)
             viewAdapter?.notifyDataSetChanged()
             RemoteDialog(requireContext(), remoteProperties,RemoteDialog.MODE_VIEW_EDIT).show()
             dialog.dismiss()

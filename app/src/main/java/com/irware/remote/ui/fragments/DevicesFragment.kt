@@ -76,7 +76,7 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
             rootView = inflater.inflate(R.layout.fragment_devices, container, false) as RelativeLayout
             manageMenu = rootView!!.findViewById(R.id.fam_manage_gpio)
             viewManager = LinearLayoutManager(context)
-            viewAdapter = DeviceListAdapter(MainActivity.devicePropList, this)
+            viewAdapter = DeviceListAdapter(ESPUtils.devicePropList, this)
             recyclerView = rootView!!.findViewById<RecyclerView>(R.id.manage_remotes_recycler_view).apply {
                 setHasFixedSize(true)
                 layoutManager = viewManager
@@ -144,7 +144,7 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
         Handler(Looper.getMainLooper()).postDelayed({
             if(manageMenu.isMenuButtonHidden)
                 manageMenu.showMenuButton(true)
-            if(MainActivity.remotePropList.isEmpty())
+            if(ESPUtils.remotePropList.isEmpty())
                 Handler(Looper.getMainLooper()).postDelayed({manageMenu.showMenu(true)},400)
         },400)
         return rootView
@@ -204,7 +204,7 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
 
             var devProp: DeviceProperties? = null
             var devExist = false
-            for(prop: DeviceProperties in MainActivity.devicePropList){
+            for(prop: DeviceProperties in ESPUtils.devicePropList){
                 if(prop.macAddress == macAddr){ devProp = prop; devExist = true; break }
             }
 
@@ -225,7 +225,7 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
                         if(JSONObject(response)["response"] != "authenticated") throw Exception()
 
                         if (!devExist) {
-                            val filePath = MainActivity.deviceConfigPath + File.separator + devName.text.toString().replace(" ", "_") + ".json"
+                            val filePath = ESPUtils.deviceConfigPath + File.separator + devName.text.toString().replace(" ", "_") + ".json"
                             File(filePath).createNewFile()
                             devProp = DeviceProperties(File(filePath))
                         }
@@ -238,11 +238,11 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
 
                         Handler(Looper.getMainLooper()).post{
                             if(devExist){
-                                viewAdapter.notifyItemChanged(MainActivity.devicePropList.indexOf(devProp!!))
+                                viewAdapter.notifyItemChanged(ESPUtils.devicePropList.indexOf(devProp!!))
                                 Toast.makeText(context, "Device Preferences Updated", Toast.LENGTH_LONG).show()
                             }else{
-                                MainActivity.devicePropList.add(devProp!!)
-                                viewAdapter.notifyItemInserted(MainActivity.devicePropList.indexOf(devProp!!))
+                                ESPUtils.devicePropList.add(devProp!!)
+                                viewAdapter.notifyItemInserted(ESPUtils.devicePropList.indexOf(devProp!!))
                                 Toast.makeText(context, "Device successfully Added", Toast.LENGTH_LONG).show()
                             }
                             dialog.dismiss()

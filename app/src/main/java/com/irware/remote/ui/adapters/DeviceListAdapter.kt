@@ -13,9 +13,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -28,7 +28,6 @@ import com.irware.remote.MainActivity
 import com.irware.remote.R
 import com.irware.remote.SettingsItem
 import com.irware.remote.holders.DeviceProperties
-import com.irware.remote.net.ARPTable
 import com.irware.remote.net.EspOta
 import com.irware.remote.net.OnUpdateIntermediateListener
 import com.irware.remote.net.SocketClient
@@ -66,6 +65,20 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
         setViewProps(holder, prop)
     }
 
+    private fun setViewRefreshed(holder: MyViewHolder, prop: DeviceProperties){
+        holder.refresh.visibility = View.GONE
+        holder.icOnline.visibility = if (prop.isConnected) View.VISIBLE else View.GONE
+        holder.icOffline.visibility = if (prop.isConnected) View.GONE else View.VISIBLE
+        holder.status.text =
+            context.resources.getString(if(prop.isConnected) R.string.online else R.string.offline)
+        holder.ipText.text = prop.ipAddress
+
+        holder.cardView.getChildAt(0).background =
+            if(prop.isConnected) AppCompatResources.getDrawable(context, R.drawable.round_corner_success)
+            else AppCompatResources.getDrawable(context, R.drawable.round_corner_error)
+        MainActivity.activity?.irFragment?.notifyDataChanged()
+    }
+
     @SuppressLint("SetTextI18n", "UseCompatLoadingForDrawables", "InflateParams")
     private fun setViewProps(holder: MyViewHolder, prop: DeviceProperties){
         holder.deviceNameView.text = prop.nickName
@@ -79,17 +92,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
         holder.ipText.text = ""
         prop.getIpAddress{
             Handler(Looper.getMainLooper()).post{
-                holder.refresh.visibility = View.GONE
-                holder.icOnline.visibility = if (prop.isConnected) View.VISIBLE else View.GONE
-                holder.icOffline.visibility = if (prop.isConnected) View.GONE else View.VISIBLE
-                holder.status.text =
-                    context.resources.getString(if(prop.isConnected) R.string.online else R.string.offline)
-                holder.ipText.text = it?: ARPTable().getIpFromMac(prop.macAddress)
-
-                holder.cardView.getChildAt(0).background =
-                    if(prop.isConnected) context.getDrawable(R.drawable.round_corner_success)
-                    else context.getDrawable(R.drawable.round_corner_error)
-                MainActivity.activity?.irFragment?.notifyDataChanged()
+                setViewRefreshed(holder, prop)
             }
         }
         holder.cardView.setOnClickListener {
@@ -100,7 +103,6 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                 .setIcon(R.drawable.ic_settings)
                 .create()
             settingsDialog.setOnShowListener {
-                val addr = prop.ipAddress
                 val settingsList = arrayListOf(
                     SettingsItem("Wireless Settings", "Wi-Fi/Hotspot SSID and passwords",
                         null, R.drawable.icon_wifi, wirelessSettingsClickAction(context, prop), prop
@@ -128,6 +130,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                 refreshLayout?.setOnRefreshListener {
                     prop.getIpAddress{
                         Handler(Looper.getMainLooper()).post{
+                            setViewRefreshed(holder, prop)
                             for(ind in 0 until settingsList.size){
                                 if(settingsList[ind].prop != null){
                                     viewAdapter.notifyItemChanged(ind)

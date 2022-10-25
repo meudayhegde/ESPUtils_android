@@ -60,17 +60,17 @@ class RemoteParserActivity : AppCompatActivity() {
 
         val spinner = findViewById<Spinner>(R.id.select_device)
 
-        if(MainActivity.devicePropList.isEmpty()){
-            MainActivity.deviceConfigPath = ESPUtils.FILES_DIR + File.separator + ESPUtils.DEVICE_CONFIG_DIR
-            val deviceConfigDir = File(MainActivity.deviceConfigPath)
+        if(ESPUtils.devicePropList.isEmpty()){
+            ESPUtils.deviceConfigPath = ESPUtils.FILES_DIR + File.separator + ESPUtils.DEVICE_CONFIG_DIR
+            val deviceConfigDir = File(ESPUtils.deviceConfigPath)
             deviceConfigDir.exists() or deviceConfigDir.mkdirs()
             for(file: File in deviceConfigDir.listFiles { _, name -> name?.endsWith(".json")?: false }!!){
-                MainActivity.devicePropList.add(DeviceProperties(file))
+                ESPUtils.devicePropList.add(DeviceProperties(file))
             }
         }
 
         val devicePropList = arrayListOf<Any>(getString(R.string.select_device))
-        devicePropList.addAll(MainActivity.devicePropList)
+        devicePropList.addAll(ESPUtils.devicePropList)
         spinner.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, devicePropList)
 
         val action = intent.action
@@ -128,7 +128,7 @@ class RemoteParserActivity : AppCompatActivity() {
                 Toast.makeText(this, getString(R.string.device_not_selected_note), Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             }
-            val selectedDevice = MainActivity.devicePropList[spinner.selectedItemPosition - 1]
+            val selectedDevice = ESPUtils.devicePropList[spinner.selectedItemPosition - 1]
             jsonObject.put("deviceConfigFileName", selectedDevice.deviceConfigFile.name)
 
             msg.visibility = View.GONE; progress.visibility = View.VISIBLE
@@ -193,7 +193,7 @@ class RemoteParserActivity : AppCompatActivity() {
 
         if(MainActivity.activity != null && !MainActivity.activity!!.isDestroyed){
             if(configFile!=null){
-                MainActivity.remotePropList.add(RemoteProperties(configFile!!,null))
+                ESPUtils.remotePropList.add(RemoteProperties(configFile!!,null))
                 MainActivity.activity?.irFragment?.notifyDataChanged()
             }
             btn.text = getString(R.string.done)

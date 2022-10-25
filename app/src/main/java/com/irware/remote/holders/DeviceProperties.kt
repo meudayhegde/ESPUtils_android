@@ -4,6 +4,7 @@ import android.os.Handler
 import android.os.Looper
 import android.text.TextUtils
 import android.util.Log
+import com.irware.remote.ESPUtils
 import com.irware.remote.MainActivity
 import com.irware.remote.net.ARPTable
 import com.irware.remote.net.SocketClient
@@ -114,7 +115,7 @@ class DeviceProperties(val deviceConfigFile: File)  {
         deviceConfigFile.delete()
         pinConfig.forEach {
             it.delete()
-            MainActivity.gpioObjectList.remove(it)
+            ESPUtils.gpioObjectList.remove(it)
         }
     }
 }

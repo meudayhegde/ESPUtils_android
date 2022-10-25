@@ -1,5 +1,6 @@
 package com.irware.remote.holders
 
+import com.irware.remote.ESPUtils
 import com.irware.remote.MainActivity
 import org.json.JSONObject
 
@@ -8,7 +9,7 @@ class GPIOObject(var jsonObj: JSONObject) {
     var parent: GPIOConfig? = null
     val deviceProperties: DeviceProperties
         get(){
-            for(prop in MainActivity.devicePropList)
+            for(prop in ESPUtils.devicePropList)
                 if(prop.macAddress == macAddr)
                     return prop
             throw Exception("Device containing this GPIO Does mot exist")

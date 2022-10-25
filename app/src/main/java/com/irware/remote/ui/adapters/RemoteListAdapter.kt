@@ -24,6 +24,7 @@ import androidx.core.content.FileProvider
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
+import com.irware.remote.ESPUtils
 import com.irware.remote.MainActivity
 import com.irware.remote.R
 import com.irware.remote.holders.RemoteProperties
@@ -150,10 +151,10 @@ class RemoteListAdapter(private val propList: ArrayList<RemoteProperties>, priva
         val spinner = inputLayout.findViewById<Spinner>(R.id.select_device)
 
         val devicePropList = arrayListOf<Any>(card.context.getString(R.string.select_device))
-        devicePropList.addAll(MainActivity.devicePropList)
+        devicePropList.addAll(ESPUtils.devicePropList)
         spinner.adapter = ArrayAdapter(card.context, android.R.layout.simple_list_item_1, devicePropList)
 
-        spinner.setSelection(MainActivity.devicePropList.indexOf(prop.deviceProperties) + 1)
+        spinner.setSelection(ESPUtils.devicePropList.indexOf(prop.deviceProperties) + 1)
 
         val dialog = Dialog(card.context)
         dialog.setContentView(inputLayout)
@@ -165,7 +166,7 @@ class RemoteListAdapter(private val propList: ArrayList<RemoteProperties>, priva
                 Toast.makeText(card.context, card.context.getString(R.string.device_not_selected_note), Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             }
-            val selectedDevice = MainActivity.devicePropList[spinner.selectedItemPosition - 1]
+            val selectedDevice = ESPUtils.devicePropList[spinner.selectedItemPosition - 1]
 
             prop.remoteVendor = vendor.text.toString()
             prop.remoteName = name.text.toString()

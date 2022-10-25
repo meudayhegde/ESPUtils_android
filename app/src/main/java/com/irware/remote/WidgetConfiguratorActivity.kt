@@ -67,9 +67,9 @@ class WidgetConfiguratorActivity : AppCompatActivity(),SwipeRefreshLayout.OnRefr
         RemoteButton.onConfigChanged()
 
         val arr = resources.obtainTypedArray(R.array.icons)
-        MainActivity.iconDrawableList = IntArray(arr.length())
+        ESPUtils.iconDrawableList = IntArray(arr.length())
         for(i in 0 until arr.length())
-            MainActivity.iconDrawableList[i] = arr.getResourceId(i,0)
+            ESPUtils.iconDrawableList[i] = arr.getResourceId(i,0)
         arr.recycle()
 
         viewManager = LinearLayoutManager(this)

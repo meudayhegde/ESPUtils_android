@@ -22,6 +22,7 @@ import com.github.clans.fab.FloatingActionButton
 import com.github.clans.fab.FloatingActionMenu
 import com.google.android.material.textfield.TextInputEditText
 import com.irware.ThreadHandler
+import com.irware.remote.ESPUtils
 import com.irware.remote.MainActivity
 import com.irware.remote.R
 import com.irware.remote.holders.GPIOObject
@@ -41,7 +42,7 @@ class GPIOControllerFragment : androidx.fragment.app.Fragment()  {
         if(rootView == null ){
             rootView = inflater.inflate(R.layout.fragment_gpio_controller, container, false) as RelativeLayout
             viewManager = LinearLayoutManager(context)
-            viewAdapter = GPIOListAdapter(MainActivity.gpioObjectList)
+            viewAdapter = GPIOListAdapter(ESPUtils.gpioObjectList)
             recyclerView = rootView!!.findViewById<RecyclerView>(R.id.manage_remotes_recycler_view).apply {
                 setHasFixedSize(true)
                 layoutManager = viewManager
@@ -52,7 +53,7 @@ class GPIOControllerFragment : androidx.fragment.app.Fragment()  {
             val refreshLayout = rootView!!.findViewById<SwipeRefreshLayout>(R.id.refresh_layout)
             refreshLayout.setOnRefreshListener {
                 refreshLayout.isRefreshing = true
-                MainActivity.devicePropList.forEach {
+                ESPUtils.devicePropList.forEach {
                     it.refreshGPIOStatus()
                 }
                 ThreadHandler.runOnFreeThread{
@@ -84,7 +85,7 @@ class GPIOControllerFragment : androidx.fragment.app.Fragment()  {
                     "GPIO9 (SD2)", "GPIO10 (SD3)", "GPIO12 (D6)", "GPIO13 (D7)", "GPIO14 (D5)", "GPIO15 (D8)", "GPIO16 (D0)"
                 ))
                 val devicePropList = arrayListOf<Any>(requireContext().getString(R.string.select_device))
-                devicePropList.addAll(MainActivity.devicePropList)
+                devicePropList.addAll(ESPUtils.devicePropList)
                 devicesSpinner.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, devicePropList)
                 dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener {
                     val nameText = dialog.findViewById<TextInputEditText>(R.id.edit_text_switch_name)!!
@@ -104,9 +105,9 @@ class GPIOControllerFragment : androidx.fragment.app.Fragment()  {
                             val jsonObj = JSONObject()
                             jsonObj.put("title", nameText.text.toString())
                             jsonObj.put("subTitle", description.text.toString())
-                            jsonObj.put("macAddr", MainActivity.devicePropList[devicesSpinner.selectedItemPosition - 1].macAddress)
+                            jsonObj.put("macAddr", ESPUtils.devicePropList[devicesSpinner.selectedItemPosition - 1].macAddress)
                             jsonObj.put("gpioNumber", gpioSpinner.selectedItem.toString().split(" ")[0].filter { it.isDigit() }.toInt())
-                            MainActivity.gpioObjectList.add(GPIOObject(jsonObj, MainActivity.gpioConfig!!))
+                            ESPUtils.gpioObjectList.add(GPIOObject(jsonObj, ESPUtils.gpioConfig!!))
                             viewAdapter?.notifyDataSetChanged()
                             dialog.dismiss()
                         }
@@ -120,7 +121,7 @@ class GPIOControllerFragment : androidx.fragment.app.Fragment()  {
         Handler(Looper.getMainLooper()).postDelayed({
             if(manageMenu.isMenuButtonHidden)
                 manageMenu.showMenuButton(true)
-            if(MainActivity.remotePropList.isEmpty())
+            if(ESPUtils.remotePropList.isEmpty())
                 Handler(Looper.getMainLooper()).postDelayed({manageMenu.showMenu(true)},400)
         },400)
         return rootView

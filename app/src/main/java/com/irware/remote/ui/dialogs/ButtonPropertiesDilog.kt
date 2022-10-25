@@ -127,7 +127,7 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
     override fun onTimeout() {
         handler.post{
             time_remaining_text.visibility = View.GONE
-            Toast.makeText(context,"TimeOut",Toast.LENGTH_LONG).show()
+            Toast.makeText(context, "TimeOut", Toast.LENGTH_LONG).show()
             ir_capture_progress.visibility = View.GONE
             ir_capture_error_logo.visibility = View.VISIBLE
             ir_capture_status.text = context.getString(R.string.ir_cap_status_timeout)
@@ -150,7 +150,7 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
     override fun onDeny(err_info:String?) {
         handler.post {
             time_remaining_text.visibility = View.GONE
-            Toast.makeText(context,err_info,Toast.LENGTH_LONG).show()
+            Toast.makeText(context, err_info, Toast.LENGTH_LONG).show()
             ir_capture_progress.visibility = View.GONE
             ir_capture_error_logo.visibility = View.VISIBLE
             ir_capture_instruction.visibility = View.GONE
@@ -179,7 +179,7 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
         try{
             jsonObj.getInt("btnPosition")
         }catch(ex:JSONException){
-            jsonObj.put("btnPosition",-1)
+            jsonObj.put("btnPosition", -1)
         }
         ButtonPropertiesDialog.jsonObj = jsonObj
         buttonProperties = ButtonProperties(jsonObj)
@@ -198,10 +198,10 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
             }
         })
 
-        val text = context.resources.getString(R.string.length_of_captured_ir_signal) + " "+jsonObj.getString("length").toLong(16)+" pulses"
+        val text = context.resources.getString(R.string.length_of_captured_ir_signal) + " " + jsonObj.getString("length").toLong(16) + " pulses"
         text_ir_size.text = text
         text_ir_size.setOnLongClickListener{
-            Toast.makeText(context,"Protocol :"+jsonObj.getString("protocol")+" "+jsonObj.getString("irCode").replace(" ","").replace("\n",""),Toast.LENGTH_LONG).show()
+            Toast.makeText(context, "Protocol :" + jsonObj.getString("protocol") + " " + jsonObj.getString("irCode").replace(" ", "").replace("\n", ""), Toast.LENGTH_LONG).show()
             true
         }
 
@@ -222,10 +222,10 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
             val iconAdapter = object:ArrayAdapter<Int>(context, R.layout.drawable_layout, ESPUtils.iconDrawableList.toTypedArray()){
                 override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                     val drawable = ContextCompat.getDrawable(context, getItem(position)!!)
-                    DrawableCompat.setTint(drawable!!,MainActivity.colorOnBackground)
+                    DrawableCompat.setTint(drawable!!, MainActivity.colorOnBackground)
                     var returnView = convertView
-                    if(returnView==null){
-                        returnView = layoutInflater.inflate(R.layout.drawable_layout,null)
+                    if(returnView == null){
+                        returnView = layoutInflater.inflate(R.layout.drawable_layout, null)
                     }
                     val iv = (returnView as LinearLayout).findViewById<ImageView>(R.id.btn_icon_grid)
                     val lparam = LinearLayout.LayoutParams(MainActivity.layoutParams.width / (MainActivity.NUM_COLUMNS + 2), MainActivity.layoutParams.width / (MainActivity.NUM_COLUMNS + 2))

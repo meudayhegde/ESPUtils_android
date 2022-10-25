@@ -26,14 +26,10 @@
                 android:orientation="vertical"
                 tools:ignore="UnusedAttribute">
 
-            <ImageView
-                    android:layout_width="48sp"
-                    android:layout_height="48sp"
-                    android:id="@+id/esp_icon"
-                    android:layout_marginStart="8sp"
-                    android:src="@drawable/icon_esp_devices"
-                    android:layout_centerVertical="true"
-                    app:tint="?attr/colorOnBackground" />
+            <ImageView android:layout_width="48sp" android:layout_height="48sp"
+                    android:id="@+id/esp_icon" android:layout_marginStart="8sp"
+                    android:src="@drawable/icon_esp_devices" android:layout_centerVertical="true"
+                    app:tint="?attr/colorOnBackground" android:contentDescription="@string/esp_devices" />
 
             <LinearLayout
                     android:id="@+id/layout_vendor"
@@ -52,6 +48,7 @@
                         android:layout_marginTop="4sp"
                         android:layout_marginEnd="6sp"
                         android:text="@string/device_name"
+                        android:textStyle="bold"
                         android:textColor="?attr/colorOnBackground"
                         android:textSize="16sp" />
 

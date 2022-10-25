@@ -26,7 +26,7 @@ object SocketClient{
             bw.flush()
         }
 
-        fun readLine():String{
+        fun readLine(): String{
             return br.readLine()
         }
 
@@ -77,7 +77,10 @@ object SocketClient{
                                 irlistener.onIrRead(result)
                             }
                         }
-                        "timeout" -> irlistener.onTimeout()
+                        "timeout" -> {
+                            irlistener.onTimeout()
+                            break
+                        }
                         "progress" -> {
                             Handler(Looper.getMainLooper()).post  {
                                 irlistener.onProgress(result.getInt("value"))

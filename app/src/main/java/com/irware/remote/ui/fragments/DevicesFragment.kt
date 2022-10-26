@@ -29,12 +29,10 @@ import com.irware.remote.MainActivity
 import com.irware.remote.R
 import com.irware.remote.holders.DeviceProperties
 import com.irware.remote.net.ARPItem
-import com.irware.remote.net.ARPTable
 import com.irware.remote.net.SocketClient
 import com.irware.remote.ui.adapters.DeviceListAdapter
 import com.irware.remote.ui.adapters.OnARPItemSelectedListener
 import com.irware.remote.ui.adapters.ScanDeviceListAdapter
-import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 import kotlin.math.min
@@ -88,7 +86,9 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
             val refreshLayout = rootView!!.findViewById<SwipeRefreshLayout>(R.id.refresh_layout)
             refreshLayout.setOnRefreshListener {
                 refreshLayout.isRefreshing = true
-                viewAdapter.notifyDataSetChanged()
+                ESPUtils.devicePropList.forEach {
+                    it.getIpAddress {  }
+                }
                 ThreadHandler.runOnFreeThread{
                     Thread.sleep(100)
                     ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE) {
@@ -271,11 +271,4 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
         super.onDetach()
         listener = null
     }
-}
-
-private fun JSONArray.insert(position: Int, value: Any){
-    for (i in length() downTo position + 1) {
-        put(i, get(i - 1))
-    }
-    put(position, value)
 }

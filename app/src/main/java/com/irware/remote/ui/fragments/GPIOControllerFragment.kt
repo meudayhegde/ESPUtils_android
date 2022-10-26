@@ -53,7 +53,9 @@ class GPIOControllerFragment : androidx.fragment.app.Fragment()  {
             val refreshLayout = rootView!!.findViewById<SwipeRefreshLayout>(R.id.refresh_layout)
             refreshLayout.setOnRefreshListener {
                 refreshLayout.isRefreshing = true
-                ESPUtils.devicePropList.forEach {
+                ESPUtils.devicePropList.filter {
+                    it.pinConfig.size > 0
+                }.forEach {
                     it.refreshGPIOStatus()
                 }
                 ThreadHandler.runOnFreeThread{
@@ -108,7 +110,7 @@ class GPIOControllerFragment : androidx.fragment.app.Fragment()  {
                             jsonObj.put("macAddr", ESPUtils.devicePropList[devicesSpinner.selectedItemPosition - 1].macAddress)
                             jsonObj.put("gpioNumber", gpioSpinner.selectedItem.toString().split(" ")[0].filter { it.isDigit() }.toInt())
                             ESPUtils.gpioObjectList.add(GPIOObject(jsonObj, ESPUtils.gpioConfig!!))
-                            viewAdapter?.notifyDataSetChanged()
+                            viewAdapter?.notifyItemInserted(ESPUtils.gpioObjectList.size - 1)
                             dialog.dismiss()
                         }
                     }
@@ -125,10 +127,6 @@ class GPIOControllerFragment : androidx.fragment.app.Fragment()  {
                 Handler(Looper.getMainLooper()).postDelayed({manageMenu.showMenu(true)},400)
         },400)
         return rootView
-    }
-
-    fun notifyDataChanged(){
-        viewAdapter?.notifyDataSetChanged()
     }
 
     override fun onAttach(context: Context) {

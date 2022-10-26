@@ -1,11 +1,10 @@
 package com.irware.remote.holders
 
 import com.irware.remote.ESPUtils
-import com.irware.remote.MainActivity
 import org.json.JSONObject
 
 class GPIOObject(var jsonObj: JSONObject) {
-
+    var onGPIORefreshListener: OnGPIORefreshListener? = null
     var parent: GPIOConfig? = null
     val deviceProperties: DeviceProperties
         get(){
@@ -44,11 +43,15 @@ class GPIOObject(var jsonObj: JSONObject) {
             jsonObj.put(it, curProp.get(it))
         }
         parent.update()
-        macAddr.intern()
         deviceProperties.pinConfig.add(this)
     }
 
     fun delete(): Boolean{
         return parent?.removeGPIO(jsonObj)?: false
     }
+}
+
+interface OnGPIORefreshListener{
+    fun onRefreshBegin()
+    fun onRefresh(pinValue: Int)
 }

@@ -3,10 +3,7 @@ package com.irware.remote.holders
 import android.os.Handler
 import android.os.Looper
 import android.text.TextUtils
-import android.util.Log
 import com.irware.remote.ESPUtils
-import com.irware.remote.MainActivity
-import com.irware.remote.net.ARPTable
 import com.irware.remote.net.SocketClient
 import org.json.JSONArray
 import org.json.JSONException
@@ -16,10 +13,15 @@ import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 
 class DeviceProperties(val deviceConfigFile: File)  {
-
+    var onStatusListener: OnStatusListener? = null
     private var jsonObj : JSONObject = getJSONObject()
-    private var onStatusUpdateListeners = ArrayList<OnStatusUpdateListener>()
     var isConnected = false
+    set(value){
+        field = value
+        Handler(Looper.getMainLooper()).post{
+            onStatusListener?.onStatusUpdate(value)
+        }
+    }
 
     var nickName: String = jsonObj.optString("nickName", "")
         get() { return jsonObj.optString("nickName", "")}
@@ -41,7 +43,10 @@ class DeviceProperties(val deviceConfigFile: File)  {
     var pinConfig = ArrayList<GPIOObject>()
 
     fun getIpAddress(listener: ((address: String?) -> Unit)){
-        ARPTable().getIpFromMac(macAddress){
+        Handler(Looper.getMainLooper()).post{
+            onStatusListener?.onBeginRefresh()
+        }
+        ESPUtils.arpTable.getIpFromMac(macAddress){
             isConnected = !(it == null || it.isEmpty())
             listener.invoke(it)
         }
@@ -72,43 +77,36 @@ class DeviceProperties(val deviceConfigFile: File)  {
 
 
     fun refreshGPIOStatus(){
+        Handler(Looper.getMainLooper()).post{
+            pinConfig.forEach {
+                it.onGPIORefreshListener?.onRefreshBegin()
+            }
+        }
         getIpAddress{ address ->
-            try{
-                if (isConnected){
-                    val connector = SocketClient.Connector(address!!)
-                    connector.sendLine("{\"request\":\"gpio_get\",\"username\":\"$userName\", \"password\": \"$password\", \"pinNumber\": -1}")
-                    val response = connector.readLine()
-                    connector.close()
-                    val pinJson = JSONArray(response)
+            if (isConnected){
+                val connector = SocketClient.Connector(address!!)
+                connector.sendLine("{\"request\":\"gpio_get\",\"username\":\"$userName\", \"password\": \"$password\", \"pinNumber\": -1}")
+                val response = connector.readLine()
+                connector.close()
+                val pinJson = JSONArray(response)
 
-                    for(j in 0 until pinJson.length()){
-                        val gpioObj = pinJson.getJSONObject(j)
-                        for(gpio in pinConfig){
-                            if(gpio.gpioNumber == gpioObj.getInt("pinNumber")){
-                                gpio.pinValue = gpioObj.getInt("pinValue")
+                for(j in 0 until pinJson.length()){
+                    val gpioObj = pinJson.getJSONObject(j)
+                    for(gpio in pinConfig){
+                        if(gpio.gpioNumber == gpioObj.getInt("pinNumber")){
+                            gpio.pinValue = gpioObj.getInt("pinValue")
+                            Handler(Looper.getMainLooper()).post{
+                                gpio.onGPIORefreshListener?.onRefresh(gpio.pinValue)
                             }
                         }
                     }
                 }
-            }catch(ex: Exception){
-                Log.d("PinInfo", "Error: Failed to get pin info, $ex")
-            }
-            Handler(Looper.getMainLooper()).post {
-                onStatusUpdateListeners.forEach {
-                    it.onStatusUpdate(isConnected)
+            }else{
+                Handler(Looper.getMainLooper()).post{
+                    pinConfig.forEach { it.onGPIORefreshListener?.onRefresh(-1) }
                 }
             }
         }
-    }
-
-    fun addOnStatusUpdateListener(onStatusUpdateListener: OnStatusUpdateListener){
-        for (listener in onStatusUpdateListeners){
-            if (listener.listenerParent == onStatusUpdateListener.listenerParent) return
-        }
-        onStatusUpdateListeners.add(onStatusUpdateListener)
-    }
-    fun clearOnStatusUpdateListener(){
-        onStatusUpdateListeners.clear()
     }
 
     fun delete(){
@@ -120,12 +118,10 @@ class DeviceProperties(val deviceConfigFile: File)  {
     }
 }
 
-interface OnStatusUpdateListener{
-    var listenerParent : Any?
+interface OnStatusListener{
+    fun onBeginRefresh()
     fun onStatusUpdate(connected: Boolean)
 }
-
-
 
 
 

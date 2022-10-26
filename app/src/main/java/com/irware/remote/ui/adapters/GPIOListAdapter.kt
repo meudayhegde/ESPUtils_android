@@ -1,10 +1,11 @@
 package com.irware.remote.ui.adapters
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,12 +18,11 @@ import com.irware.ThreadHandler
 import com.irware.remote.MainActivity
 import com.irware.remote.R
 import com.irware.remote.holders.GPIOObject
-import com.irware.remote.holders.OnStatusUpdateListener
-import com.irware.remote.net.ARPTable
+import com.irware.remote.holders.OnGPIORefreshListener
 import com.irware.remote.net.SocketClient
 import org.json.JSONObject
 
-class GPIOListAdapter(private val propList: ArrayList<GPIOObject>) : RecyclerView.Adapter<GPIOListAdapter.MyViewHolder>(){
+class GPIOListAdapter(private val gpioList: ArrayList<GPIOObject>) : RecyclerView.Adapter<GPIOListAdapter.MyViewHolder>(){
 
     class MyViewHolder(val cardView: CardView) : RecyclerView.ViewHolder(cardView){
         val title: TextView = cardView.findViewById(R.id.gpio_name)
@@ -46,63 +46,78 @@ class GPIOListAdapter(private val propList: ArrayList<GPIOObject>) : RecyclerVie
 
     @SuppressLint("InflateParams")
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val prop = propList[position]
+        val gpioObject = gpioList[position]
+        setViews(holder, gpioObject)
+    }
 
-        holder.title.text = prop.title
-        holder.subTitle.text = "Device: ${prop.deviceProperties?.nickName?: "Unknown"}\n${prop.subTitle}"
-        holder.iconDrawable?.setTint(MainActivity.colorOnBackground)
+    private fun setViews(holder: MyViewHolder, gpioObject: GPIOObject){
+        gpioObject.onGPIORefreshListener = object: OnGPIORefreshListener{
+            override fun onRefreshBegin() {
+                itemStatusRefreshing(holder, gpioObject)
+            }
 
-        holder.cardView.isEnabled = false
+            override fun onRefresh(pinValue: Int) {
+                if(pinValue == -1) itemStatusOffline(holder, gpioObject)
+                else itemStatusOnline(holder, gpioObject)
+            }
+        }
+        if(gpioObject.deviceProperties.isConnected) itemStatusOnline(holder, gpioObject)
+        else itemStatusOffline(holder, gpioObject)
+
+        holder.cardView.setOnClickListener { holder.gpioSwitch.toggle() }
+        holder.gpioSwitch.setOnCheckedChangeListener (object: CompoundButton.OnCheckedChangeListener{
+            override fun onCheckedChanged(p0: CompoundButton?, p1: Boolean) {
+                gpioSwitchCheckedCHangedListener(gpioObject, p0!!, holder.iconDrawable, this)
+            }
+        })
+    }
+
+    private fun itemStatusOnline(holder: MyViewHolder, gpioObject: GPIOObject){
+        itemStatusAll(holder, gpioObject)
+        holder.cardView.isEnabled = true
+        holder.cardView.getChildAt(0).background =
+            ContextCompat.getDrawable(holder.cardView.context, R.drawable.round_corner_success)
+        holder.gpioSwitch.visibility = View.VISIBLE
+        holder.statusLayout.visibility = View.GONE
+        if(gpioObject.pinValue == 1){
+            holder.gpioSwitch.isChecked = true
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                holder.iconDrawable?.setTint(Color.YELLOW)
+            }
+        }else{
+            holder.gpioSwitch.isChecked = false
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                holder.iconDrawable?.setTint(MainActivity.colorOnBackground)
+            }
+        }
+    }
+
+    private fun itemStatusOffline(holder: MyViewHolder, gpioObject: GPIOObject){
+        itemStatusAll(holder, gpioObject)
+        holder.statusLayout.visibility = View.VISIBLE
         holder.gpioSwitch.visibility = View.GONE
+        holder.cardView.isEnabled = false
+        holder.cardView.getChildAt(0).background = ContextCompat.getDrawable(holder.cardView.context, R.drawable.round_corner_error)
+        holder.progressBar.visibility = View.GONE
+        holder.progressImg.visibility = View.VISIBLE
+        holder.progressText.text = holder.cardView.context.getString(R.string.offline)
+    }
 
+    private fun itemStatusRefreshing(holder: MyViewHolder, gpioObject: GPIOObject){
+        itemStatusAll(holder, gpioObject)
+        holder.gpioSwitch.visibility = View.GONE
         holder.statusLayout.visibility = View.VISIBLE
         holder.progressBar.visibility = View.VISIBLE
         holder.progressImg.visibility = View.GONE
         holder.progressText.text = holder.cardView.context.getString(R.string.loading)
-
-        holder.cardView.getChildAt(0).background = ContextCompat.getDrawable(holder.cardView.context, R.drawable.round_corner)
-        prop.deviceProperties?.addOnStatusUpdateListener(object: OnStatusUpdateListener{
-            override var listenerParent: Any? = prop
-
-            override fun onStatusUpdate(connected: Boolean) {
-                updateItemStatus(connected, prop, holder)
-            }
-        })
-        prop.deviceProperties?.refreshGPIOStatus()
+        holder.cardView.getChildAt(0).background =
+            ContextCompat.getDrawable(holder.cardView.context, R.drawable.layout_border_round_corner)
+        holder.cardView.isEnabled = false
     }
-
-    fun updateItemStatus(connected: Boolean, prop: GPIOObject, holder: MyViewHolder){
-        if(connected){
-            holder.cardView.getChildAt(0).background = ContextCompat.getDrawable(holder.cardView.context, R.drawable.round_corner_success)
-            holder.cardView.isEnabled = true
-
-            holder.gpioSwitch.visibility = View.VISIBLE
-            holder.statusLayout.visibility = View.GONE
-
-            if(prop.pinValue == 1){
-                holder.gpioSwitch.isChecked = true
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    holder.iconDrawable?.setTint(Color.YELLOW)
-                }
-            }else{
-                holder.gpioSwitch.isChecked = false
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    holder.iconDrawable?.setTint(MainActivity.colorOnBackground)
-                }
-            }
-
-            holder.cardView.setOnClickListener { holder.gpioSwitch.toggle() }
-            holder.gpioSwitch.setOnCheckedChangeListener (object: CompoundButton.OnCheckedChangeListener{
-                override fun onCheckedChanged(p0: CompoundButton?, p1: Boolean) {
-                    gpioSwitchCheckedCHangedListener(prop, p0!!, holder.iconDrawable, this)
-                }
-            })
-        }else{
-            holder.cardView.getChildAt(0).background = ContextCompat.getDrawable(holder.cardView.context, R.drawable.round_corner_error)
-            holder.progressBar.visibility = View.GONE
-            holder.progressImg.visibility = View.VISIBLE
-            holder.progressText.text = holder.cardView.context.getString(R.string.offline)
-        }
+    private fun itemStatusAll(holder: MyViewHolder, gpioObject: GPIOObject){
+        holder.title.text = gpioObject.title
+        holder.subTitle.text = "Device: ${gpioObject.deviceProperties.nickName}\n${gpioObject.subTitle}"
+        holder.iconDrawable?.setTint(MainActivity.colorOnBackground)
     }
 
     private fun gpioSwitchCheckedCHangedListener(prop: GPIOObject, compoundButton: CompoundButton, iconDrawable: Drawable?,
@@ -117,7 +132,7 @@ class GPIOListAdapter(private val propList: ArrayList<GPIOObject>) : RecyclerVie
             }catch(ex: Exception){
                 false
             }
-            (compoundButton.context as Activity).runOnUiThread {
+            Handler(Looper.getMainLooper()).post {
                 if(!success){
                     compoundButton.setOnCheckedChangeListener { _, _ ->  }
                     compoundButton.isChecked = !compoundButton.isChecked
@@ -128,5 +143,5 @@ class GPIOListAdapter(private val propList: ArrayList<GPIOObject>) : RecyclerVie
         }
     }
 
-    override fun getItemCount() = propList.size
+    override fun getItemCount() = gpioList.size
 }

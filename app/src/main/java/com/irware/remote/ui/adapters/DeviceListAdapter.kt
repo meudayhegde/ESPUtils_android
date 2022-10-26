@@ -28,6 +28,7 @@ import com.irware.remote.MainActivity
 import com.irware.remote.R
 import com.irware.remote.SettingsItem
 import com.irware.remote.holders.DeviceProperties
+import com.irware.remote.holders.OnStatusListener
 import com.irware.remote.net.EspOta
 import com.irware.remote.net.OnUpdateIntermediateListener
 import com.irware.remote.net.SocketClient
@@ -42,8 +43,7 @@ import java.util.zip.ZipFile
 class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                         private val devicesFragment: DevicesFragment): RecyclerView.Adapter<DeviceListAdapter.MyViewHolder>(){
     
-    class MyViewHolder(listItem: RelativeLayout) : RecyclerView.ViewHolder(listItem){
-        val cardView: CardView = listItem.findViewById(R.id.device_list_item_foreground)
+    class MyViewHolder(val cardView: CardView) : RecyclerView.ViewHolder(cardView){
         val deviceNameView: TextView = cardView.findViewById(R.id.name_device)
         val deviceMacAddrView: TextView = cardView.findViewById(R.id.mac_addr)
         val deviceDescView: TextView = cardView.findViewById(R.id.device_desc)
@@ -56,8 +56,8 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
 
     val context = devicesFragment.requireContext()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        val listItem = LayoutInflater.from(parent.context).inflate(R.layout.device_list_item, parent, false) as RelativeLayout
-        return MyViewHolder(listItem)
+        val cardView = LayoutInflater.from(parent.context).inflate(R.layout.device_list_item, parent, false) as CardView
+        return MyViewHolder(cardView)
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
@@ -65,36 +65,56 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
         setViewProps(holder, prop)
     }
 
-    private fun setViewRefreshed(holder: MyViewHolder, prop: DeviceProperties){
-        holder.refresh.visibility = View.GONE
-        holder.icOnline.visibility = if (prop.isConnected) View.VISIBLE else View.GONE
-        holder.icOffline.visibility = if (prop.isConnected) View.GONE else View.VISIBLE
-        holder.status.text =
-            context.resources.getString(if(prop.isConnected) R.string.online else R.string.offline)
-        holder.ipText.text = prop.ipAddress
-
-        holder.cardView.getChildAt(0).background =
-            if(prop.isConnected) AppCompatResources.getDrawable(context, R.drawable.round_corner_success)
-            else AppCompatResources.getDrawable(context, R.drawable.round_corner_error)
-        MainActivity.activity?.irFragment?.notifyDataChanged()
-    }
-
-    @SuppressLint("SetTextI18n", "UseCompatLoadingForDrawables", "InflateParams")
-    private fun setViewProps(holder: MyViewHolder, prop: DeviceProperties){
+    private fun setStateAll(holder:MyViewHolder, prop: DeviceProperties){
         holder.deviceNameView.text = prop.nickName
         holder.deviceMacAddrView.text = "(${prop.macAddress})"
         holder.deviceDescView.text = prop.description
+    }
 
+    private fun setStateRefreshing(holder:MyViewHolder, prop: DeviceProperties){
+        setStateAll(holder, prop)
         holder.refresh.visibility = View.VISIBLE
         holder.icOnline.visibility = View.GONE
         holder.icOffline.visibility = View.GONE
         holder.status.text = context.getString(R.string.connecting)
+        holder.cardView.getChildAt(0).background =
+            AppCompatResources.getDrawable(context, R.drawable.layout_border_round_corner)
         holder.ipText.text = ""
-        prop.getIpAddress{
-            Handler(Looper.getMainLooper()).post{
-                setViewRefreshed(holder, prop)
+    }
+    private fun setStateOnline(holder:MyViewHolder, prop: DeviceProperties){
+        setStateAll(holder, prop)
+        holder.refresh.visibility = View.GONE
+        holder.icOnline.visibility = View.VISIBLE
+        holder.icOffline.visibility = View.GONE
+        holder.status.text = context.resources.getString(R.string.online)
+        holder.ipText.text = prop.ipAddress
+        holder.cardView.getChildAt(0).background =
+            AppCompatResources.getDrawable(context, R.drawable.round_corner_success)
+    }
+    private fun setStateOffline(holder:MyViewHolder, prop: DeviceProperties){
+        setStateAll(holder, prop)
+        holder.refresh.visibility = View.GONE
+        holder.icOnline.visibility = View.GONE
+        holder.icOffline.visibility = View.VISIBLE
+        holder.status.text = context.resources.getString(R.string.offline)
+        holder.ipText.text = prop.ipAddress
+        holder.cardView.getChildAt(0).background =
+            AppCompatResources.getDrawable(context, R.drawable.round_corner_error)
+    }
+
+    private fun setViewProps(holder: MyViewHolder, prop: DeviceProperties){
+        prop.onStatusListener = object: OnStatusListener{
+            override fun onBeginRefresh() {
+                setStateRefreshing(holder, prop)
+            }
+
+            override fun onStatusUpdate(connected: Boolean) {
+                if(connected) setStateOnline(holder, prop) else setStateOffline(holder, prop)
+                MainActivity.activity?.irFragment?.notifyDataChanged()
             }
         }
+        if(prop.isConnected) setStateOnline(holder, prop) else setStateOffline(holder, prop)
+
         holder.cardView.setOnClickListener {
             val settingsDialog = AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
                 .setPositiveButton(context.resources.getString(R.string.done)) { p0, _ -> p0.dismiss() }
@@ -130,7 +150,6 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                 refreshLayout?.setOnRefreshListener {
                     prop.getIpAddress{
                         Handler(Looper.getMainLooper()).post{
-                            setViewRefreshed(holder, prop)
                             for(ind in 0 until settingsList.size){
                                 if(settingsList[ind].prop != null){
                                     viewAdapter.notifyItemChanged(ind)

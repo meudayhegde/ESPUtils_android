@@ -10,7 +10,7 @@ class ThreadHandler {
 
     private constructor(vararg threadNames: String, threadCunt: Int = CPU_CORE_COUNT - 1){
         threadNames.forEach {
-            val thread = InfiniteThread()
+            val thread = InfiniteThread(true)
             thread.name = it
             threadList.add(thread)
         }
@@ -131,6 +131,11 @@ class ThreadHandler {
         constructor(task: (() -> Unit)) : super() {
             start()
             enqueueTask(task)
+        }
+
+        constructor(daemon: Boolean): super(){
+            isDaemon = daemon
+            start()
         }
 
         override fun run() {

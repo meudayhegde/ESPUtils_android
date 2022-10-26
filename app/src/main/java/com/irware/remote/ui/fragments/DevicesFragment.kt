@@ -27,11 +27,12 @@ import com.irware.ThreadHandler
 import com.irware.remote.ESPUtils
 import com.irware.remote.MainActivity
 import com.irware.remote.R
+import com.irware.remote.holders.ARPItem
 import com.irware.remote.holders.DeviceProperties
-import com.irware.remote.net.ARPItem
+import com.irware.remote.listeners.OnARPItemSelectedListener
+import com.irware.remote.listeners.OnFragmentInteractionListener
 import com.irware.remote.net.SocketClient
 import com.irware.remote.ui.adapters.DeviceListAdapter
-import com.irware.remote.ui.adapters.OnARPItemSelectedListener
 import com.irware.remote.ui.adapters.ScanDeviceListAdapter
 import org.json.JSONObject
 import java.io.File
@@ -127,7 +128,7 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
                 dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
                 manageMenu.close(true)
 
-                viewAdapter.setOnARPItemSelectedListener(object: OnARPItemSelectedListener{
+                viewAdapter.setOnARPItemSelectedListener(object: OnARPItemSelectedListener {
                     override fun onARPItemSelected(arpItem: ARPItem) {
                         recyclerView.visibility = View.GONE
                         scrollView.visibility = View.VISIBLE

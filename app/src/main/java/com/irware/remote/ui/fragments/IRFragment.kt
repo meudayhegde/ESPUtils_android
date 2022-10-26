@@ -29,6 +29,7 @@ import com.irware.remote.ESPUtils
 import com.irware.remote.MainActivity
 import com.irware.remote.R
 import com.irware.remote.holders.RemoteProperties
+import com.irware.remote.listeners.OnFragmentInteractionListener
 import com.irware.remote.ui.adapters.RemoteListAdapter
 import com.irware.remote.ui.dialogs.RemoteDialog
 import java.io.File

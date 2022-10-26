@@ -7,6 +7,7 @@ import com.irware.ThreadHandler
 import com.irware.remote.ESPUtils
 import com.irware.remote.MainActivity
 import com.irware.remote.R
+import com.irware.remote.listeners.IrCodeListener
 import com.irware.remote.ui.dialogs.ButtonPropertiesDialog
 import org.json.JSONObject
 import java.io.*
@@ -39,7 +40,7 @@ object SocketClient{
         }
     }
 
-    fun readIrCode(address: String, userName: String, password: String, irlistener:IrCodeListener, jsonObj:JSONObject?) {
+    fun readIrCode(address: String, userName: String, password: String, irlistener: IrCodeListener, jsonObj:JSONObject?) {
         ThreadHandler.runOnFreeThread {
             var canceled = false
             try {
@@ -115,13 +116,4 @@ object SocketClient{
         }
     }
 
-}
-
-interface IrCodeListener{
-    var parentDialog:androidx.appcompat.app.AlertDialog?
-    var mode:Int
-    fun onIrRead(jsonObj:JSONObject)
-    fun onTimeout()
-    fun onDeny(err_info:String?)
-    fun onProgress(value:Int)
 }

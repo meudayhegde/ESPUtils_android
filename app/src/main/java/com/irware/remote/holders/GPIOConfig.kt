@@ -75,23 +75,22 @@ class GPIOConfig(private val gpioConfigFile: File)  {
     override fun toString(): String {
         return jsonObj.toString(0).replace("\n","")
     }
-}
 
-private fun JSONArray.index(obj: JSONObject): Int{
-    for(position in 0 until this.length()){
-        val curObj = getJSONObject(position)
-        if(curObj.optString("macAddr", "") == obj.optString("macAddr", "") &&
+    private fun JSONArray.index(obj: JSONObject): Int{
+        for(position in 0 until this.length()){
+            val curObj = getJSONObject(position)
+            if(curObj.optString("macAddr", "") == obj.optString("macAddr", "") &&
                 curObj.optInt("gpioNumber") == obj.optInt("gpioNumber")) return position
+        }
+        return -1
     }
-    return -1
-}
 
-private operator fun JSONArray.contains(obj: JSONObject): Boolean {
-    if(index(obj) == -1)
-        return false
-    return true
+    private operator fun JSONArray.contains(obj: JSONObject): Boolean {
+        if(index(obj) == -1)
+            return false
+        return true
+    }
 }
-
 
 
 

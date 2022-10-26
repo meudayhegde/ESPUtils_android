@@ -13,6 +13,7 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import com.irware.remote.R
+import com.irware.remote.listeners.OnFragmentInteractionListener
 
 class AboutFragment : androidx.fragment.app.Fragment() {
     private var listener: OnFragmentInteractionListener? = null

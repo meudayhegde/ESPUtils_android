@@ -6,19 +6,20 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.irware.remote.R
-import com.irware.remote.net.ARPItem
+import com.irware.remote.holders.ARPItem
+import com.irware.remote.listeners.OnARPItemSelectedListener
 
-class ScanDeviceListAdapter(private val arpItemList: ArrayList<ARPItem>) : RecyclerView.Adapter<ScanDeviceListAdapter.MyViewHolder>() {
+class ScanDeviceListAdapter(private val arpItemList: ArrayList<ARPItem>) : RecyclerView.Adapter<ScanDeviceListAdapter.DeviceScanListViewHolder>() {
 
-    class MyViewHolder(val cardView: CardView) : RecyclerView.ViewHolder(cardView){
+    class DeviceScanListViewHolder(val cardView: CardView) : RecyclerView.ViewHolder(cardView){
         val ipAddrView: TextView = cardView.findViewById(R.id.device_ip_address)
         val macAddrView: TextView = cardView.findViewById(R.id.device_mac_address)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DeviceScanListViewHolder {
         val cardView = LayoutInflater.from(parent.context)
             .inflate(R.layout.device_list_scan_item, parent, false) as CardView
-        return MyViewHolder(cardView)
+        return DeviceScanListViewHolder(cardView)
     }
 
     private var onARPItemSelectedListener: OnARPItemSelectedListener? = null
@@ -26,7 +27,7 @@ class ScanDeviceListAdapter(private val arpItemList: ArrayList<ARPItem>) : Recyc
         this.onARPItemSelectedListener = onARPItemSelectedListener
     }
 
-    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: DeviceScanListViewHolder, position: Int) {
         val item = arpItemList[position]
         holder.ipAddrView.text = item.ipAddress
         holder.macAddrView.text = item.macAddress
@@ -34,8 +35,4 @@ class ScanDeviceListAdapter(private val arpItemList: ArrayList<ARPItem>) : Recyc
     }
 
     override fun getItemCount() = arpItemList.size
-}
-
-interface OnARPItemSelectedListener{
-    fun onARPItemSelected(arpItem: ARPItem)
 }

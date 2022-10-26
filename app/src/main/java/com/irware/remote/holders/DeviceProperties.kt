@@ -4,6 +4,7 @@ import android.os.Handler
 import android.os.Looper
 import android.text.TextUtils
 import com.irware.remote.ESPUtils
+import com.irware.remote.listeners.OnDeviceStatusListener
 import com.irware.remote.net.SocketClient
 import org.json.JSONArray
 import org.json.JSONException
@@ -13,13 +14,13 @@ import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 
 class DeviceProperties(val deviceConfigFile: File)  {
-    var onStatusListener: OnStatusListener? = null
+    var onDeviceStatusListener: OnDeviceStatusListener? = null
     private var jsonObj : JSONObject = getJSONObject()
     var isConnected = false
     set(value){
         field = value
         Handler(Looper.getMainLooper()).post{
-            onStatusListener?.onStatusUpdate(value)
+            onDeviceStatusListener?.onStatusUpdate(value)
         }
     }
 
@@ -44,7 +45,7 @@ class DeviceProperties(val deviceConfigFile: File)  {
 
     fun getIpAddress(listener: ((address: String?) -> Unit)){
         Handler(Looper.getMainLooper()).post{
-            onStatusListener?.onBeginRefresh()
+            onDeviceStatusListener?.onBeginRefresh()
         }
         ESPUtils.arpTable.getIpFromMac(macAddress){
             isConnected = !(it == null || it.isEmpty())
@@ -117,11 +118,5 @@ class DeviceProperties(val deviceConfigFile: File)  {
         }
     }
 }
-
-interface OnStatusListener{
-    fun onBeginRefresh()
-    fun onStatusUpdate(connected: Boolean)
-}
-
 
 

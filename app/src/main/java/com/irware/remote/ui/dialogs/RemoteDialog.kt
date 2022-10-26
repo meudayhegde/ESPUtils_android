@@ -1,33 +1,31 @@
 package com.irware.remote.ui.dialogs
 
 import android.app.Dialog
-import android.appwidget.AppWidgetManager
-import android.content.ComponentName
 import android.content.Context
 import android.graphics.Color
-import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.view.DragEvent
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import com.github.clans.fab.FloatingActionButton
-import com.irware.remote.ButtonWidgetProvider
 import com.irware.remote.MainActivity
 import com.irware.remote.R
-import com.irware.remote.net.ARPTable
 import com.irware.remote.holders.ButtonProperties
 import com.irware.remote.holders.RemoteProperties
+import com.irware.remote.listeners.HomeButtonDropListener
+import com.irware.remote.listeners.OnRemoteButtonSelectedListener
+import com.irware.remote.listeners.SettingsButtonDropListener
 import com.irware.remote.ui.adapters.ButtonsGridAdapter
 import com.irware.remote.ui.buttons.RemoteButton
 import kotlinx.android.synthetic.main.create_remote_layout.*
 import org.json.JSONException
 import org.json.JSONObject
 
-class RemoteDialog(context: Context,val properties:RemoteProperties, val mode:Int) : Dialog(context,R.style.AppTheme),OnSelectedListener,View.OnDragListener {
+class RemoteDialog(context: Context,val properties:RemoteProperties, val mode:Int) : Dialog(context,R.style.AppTheme),
+    OnRemoteButtonSelectedListener, View.OnDragListener {
     private val arrayList:ArrayList<ButtonProperties?> = ArrayList()
     private val adapter:ButtonsGridAdapter
 
@@ -85,7 +83,7 @@ class RemoteDialog(context: Context,val properties:RemoteProperties, val mode:In
         }
     }
 
-    private fun setOnFabClickListener(fab:FloatingActionButton,mode:Int){
+    private fun setOnFabClickListener(fab: FloatingActionButton, mode: Int){
         fab.setOnClickListener {
             val dialog = ButtonPropertiesDialog(context, this, mode, properties.deviceProperties.ipAddress,
                 properties.deviceProperties.userName, properties.deviceProperties.password)
@@ -95,24 +93,22 @@ class RemoteDialog(context: Context,val properties:RemoteProperties, val mode:In
         }
     }
 
-    override fun onSelected(prop: JSONObject) {
+    override fun onSelected(jsonObject: JSONObject) {
         try{
-            var pos = prop.getInt("btnPosition")
+            var pos = jsonObject.getInt("btnPosition")
             if(pos < 0){
-                pos = adapter.getGetEmptyPosition()
-                prop.put("btnPosition", pos)
+                pos = adapter.getEmptyPosition()
+                jsonObject.put("btnPosition", pos)
             }
-            val btnProp = ButtonProperties(prop, properties)
+            val btnProp = ButtonProperties(jsonObject, properties)
             arrayList[pos] = btnProp
             adapter.notifyItemChanged(pos)
-//            adapter.notifyDataSetChanged(false)
         }catch(ex:JSONException){
-            val pos= adapter.getGetEmptyPosition()
-            prop.put("btnPosition",pos)
-            val btnProp = ButtonProperties(prop,properties)
+            val pos= adapter.getEmptyPosition()
+            jsonObject.put("btnPosition",pos)
+            val btnProp = ButtonProperties(jsonObject,properties)
             arrayList[pos] = btnProp
             adapter.notifyItemChanged(pos)
-//            adapter.notifyDataSetChanged(false)
         }
     }
 
@@ -151,83 +147,5 @@ class RemoteDialog(context: Context,val properties:RemoteProperties, val mode:In
     companion object{
         const val MODE_SELECT_BUTTON = 1
         const val MODE_VIEW_EDIT = 0
-    }
-}
-
-class HomeButtonDropListener(private val remoteDialog:RemoteDialog):View.OnDragListener{
-    override fun onDrag(v: View?, event: DragEvent?): Boolean {
-        when (event?.action) {
-            DragEvent.ACTION_DROP -> {
-                val view = event.localState as RemoteButton
-                view.visibility = View.VISIBLE
-                val btnProp = view.getProperties()
-                requestPinWidget(btnProp)
-            }
-            DragEvent.ACTION_DRAG_ENDED ->{
-                remoteDialog.image_view_home.visibility = View.INVISIBLE
-                DrawableCompat.setTint(remoteDialog.image_view_home.drawable,MainActivity.colorOnBackground)
-                remoteDialog.create_remote_info_layout.visibility = View.VISIBLE
-            }
-            DragEvent.ACTION_DRAG_ENTERED ->{
-                DrawableCompat.setTint(remoteDialog.image_view_home.drawable,Color.GREEN)
-            }
-            DragEvent.ACTION_DRAG_EXITED -> {
-                DrawableCompat.setTint(remoteDialog.image_view_home.drawable, MainActivity.colorOnBackground)
-            }
-        }
-        return true
-    }
-
-    private fun requestPinWidget(properties:ButtonProperties){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val appWidgetManager: AppWidgetManager= remoteDialog.context.getSystemService(AppWidgetManager::class.java)
-            val myProvider = ComponentName(remoteDialog.context, ButtonWidgetProvider::class.java)
-
-            val pref = remoteDialog.context.getSharedPreferences("widget_associations",Context.MODE_PRIVATE)
-            val editor = pref.edit()
-            editor.putString("queued_button",properties.parent?.remoteConfigFile?.name + ","+ properties.buttonId)
-            editor.apply()
-
-            Toast.makeText(remoteDialog.context,pref.getString("queued_button",""),Toast.LENGTH_LONG).show()
-
-            if(appWidgetManager.isRequestPinAppWidgetSupported){
-                appWidgetManager.requestPinAppWidget(myProvider, null, null)
-            }
-            else{
-                Toast.makeText(remoteDialog.context,"Your launcher doesn't support this feature",Toast.LENGTH_LONG).show()
-            }
-        } else {
-            Toast.makeText(remoteDialog.context,"Your Android version doesn't support this feature",Toast.LENGTH_LONG).show()
-        }
-    }
-}
-
-class SettingsButtonDropListener(private val remoteDialog: RemoteDialog): View.OnDragListener{
-    override fun onDrag(v: View?, event: DragEvent?): Boolean {
-        when (event?.action) {
-            DragEvent.ACTION_DROP -> {
-                val view = event.localState as RemoteButton
-                view.visibility = View.VISIBLE
-                val btnProp = view.getProperties()
-                val properties = remoteDialog.properties
-                val dialog = ButtonPropertiesDialog(view.context, remoteDialog,ButtonPropertiesDialog.MODE_SINGLE, properties.deviceProperties.ipAddress,
-                    properties.deviceProperties.userName, properties.deviceProperties.password)
-                dialog.show()
-                dialog.onIrRead(JSONObject(btnProp.jsonObj.toString()))
-            }
-            DragEvent.ACTION_DRAG_ENDED ->{
-                remoteDialog.image_view_btn_settings.visibility = View.INVISIBLE
-                DrawableCompat.setTint(remoteDialog.image_view_btn_settings.drawable,MainActivity.colorOnBackground)
-                remoteDialog.create_remote_info_layout.visibility = View.VISIBLE
-            }
-            DragEvent.ACTION_DRAG_ENTERED ->{
-
-                DrawableCompat.setTint(remoteDialog.image_view_btn_settings.drawable, if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) { remoteDialog.context.getColor(R.color.sky_blue)} else remoteDialog.context.resources.getColor(R.color.sky_blue))
-            }
-            DragEvent.ACTION_DRAG_EXITED -> {
-                DrawableCompat.setTint(remoteDialog.image_view_btn_settings.drawable, MainActivity.colorOnBackground)
-            }
-        }
-        return true
     }
 }

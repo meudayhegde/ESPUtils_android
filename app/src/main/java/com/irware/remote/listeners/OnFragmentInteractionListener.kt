@@ -1,4 +1,4 @@
-package com.irware.remote.ui.fragments
+package com.irware.remote.listeners
 
 import android.net.Uri
 

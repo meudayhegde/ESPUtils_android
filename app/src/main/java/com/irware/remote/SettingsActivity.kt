@@ -1,14 +1,12 @@
 package com.irware.remote
 
 import android.annotation.SuppressLint
-import android.app.Dialog
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.widget.RadioGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -17,7 +15,7 @@ import androidx.appcompat.view.menu.MenuBuilder
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.radiobutton.MaterialRadioButton
-import com.irware.remote.holders.DeviceProperties
+import com.irware.remote.holders.SettingsItem
 import com.irware.remote.ui.adapters.SettingsAdapter
 
 
@@ -51,7 +49,7 @@ class SettingsActivity : AppCompatActivity() {
             SettingsItem("Application Theme","UI theme for iRWaRE Application", selectionDialog("Application Theme", R.drawable.icon_theme, "application_theme", arrayListOf("Follow System Theme", "Light Theme", "Dark Theme")) {
                 themeChanged = true
                 AppCompatDelegate.setDefaultNightMode(
-                    when (getSharedPreferences("settings", Context.MODE_PRIVATE).getInt("application_theme", 0)) {
+                    when (getSharedPreferences("settings", MODE_PRIVATE).getInt("application_theme", 0)) {
                         1 -> { AppCompatDelegate.MODE_NIGHT_NO }
                         2 -> { AppCompatDelegate.MODE_NIGHT_YES }
                         else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
@@ -117,8 +115,4 @@ class SettingsActivity : AppCompatActivity() {
     companion object{
         var themeChanged = false
     }
-}
-
-class SettingsItem(var title: String, var subtitle: String, var dialog:Dialog?,
-                   var iconRes: Int = 0, var clickAction: Runnable? = null, var prop: DeviceProperties? = null){
 }

@@ -2,7 +2,6 @@ package com.irware.remote.holders
 
 import android.text.TextUtils
 import com.irware.remote.ESPUtils
-import com.irware.remote.MainActivity
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -123,20 +122,20 @@ class RemoteProperties(val remoteConfigFile: File, private val eventListener: Ev
             fun jsonLoadError(ex:Exception)
         }
     }
-}
 
-private fun JSONArray.index(obj: JSONObject):Int{
-    for(position in 0 until this.length()){
-        if(getJSONObject(position).optLong("buttonID") == obj.getLong("buttonID"))
-            return position
+    private fun JSONArray.index(obj: JSONObject):Int{
+        for(position in 0 until this.length()){
+            if(getJSONObject(position).optLong("buttonID") == obj.getLong("buttonID"))
+                return position
+        }
+        return -1
     }
-    return -1
-}
 
-private operator fun JSONArray.contains(obj: JSONObject): Boolean {
-    if(index(obj) == -1)
-        return false
-    return true
+    private operator fun JSONArray.contains(obj: JSONObject): Boolean {
+        if(index(obj) == -1)
+            return false
+        return true
+    }
 }
 
 

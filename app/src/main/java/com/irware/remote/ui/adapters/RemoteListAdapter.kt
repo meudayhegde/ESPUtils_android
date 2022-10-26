@@ -33,12 +33,12 @@ import java.io.File
 import java.io.OutputStreamWriter
 import kotlin.math.min
 
-class RemoteListAdapter(private val propList: ArrayList<RemoteProperties>, private val mode:Int) : RecyclerView.Adapter<RemoteListAdapter.MyViewHolder>(){
+class RemoteListAdapter(private val propList: ArrayList<RemoteProperties>, private val mode:Int) : RecyclerView.Adapter<RemoteListAdapter.RemoteListViewHolder>(){
 
-    class MyViewHolder(val cardView: CardView) : RecyclerView.ViewHolder(cardView)
+    class RemoteListViewHolder(val cardView: CardView) : RecyclerView.ViewHolder(cardView)
 
     override fun onCreateViewHolder(parent: ViewGroup,
-                                    viewType: Int): MyViewHolder {
+                                    viewType: Int): RemoteListViewHolder {
         val cardView = LayoutInflater.from(parent.context).inflate(R.layout.manage_remote_list_item, parent, false) as CardView
         if(mode == RemoteDialog.MODE_SELECT_BUTTON){
             cardView.findViewById<ImageView>(R.id.icon_share).visibility =View.GONE
@@ -48,11 +48,11 @@ class RemoteListAdapter(private val propList: ArrayList<RemoteProperties>, priva
             Configuration.UI_MODE_NIGHT_NO -> { }
             Configuration.UI_MODE_NIGHT_UNDEFINED -> { }
         }
-        return MyViewHolder(cardView)
+        return RemoteListViewHolder(cardView)
     }
 
     @SuppressLint("InflateParams")
-    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: RemoteListViewHolder, position: Int) {
         val prop = propList[position]
         setViewProps(holder.cardView, prop)
         holder.cardView.findViewById<TextView>(R.id.btn_count).text =

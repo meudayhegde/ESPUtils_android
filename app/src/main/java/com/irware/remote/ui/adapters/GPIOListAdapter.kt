@@ -18,13 +18,13 @@ import com.irware.ThreadHandler
 import com.irware.remote.MainActivity
 import com.irware.remote.R
 import com.irware.remote.holders.GPIOObject
-import com.irware.remote.holders.OnGPIORefreshListener
+import com.irware.remote.listeners.OnGPIORefreshListener
 import com.irware.remote.net.SocketClient
 import org.json.JSONObject
 
-class GPIOListAdapter(private val gpioList: ArrayList<GPIOObject>) : RecyclerView.Adapter<GPIOListAdapter.MyViewHolder>(){
+class GPIOListAdapter(private val gpioList: ArrayList<GPIOObject>) : RecyclerView.Adapter<GPIOListAdapter.GPIOListViewHolder>(){
 
-    class MyViewHolder(val cardView: CardView) : RecyclerView.ViewHolder(cardView){
+    class GPIOListViewHolder(val cardView: CardView) : RecyclerView.ViewHolder(cardView){
         val title: TextView = cardView.findViewById(R.id.gpio_name)
         val subTitle: TextView = cardView.findViewById(R.id.gpio_description)
         val gpioSwitch: SwitchCompat = cardView.findViewById(R.id.gpio_switch)
@@ -39,19 +39,19 @@ class GPIOListAdapter(private val gpioList: ArrayList<GPIOObject>) : RecyclerVie
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GPIOListViewHolder {
         val cardView = LayoutInflater.from(parent.context).inflate(R.layout.gpio_list_item, parent, false) as CardView
-        return MyViewHolder(cardView)
+        return GPIOListViewHolder(cardView)
     }
 
     @SuppressLint("InflateParams")
-    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: GPIOListViewHolder, position: Int) {
         val gpioObject = gpioList[position]
         setViews(holder, gpioObject)
     }
 
-    private fun setViews(holder: MyViewHolder, gpioObject: GPIOObject){
-        gpioObject.onGPIORefreshListener = object: OnGPIORefreshListener{
+    private fun setViews(holder: GPIOListViewHolder, gpioObject: GPIOObject){
+        gpioObject.onGPIORefreshListener = object: OnGPIORefreshListener {
             override fun onRefreshBegin() {
                 itemStatusRefreshing(holder, gpioObject)
             }
@@ -72,7 +72,7 @@ class GPIOListAdapter(private val gpioList: ArrayList<GPIOObject>) : RecyclerVie
         })
     }
 
-    private fun itemStatusOnline(holder: MyViewHolder, gpioObject: GPIOObject){
+    private fun itemStatusOnline(holder: GPIOListViewHolder, gpioObject: GPIOObject){
         itemStatusAll(holder, gpioObject)
         holder.cardView.isEnabled = true
         holder.cardView.getChildAt(0).background =
@@ -92,7 +92,7 @@ class GPIOListAdapter(private val gpioList: ArrayList<GPIOObject>) : RecyclerVie
         }
     }
 
-    private fun itemStatusOffline(holder: MyViewHolder, gpioObject: GPIOObject){
+    private fun itemStatusOffline(holder: GPIOListViewHolder, gpioObject: GPIOObject){
         itemStatusAll(holder, gpioObject)
         holder.statusLayout.visibility = View.VISIBLE
         holder.gpioSwitch.visibility = View.GONE
@@ -103,7 +103,7 @@ class GPIOListAdapter(private val gpioList: ArrayList<GPIOObject>) : RecyclerVie
         holder.progressText.text = holder.cardView.context.getString(R.string.offline)
     }
 
-    private fun itemStatusRefreshing(holder: MyViewHolder, gpioObject: GPIOObject){
+    private fun itemStatusRefreshing(holder: GPIOListViewHolder, gpioObject: GPIOObject){
         itemStatusAll(holder, gpioObject)
         holder.gpioSwitch.visibility = View.GONE
         holder.statusLayout.visibility = View.VISIBLE
@@ -114,7 +114,7 @@ class GPIOListAdapter(private val gpioList: ArrayList<GPIOObject>) : RecyclerVie
             ContextCompat.getDrawable(holder.cardView.context, R.drawable.layout_border_round_corner)
         holder.cardView.isEnabled = false
     }
-    private fun itemStatusAll(holder: MyViewHolder, gpioObject: GPIOObject){
+    private fun itemStatusAll(holder: GPIOListViewHolder, gpioObject: GPIOObject){
         holder.title.text = gpioObject.title
         holder.subTitle.text = "Device: ${gpioObject.deviceProperties.nickName}\n${gpioObject.subTitle}"
         holder.iconDrawable?.setTint(MainActivity.colorOnBackground)

@@ -11,7 +11,6 @@ import android.os.Handler
 import android.os.Looper
 import android.widget.RemoteViews
 import android.widget.Toast
-import com.irware.remote.net.ARPTable
 import com.irware.remote.holders.ButtonProperties
 import com.irware.remote.holders.RemoteProperties
 import com.irware.remote.net.SocketClient

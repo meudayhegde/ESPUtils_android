@@ -1,6 +1,7 @@
 package com.irware.remote.holders
 
 import com.irware.remote.ESPUtils
+import com.irware.remote.listeners.OnGPIORefreshListener
 import org.json.JSONObject
 
 class GPIOObject(var jsonObj: JSONObject) {
@@ -49,9 +50,4 @@ class GPIOObject(var jsonObj: JSONObject) {
     fun delete(): Boolean{
         return parent?.removeGPIO(jsonObj)?: false
     }
-}
-
-interface OnGPIORefreshListener{
-    fun onRefreshBegin()
-    fun onRefresh(pinValue: Int)
 }

@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Color
-import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.text.Editable
@@ -20,7 +19,8 @@ import com.irware.remote.ESPUtils
 import com.irware.remote.MainActivity
 import com.irware.remote.R
 import com.irware.remote.holders.ButtonProperties
-import com.irware.remote.net.IrCodeListener
+import com.irware.remote.listeners.IrCodeListener
+import com.irware.remote.listeners.OnRemoteButtonSelectedListener
 import com.irware.remote.net.SocketClient
 import com.irware.remote.ui.buttons.RemoteButton
 import com.madrapps.pikolo.ColorPicker
@@ -33,11 +33,9 @@ import org.json.JSONObject
 import kotlin.math.min
 import kotlin.math.roundToInt
 
-
-class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedListener,
-                             override var mode:Int, private val address: String, private val userName: String,
+class ButtonPropertiesDialog(context:Context, private var listener: OnRemoteButtonSelectedListener,
+                             override var mode: Int, private val address: String, private val userName: String,
                              private val password: String): AlertDialog(context, R.style.AppTheme_AlertDialog), IrCodeListener {
-
     override var parentDialog: AlertDialog? = null
 
     private val buttonPositive: Button
@@ -88,7 +86,6 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
         })
     }
 
-    @SuppressLint("SetTextI18n")
     fun captureInit(jsonObj:JSONObject?){
         time_remaining_text.visibility = View.VISIBLE
         time_remaining_text.text = ""
@@ -123,7 +120,6 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
         }
     }
 
-    @SuppressLint("SetTextI18n")
     override fun onTimeout() {
         handler.post{
             time_remaining_text.visibility = View.GONE
@@ -277,22 +273,18 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnSelectedLi
         var MODE_MULTI = 1
         var jsonObj = JSONObject("""{"iconType":${RemoteButton.TYPE_RECT_HOR},"color":${Color.GRAY},"icon":0,"textColor":${Color.WHITE}}""")
     }
-}
 
-private operator fun IntArray.times(count: Int): IntArray {
-    val ia=IntArray(size*count)
-    for(i in 1..count)
-        ia.plus(this)
-    return ia
-}
+    private operator fun IntArray.times(count: Int): IntArray {
+        val ia=IntArray(size*count)
+        for(i in 1..count)
+            ia.plus(this)
+        return ia
+    }
 
-private operator fun <E> ArrayList<E>.times(size: Int): ArrayList<E> {
-    val al=ArrayList<E>()
-    for(i in 1..size)
-        al.addAll(this)
-    return al
-}
-
-interface OnSelectedListener{
-    fun onSelected(prop:JSONObject)
+    private operator fun <E> ArrayList<E>.times(size: Int): ArrayList<E> {
+        val al=ArrayList<E>()
+        for(i in 1..size)
+            al.addAll(this)
+        return al
+    }
 }

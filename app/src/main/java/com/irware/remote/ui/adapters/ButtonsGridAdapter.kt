@@ -30,15 +30,15 @@ import org.json.JSONObject
 
 
 class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>, private val remoteDialog:RemoteDialog, private val address: String,
-                         private  val userName: String, private val password: String) :RecyclerView.Adapter<ButtonsGridAdapter.ViewHolder>(),
+                         private  val userName: String, private val password: String) :RecyclerView.Adapter<ButtonsGridAdapter.ButtonGridViewHolder>(),
     View.OnDragListener,View.OnLongClickListener{
 
-    class ViewHolder(var container: LinearLayout,var button:RemoteButton):RecyclerView.ViewHolder(container)
+    class ButtonGridViewHolder(var container: LinearLayout, var button: RemoteButton): RecyclerView.ViewHolder(container)
     private val vibe = remoteDialog.context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
     private val anim = AnimationUtils.loadAnimation(remoteDialog.context, R.anim.anim_button_show)
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ButtonGridViewHolder {
         val context = parent.context
         val container = LinearLayout(context)
         container.gravity = Gravity.CENTER
@@ -73,14 +73,14 @@ class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>, pri
         }
         container.addView(btn)
         container.setOnDragListener(this)
-        return ViewHolder(container,btn)
+        return ButtonGridViewHolder(container,btn)
     }
 
     override fun getItemCount(): Int {
         return arrayList.size
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ButtonGridViewHolder, position: Int) {
         val container = holder.container
         container.id = position
         val context = holder.container.context
@@ -111,7 +111,7 @@ class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>, pri
         },20)
     }
 
-    fun getGetEmptyPosition():Int{
+    fun getEmptyPosition():Int{
         arrayList.withIndex().forEach {
             indexedValue: IndexedValue<ButtonProperties?> -> if(indexedValue.value == null) return indexedValue.index
         }
@@ -161,14 +161,11 @@ class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>, pri
             DragEvent.ACTION_DRAG_ENTERED ->{
                 lin.background = when{
                     lin.getChildAt(0)?.visibility == View.VISIBLE -> null
-                    true -> ContextCompat.getDrawable(lin.context, R.drawable.round_corner)
-                    else -> with(lin) {
-                        @Suppress("DEPRECATION")
-                        context.resources.getDrawable(R.drawable.round_corner)
-                    }
+                    else -> ContextCompat.getDrawable(
+                        lin.context,
+                        R.drawable.layout_border_round_corner
+                    )
                 }
-
-
             }
 
             DragEvent.ACTION_DRAG_EXITED -> {

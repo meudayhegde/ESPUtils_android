@@ -1,5 +1,6 @@
 package com.irware.remote.holders
 
+import com.irware.remote.listeners.OnRemoteButtonModificationListener
 import org.json.JSONObject
 
 class ButtonProperties(var jsonObj:JSONObject) {
@@ -46,19 +47,9 @@ class ButtonProperties(var jsonObj:JSONObject) {
 
     var buttonShowAnimation = true
 
-    private var listener:OnModificationListener?= null
+    private var listener: OnRemoteButtonModificationListener?= null
 
-    fun setOnModificationListener(listener: OnModificationListener){
+    fun setOnModificationListener(listener: OnRemoteButtonModificationListener){
         this.listener=listener
     }
-}
-
-interface OnModificationListener{
-    fun onIconModified()
-    fun onTypeModified()
-    fun onTextModified()
-    fun onColorModified()
-    fun onIrModified()
-    fun onPositionModified()
-    fun onTextColorChanged()
 }

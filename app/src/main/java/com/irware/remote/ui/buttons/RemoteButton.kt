@@ -16,7 +16,7 @@ import androidx.core.graphics.drawable.DrawableCompat
 import com.irware.remote.ESPUtils
 import com.irware.remote.MainActivity
 import com.irware.remote.holders.ButtonProperties
-import com.irware.remote.holders.OnModificationListener
+import com.irware.remote.listeners.OnRemoteButtonModificationListener
 import kotlin.math.min
 
 
@@ -57,7 +57,7 @@ class RemoteButton : LinearLayout {
         textView.setTextColor(Color.WHITE)
         setButtonProperties(properties)
 
-        properties.setOnModificationListener(object:OnModificationListener{
+        properties.setOnModificationListener(object: OnRemoteButtonModificationListener {
             override fun onTextColorChanged() {
                 textView.setTextColor(properties.textColor)
                 onIconModified()

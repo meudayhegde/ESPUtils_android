@@ -3,9 +3,9 @@ package com.irware.remote.net
 import android.text.TextUtils
 import android.util.Log
 import com.irware.ThreadHandler
-import com.irware.getIPAddress
+import com.irware.Utils
 import com.irware.remote.ESPUtils
-import com.irware.remote.ui.adapters.insert
+import com.irware.remote.holders.ARPItem
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -89,7 +89,7 @@ class ARPTable(private val scanCount: Int = 1) {
         ThreadHandler.runOnFreeThread {
             var currentScanCount = 0
             while((scanCount == -1) or (currentScanCount < scanCount)){
-                for(myIp in getIPAddress()){
+                for(myIp in Utils.getIPAddress()){
                     @Suppress("NAME_SHADOWING") val myIp = myIp.split(".")
                     val myIpInt = myIp[3].toInt()
                     for(i in 1 until 255){
@@ -132,19 +132,24 @@ class ARPTable(private val scanCount: Int = 1) {
         const val ARP_TABLE_FILE = "ARPTable.json"
         const val MAX_RETRY = 3
     }
-}
 
-private fun JSONArray.index(obj: String?):Int{
-    for(position in 0 until length()){
-        if(getString(position).equals(obj, true)) return position
+    private fun JSONArray.index(obj: String?):Int{
+        for(position in 0 until length()){
+            if(getString(position).equals(obj, true)) return position
+        }
+        return -1
     }
-    return -1
-}
 
-private operator fun JSONArray.contains(obj: String?): Boolean {
-    if(index(obj) == -1)
-        return false
-    return true
-}
+    private operator fun JSONArray.contains(obj: String?): Boolean {
+        if(index(obj) == -1)
+            return false
+        return true
+    }
 
-class ARPItem(var macAddress: String, var ipAddress:String)
+    private fun JSONArray.insert(position: Int, value: Any){
+        if(length() > 0) for (i in length() downTo position + 1) {
+            put(i, get(i - 1))
+        }
+        put(position, value)
+    }
+}

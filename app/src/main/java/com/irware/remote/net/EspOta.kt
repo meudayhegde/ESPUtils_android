@@ -1,8 +1,9 @@
 package com.irware.remote.net
 
 import android.util.Log
-import com.irware.md5
+import com.irware.Utils
 import com.irware.remote.holders.DeviceProperties
+import com.irware.remote.listeners.OnOTAIntermediateListener
 import java.io.File
 import java.io.IOException
 import java.net.DatagramPacket
@@ -11,11 +12,11 @@ import java.net.InetAddress
 import java.net.ServerSocket
 
 class EspOta(private val devProp: DeviceProperties, private val localPort: Int = OTA_PORT, private val remotePort: Int = OTA_PORT) {
-    private fun sendInvitation(updateFile: File, command: Int = SYSTEM, updateIntermediateListener: OnUpdateIntermediateListener? = null): Boolean{
+    private fun sendInvitation(updateFile: File, command: Int = SYSTEM, updateIntermediateListener: OnOTAIntermediateListener? = null): Boolean{
 
         updateIntermediateListener?.onStatusUpdate("Authenticating...", true)
 
-        val fileMD5 = md5(updateFile)
+        val fileMD5 = Utils.md5(updateFile)
         val fileLength = updateFile.length()
         var message = "$command $localPort $fileLength ${fileMD5}\n"
         val sock = DatagramSocket()
@@ -37,9 +38,9 @@ class EspOta(private val devProp: DeviceProperties, private val localPort: Int =
         if(content != "OK"){
             if(content.startsWith("AUTH")){
                 val nonce = content.split(" ")[1]
-                val cnonce = md5("${updateFile.absolutePath}$fileLength$fileMD5${devProp.ipAddress}")
-                val passMD5 = md5(devProp.password)
-                val result = md5("$passMD5:$nonce:$cnonce")
+                val cnonce = Utils.md5("${updateFile.absolutePath}$fileLength$fileMD5${devProp.ipAddress}")
+                val passMD5 = Utils.md5(devProp.password)
+                val result = Utils.md5("$passMD5:$nonce:$cnonce")
 
                 message = "$AUTH $cnonce $result"
                 pack = DatagramPacket(message.toByteArray(Charsets.UTF_8), message.length, InetAddress.getByName(devProp.ipAddress), remotePort)
@@ -78,7 +79,7 @@ class EspOta(private val devProp: DeviceProperties, private val localPort: Int =
         }
     }
 
-    fun installUpdate(updateFile: File, command: Int = SYSTEM, updateIntermediateListener: OnUpdateIntermediateListener? = null){
+    fun installUpdate(updateFile: File, command: Int = SYSTEM, updateIntermediateListener: OnOTAIntermediateListener? = null){
 
         val serverSocket = ServerSocket(localPort)
         var authenticated = false
@@ -160,10 +161,4 @@ class EspOta(private val devProp: DeviceProperties, private val localPort: Int =
 
         val TAG: String = (EspOta::class.java).simpleName
     }
-}
-
-interface OnUpdateIntermediateListener{
-    fun onStatusUpdate(status: String, progress: Boolean)
-    fun onProgressUpdate(progress: Float)
-    fun onError(message: String)
 }

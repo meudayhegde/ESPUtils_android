@@ -25,9 +25,14 @@ import androidx.core.content.FileProvider
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.navigation.NavigationView
+import com.irware.remote.listeners.OnConfigurationChangeListener
+import com.irware.remote.listeners.OnFragmentInteractionListener
 import com.irware.remote.listeners.OnValidationListener
 import com.irware.remote.ui.buttons.RemoteButton
-import com.irware.remote.ui.fragments.*
+import com.irware.remote.ui.fragments.AboutFragment
+import com.irware.remote.ui.fragments.DevicesFragment
+import com.irware.remote.ui.fragments.GPIOControllerFragment
+import com.irware.remote.ui.fragments.IRFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import java.io.*
@@ -399,9 +404,4 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         Handler(Looper.getMainLooper()).postDelayed({ restart = false },1400)
     }
-}
-
-interface OnConfigurationChangeListener{
-    var keepAlive:Boolean
-    fun onConfigurationChanged(config:Configuration)
 }

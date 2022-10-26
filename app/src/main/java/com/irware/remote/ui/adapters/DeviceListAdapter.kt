@@ -23,17 +23,16 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.irware.ThreadHandler
-import com.irware.md5
+import com.irware.Utils
 import com.irware.remote.MainActivity
 import com.irware.remote.R
-import com.irware.remote.SettingsItem
 import com.irware.remote.holders.DeviceProperties
-import com.irware.remote.holders.OnStatusListener
+import com.irware.remote.holders.SettingsItem
+import com.irware.remote.listeners.OnDeviceStatusListener
+import com.irware.remote.listeners.OnOTAIntermediateListener
 import com.irware.remote.net.EspOta
-import com.irware.remote.net.OnUpdateIntermediateListener
 import com.irware.remote.net.SocketClient
 import com.irware.remote.ui.fragments.DevicesFragment
-import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 import java.util.*
@@ -41,9 +40,9 @@ import java.util.zip.ZipFile
 
 
 class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
-                        private val devicesFragment: DevicesFragment): RecyclerView.Adapter<DeviceListAdapter.MyViewHolder>(){
+                        private val devicesFragment: DevicesFragment): RecyclerView.Adapter<DeviceListAdapter.DeviceListViewHolder>(){
     
-    class MyViewHolder(val cardView: CardView) : RecyclerView.ViewHolder(cardView){
+    class DeviceListViewHolder(val cardView: CardView) : RecyclerView.ViewHolder(cardView){
         val deviceNameView: TextView = cardView.findViewById(R.id.name_device)
         val deviceMacAddrView: TextView = cardView.findViewById(R.id.mac_addr)
         val deviceDescView: TextView = cardView.findViewById(R.id.device_desc)
@@ -55,23 +54,23 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
     }
 
     val context = devicesFragment.requireContext()
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DeviceListViewHolder {
         val cardView = LayoutInflater.from(parent.context).inflate(R.layout.device_list_item, parent, false) as CardView
-        return MyViewHolder(cardView)
+        return DeviceListViewHolder(cardView)
     }
 
-    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: DeviceListViewHolder, position: Int) {
         val prop = propList[position]
         setViewProps(holder, prop)
     }
 
-    private fun setStateAll(holder:MyViewHolder, prop: DeviceProperties){
+    private fun setStateAll(holder:DeviceListViewHolder, prop: DeviceProperties){
         holder.deviceNameView.text = prop.nickName
         holder.deviceMacAddrView.text = "(${prop.macAddress})"
         holder.deviceDescView.text = prop.description
     }
 
-    private fun setStateRefreshing(holder:MyViewHolder, prop: DeviceProperties){
+    private fun setStateRefreshing(holder:DeviceListViewHolder, prop: DeviceProperties){
         setStateAll(holder, prop)
         holder.refresh.visibility = View.VISIBLE
         holder.icOnline.visibility = View.GONE
@@ -81,7 +80,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
             AppCompatResources.getDrawable(context, R.drawable.layout_border_round_corner)
         holder.ipText.text = ""
     }
-    private fun setStateOnline(holder:MyViewHolder, prop: DeviceProperties){
+    private fun setStateOnline(holder:DeviceListViewHolder, prop: DeviceProperties){
         setStateAll(holder, prop)
         holder.refresh.visibility = View.GONE
         holder.icOnline.visibility = View.VISIBLE
@@ -91,7 +90,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
         holder.cardView.getChildAt(0).background =
             AppCompatResources.getDrawable(context, R.drawable.round_corner_success)
     }
-    private fun setStateOffline(holder:MyViewHolder, prop: DeviceProperties){
+    private fun setStateOffline(holder:DeviceListViewHolder, prop: DeviceProperties){
         setStateAll(holder, prop)
         holder.refresh.visibility = View.GONE
         holder.icOnline.visibility = View.GONE
@@ -102,8 +101,8 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
             AppCompatResources.getDrawable(context, R.drawable.round_corner_error)
     }
 
-    private fun setViewProps(holder: MyViewHolder, prop: DeviceProperties){
-        prop.onStatusListener = object: OnStatusListener{
+    private fun setViewProps(holder: DeviceListViewHolder, prop: DeviceProperties){
+        prop.onDeviceStatusListener = object: OnDeviceStatusListener {
             override fun onBeginRefresh() {
                 setStateRefreshing(holder, prop)
             }
@@ -231,7 +230,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
         }
     }
 
-    private fun extractUpdate(file: File, updateIntermediateListener: OnUpdateIntermediateListener?): File?{
+    private fun extractUpdate(file: File, updateIntermediateListener: OnOTAIntermediateListener?): File?{
         updateIntermediateListener?.onStatusUpdate("Extracting update file...", true)
         if(file.exists() and file.isFile){
             if(!file.absolutePath.endsWith(".zip")){
@@ -294,7 +293,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                         val errorLayout = updateDialog.findViewById<LinearLayout>(R.id.error_layout)
                         val errorView = updateDialog.findViewById<TextView>(R.id.error_content)
 
-                        val updateIntermediateListener = object : OnUpdateIntermediateListener {
+                        val updateIntermediateListener = object : OnOTAIntermediateListener {
                             override fun onStatusUpdate(status: String, progress: Boolean) {
                                 Handler(Looper.getMainLooper()).post {
                                     if (progress) {
@@ -411,7 +410,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
         }
     }
 
-    private fun verifyUpdate(updateDir: File, updateIntermediateListener: OnUpdateIntermediateListener?): Boolean{
+    private fun verifyUpdate(updateDir: File, updateIntermediateListener: OnOTAIntermediateListener?): Boolean{
         updateIntermediateListener?.onStatusUpdate("Verifying update file.", true)
         val hashFile = File(updateDir.absolutePath, ".hash")
         if(!hashFile.exists()){
@@ -422,9 +421,9 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
         val hashOrigin = hashFile.inputStream().readBytes().toString(Charsets.UTF_8).replace("\n","")
         var hash = ""
         updateDir.listFiles{ _, name -> name.endsWith(".bin")}?.sortedArray()?.forEach {
-            hash += md5(it) + md5(it.name)
+            hash += Utils.md5(it) + Utils.md5(it.name)
         }
-        val verified = md5(hash) == hashOrigin
+        val verified = Utils.md5(hash) == hashOrigin
         if(!verified) updateIntermediateListener?.onError("Verification failed, Please select a valid update for the selected device")
         Log.d(javaClass.simpleName, " Verified")
         return verified
@@ -750,11 +749,4 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
             }
         }
     }
-}
-
-fun JSONArray.insert(position: Int, value: Any){
-    if(length() > 0) for (i in length() downTo position + 1) {
-        put(i, get(i - 1))
-    }
-    put(position, value)
 }

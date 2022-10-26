@@ -7,25 +7,25 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.irware.remote.R
-import com.irware.remote.SettingsItem
+import com.irware.remote.holders.SettingsItem
 
-class SettingsAdapter(private val list: ArrayList<SettingsItem>) : RecyclerView.Adapter<SettingsAdapter.MyViewHolder>(){
+class SettingsAdapter(private val list: ArrayList<SettingsItem>) : RecyclerView.Adapter<SettingsAdapter.SettingsListViewHolder>(){
 
-    class MyViewHolder(val cardView: CardView) : RecyclerView.ViewHolder(cardView){
+    class SettingsListViewHolder(val cardView: CardView) : RecyclerView.ViewHolder(cardView){
         val titleView: TextView = cardView.findViewById(R.id.setting_title)
         val subTitleView: TextView = cardView.findViewById(R.id.setting_subtitle)
         val iconView: ImageView = cardView.findViewById(R.id.ic_settings)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup,
-                                    viewType: Int): MyViewHolder {
+                                    viewType: Int): SettingsListViewHolder {
         val cardView = LayoutInflater.from(parent.context)
             .inflate(R.layout.settings_list_item, parent, false) as CardView
 
-        return MyViewHolder(cardView)
+        return SettingsListViewHolder(cardView)
     }
 
-    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: SettingsListViewHolder, position: Int) {
         holder.titleView.text = list[position].title
         holder.subTitleView.text = list[position].subtitle
         if(list[position].iconRes != 0) holder.iconView.setImageResource(list[position].iconRes)

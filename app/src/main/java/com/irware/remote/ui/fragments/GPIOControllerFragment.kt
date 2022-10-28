@@ -25,6 +25,7 @@ import com.irware.ThreadHandler
 import com.irware.remote.ESPUtils
 import com.irware.remote.MainActivity
 import com.irware.remote.R
+import com.irware.remote.holders.GPIOItem
 import com.irware.remote.holders.GPIOObject
 import com.irware.remote.listeners.OnFragmentInteractionListener
 import com.irware.remote.ui.adapters.GPIOListAdapter
@@ -83,10 +84,10 @@ class GPIOControllerFragment : androidx.fragment.app.Fragment()  {
                 val devicesSpinner = dialog.findViewById<Spinner>(R.id.select_device)!!
                 val gpioSpinner = dialog.findViewById<Spinner>(R.id.pin_number)!!
 
-                gpioSpinner.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, arrayListOf(
-                    requireContext().getString(R.string.pin), "GPIO0 (D3)", "GPIO1 (TX)", "GPIO2 (D4)", "GPIO3 (RX)", "GPIO4 (D2)", "GPIO5 (D1)",
-                    "GPIO9 (SD2)", "GPIO10 (SD3)", "GPIO12 (D6)", "GPIO13 (D7)", "GPIO14 (D5)", "GPIO15 (D8)", "GPIO16 (D0)"
-                ))
+                val gpioList = ArrayList<GPIOItem>()
+                requireContext().resources.getStringArray(R.array.esp_gpio).forEach { gpioList.add(GPIOItem(it)) }
+                gpioSpinner.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, gpioList)
+
                 val devicePropList = arrayListOf<Any>(requireContext().getString(R.string.select_device))
                 devicePropList.addAll(ESPUtils.devicePropList)
                 devicesSpinner.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, devicePropList)

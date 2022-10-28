@@ -41,7 +41,7 @@ class RemoteListAdapter(private val propList: ArrayList<RemoteProperties>, priva
                                     viewType: Int): RemoteListViewHolder {
         val cardView = LayoutInflater.from(parent.context).inflate(R.layout.manage_remote_list_item, parent, false) as CardView
         if(mode == RemoteDialog.MODE_SELECT_BUTTON){
-            cardView.findViewById<ImageView>(R.id.icon_share).visibility =View.GONE
+            cardView.findViewById<ImageView>(R.id.icon_share).visibility = View.GONE
         }
         when (cardView.context?.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)) {
             Configuration.UI_MODE_NIGHT_YES -> { }

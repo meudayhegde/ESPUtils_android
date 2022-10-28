@@ -26,4 +26,20 @@
         <item>User can capture the signals of existing IR remote controller and send them at anytime using this application and ESP8266 micro controller.</item>
     </string-array>
 
+    <string-array name="esp_gpio">
+        <item>GPIO0 (D3)</item>
+        <item>GPIO1 (TX)</item>
+        <item>GPIO2 (D4)</item>
+        <item>GPIO3 (RX)</item>
+        <item>GPIO4 (D2)</item>
+        <item>GPIO5 (D1)</item>
+        <item>GPIO9 (SD2)</item>
+        <item>GPIO10 (SD3)</item>
+        <item>GPIO12 (D6)</item>
+        <item>GPIO13 (D7)</item>
+        <item>GPIO14 (D5)</item>
+        <item>GPIO15 (D8)</item>
+        <item>GPIO16 (D0)</item>
+    </string-array>
+
 </resources>

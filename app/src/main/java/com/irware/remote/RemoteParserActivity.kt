@@ -129,7 +129,7 @@ class RemoteParserActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
             val selectedDevice = ESPUtils.devicePropList[spinner.selectedItemPosition - 1]
-            jsonObject.put("deviceConfigFileName", selectedDevice.deviceConfigFile.name)
+            jsonObject.put("deviceConfigFileName", selectedDevice.deviceConfigFile?.name)
 
             msg.visibility = View.GONE; progress.visibility = View.VISIBLE
             try{

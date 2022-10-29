@@ -12,7 +12,7 @@ class GPIOObject(var jsonObj: JSONObject) {
             for(prop in ESPUtils.devicePropList)
                 if(prop.macAddress == macAddr)
                     return prop
-            throw Exception("Device containing this GPIO Does mot exist")
+            return DeviceProperties()
         }
 
     var title: String = jsonObj.optString("title", "")

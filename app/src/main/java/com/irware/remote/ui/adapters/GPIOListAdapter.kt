@@ -20,9 +20,11 @@ import com.irware.remote.R
 import com.irware.remote.holders.GPIOObject
 import com.irware.remote.listeners.OnGPIORefreshListener
 import com.irware.remote.net.SocketClient
+import com.irware.remote.ui.fragments.GPIOControllerFragment
 import org.json.JSONObject
 
-class GPIOListAdapter(private val gpioList: ArrayList<GPIOObject>) : RecyclerView.Adapter<GPIOListAdapter.GPIOListViewHolder>(){
+class GPIOListAdapter(private val gpioList: ArrayList<GPIOObject>,
+                      private val fragment: GPIOControllerFragment) : RecyclerView.Adapter<GPIOListAdapter.GPIOListViewHolder>(){
 
     class GPIOListViewHolder(val cardView: CardView) : RecyclerView.ViewHolder(cardView){
         val title: TextView = cardView.findViewById(R.id.gpio_name)
@@ -64,17 +66,21 @@ class GPIOListAdapter(private val gpioList: ArrayList<GPIOObject>) : RecyclerVie
         if(gpioObject.deviceProperties.isConnected) itemStatusOnline(holder, gpioObject)
         else itemStatusOffline(holder, gpioObject)
 
-        holder.cardView.setOnClickListener { holder.gpioSwitch.toggle() }
         holder.gpioSwitch.setOnCheckedChangeListener (object: CompoundButton.OnCheckedChangeListener{
             override fun onCheckedChanged(p0: CompoundButton?, p1: Boolean) {
                 gpioSwitchCheckedCHangedListener(gpioObject, p0!!, holder.iconDrawable, this)
             }
         })
+
+        holder.cardView.setOnLongClickListener {
+            fragment.gpioDialog(gpioObject)
+            true
+        }
     }
 
     private fun itemStatusOnline(holder: GPIOListViewHolder, gpioObject: GPIOObject){
         itemStatusAll(holder, gpioObject)
-        holder.cardView.isEnabled = true
+        holder.cardView.setOnClickListener { holder.gpioSwitch.toggle() }
         holder.cardView.getChildAt(0).background =
             ContextCompat.getDrawable(holder.cardView.context, R.drawable.round_corner_success)
         holder.gpioSwitch.visibility = View.VISIBLE
@@ -96,11 +102,14 @@ class GPIOListAdapter(private val gpioList: ArrayList<GPIOObject>) : RecyclerVie
         itemStatusAll(holder, gpioObject)
         holder.statusLayout.visibility = View.VISIBLE
         holder.gpioSwitch.visibility = View.GONE
-        holder.cardView.isEnabled = false
+
         holder.cardView.getChildAt(0).background = ContextCompat.getDrawable(holder.cardView.context, R.drawable.round_corner_error)
         holder.progressBar.visibility = View.GONE
         holder.progressImg.visibility = View.VISIBLE
         holder.progressText.text = holder.cardView.context.getString(R.string.offline)
+        holder.cardView.setOnClickListener {
+            Toast.makeText(holder.cardView.context, holder.cardView.context.getString(R.string.device_offline), Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun itemStatusRefreshing(holder: GPIOListViewHolder, gpioObject: GPIOObject){
@@ -112,7 +121,9 @@ class GPIOListAdapter(private val gpioList: ArrayList<GPIOObject>) : RecyclerVie
         holder.progressText.text = holder.cardView.context.getString(R.string.loading)
         holder.cardView.getChildAt(0).background =
             ContextCompat.getDrawable(holder.cardView.context, R.drawable.layout_border_round_corner)
-        holder.cardView.isEnabled = false
+        holder.cardView.setOnClickListener {
+            Toast.makeText(holder.cardView.context, holder.cardView.context.getString(R.string.scanning), Toast.LENGTH_SHORT).show()
+        }
     }
     private fun itemStatusAll(holder: GPIOListViewHolder, gpioObject: GPIOObject){
         holder.title.text = gpioObject.title

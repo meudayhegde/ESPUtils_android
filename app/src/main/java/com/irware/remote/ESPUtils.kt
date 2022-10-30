@@ -30,7 +30,7 @@ class ESPUtils: Application() {
         val arr = resources.obtainTypedArray(R.array.icons)
         iconDrawableList = IntArray(arr.length())
         for(i in 0 until arr.length())
-            iconDrawableList[i] = arr.getResourceId(i,0)
+            iconDrawableList[i] = arr.getResourceId(i, 0)
         arr.recycle()
 
         remoteConfigPath = FILES_DIR + File.separator + REMOTE_CONFIG_DIR

@@ -121,7 +121,7 @@ class GPIOControllerFragment : androidx.fragment.app.Fragment()  {
                     AlertDialog.Builder(requireContext(), R.style.AppTheme_AlertDialog)
                         .setIcon(R.drawable.icon_delete)
                         .setTitle(R.string.confirm_delete)
-                        .setMessage("Delete GPIO Switch ${gpio.title} ?")
+                        .setMessage(getString(R.string.message_delete_gpio_switch, gpio.title))
                         .setNegativeButton(R.string.cancel){ _, _ -> }
                         .setPositiveButton(R.string.delete){_, _ ->
                             val index = ESPUtils.gpioObjectList.indexOf(gpio)
@@ -136,13 +136,13 @@ class GPIOControllerFragment : androidx.fragment.app.Fragment()  {
             btnPositive.setOnClickListener {
                 when {
                     devicesSpinner.selectedItemPosition == 0 -> {
-                        Toast.makeText(requireContext(), "Please select Device", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), R.string.please_select_device, Toast.LENGTH_SHORT).show()
                     }
                     gpioSpinner.selectedItemPosition == 0 -> {
-                        Toast.makeText(requireContext(), "Please select GPIO Pin number", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), R.string.please_select_gpio_pin_number, Toast.LENGTH_SHORT).show()
                     }
                     nameText.text?.isEmpty()?: false -> {
-                        nameText.error = "Name field cannot be empty"
+                        nameText.setText(R.string.name_field_cannot_be_empty)
                     }
                     else -> {
                         val gpioObj = gpioObject?: GPIOObject(JSONObject(), ESPUtils.gpioConfig!!)

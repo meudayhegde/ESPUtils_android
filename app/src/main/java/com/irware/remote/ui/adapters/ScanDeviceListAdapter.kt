@@ -7,7 +7,6 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.irware.remote.R
 import com.irware.remote.holders.ARPItem
-import com.irware.remote.listeners.OnARPItemSelectedListener
 
 class ScanDeviceListAdapter(private val arpItemList: ArrayList<ARPItem>) : RecyclerView.Adapter<ScanDeviceListAdapter.DeviceScanListViewHolder>() {
 
@@ -22,8 +21,8 @@ class ScanDeviceListAdapter(private val arpItemList: ArrayList<ARPItem>) : Recyc
         return DeviceScanListViewHolder(cardView)
     }
 
-    private var onARPItemSelectedListener: OnARPItemSelectedListener? = null
-    fun setOnARPItemSelectedListener(onARPItemSelectedListener: OnARPItemSelectedListener){
+    private var onARPItemSelectedListener: ((arpItem: ARPItem) -> Unit)? = null
+    fun setOnARPItemSelectedListener(onARPItemSelectedListener: (arpItem: ARPItem) -> Unit){
         this.onARPItemSelectedListener = onARPItemSelectedListener
     }
 
@@ -31,7 +30,7 @@ class ScanDeviceListAdapter(private val arpItemList: ArrayList<ARPItem>) : Recyc
         val item = arpItemList[position]
         holder.ipAddrView.text = item.ipAddress
         holder.macAddrView.text = item.macAddress
-        holder.cardView.setOnClickListener { onARPItemSelectedListener?.onARPItemSelected(item) }
+        holder.cardView.setOnClickListener { onARPItemSelectedListener?.invoke(item) }
     }
 
     override fun getItemCount() = arpItemList.size

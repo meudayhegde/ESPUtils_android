@@ -66,7 +66,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
 
     private fun setStateAll(holder:DeviceListViewHolder, prop: DeviceProperties){
         holder.deviceNameView.text = prop.nickName
-        holder.deviceMacAddrView.text = "(${prop.macAddress})"
+        holder.deviceMacAddrView.text = context.getString(R.string.parentheses, prop.macAddress)
         holder.deviceDescView.text = prop.description
     }
 
@@ -118,7 +118,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
             val settingsDialog = AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
                 .setPositiveButton(context.resources.getString(R.string.done)) { p0, _ -> p0.dismiss() }
                 .setTitle("Settings for ${prop.nickName}")
-                .setView(R.layout.activity_settings)
+                .setView(R.layout.controllers_refresh_layout)
                 .setIcon(R.drawable.ic_settings)
                 .create()
             settingsDialog.setOnShowListener {
@@ -145,7 +145,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                 )
                 val viewManager = LinearLayoutManager(context)
                 val viewAdapter = SettingsAdapter(settingsList)
-                val refreshLayout = settingsDialog.findViewById<SwipeRefreshLayout>(R.id.settings_refresh_layout)
+                val refreshLayout = settingsDialog.findViewById<SwipeRefreshLayout>(R.id.refresh_layout)
                 refreshLayout?.setOnRefreshListener {
                     prop.getIpAddress{
                         Handler(Looper.getMainLooper()).post{
@@ -163,7 +163,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                         }
                     }
                 }
-                settingsDialog.findViewById<RecyclerView>(R.id.settings_list)?.apply {
+                settingsDialog.findViewById<RecyclerView>(R.id.manage_remotes_recycler_view)?.apply {
                     setHasFixedSize(true)
                     layoutManager = viewManager
                     adapter = viewAdapter

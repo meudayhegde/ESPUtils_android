@@ -10,6 +10,7 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,7 +30,6 @@ import com.irware.remote.MainActivity
 import com.irware.remote.R
 import com.irware.remote.holders.ARPItem
 import com.irware.remote.holders.DeviceProperties
-import com.irware.remote.listeners.OnARPItemSelectedListener
 import com.irware.remote.listeners.OnFragmentInteractionListener
 import com.irware.remote.net.SocketClient
 import com.irware.remote.ui.adapters.DeviceListAdapter
@@ -69,7 +69,6 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
         }
     }
 
-    @SuppressLint("InflateParams")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         if(rootView == null ){
             rootView = inflater.inflate(R.layout.fragment_devices, container, false) as RelativeLayout
@@ -102,41 +101,44 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
             val fabEnterAddress = rootView!!.findViewById<FloatingActionButton>(R.id.fab_enter_address)
 
             fabScan.setOnClickListener {
-                val content = LayoutInflater.from(context).inflate(R.layout.add_new_device,null) as LinearLayout
-                val scrollView = content.findViewById<ScrollView>(R.id.add_new_device_scroll)
-                val recyclerView = content.findViewById<RecyclerView>(R.id.device_list_add_new_device)
-                val btnCancel = content.findViewById<Button>(R.id.cancel)
-                val btnNext = content.findViewById<Button>(R.id.button_done)
+                val deviceDialog = AlertDialog.Builder(requireContext(), R.style.AppTheme_AlertDialog)
+                    .setIcon(R.drawable.ic_refresh)
+                    .setNegativeButton(R.string.cancel){ _, _ -> }
+                    .setTitle(R.string.add_new_device)
+                    .setView(R.layout.recycler_layout)
+                    .create()
 
-                scrollView.visibility = View.GONE
-                recyclerView.visibility = View.VISIBLE
-                val viewAdapter = ScanDeviceListAdapter(ESPUtils.arpTable.getARPItemList())
-                recyclerView.apply {
-                    setHasFixedSize(true)
-                    layoutManager = LinearLayoutManager(context)
-                    adapter = viewAdapter
-                }
+                deviceDialog.setOnShowListener {
+                    val recyclerViewScanner = deviceDialog.findViewById<RecyclerView>(R.id.scan_device_recycler_view)
+                    val arpItemList = ArrayList<ARPItem>()
+                    val viewAdapterScanner = ScanDeviceListAdapter(arpItemList)
+                    recyclerViewScanner?.apply {
+                        setHasFixedSize(true)
+                        layoutManager = LinearLayoutManager(context)
+                        adapter = viewAdapterScanner
+                    }
 
-                val dialog = Dialog(requireContext())
-                dialog.setContentView(content)
-                btnCancel.setOnClickListener { dialog.cancel() }
-                btnNext.visibility = View.GONE
-
-                dialog.show()
-                val width = min(MainActivity.layoutParams.width, MainActivity.layoutParams.height)
-                dialog.window?.setLayout(width - width/8, WindowManager.LayoutParams.WRAP_CONTENT)
-                dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-                manageMenu.close(true)
-
-                viewAdapter.setOnARPItemSelectedListener(object: OnARPItemSelectedListener {
-                    override fun onARPItemSelected(arpItem: ARPItem) {
-                        recyclerView.visibility = View.GONE
-                        scrollView.visibility = View.VISIBLE
-                        btnNext.visibility = View.VISIBLE
+                    viewAdapterScanner.setOnARPItemSelectedListener { arpItem ->
                         onAddressVerified(requireContext(), arpItem.ipAddress, arpItem.macAddress)
                     }
 
-                })
+                    ESPUtils.arpTable.getARPItemList { arpItem ->
+                        Log.d("IP Address", "${arpItem.macAddress}: ${ arpItem.ipAddress }")
+                        Handler(Looper.getMainLooper()).post{
+                            arpItemList.add(arpItem)
+                            viewAdapterScanner.notifyDataSetChanged()
+//                            viewAdapterScanner.notifyItemInserted(arpItemList.indexOf(arpItem))
+                        }
+                    }.enqueueTask {
+                        Handler(Looper.getMainLooper()).post {
+                            deviceDialog.findViewById<ProgressBar>(R.id.device_scanner_progress_bar)?.visibility = View.GONE
+                        }
+                    }
+                }
+
+                deviceDialog.show()
+
+                manageMenu.close(true)
             }
             fabEnterAddress.setOnClickListener { newDeviceEnterAddress() }
         }

@@ -17,7 +17,7 @@
                 android:layout_width="120sp"
                 android:id="@+id/icon_app_about"
                 android:layout_height="120sp"
-                android:layout_marginTop="22sp"
+                android:layout_marginTop="@dimen/margin_max"
                 android:contentDescription="@string/about_app"
                 android:src="@drawable/circuit_dark" />
 
@@ -28,20 +28,19 @@
                 app:cardElevation="4dp"
                 app:cardCornerRadius="6dp"
                 app:cardUseCompatPadding="true"
-                android:layout_marginTop="14sp">
+                android:layout_marginTop="@dimen/margin_high">
 
             <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/sky_blue"
-                    android:text="@string/about_app"
                     android:gravity="center_horizontal"
-                    android:textSize="22sp"
-                    android:drawableStart="@drawable/icon_info"
-                    android:drawableTint="@color/sky_blue"
-                    android:paddingStart="12sp"
-                    android:paddingEnd="12sp"
-
+                    android:paddingStart="@dimen/margin_high"
+                    android:paddingEnd="@dimen/margin_high"
+                    android:text="@string/about_app"
+                    android:textColor="@color/sky_blue_variant_1"
+                    android:textSize="@dimen/text_size_title_large"
+                    app:drawableStartCompat="@drawable/icon_info"
+                    app:drawableTint="@color/sky_blue_variant_1"
                     tools:targetApi="m" />
 
         </com.google.android.material.card.MaterialCardView>
@@ -62,26 +61,26 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="?attr/colorOnBackground"
-                    android:layout_marginTop="12sp"
-                    android:layout_marginBottom="12sp"
-                    android:paddingStart="10sp"
-                    android:paddingEnd="10sp"
-                    android:textSize="16sp" />
+                    android:layout_marginTop="@dimen/margin_high"
+                    android:layout_marginBottom="@dimen/margin_high"
+                    android:paddingStart="@dimen/margin_medium"
+                    android:paddingEnd="@dimen/margin_medium"
+                    android:textSize="@dimen/text_size_subtitle_large" />
 
         </com.google.android.material.card.MaterialCardView>
 
 
-            <TextView
-                    android:layout_height="wrap_content"
-                    android:layout_width="match_parent"
-                    android:text="@string/libraries_used"
-                    android:layout_marginTop="15sp"
-                    android:layout_marginStart="22sp"
-                    android:layout_marginEnd="12sp"
-                    android:layout_marginBottom="6sp"
-                    android:textStyle="bold"
-                    android:textSize="15sp"
-                    android:textColor="@color/sky_blue"/>
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="22sp"
+                android:layout_marginTop="15sp"
+                android:layout_marginEnd="12sp"
+                android:layout_marginBottom="6sp"
+                android:text="@string/libraries_used"
+                android:textColor="@color/sky_blue_variant_1"
+                android:textSize="15sp"
+                android:textStyle="bold" />
 
         <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
@@ -101,13 +100,13 @@
                     android:background="?attr/selectableItemBackground">
 
                 <TextView
-                        android:layout_height="wrap_content"
                         android:layout_width="match_parent"
-                        android:text="@string/floating_action_button"
+                        android:layout_height="wrap_content"
                         android:layout_margin="10dp"
-                        android:textStyle="bold"
+                        android:text="@string/floating_action_button"
+                        android:textColor="@color/sky_blue_variant_1"
                         android:textSize="15sp"
-                        android:textColor="@color/sky_blue"/>
+                        android:textStyle="bold" />
 
                 <TextView
                         android:layout_height="wrap_content"
@@ -140,13 +139,13 @@
                     android:background="?attr/selectableItemBackground">
 
                 <TextView
-                        android:layout_height="wrap_content"
                         android:layout_width="match_parent"
-                        android:text="@string/pikolo_colorpicker"
+                        android:layout_height="wrap_content"
                         android:layout_margin="10dp"
-                        android:textStyle="bold"
+                        android:text="@string/pikolo_colorpicker"
+                        android:textColor="@color/sky_blue_variant_1"
                         android:textSize="15sp"
-                        android:textColor="@color/sky_blue"/>
+                        android:textStyle="bold" />
 
                 <TextView
                         android:layout_height="wrap_content"
@@ -179,13 +178,13 @@
                     android:background="?attr/selectableItemBackground">
 
                 <TextView
-                        android:layout_height="wrap_content"
                         android:layout_width="match_parent"
-                        android:text="@string/material_components_android"
+                        android:layout_height="wrap_content"
                         android:layout_margin="10dp"
-                        android:textStyle="bold"
+                        android:text="@string/material_components_android"
+                        android:textColor="@color/sky_blue_variant_1"
                         android:textSize="15sp"
-                        android:textColor="@color/sky_blue"/>
+                        android:textStyle="bold" />
 
                 <TextView
                         android:layout_height="wrap_content"

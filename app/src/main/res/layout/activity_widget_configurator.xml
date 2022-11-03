@@ -12,7 +12,7 @@
             android:layout_gravity="center_horizontal"
             style="@style/TextAppearance.AppCompat.Title"
             android:text="@string/select_remote_controller_button"
-            android:layout_margin="14sp"/>
+            android:layout_margin="@dimen/margin_high"/>
 
     <include layout="@layout/controllers_refresh_layout"
             android:id="@+id/remote_refresh_layout"

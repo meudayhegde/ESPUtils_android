@@ -10,9 +10,9 @@
 
     <TextView android:id="@+id/info_layout"
             android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_gravity="center"
-            android:layout_marginTop="14sp" android:layout_marginStart="14sp" android:layout_marginEnd="14sp"
+            android:layout_marginTop="@dimen/margin_high" android:layout_marginStart="@dimen/margin_high" android:layout_marginEnd="@dimen/margin_high"
             android:paddingStart="10sp" android:gravity="center" android:textColor="?attr/colorOnBackground"
-            android:text="@string/long_press_remote_item_card_to_edit_remote_controller_information" android:textSize="18sp"
+            android:text="@string/long_press_remote_item_card_to_edit_remote_controller_information" android:textSize="@dimen/text_size_title"
             tools:targetApi="m" tools:ignore="RtlSymmetry" android:textStyle="bold"
             fab:drawableStartCompat="@drawable/icon_info"
             fab:drawableTint="?attr/colorOnBackground" />
@@ -20,7 +20,7 @@
     <include layout="@layout/controllers_refresh_layout"
         android:id="@+id/refresh_layout"
         android:layout_width="match_parent"
-        android:layout_margin="14sp"
+        android:layout_margin="@dimen/margin_high"
         android:layout_height="match_parent"
         android:layout_below="@id/info_layout"/>
 

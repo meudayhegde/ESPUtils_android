@@ -26,7 +26,7 @@
             android:layout_marginLeft="25sp"
             android:layout_marginTop="75sp"
             android:layout_marginRight="25sp"
-            android:layout_marginBottom="14sp"
+            android:layout_marginBottom="@dimen/margin_high"
             android:layout_alignParentBottom="true"
             android:visibility="gone" />
 

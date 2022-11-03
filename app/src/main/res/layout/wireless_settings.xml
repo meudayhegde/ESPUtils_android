@@ -6,21 +6,21 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="18sp"
-        android:layout_marginStart="14sp"
-        android:layout_marginEnd="14sp"
+        android:layout_marginTop="@dimen/margin_max"
+        android:layout_marginStart="@dimen/margin_high"
+        android:layout_marginEnd="@dimen/margin_high"
         android:orientation="vertical" >
 
-    <ProgressBar android:id="@+id/get_wireless_loading" style="?android:attr/progressBarStyleHorizontal" android:layout_marginTop="8sp"
+    <ProgressBar android:id="@+id/get_wireless_loading" style="?android:attr/progressBarStyleHorizontal" android:layout_marginTop="@dimen/margin_low"
             android:layout_width="match_parent" android:layout_height="12sp" android:indeterminate="true"/>
 
     <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="18sp"
+            android:layout_marginTop="@dimen/margin_max"
             android:gravity="center_vertical"
-            android:layout_marginStart="16sp"
-            android:layout_marginEnd="12sp"
+            android:layout_marginStart="@dimen/margin_high"
+            android:layout_marginEnd="@dimen/margin_high"
             android:orientation="horizontal">
 
         <TextView
@@ -32,21 +32,21 @@
         <Spinner
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20sp"
+                android:layout_marginStart="@dimen/margin_max"
                 android:id="@+id/spinner_wireless_mode"
-                android:layout_marginEnd="20sp"/>
+                android:layout_marginEnd="@dimen/margin_max"/>
 
     </LinearLayout>
 
     <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16sp"
-            android:layout_marginEnd="14sp"
-            android:layout_marginStart="14sp"
+            android:layout_marginTop="@dimen/margin_max"
+            android:layout_marginEnd="@dimen/margin_high"
+            android:layout_marginStart="@dimen/margin_high"
             android:id="@+id/til_wifi_name_"
             app:hintTextColor="?attr/colorOnBackground"
-            style="@style/textFieldLayoutWhiteTheme"
+            style="@style/TextInputLayoutStyle"
             android:hint="@string/wifi_name">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -61,13 +61,13 @@
     <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8sp"
-            android:layout_marginEnd="14sp"
+            android:layout_marginTop="@dimen/margin_low"
+            android:layout_marginEnd="@dimen/margin_high"
             app:passwordToggleEnabled="true"
-            android:layout_marginStart="14sp"
+            android:layout_marginStart="@dimen/margin_high"
             app:hintTextColor="?attr/colorOnBackground"
             android:id="@+id/til_wifi_passwd_"
-            style="@style/textFieldLayoutWhiteTheme"
+            style="@style/TextInputLayoutStyle"
             android:hint="@string/wifi_password">
 
         <com.google.android.material.textfield.TextInputEditText

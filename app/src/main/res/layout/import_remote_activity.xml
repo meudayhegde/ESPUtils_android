@@ -12,9 +12,9 @@
             android:id="@+id/title_dialog"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="18sp"
-            android:textSize="24sp"
-            android:drawablePadding="14sp"
+            android:layout_margin="@dimen/margin_max"
+            android:textSize="@dimen/text_size_title_large"
+            android:drawablePadding="@dimen/margin_high"
             android:gravity="center_vertical"
             android:textStyle="bold"
             android:textColor="?attr/colorOnBackground"
@@ -29,9 +29,9 @@
         <TextView
                 android:id="@+id/message_text"
                 android:layout_width="match_parent"
-                android:layout_marginStart="18sp"
-                android:layout_marginEnd="14sp"
-                android:textSize="14sp"
+                android:layout_marginStart="@dimen/margin_max"
+                android:layout_marginEnd="@dimen/margin_high"
+                android:textSize="@dimen/text_size_subtitle"
                 android:textColor="?attr/colorOnBackground"
                 android:layout_height="wrap_content"
                 android:text="@string/select_the_device_to_use_this_remote_configuration" />
@@ -39,9 +39,9 @@
         <Spinner
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16sp"
-                android:layout_marginEnd="14sp"
-                android:layout_marginTop="8sp"
+                android:layout_marginStart="@dimen/margin_max"
+                android:layout_marginEnd="@dimen/margin_high"
+                android:layout_marginTop="@dimen/margin_low"
                 android:layout_gravity="center_horizontal"
                 android:id="@+id/select_device"/>
 
@@ -49,11 +49,11 @@
 
     <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_marginTop="18sp"
+            android:layout_marginTop="@dimen/margin_max"
             android:gravity="center"
             android:layout_gravity="center"
-            android:layout_marginStart="14sp"
-            android:layout_marginEnd="14sp"
+            android:layout_marginStart="@dimen/margin_high"
+            android:layout_marginEnd="@dimen/margin_high"
             android:layout_height="wrap_content">
 
 
@@ -61,7 +61,7 @@
                 android:id="@+id/progress_status"
                 style="?android:attr/progressBarStyle"
                 android:visibility="gone"
-                android:layout_margin="14sp"
+                android:layout_margin="@dimen/margin_high"
                 android:layout_width="80sp"
                 android:layout_height="80sp" />
 
@@ -71,7 +71,7 @@
                 android:layout_centerInParent="true"
                 android:layout_width="80sp"
                 android:layout_height="80sp"
-                android:layout_margin="14sp"
+                android:layout_margin="@dimen/margin_high"
                 app:srcCompat="@drawable/icon_check_circle"
                 android:contentDescription="@string/result_icon" />
 
@@ -79,10 +79,10 @@
 
     <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_marginTop="18sp"
+            android:layout_marginTop="@dimen/margin_max"
             android:layout_gravity="center"
-            android:layout_marginStart="14sp"
-            android:layout_marginEnd="14sp"
+            android:layout_marginStart="@dimen/margin_high"
+            android:layout_marginEnd="@dimen/margin_high"
             android:layout_marginBottom="4sp"
             android:layout_height="wrap_content">
 
@@ -92,7 +92,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
-                android:layout_marginEnd="8sp"
+                android:layout_marginEnd="@dimen/margin_low"
                 android:text="@string/import_" />
 
         <Button
@@ -101,7 +101,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_toStartOf="@id/button_import"
-                android:layout_marginEnd="14sp"
+                android:layout_marginEnd="@dimen/margin_high"
                 android:text="@string/cancel" />
     </RelativeLayout>
 

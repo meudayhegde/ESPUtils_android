@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.radiobutton.MaterialRadioButton
 import com.irware.remote.holders.SettingsItem
 import com.irware.remote.ui.adapters.SettingsAdapter
+import kotlinx.android.synthetic.main.activity_settings.*
 
 
 class SettingsActivity : AppCompatActivity() {
@@ -33,8 +34,11 @@ class SettingsActivity : AppCompatActivity() {
         {1-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);2-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)}
         setContentView(R.layout.activity_settings)
 
-        viewManager = LinearLayoutManager(this)
+        toolbar_settings.setNavigationOnClickListener {
+            finish()
+        }
 
+        viewManager = LinearLayoutManager(this)
 
         val fragmentList = ArrayList<String>()
         val menu = MenuBuilder(this)
@@ -95,8 +99,8 @@ class SettingsActivity : AppCompatActivity() {
             .setTitle(title)
             .setView(content)
             .setIcon(icon)
-            .setNegativeButton("Cancel"){_,_->}
-            .setPositiveButton("Apply"){_,_->
+            .setNegativeButton(R.string.cancel){_,_->}
+            .setPositiveButton(R.string.apply){_,_->
                 editor.putInt(prefName, content.checkedRadioButtonId)
                 editor.apply()
                 action?.run()

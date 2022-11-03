@@ -5,8 +5,8 @@
         android:layout_height="match_parent">
     <Button
             android:id="@+id/widget_button"
-            android:paddingStart="8sp"
-            android:paddingEnd="8sp"
+            android:paddingStart="@dimen/margin_low"
+            android:paddingEnd="@dimen/margin_low"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/white"

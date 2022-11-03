@@ -8,17 +8,17 @@
     <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16sp"
-            android:layout_marginEnd="14sp"
-            android:layout_marginStart="14sp">
+            android:layout_marginTop="@dimen/margin_max"
+            android:layout_marginEnd="@dimen/margin_high"
+            android:layout_marginStart="@dimen/margin_high">
 
         <Spinner
                 android:id="@+id/pin_number"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
-                android:paddingStart="12sp"
-                android:paddingEnd="12sp"
+                android:paddingStart="@dimen/margin_medium"
+                android:paddingEnd="@dimen/margin_medium"
                 android:prompt="@string/pin">
         </Spinner>
 
@@ -26,7 +26,7 @@
                 android:id="@+id/select_device"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="12sp"
+                android:layout_marginEnd="@dimen/margin_high"
                 android:layout_toStartOf="@id/pin_number"
                 android:layout_alignParentStart="true"
                 android:prompt="@string/select_device">
@@ -37,12 +37,12 @@
     <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8sp"
-            android:layout_marginEnd="14sp"
-            android:layout_marginStart="14sp"
+            android:layout_marginTop="@dimen/margin_low"
+            android:layout_marginEnd="@dimen/margin_high"
+            android:layout_marginStart="@dimen/margin_high"
             android:id="@+id/title"
             app:hintTextColor="?attr/colorOnBackground"
-            style="@style/textFieldLayoutWhiteTheme"
+            style="@style/TextInputLayoutStyle"
             android:hint="@string/switch_name">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -58,11 +58,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4sp"
-            android:layout_marginEnd="14sp"
-            android:layout_marginStart="14sp"
+            android:layout_marginEnd="@dimen/margin_high"
+            android:layout_marginStart="@dimen/margin_high"
             android:id="@+id/description"
             app:hintTextColor="?attr/colorOnBackground"
-            style="@style/textFieldLayoutWhiteTheme"
+            style="@style/TextInputLayoutStyle"
             android:hint="@string/description">
 
         <com.google.android.material.textfield.TextInputEditText

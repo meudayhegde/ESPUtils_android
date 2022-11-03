@@ -17,7 +17,7 @@ object SocketClient{
 
     class Connector(address:String){
         private val adr = address.split(":")
-        private val soc = if(adr.size == 2) Socket(adr[0],adr[1].toInt()) else Socket(address, ESPUtils.PORT)
+        private val soc = if(adr.size == 2) Socket(adr[0], adr[1].toInt()) else Socket(address, ESPUtils.ESP_COM_PORT)
         private val br = BufferedReader(InputStreamReader(soc.getInputStream()))
         private val bw = BufferedWriter(OutputStreamWriter(soc.getOutputStream()))
 

@@ -1,4 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
 
     <style name="AppTheme" parent="Theme.MaterialComponents.DayNight">
         <item name="colorPrimary">@color/sky_blue</item>
@@ -13,7 +13,7 @@
         <item name="android:buttonStyle">@style/Widget.MaterialComponents.Button.OutlinedButton</item>
     </style>
 
-    <style name="AppTheme.AlertDialog" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
+    <style name="AppTheme.AlertDialog" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
         <item name="android:windowBackground">@drawable/layout_border_round_corner</item>
         <item name="colorPrimary">@color/sky_blue</item>
         <item name="colorAccent">@color/sky_blue_light</item>
@@ -25,13 +25,13 @@
         <item name="colorPrimary">@color/sky_blue</item>
         <item name="colorPrimaryDark">@color/blue_dark</item>
         <item name="colorAccent">@color/blue_light</item>
-        <item name="colorControlNormal">#ffffff</item>
+        <item name="colorControlNormal">@color/white</item>
         <item name="android:navigationBarColor" >@color/blue_dark</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="AppTheme.NoActionBar">
+    <style name="AppTheme.NoActionBar" parent="AppTheme">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
@@ -66,7 +66,7 @@
         <item name="boxStrokeWidth">2dp</item>
     </style>
 
-    <style name="textFieldLayoutWhiteTheme" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+    <style name="TextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="boxStrokeColor">@color/edit_text_bg_white</item>

@@ -138,4 +138,5 @@
     <string name="please_select_gpio_pin_number">Please select GPIO Pin number</string>
     <string name="name_field_cannot_be_empty">Name field cannot be empty</string>
     <string name="message_delete_gpio_switch">Delete GPIO Switch %1$s ?</string>
+    <string name="parentheses">(%1$s)</string>
 </resources>

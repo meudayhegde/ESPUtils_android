@@ -54,8 +54,9 @@ class ESPUtils: Application() {
             val files = File(remoteConfigPath).listFiles { pathname ->
                 pathname!!.isFile and (pathname.name.endsWith(".json", true)) and pathname.canWrite()
             }
-            for (file in files!!)
+            files?.forEach { file ->
                 remotePropList.add(RemoteProperties(file, null))
+            }
         }
     }
 
@@ -72,7 +73,7 @@ class ESPUtils: Application() {
         var remoteConfigPath = ""
         var deviceConfigPath = ""
 
-        const val PORT = 48321
+        const val ESP_COM_PORT = 48321
         const val REMOTE_CONFIG_DIR = "remotes"
         const val DEVICE_CONFIG_DIR = "devices"
     }

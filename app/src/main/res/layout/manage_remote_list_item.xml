@@ -26,7 +26,7 @@
                 android:layout_height="48sp"
                 app:srcCompat="@drawable/icon_ir_remote"
                 android:layout_centerVertical="true"
-                android:layout_marginStart="8sp"
+                android:layout_marginStart="@dimen/margin_low"
                 android:contentDescription="@string/remove"
                 app:tint="?attr/colorOnBackground" />
 
@@ -42,12 +42,12 @@
             <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="14sp"
+                    android:layout_marginStart="@dimen/margin_high"
                     android:layout_marginTop="4sp"
                     android:layout_marginEnd="6sp"
                     android:text="@string/vendor_name"
                     android:textColor="?attr/colorOnBackground"
-                    android:textSize="16sp" />
+                    android:textSize="@dimen/text_size_subtitle_large" />
 
             <TextView
                     android:id="@+id/mac_addr"
@@ -56,7 +56,7 @@
                     android:layout_marginTop="4sp"
                     android:text="@string/vendor_name"
                     android:textColor="?attr/colorOnBackground"
-                    android:textSize="18sp" />
+                    android:textSize="@dimen/text_size_title" />
 
         </LinearLayout>
 
@@ -72,23 +72,23 @@
             <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="14sp"
+                    android:layout_marginStart="@dimen/margin_high"
                     android:layout_marginTop="4sp"
                     android:layout_marginEnd="6sp"
                     android:text="@string/model_name"
                     android:textColor="?attr/colorOnBackground"
-                    android:textSize="16sp" />
+                    android:textSize="@dimen/text_size_subtitle_large" />
 
             <TextView
                     android:id="@+id/model_name_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="14sp"
+                    android:layout_marginStart="@dimen/margin_high"
                     android:layout_marginTop="4sp"
-                    android:layout_marginEnd="14sp"
+                    android:layout_marginEnd="@dimen/margin_high"
                     android:text="@string/model_name"
                     android:textColor="?attr/colorOnBackground"
-                    android:textSize="18sp" />
+                    android:textSize="@dimen/text_size_title" />
 
         </LinearLayout>
 
@@ -110,9 +110,9 @@
                 android:layout_below="@id/icon_share"
                 android:layout_alignParentEnd="true"
                 android:layout_marginStart="4sp"
-                android:layout_marginTop="14sp"
+                android:layout_marginTop="@dimen/margin_high"
                 android:layout_marginEnd="12sp"
-                android:layout_marginBottom="14sp"
+                android:layout_marginBottom="@dimen/margin_high"
                 android:gravity="end"
                 android:textColor="?attr/colorOnBackground"
                 android:textSize="22sp" />
@@ -123,13 +123,13 @@
                 android:layout_height="wrap_content"
                 android:layout_toEndOf="@id/icon_remote_list_item"
                 android:layout_below="@id/layout_name"
-                android:layout_marginStart="14sp"
-                android:layout_marginTop="8sp"
+                android:layout_marginStart="@dimen/margin_high"
+                android:layout_marginTop="@dimen/margin_low"
                 android:layout_marginBottom="4sp"
                 android:layout_toStartOf="@id/btn_count"
                 android:text="@string/description"
                 android:textColor="?attr/colorOnBackground"
-                android:textSize="14sp" />
+                android:textSize="@dimen/text_size_subtitle" />
 
     </RelativeLayout>
 

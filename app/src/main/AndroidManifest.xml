@@ -84,7 +84,7 @@
                 android:configChanges="keyboardHidden|orientation|screenSize"
                 android:label="@string/title_activity_settings"
                 android:parentActivityName=".MainActivity"
-                android:theme="@style/AppTheme">
+                android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
                     android:value="com.irware.remote.MainActivity" />

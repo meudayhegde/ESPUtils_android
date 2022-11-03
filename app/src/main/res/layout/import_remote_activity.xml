@@ -83,7 +83,7 @@
             android:layout_gravity="center"
             android:layout_marginStart="@dimen/margin_high"
             android:layout_marginEnd="@dimen/margin_high"
-            android:layout_marginBottom="4sp"
+            android:layout_marginBottom="@dimen/margin_min"
             android:layout_height="wrap_content">
 
         <Button

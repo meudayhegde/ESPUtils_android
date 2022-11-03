@@ -80,6 +80,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
             AppCompatResources.getDrawable(context, R.drawable.layout_border_round_corner)
         holder.ipText.text = ""
     }
+
     private fun setStateOnline(holder:DeviceListViewHolder, prop: DeviceProperties){
         setStateAll(holder, prop)
         holder.refresh.visibility = View.GONE
@@ -90,6 +91,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
         holder.cardView.getChildAt(0).background =
             AppCompatResources.getDrawable(context, R.drawable.round_corner_success)
     }
+
     private fun setStateOffline(holder:DeviceListViewHolder, prop: DeviceProperties){
         setStateAll(holder, prop)
         holder.refresh.visibility = View.GONE

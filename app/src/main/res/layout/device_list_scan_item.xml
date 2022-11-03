@@ -6,8 +6,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:cardUseCompatPadding="true"
-        app:cardElevation="4dp"
-        app:cardCornerRadius="12sp"
+        app:cardElevation="@dimen/card_elevation"
+        app:cardCornerRadius="@dimen/list_item_card_radius"
         android:descendantFocusability="blocksDescendants">
 
     <RelativeLayout
@@ -19,7 +19,7 @@
             tools:ignore="UnusedAttribute">
 
         <ImageView style="@style/MaterialAlertDialog.MaterialComponents.Title.Icon"
-                android:src="@drawable/icon_esp_devices" android:layout_marginStart="6sp"
+                android:src="@drawable/icon_esp_devices" android:layout_marginStart="@dimen/margin_low"
                 android:layout_centerVertical="true" app:tint="?attr/colorOnBackground"
                 android:contentDescription="@string/esp_devices" android:id="@+id/esp_icon"/>
 
@@ -27,12 +27,12 @@
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:layout_toEndOf="@id/esp_icon" android:textColor="?attr/colorOnBackground"
                 android:id="@+id/device_ip_address" android:text="@string/ip_address"
-                android:textSize="@dimen/text_size_subtitle" android:layout_marginTop="@dimen/margin_medium"
+                android:textSize="@dimen/text_size_title" android:layout_marginTop="@dimen/margin_medium"
                 android:layout_marginStart="@dimen/margin_low" android:layout_marginEnd="@dimen/margin_low"/>
 
         <TextView
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:textSize="12sp" android:layout_marginTop="4sp" android:textColor="?attr/colorOnBackground"
+                android:textSize="@dimen/text_size_title" android:layout_marginTop="@dimen/margin_min" android:textColor="?attr/colorOnBackground"
                 android:layout_below="@id/device_ip_address" android:layout_toEndOf="@id/esp_icon"
                 android:id="@+id/device_mac_address" android:text="@string/mac_address"
                 android:layout_marginStart="@dimen/margin_low" android:layout_marginEnd="@dimen/margin_low"

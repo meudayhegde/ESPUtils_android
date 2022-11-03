@@ -7,8 +7,8 @@
         android:layout_height="wrap_content"
         android:descendantFocusability="blocksDescendants"
         android:orientation="vertical"
-        app:cardCornerRadius="6sp"
-        app:cardElevation="4dp"
+        app:cardCornerRadius="@dimen/card_radius"
+        app:cardElevation="@dimen/card_elevation"
         app:cardUseCompatPadding="true">
 
     <RelativeLayout
@@ -22,8 +22,8 @@
 
         <ImageView
                 android:id="@+id/icon_remote_list_item"
-                android:layout_width="48sp"
-                android:layout_height="48sp"
+                android:layout_width="@dimen/list_item_icon_size"
+                android:layout_height="@dimen/list_item_icon_size"
                 app:srcCompat="@drawable/icon_ir_remote"
                 android:layout_centerVertical="true"
                 android:layout_marginStart="@dimen/margin_low"
@@ -43,8 +43,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/margin_high"
-                    android:layout_marginTop="4sp"
-                    android:layout_marginEnd="6sp"
+                    android:layout_marginTop="@dimen/margin_min"
+                    android:layout_marginEnd="@dimen/margin_low"
                     android:text="@string/vendor_name"
                     android:textColor="?attr/colorOnBackground"
                     android:textSize="@dimen/text_size_subtitle_large" />
@@ -53,7 +53,7 @@
                     android:id="@+id/mac_addr"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4sp"
+                    android:layout_marginTop="@dimen/margin_min"
                     android:text="@string/vendor_name"
                     android:textColor="?attr/colorOnBackground"
                     android:textSize="@dimen/text_size_title" />
@@ -73,8 +73,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/margin_high"
-                    android:layout_marginTop="4sp"
-                    android:layout_marginEnd="6sp"
+                    android:layout_marginTop="@dimen/margin_min"
+                    android:layout_marginEnd="@dimen/margin_low"
                     android:text="@string/model_name"
                     android:textColor="?attr/colorOnBackground"
                     android:textSize="@dimen/text_size_subtitle_large" />
@@ -84,7 +84,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/margin_high"
-                    android:layout_marginTop="4sp"
+                    android:layout_marginTop="@dimen/margin_min"
                     android:layout_marginEnd="@dimen/margin_high"
                     android:text="@string/model_name"
                     android:textColor="?attr/colorOnBackground"
@@ -97,8 +97,8 @@
                 android:layout_width="30sp"
                 android:layout_height="30sp"
                 android:layout_alignParentEnd="true"
-                android:layout_marginTop="4sp"
-                android:layout_marginEnd="10sp"
+                android:layout_marginTop="@dimen/margin_min"
+                android:layout_marginEnd="@dimen/margin_medium"
                 android:contentDescription="@string/icon_to_share_remote"
                 app:srcCompat="@drawable/icon_share"
                 app:tint="?attr/colorOnBackground" />
@@ -109,13 +109,13 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/icon_share"
                 android:layout_alignParentEnd="true"
-                android:layout_marginStart="4sp"
+                android:layout_marginStart="@dimen/margin_min"
                 android:layout_marginTop="@dimen/margin_high"
-                android:layout_marginEnd="12sp"
+                android:layout_marginEnd="@dimen/margin_high"
                 android:layout_marginBottom="@dimen/margin_high"
                 android:gravity="end"
                 android:textColor="?attr/colorOnBackground"
-                android:textSize="22sp" />
+                android:textSize="@dimen/text_size_title_large" />
 
         <TextView
                 android:id="@+id/remote_desc"
@@ -125,7 +125,7 @@
                 android:layout_below="@id/layout_name"
                 android:layout_marginStart="@dimen/margin_high"
                 android:layout_marginTop="@dimen/margin_low"
-                android:layout_marginBottom="4sp"
+                android:layout_marginBottom="@dimen/margin_min"
                 android:layout_toStartOf="@id/btn_count"
                 android:text="@string/description"
                 android:textColor="?attr/colorOnBackground"

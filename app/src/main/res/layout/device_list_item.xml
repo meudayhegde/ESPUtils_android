@@ -8,8 +8,8 @@
         android:descendantFocusability="blocksDescendants"
         android:orientation="vertical"
         android:visibility="visible"
-        app:cardCornerRadius="12sp"
-        app:cardElevation="4sp"
+        app:cardCornerRadius="@dimen/list_item_card_radius"
+        app:cardElevation="@dimen/card_elevation"
         app:cardUseCompatPadding="true">
 
     <RelativeLayout
@@ -23,8 +23,8 @@
 
         <ImageView
                 android:id="@+id/esp_icon"
-                android:layout_width="48sp"
-                android:layout_height="48sp"
+                android:layout_width="@dimen/list_item_icon_size"
+                android:layout_height="@dimen/list_item_icon_size"
                 android:layout_centerVertical="true"
                 android:layout_marginStart="@dimen/margin_low"
                 android:contentDescription="@string/esp_devices"
@@ -96,7 +96,7 @@
                 android:layout_marginBottom="@dimen/margin_high"
                 android:gravity="end"
                 android:textColor="?attr/colorOnBackground"
-                android:textSize="22sp" />
+                android:textSize="@dimen/text_size_title_large" />
 
         <TextView
                 android:id="@+id/device_desc"
@@ -104,8 +104,8 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/layout_name"
                 android:layout_marginStart="@dimen/margin_high"
-                android:layout_marginTop="4sp"
-                android:layout_marginBottom="6sp"
+                android:layout_marginTop="@dimen/margin_min"
+                android:layout_marginBottom="@dimen/margin_low"
                 android:layout_toStartOf="@id/btn_count"
                 android:layout_toEndOf="@id/esp_icon"
                 android:text="@string/description"
@@ -117,7 +117,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:layout_marginEnd="12sp"
+                android:layout_marginEnd="@dimen/margin_high"
                 android:gravity="center_horizontal"
                 android:orientation="vertical"
                 tools:ignore="RelativeOverlap">
@@ -151,7 +151,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/scanning"
-                    android:textSize="10sp"
+                    android:textSize="@dimen/margin_medium"
                     tools:ignore="SmallSp" />
         </LinearLayout>
 

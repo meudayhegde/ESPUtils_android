@@ -9,8 +9,8 @@
     <TextView android:id="@+id/create_remote_info_layout"
             android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_gravity="center"
             android:layout_marginTop="@dimen/margin_high" android:layout_marginStart="@dimen/margin_high" android:layout_marginEnd="@dimen/margin_high"
-            android:paddingStart="10sp" android:gravity="center" android:textColor="?attr/colorOnBackground"
-            android:text="@string/create_remote_guide" android:textSize="15sp"
+            android:paddingStart="@dimen/margin_medium" android:gravity="center" android:textColor="?attr/colorOnBackground"
+            android:text="@string/create_remote_guide" android:textSize="@dimen/text_size_title"
             tools:targetApi="m" tools:ignore="RtlSymmetry"
             fab:drawableTint="?attr/colorOnBackground"
             fab:drawableStartCompat="@drawable/icon_info" />
@@ -60,8 +60,8 @@
                 android:layout_height="wrap_content" fab:fab_label="New Button"
                 fab:fab_size="mini" fab:fab_colorNormal="@color/sky_blue"
                 fab:fab_colorPressed="?attr/colorPrimaryDark" fab:fab_colorRipple="?attr/colorPrimaryDark"
-                android:src="@drawable/ic_import_single" android:layout_marginEnd="20dp" android:layout_marginBottom="20dp"
-                tools:ignore="VectorDrawableCompat" />
+                android:src="@drawable/ic_import_single" android:layout_marginEnd="@dimen/margin_high"
+                android:layout_marginBottom="@dimen/margin_high" tools:ignore="VectorDrawableCompat" />
 
         <com.github.clans.fab.FloatingActionButton
                 android:id="@+id/fab_multi_capture"
@@ -91,10 +91,10 @@
 
         <ImageView
                 android:id="@+id/image_view_btn_settings"
-                android:layout_width="40sp"
-                android:layout_height="40sp"
+                android:layout_width="@dimen/list_item_icon_size"
+                android:layout_height="@dimen/list_item_icon_size"
                 android:visibility="invisible"
-                android:layout_marginTop="15sp"
+                android:layout_marginTop="@dimen/margin_high"
                 fab:srcCompat="@drawable/ic_settings"
                 android:contentDescription="@string/button_to_delete_remotebutton"
                 fab:tint="?attr/colorOnBackground" />
@@ -113,10 +113,10 @@
 
         <ImageView
                 android:id="@+id/image_view_home"
-                android:layout_width="40sp"
-                android:layout_height="40sp"
+                android:layout_width="@dimen/list_item_icon_size"
+                android:layout_height="@dimen/list_item_icon_size"
                 android:visibility="invisible"
-                android:layout_marginTop="15sp"
+                android:layout_marginTop="@dimen/margin_high"
                 fab:srcCompat="@drawable/icon_home"
                 android:contentDescription="@string/button_to_delete_remotebutton"
                 fab:tint="?attr/colorOnBackground" />
@@ -136,10 +136,10 @@
 
         <ImageView
                 android:id="@+id/image_view_delete"
-                android:layout_width="40sp"
-                android:layout_height="40sp"
+                android:layout_width="@dimen/list_item_icon_size"
+                android:layout_height="@dimen/list_item_icon_size"
                 android:visibility="invisible"
-                android:layout_marginTop="15sp"
+                android:layout_marginTop="@dimen/margin_high"
                 fab:srcCompat="@drawable/icon_delete"
                 android:contentDescription="@string/button_to_delete_remotebutton"
                 fab:tint="?attr/colorOnBackground" />

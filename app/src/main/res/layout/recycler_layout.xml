@@ -6,7 +6,7 @@
 
     <ProgressBar
             android:layout_width="match_parent"
-            android:layout_height="12sp"
+            android:layout_height="@dimen/height_progress_bar_linear"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_marginTop="@dimen/margin_low"
             android:layout_marginStart="@dimen/margin_high"

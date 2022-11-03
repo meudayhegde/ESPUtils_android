@@ -7,7 +7,7 @@
         android:layout_height="wrap_content"
         app:cardUseCompatPadding="true"
         app:cardElevation="3dp"
-        app:cardCornerRadius="12sp"
+        app:cardCornerRadius="@dimen/list_item_card_radius"
         android:descendantFocusability="blocksDescendants">
 
     <RelativeLayout
@@ -39,7 +39,7 @@
                 android:textSize="@dimen/text_size_title"
                 android:layout_toEndOf="@id/ic_gpio_list_item"
                 android:textColor="?attr/colorOnBackground"
-                android:layout_marginStart="6sp"
+                android:layout_marginStart="@dimen/margin_low"
                 android:text="@string/title"
                 tools:ignore="RelativeOverlap" />
 
@@ -49,7 +49,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/gpio_name"
                 android:layout_toEndOf="@id/ic_gpio_list_item"
-                android:layout_marginStart="6sp"
+                android:layout_marginStart="@dimen/margin_low"
                 android:textSize="@dimen/text_size_subtitle"
                 android:text="@string/subtitle" />
 
@@ -59,7 +59,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:layout_marginEnd="12sp"/>
+                android:layout_marginEnd="@dimen/margin_high"/>
 
         <LinearLayout
                 android:layout_width="55sp"
@@ -67,7 +67,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:layout_marginEnd="12sp"
+                android:layout_marginEnd="@dimen/margin_high"
                 android:gravity="center_horizontal"
                 android:orientation="vertical"
                 android:visibility="gone"
@@ -93,7 +93,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/loading"
-                    android:textSize="10sp"
+                    android:textSize="@dimen/text_size_micro"
                     tools:ignore="SmallSp" />
         </LinearLayout>
 

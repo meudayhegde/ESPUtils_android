@@ -19,14 +19,14 @@
                 android:layout_height="120sp"
                 android:layout_marginTop="@dimen/margin_max"
                 android:contentDescription="@string/about_app"
-                android:src="@drawable/circuit_dark" />
+                android:src="@drawable/circuit_light_dark_auto" />
 
         <com.google.android.material.card.MaterialCardView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:descendantFocusability="blocksDescendants"
-                app:cardElevation="4dp"
-                app:cardCornerRadius="6dp"
+                app:cardElevation="@dimen/card_elevation"
+                app:cardCornerRadius="@dimen/card_radius"
                 app:cardUseCompatPadding="true"
                 android:layout_marginTop="@dimen/margin_high">
 
@@ -48,13 +48,13 @@
         <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="12sp"
-                android:layout_marginEnd="12sp"
+                android:layout_marginStart="@dimen/margin_high"
+                android:layout_marginEnd="@dimen/margin_medium"
                 app:cardUseCompatPadding="true"
                 android:descendantFocusability="blocksDescendants"
-                app:cardElevation="4dp"
-                app:cardCornerRadius="6dp"
-                android:layout_margin="10sp">
+                app:cardElevation="@dimen/card_elevation"
+                app:cardCornerRadius="@dimen/card_radius"
+                android:layout_margin="@dimen/margin_medium">
 
             <TextView
                     android:id="@+id/about_app"
@@ -69,27 +69,26 @@
 
         </com.google.android.material.card.MaterialCardView>
 
-
         <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="22sp"
-                android:layout_marginTop="15sp"
-                android:layout_marginEnd="12sp"
-                android:layout_marginBottom="6sp"
+                android:layout_marginStart="@dimen/margin_max"
+                android:layout_marginTop="@dimen/margin_high"
+                android:layout_marginEnd="@dimen/margin_high"
+                android:layout_marginBottom="@dimen/margin_low"
                 android:text="@string/libraries_used"
                 android:textColor="@color/sky_blue_variant_1"
-                android:textSize="15sp"
+                android:textSize="@dimen/text_size_title"
                 android:textStyle="bold" />
 
         <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="12sp"
-                android:layout_marginEnd="12sp"
+                android:layout_marginStart="@dimen/margin_high"
+                android:layout_marginEnd="@dimen/margin_high"
                 app:cardUseCompatPadding="true"
-                app:cardElevation="4dp"
-                app:cardCornerRadius="6sp"
+                app:cardElevation="@dimen/card_elevation"
+                app:cardCornerRadius="@dimen/card_radius"
                 android:descendantFocusability="blocksDescendants">
 
             <LinearLayout
@@ -102,19 +101,19 @@
                 <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
+                        android:layout_margin="@dimen/margin_medium"
                         android:text="@string/floating_action_button"
                         android:textColor="@color/sky_blue_variant_1"
-                        android:textSize="15sp"
+                        android:textSize="@dimen/text_size_title"
                         android:textStyle="bold" />
 
                 <TextView
                         android:layout_height="wrap_content"
                         android:layout_width="match_parent"
-                        android:layout_marginStart="12dp"
-                        android:layout_marginEnd="10dp"
+                        android:layout_marginStart="@dimen/margin_high"
+                        android:layout_marginEnd="@dimen/margin_medium"
                         android:text="Copyright © Dmytro Tarianyk\nApache License, Version 2.0\nhttps://github.com/Clans/FloatingActionButton"
-                        android:layout_marginBottom="15dp"
+                        android:layout_marginBottom="@dimen/margin_high"
                         android:textColor="?attr/colorOnBackground"
                         tools:ignore="HardcodedText" />
 
@@ -124,11 +123,11 @@
         <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="12sp"
-                android:layout_marginEnd="12sp"
+                android:layout_marginStart="@dimen/margin_high"
+                android:layout_marginEnd="@dimen/margin_high"
                 app:cardUseCompatPadding="true"
-                app:cardElevation="4dp"
-                app:cardCornerRadius="6sp"
+                app:cardElevation="@dimen/card_elevation"
+                app:cardCornerRadius="@dimen/card_radius"
                 android:descendantFocusability="blocksDescendants">
 
             <LinearLayout
@@ -141,19 +140,19 @@
                 <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
+                        android:layout_margin="@dimen/margin_medium"
                         android:text="@string/pikolo_colorpicker"
                         android:textColor="@color/sky_blue_variant_1"
-                        android:textSize="15sp"
+                        android:textSize="@dimen/text_size_title"
                         android:textStyle="bold" />
 
                 <TextView
                         android:layout_height="wrap_content"
                         android:layout_width="match_parent"
-                        android:layout_marginStart="12dp"
-                        android:layout_marginEnd="10dp"
+                        android:layout_marginStart="@dimen/margin_high"
+                        android:layout_marginEnd="@dimen/margin_medium"
                         android:text="Copyright © Madrapps\nApache License, Version 2.0\nhttps://github.com/Madrapps/Pikolo"
-                        android:layout_marginBottom="15dp"
+                        android:layout_marginBottom="@dimen/margin_high"
                         android:textColor="?attr/colorOnBackground"
                         tools:ignore="HardcodedText" />
 
@@ -163,11 +162,11 @@
         <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="12sp"
-                android:layout_marginEnd="12sp"
+                android:layout_marginStart="@dimen/margin_high"
+                android:layout_marginEnd="@dimen/margin_high"
                 app:cardUseCompatPadding="true"
-                app:cardElevation="4dp"
-                app:cardCornerRadius="6sp"
+                app:cardElevation="@dimen/card_elevation"
+                app:cardCornerRadius="@dimen/card_radius"
                 android:descendantFocusability="blocksDescendants">
 
             <LinearLayout
@@ -180,19 +179,19 @@
                 <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
+                        android:layout_margin="@dimen/margin_medium"
                         android:text="@string/material_components_android"
                         android:textColor="@color/sky_blue_variant_1"
-                        android:textSize="15sp"
+                        android:textSize="@dimen/text_size_title"
                         android:textStyle="bold" />
 
                 <TextView
                         android:layout_height="wrap_content"
                         android:layout_width="match_parent"
-                        android:layout_marginStart="12dp"
-                        android:layout_marginEnd="10dp"
+                        android:layout_marginStart="@dimen/margin_high"
+                        android:layout_marginEnd="@dimen/margin_medium"
                         android:text="Copyright © material-components\nApache License, Version 2.0\nhttps://github.com/material-components/material-components-android"
-                        android:layout_marginBottom="15dp"
+                        android:layout_marginBottom="@dimen/margin_high"
                         android:textColor="?attr/colorOnBackground"
                         tools:ignore="HardcodedText" />
 

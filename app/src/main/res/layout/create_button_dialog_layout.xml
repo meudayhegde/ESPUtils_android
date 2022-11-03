@@ -31,12 +31,12 @@
                         android:layout_width="85sp"
                         android:layout_height="85sp" />
             </RelativeLayout>
-            <ImageView android:layout_width="60sp" android:layout_height="60sp"
-                    android:id="@+id/ir_capture_error_logo" android:layout_margin="20dp" app:srcCompat="@drawable/ic_error_red"
+            <ImageView android:layout_width="@dimen/list_item_icon_size" android:layout_height="@dimen/list_item_icon_size"
+                    android:id="@+id/ir_capture_error_logo" android:layout_margin="@dimen/margin_max" app:srcCompat="@drawable/ic_error_red"
                     android:contentDescription="@string/ir_capture_error_logo_description" android:visibility="gone"/>
 
-            <ImageView android:layout_width="60sp" android:layout_height="60sp" android:id="@+id/ir_capture_success_logo"
-                    android:layout_margin="20dp" app:srcCompat="@drawable/icon_check_circle"
+            <ImageView android:layout_width="@dimen/list_item_icon_size" android:layout_height="@dimen/list_item_icon_size" android:id="@+id/ir_capture_success_logo"
+                    android:layout_margin="@dimen/margin_max" app:srcCompat="@drawable/icon_check_circle"
                     android:contentDescription="@string/ir_capture_error_logo_description" android:visibility="gone"
                     app:tint="@color/green" />
 
@@ -64,7 +64,7 @@
             <RelativeLayout
                     android:id="@+id/layout_color_picker" android:layout_width="wrap_content"
                     android:layout_height="wrap_content" android:gravity="center"
-                    android:layout_gravity="center" android:layout_marginTop="12sp"
+                    android:layout_gravity="center" android:layout_marginTop="@dimen/margin_high"
                     android:layout_marginBottom="@dimen/margin_max">
 
 
@@ -76,8 +76,8 @@
 
             <TextView
                     android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_gravity="center"
-                    android:layout_margin="@dimen/margin_high" android:paddingStart="10sp" android:gravity="center" android:textColor="?attr/colorOnBackground"
-                    android:text="@string/color_picker_help" android:textSize="16sp"
+                    android:layout_margin="@dimen/margin_high" android:paddingStart="@dimen/margin_medium" android:gravity="center" android:textColor="?attr/colorOnBackground"
+                    android:text="@string/color_picker_help" android:textSize="@dimen/text_size_title"
                     tools:targetApi="m" tools:ignore="RtlSymmetry"
                     app:drawableTint="?attr/colorOnBackground"
                     app:drawableStartCompat="@drawable/icon_info" />
@@ -89,19 +89,19 @@
 
             <LinearLayout
                     style="?android:attr/buttonBarStyle" android:layout_width="match_parent"
-                    android:layout_height="match_parent" android:layout_marginTop="12sp"
+                    android:layout_height="match_parent" android:layout_marginTop="@dimen/margin_medium"
                     android:gravity="center_horizontal|center_vertical" android:orientation="horizontal">
 
                 <android.widget.Button
                         android:id="@+id/btn_icon" style="?android:attr/buttonBarStyle"
                         android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/margin_high" android:layout_marginTop="2sp"
+                        android:layout_marginStart="@dimen/margin_high" android:layout_marginTop="@dimen/margin_low"
                         android:background="@drawable/round_corner_white_bg" android:text="@string/icon" />
 
                 <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/textInputButtonName" style="@style/TextInputLayoutStyle"
-                        android:layout_marginTop="12sp" android:layout_marginLeft="10dp"
-                        android:layout_marginRight="10dp" android:layout_marginBottom="10dp"
+                        android:layout_marginTop="@dimen/margin_medium" android:layout_marginStart="@dimen/margin_medium"
+                        android:layout_marginEnd="@dimen/margin_medium" android:layout_marginBottom="@dimen/margin_medium"
                         android:textColorHint="@android:color/darker_gray">
                     <EditText
                             android:id="@+id/btn_edit_text" style="@style/modifiedEditText"

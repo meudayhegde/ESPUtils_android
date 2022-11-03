@@ -19,7 +19,7 @@
     <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputEmail"
             style="@style/textFieldLayout"
-            android:layout_marginTop="12sp"
+            android:layout_marginTop="@dimen/margin_high"
             android:textColorHint="@color/white">
         <EditText
                 android:id="@+id/edit_text_uname"
@@ -37,7 +37,7 @@
     <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputPassword"
             style="@style/textFieldLayout"
-            android:layout_marginTop="12sp"
+            android:layout_marginTop="@dimen/margin_medium"
             app:passwordToggleEnabled="true"
             app:passwordToggleTint="@android:color/white"
             android:textColorHint="@color/white">
@@ -71,6 +71,6 @@
             android:layout_marginTop="10dp"
             android:text="@string/skip"
             android:textColor="@color/sky_blue"
-            android:textSize="@dimen/newsMoreTextSize" />
+            android:textSize="@dimen/text_size_subtitle" />
 
 </LinearLayout>

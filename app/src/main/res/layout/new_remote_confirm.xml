@@ -13,15 +13,15 @@
         <TextView
                 android:id="@+id/title_new_remote_confirm" android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:textColor="?attr/colorOnBackground"
-                android:gravity="center" android:layout_marginTop="10sp" android:layout_marginStart="@dimen/margin_high"
+                android:gravity="center" android:layout_marginTop="@dimen/margin_medium" android:layout_marginStart="@dimen/margin_high"
                 android:layout_marginEnd="@dimen/margin_high" android:layout_marginBottom="@dimen/margin_high" android:textSize="@dimen/text_size_title"/>
 
         <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_marginTop="10sp"
+                android:layout_marginTop="@dimen/margin_medium"
                 android:layout_marginStart="@dimen/margin_high"
                 android:layout_marginEnd="@dimen/margin_high"
-                android:layout_marginBottom="4sp"
+                android:layout_marginBottom="@dimen/margin_min"
                 style="@style/TextInputLayoutStyle"
                 android:layout_height="wrap_content">
 
@@ -39,7 +39,7 @@
                 android:layout_marginStart="@dimen/margin_high"
                 android:layout_marginEnd="@dimen/margin_high"
                 style="@style/TextInputLayoutStyle"
-                android:layout_marginBottom="4sp"
+                android:layout_marginBottom="@dimen/margin_min"
                 android:hint="@string/model_name">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -53,7 +53,7 @@
                 android:layout_width="match_parent"
                 android:layout_marginStart="@dimen/margin_high"
                 android:layout_marginEnd="@dimen/margin_high"
-                android:layout_marginBottom="4sp"
+                android:layout_marginBottom="@dimen/margin_min"
                 android:hint="@string/description"
                 style="@style/TextInputLayoutStyle"
                 android:layout_height="wrap_content">
@@ -71,7 +71,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_high"
                 android:layout_marginEnd="@dimen/margin_high"
-                android:layout_marginTop="4sp"/>
+                android:layout_marginTop="@dimen/margin_min"/>
 
         <RelativeLayout
                 android:layout_width="match_parent"

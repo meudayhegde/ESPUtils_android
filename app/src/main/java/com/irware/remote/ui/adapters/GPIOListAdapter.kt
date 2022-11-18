@@ -15,6 +15,7 @@ import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.irware.ThreadHandler
+import com.irware.remote.ESPUtilsApp
 import com.irware.remote.MainActivity
 import com.irware.remote.R
 import com.irware.remote.holders.GPIOObject
@@ -127,7 +128,11 @@ class GPIOListAdapter(private val gpioList: ArrayList<GPIOObject>,
     }
     private fun itemStatusAll(holder: GPIOListViewHolder, gpioObject: GPIOObject){
         holder.title.text = gpioObject.title
-        holder.subTitle.text = "Device: ${gpioObject.deviceProperties.nickName}\n${gpioObject.subTitle}"
+        holder.subTitle.text = ESPUtilsApp.getString(
+            R.string.gpio_list_item_subtitle,
+            gpioObject.deviceProperties.nickName,
+            gpioObject.subTitle
+        )
         holder.iconDrawable?.setTint(MainActivity.colorOnBackground)
     }
 
@@ -136,9 +141,13 @@ class GPIOListAdapter(private val gpioList: ArrayList<GPIOObject>,
         ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE){
             val success = try{
                 val connector = SocketClient.Connector(prop.deviceProperties.ipAddress)
-                connector.sendLine("{\"request\":\"gpio_set\",\"username\":\"${prop.deviceProperties.userName}\", " +
-                        "\"password\": \"${prop.deviceProperties.password}\", \"pinMode\": \"OUTPUT\", \"pinNumber\":" +
-                        " ${prop.gpioNumber}, \"pinValue\": ${if(compoundButton.isChecked) 1 else 0}}")
+                connector.sendLine(ESPUtilsApp.getString(
+                    R.string.esp_command_set_gpio,
+                    prop.deviceProperties.userName,
+                    prop.deviceProperties.password,
+                    prop.gpioNumber,
+                    if(compoundButton.isChecked) 1 else 0
+                ))
                 JSONObject(connector.readLine()).getString("response") == "success"
             }catch(ex: Exception){
                 false

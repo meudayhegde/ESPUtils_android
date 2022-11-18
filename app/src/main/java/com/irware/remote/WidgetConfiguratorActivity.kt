@@ -67,9 +67,9 @@ class WidgetConfiguratorActivity : AppCompatActivity(),SwipeRefreshLayout.OnRefr
         RemoteButton.onConfigChanged()
 
         val arr = resources.obtainTypedArray(R.array.icons)
-        ESPUtils.iconDrawableList = IntArray(arr.length())
+        ESPUtilsApp.iconDrawableList = IntArray(arr.length())
         for(i in 0 until arr.length())
-            ESPUtils.iconDrawableList[i] = arr.getResourceId(i,0)
+            ESPUtilsApp.iconDrawableList[i] = arr.getResourceId(i,0)
         arr.recycle()
 
         viewManager = LinearLayoutManager(this)
@@ -88,7 +88,7 @@ class WidgetConfiguratorActivity : AppCompatActivity(),SwipeRefreshLayout.OnRefr
         (remote_refresh_layout as SwipeRefreshLayout).isRefreshing = true
         ThreadHandler.runOnFreeThread{
             remotePropList.clear()
-            val files = File(ESPUtils.FILES_DIR + File.separator + ESPUtils.REMOTE_CONFIG_DIR).listFiles { pathname ->
+            val files = File(ESPUtilsApp.FILES_DIR + File.separator + ESPUtilsApp.REMOTE_CONFIG_DIR).listFiles { pathname ->
                 pathname!!.isFile and (pathname.name.endsWith(
                     ".json",
                     true

@@ -4,7 +4,8 @@ import android.text.TextUtils
 import android.util.Log
 import com.irware.ThreadHandler
 import com.irware.Utils
-import com.irware.remote.ESPUtils
+import com.irware.remote.ESPUtilsApp
+import com.irware.remote.R
 import com.irware.remote.holders.ARPItem
 import org.json.JSONArray
 import org.json.JSONException
@@ -15,7 +16,7 @@ import java.io.OutputStreamWriter
 import java.net.InetAddress
 
 class ARPTable(private val scanCount: Int = 1) {
-    private var arpTableFile: File = File(ESPUtils.FILES_DIR + File.separator + ARP_TABLE_FILE)
+    private var arpTableFile: File = File(ESPUtilsApp.FILES_DIR + File.separator + ARP_TABLE_FILE)
     private var jsonObj: JSONObject = getJSONObject()
 
     init{
@@ -30,49 +31,51 @@ class ARPTable(private val scanCount: Int = 1) {
     }
 
     fun getARPItemList(onArpItemListener: ((arpItem: ARPItem) -> Unit)): ThreadHandler.InfiniteThread{
-        return ThreadHandler.getThreadByPosition(ThreadHandler.runOnFreeThread {
-            val ipList = ArrayList<String>()
-            val reachableIPList = ArrayList<String>()
-            jsonObj.keys().forEach {
-                val ipArray = jsonObj.getJSONArray(it)
-                for(index in 0 until ipArray.length()){
-                    ipList.add(ipArray.getString(index))
-                }
-            }
-            ipList.forEach { address ->
-                for(i in 0 until 3){
-                    val inetAddress = InetAddress.getByName(address)
-                    if((address !in reachableIPList) and inetAddress.isReachable(10)){
-                        try{
-                            reachableIPList.add(address)
-                            val macAddress = getMacForIP(address)
-                            onArpItemListener.invoke(ARPItem(macAddress, address))
-                            break
-                        }catch(_: Exception){}
+        return ThreadHandler.getThreadByPosition(
+            ThreadHandler.runOnFreeThread{
+                val ipList = ArrayList<String>()
+                val reachableIPList = ArrayList<String>()
+                jsonObj.keys().forEach {
+                    val ipArray = jsonObj.getJSONArray(it)
+                    for(index in 0 until ipArray.length()){
+                        ipList.add(ipArray.getString(index))
                     }
                 }
-            }
-            for(myIp in Utils.getIPAddress()){
-                val myIpArr = myIp.split(".")
-                val myIpInt = myIpArr[3].toInt()
-                for(i in 1 until 255){
-                    arrayOf(i, -i).forEach { ind ->
-                        val addressInt = myIpInt + ind
-                        if(addressInt in 0 until 255){
-                            val address = "${myIpArr[0]}.${myIpArr[1]}.${myIpArr[2]}.$addressInt"
-                            val inetAddress = InetAddress.getByName(address)
-                            if((address !in reachableIPList) and inetAddress.isReachable(10)){
-                                try{
-                                    reachableIPList.add(address)
-                                    val macAddress = getMacForIP(address)
-                                    onArpItemListener.invoke(ARPItem(macAddress, address))
-                                }catch(_: Exception){}
+                ipList.forEach { address ->
+                    for(i in 0 until 3){
+                        val inetAddress = InetAddress.getByName(address)
+                        if((address !in reachableIPList) and inetAddress.isReachable(10)){
+                            try{
+                                reachableIPList.add(address)
+                                val macAddress = getMacForIP(address)
+                                onArpItemListener.invoke(ARPItem(macAddress, address))
+                                break
+                            }catch(_: Exception){}
+                        }
+                    }
+                }
+                for(myIp in Utils.getIPAddress()){
+                    val myIpArr = myIp.split(".")
+                    val myIpInt = myIpArr[3].toInt()
+                    for(i in 1 until 255){
+                        arrayOf(i, -i).forEach { ind ->
+                            val addressInt = myIpInt + ind
+                            if(addressInt in 0 until 255){
+                                val address = "${myIpArr[0]}.${myIpArr[1]}.${myIpArr[2]}.$addressInt"
+                                val inetAddress = InetAddress.getByName(address)
+                                if((address !in reachableIPList) and inetAddress.isReachable(10)){
+                                    try{
+                                        reachableIPList.add(address)
+                                        val macAddress = getMacForIP(address)
+                                        onArpItemListener.invoke(ARPItem(macAddress, address))
+                                    }catch(_: Exception){}
+                                }
                             }
                         }
                     }
                 }
             }
-        })
+        )
     }
 
     fun getIpFromMac(mac: String, listener: ((address: String?) -> Unit)? = null): String?{
@@ -84,8 +87,8 @@ class ARPTable(private val scanCount: Int = 1) {
                     if(InetAddress.getByName(address).isReachable(50)){
                         try{
                             val connector = SocketClient.Connector(address)
-                            connector.sendLine("{\"request\":\"ping\"}")
-                            if(JSONObject(connector.readLine()).getString("MAC") == mac) {
+                            connector.sendLine(ESPUtilsApp.getString(R.string.esp_command_ping))
+                            if(JSONObject(connector.readLine()).getString(ESPUtilsApp.getString(R.string.esp_response_mac)) == mac) {
                                 if(i != 0){
                                     addresses.remove(i)
                                     addresses.insert(0, address)
@@ -172,10 +175,10 @@ class ARPTable(private val scanCount: Int = 1) {
 
     private fun getMacForIP(address: String): String{
         val connector = SocketClient.Connector(address)
-        connector.sendLine("{\"request\":\"ping\"}")
+        connector.sendLine(ESPUtilsApp.getString(R.string.esp_command_ping))
         val response = connector.readLine()
         connector.close()
-        return JSONObject(response).optString("MAC")
+        return JSONObject(response).optString(ESPUtilsApp.getString(R.string.esp_response_mac))
     }
 
     companion object{

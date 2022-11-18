@@ -1,8 +1,10 @@
 package com.irware.remote
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
 import android.os.Build
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import com.irware.ThreadHandler
 import com.irware.remote.holders.DeviceProperties
@@ -12,9 +14,10 @@ import com.irware.remote.holders.RemoteProperties
 import com.irware.remote.net.ARPTable
 import java.io.File
 
-class ESPUtils: Application() {
+class ESPUtilsApp: Application() {
     override fun onCreate() {
         super.onCreate()
+        context = this
         FILES_DIR = filesDir.absolutePath
         arpTable = ARPTable(-1)
 
@@ -64,6 +67,9 @@ class ESPUtils: Application() {
         lateinit var FILES_DIR: String
         lateinit var arpTable: ARPTable
 
+        @SuppressLint("StaticFieldLeak")
+        private var context: Context? = null
+
         val remotePropList = ArrayList<RemoteProperties>()
         val devicePropList = ArrayList<DeviceProperties>()
         val gpioObjectList = ArrayList<GPIOObject>()
@@ -76,5 +82,9 @@ class ESPUtils: Application() {
         const val ESP_COM_PORT = 48321
         const val REMOTE_CONFIG_DIR = "remotes"
         const val DEVICE_CONFIG_DIR = "devices"
+
+        fun getString(@StringRes stringRes: Int, vararg formatArgs: Any = emptyArray()): String{
+            return context?.getString(stringRes, *formatArgs)?: ""
+        }
     }
 }

@@ -119,29 +119,29 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
         holder.cardView.setOnClickListener {
             val settingsDialog = AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
                 .setPositiveButton(context.resources.getString(R.string.done)) { p0, _ -> p0.dismiss() }
-                .setTitle("Settings for ${prop.nickName}")
+                .setTitle(context.getString(R.string.settings_dialog_subtitle, prop.nickName))
                 .setView(R.layout.controllers_refresh_layout)
                 .setIcon(R.drawable.ic_settings)
                 .create()
             settingsDialog.setOnShowListener {
                 val settingsList = arrayListOf(
-                    SettingsItem("Wireless Settings", "Wi-Fi/Hotspot SSID and passwords",
+                    SettingsItem(context.getString(R.string.wireless_settings), context.getString(R.string.wireless_settings_subtitle),
                         null, R.drawable.icon_wifi, wirelessSettingsClickAction(context, prop), prop
                     ),
                     SettingsItem(
-                        "User Settings", "User credentials (username and password)",
+                        context.getString(R.string.user_settings), context.getString(R.string.user_settings_subtitle),
                         null, R.drawable.ic_user, userSettingsClickAction(context, prop), prop
                     ),
-                    SettingsItem("Reboot", "Restart the micro controller", null,
+                    SettingsItem(context.getString(R.string.reboot), context.getString(R.string.reboot_subtitle), null,
                         R.drawable.icon_power, restartConfirmClickAction(context, prop), prop
                     ),
-                    SettingsItem("Install Update", "install update on esp device",
+                    SettingsItem(context.getString(R.string.install_update), context.getString(R.string.install_update_subtitle),
                         null, R.drawable.ic_system_update, updateClickAction(context, prop), prop
                     ),
-                    SettingsItem("Remove Device", "Remove ESP device from device list",
+                    SettingsItem(context.getString(R.string.remove_device), context.getString(R.string.remove_device_subtitle),
                         null, R.drawable.icon_delete, deleteClickAction(context, holder.adapterPosition, settingsDialog)
                     ),
-                    SettingsItem("Edit Properties", "Edit device properties",
+                    SettingsItem(context.getString(R.string.edit_properties), context.getString(R.string.edit_properties_subtitle),
                         null, R.drawable.icon_edit, editClickAction(context, prop)
                     )
                 )
@@ -190,13 +190,13 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                         ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE) {
                             try {
                                 val connector = SocketClient.Connector(prop.ipAddress)
-                                connector.sendLine("{\"request\":\"restart\",\"username\":\"${prop.userName}\",\"password\":\"${prop.password}\"}")
+                                connector.sendLine(context.getString(R.string.esp_command_restart, prop.userName, prop.password))
                                 Handler(Looper.getMainLooper()).post {
-                                    Toast.makeText(context, "Restart command successfully sent.", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, context.getString(R.string.restart_command_successfully_sent), Toast.LENGTH_SHORT).show()
                                 }
                             } catch (ex: Exception) {
                                 Handler(Looper.getMainLooper()).post {
-                                    Toast.makeText(context, "Failed to send Restart command!", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, context.getString(R.string.failed_to_send_restart_command), Toast.LENGTH_SHORT).show()
                                 }
                             }
                         }
@@ -220,7 +220,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                     propList.removeAt(position)
                     notifyItemRemoved(position)
                     settingsDialog.dismiss()
-                    Toast.makeText(context, "Device successfully removed.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, context.getString(R.string.device_successfully_removed), Toast.LENGTH_SHORT).show()
                 }
                 .show()
         }
@@ -233,10 +233,10 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
     }
 
     private fun extractUpdate(file: File, updateIntermediateListener: OnOTAIntermediateListener?): File?{
-        updateIntermediateListener?.onStatusUpdate("Extracting update file...", true)
+        updateIntermediateListener?.onStatusUpdate(context.getString(R.string.extracting_update_file), true)
         if(file.exists() and file.isFile){
-            if(!file.absolutePath.endsWith(".zip")){
-                updateIntermediateListener?.onError("Err: Update file is not valid")
+            if(!file.absolutePath.endsWith(context.getString(R.string.extension_zip))){
+                updateIntermediateListener?.onError(context.getString(R.string.err_update_file_is_not_valid))
                 return null
             }
 
@@ -266,7 +266,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
             file.delete()
             return extractDir
         }
-        updateIntermediateListener?.onError("Err: Update file does not exist.")
+        updateIntermediateListener?.onError(context.getString(R.string.err_update_file_does_not_exist))
         return null
     }
 
@@ -276,11 +276,11 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
             if(prop.isConnected) {
                 devicesFragment.updateSelectedListener = { updateFile ->
                     val updateDialog = AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
-                        .setTitle("Esp Ota Update")
+                        .setTitle(R.string.esp_ota_update)
                         .setView(R.layout.esp_ota_layout)
                         .setIcon(R.drawable.ic_system_update)
-                        .setNegativeButton("Cancel") { _, _ -> }
-                        .setPositiveButton("Update") { _, _ -> }
+                        .setNegativeButton(R.string.cancel) { _, _ -> }
+                        .setPositiveButton(R.string.update) { _, _ -> }
                         .create()
                     updateDialog.setCancelable(false)
                     updateDialog.setOnShowListener {
@@ -358,30 +358,22 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
 
                                     val espOta = EspOta(prop)
                                     val system =
-                                        updateDir.listFiles { _, name -> name.endsWith(".bin") }
+                                        updateDir.listFiles { _, name -> name.endsWith(context.getString(R.string.extension_bin)) }
                                             ?.find {
-                                                it.name.lowercase(Locale.ROOT).startsWith("system")
+                                                it.name.lowercase(Locale.ROOT).startsWith(context.getString(R.string.update_file_system))
                                             }
                                     system?.let {
-                                        espOta.installUpdate(
-                                            it,
-                                            EspOta.SYSTEM,
-                                            updateIntermediateListener
-                                        )
+                                        espOta.installUpdate(it, EspOta.SYSTEM, updateIntermediateListener)
                                         return@runOnFreeThread
                                     }
 
                                     val spiffs =
-                                        updateDir.listFiles { _, name -> name.endsWith(".bin") }
+                                        updateDir.listFiles { _, name -> name.endsWith(context.getString(R.string.extension_bin)) }
                                             ?.find {
-                                                it.name.lowercase(Locale.ROOT).startsWith("spiffs")
+                                                it.name.lowercase(Locale.ROOT).startsWith(context.getString(R.string.update_file_spiffs))
                                             }
                                     spiffs?.let {
-                                        espOta.installUpdate(
-                                            it,
-                                            EspOta.SPIFFS,
-                                            updateIntermediateListener
-                                        )
+                                        espOta.installUpdate(it, EspOta.SPIFFS, updateIntermediateListener)
                                         return@runOnFreeThread
                                     }
 
@@ -414,7 +406,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
 
     private fun verifyUpdate(updateDir: File, updateIntermediateListener: OnOTAIntermediateListener?): Boolean{
         updateIntermediateListener?.onStatusUpdate("Verifying update file.", true)
-        val hashFile = File(updateDir.absolutePath, ".hash")
+        val hashFile = File(updateDir.absolutePath, context.getString(R.string.extension_hash))
         if(!hashFile.exists()){
             updateIntermediateListener?.onError("Hash does not exist, Update aborted.")
             return false
@@ -454,20 +446,8 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                     for (item in listOf(cUname, cPass, nUname, nPass, nPassCon)) {
                         item.addTextChangedListener(object : TextWatcher {
                             override fun afterTextChanged(s: Editable?) {}
-                            override fun beforeTextChanged(
-                                s: CharSequence?,
-                                start: Int,
-                                count: Int,
-                                after: Int
-                            ) {
-                            }
-
-                            override fun onTextChanged(
-                                s: CharSequence?,
-                                start: Int,
-                                before: Int,
-                                count: Int
-                            ) {
+                            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                                 (item.parent.parent as TextInputLayout).error = null
                             }
                         })
@@ -495,18 +475,19 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                                     "Wrong settings may result in inaccessibility of iRWaRE device (full reset will be required to recover))."
                                             + "Make Sure UserName and password are correct"
                                 )
-                                .setNegativeButton("Cancel") { dg, _ -> dg.dismiss() }
-                                .setPositiveButton("Confirm") { _, _ ->
+                                .setNegativeButton(R.string.cancel) { dg, _ -> dg.dismiss() }
+                                .setPositiveButton(R.string.confirm) { _, _ ->
                                     userDialog.dismiss()
                                     ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE) {
                                         try {
                                             val connector = SocketClient.Connector(prop.ipAddress)
                                             connector.sendLine(
-                                                "{\"request\":\"set_user\",\"username\":\""
-                                                        + cUname.text.toString() + "\",\"password\":\""
-                                                        + cPass.text.toString() + "\",\"new_username\":\""
-                                                        + nUname.text.toString() + "\",\"new_password\":\""
-                                                        + nPass.text.toString() + "\"}"
+                                                context.getString(R.string.esp_command_change_user,
+                                                    cUname.text.toString(),
+                                                    cPass.text.toString(),
+                                                    nUname.text.toString(),
+                                                    nPass.text.toString()
+                                                )
                                             )
                                             val result = connector.readLine()
                                             val resultObj = JSONObject(result)
@@ -551,9 +532,9 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
         return Runnable {
             if(prop.isConnected) {
                 val dialog = AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
-                    .setTitle("Wireless Settings")
+                    .setTitle(R.string.wireless_settings)
                     .setView(R.layout.wireless_settings)
-                    .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
+                    .setNegativeButton(R.string.cancel) { dialog, _ -> dialog.dismiss() }
                     .setPositiveButton(context.getString(R.string.apply)) { _, _ -> }
                     .setIcon(R.drawable.icon_wifi)
                     .create()
@@ -673,21 +654,21 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                                 context.getString(R.string.empty_password)
                         if (ssid.text!!.isNotEmpty() and ((pass.text?.length ?: 0) >= 8)) {
                             AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
-                                .setTitle("Confirm")
+                                .setTitle(R.string.confirm)
                                 .setMessage(
                                     "Wrong settings may result in inaccessibility of iRWaRE device (full reset will be required to recover))."
                                             + "\nMake Sure SSID and password are correct"
                                 )
-                                .setNegativeButton("Cancel") { dg, _ -> dg.dismiss() }
-                                .setPositiveButton("Confirm") { _, _ ->
+                                .setNegativeButton(R.string.cancel) { dg, _ -> dg.dismiss() }
+                                .setPositiveButton(R.string.confirm) { _, _ ->
                                     dialog.dismiss()
                                     ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE) {
                                         try {
                                             val connector = SocketClient.Connector(prop.ipAddress)
                                             connector.sendLine(
-                                                "{\"request\":\"set_wireless\",\"username\":\"${prop.userName}\",\"password\":\""
-                                                        + "${prop.password}\",\"wireless_mode\":\"" + mode + "\",\"new_ssid\":\""
-                                                        + "${ssid.text.toString()}\",\"new_pass\":\"${pass.text.toString()}\"}"
+                                                context.getString(R.string.esp_command_change_wireless,
+                                                    prop.userName, prop.password, mode, ssid.text.toString(), pass.text.toString()
+                                                )
                                             )
                                             val result = connector.readLine()
                                             val resultObj = JSONObject(result)
@@ -733,11 +714,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
         ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE){
             try {
                 val connector = SocketClient.Connector(address)
-                connector.sendLine(
-                    "{\"request\":\"get_wireless\",\"username\":\""
-                            + userName + "\",\"password\":\""
-                            + password + "\"}"
-                )
+                connector.sendLine(context.getString(R.string.esp_command_get_wireless, userName, password))
                 val result = connector.readLine()
                 val resultObj = JSONObject(result)
                 Handler(Looper.getMainLooper()).post{

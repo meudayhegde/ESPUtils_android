@@ -10,7 +10,9 @@ import android.view.View
 import android.widget.Toast
 import androidx.core.graphics.drawable.DrawableCompat
 import com.irware.remote.ButtonWidgetProvider
+import com.irware.remote.ESPUtilsApp
 import com.irware.remote.MainActivity
+import com.irware.remote.R
 import com.irware.remote.holders.ButtonProperties
 import com.irware.remote.ui.buttons.RemoteButton
 import com.irware.remote.ui.dialogs.RemoteDialog
@@ -46,23 +48,21 @@ class HomeButtonDropListener(private val remoteDialog: RemoteDialog): View.OnDra
                 AppWidgetManager::class.java)
             val myProvider = ComponentName(remoteDialog.context, ButtonWidgetProvider::class.java)
 
-            val pref = remoteDialog.context.getSharedPreferences("widget_associations", Context.MODE_PRIVATE)
+            val pref = remoteDialog.context.getSharedPreferences(ESPUtilsApp.getString(R.string.shared_pref_name_widget_associations), Context.MODE_PRIVATE)
             val editor = pref.edit()
-            editor.putString("queued_button",properties.parent?.remoteConfigFile?.name + ","+ properties.buttonId)
+            editor.putString(ESPUtilsApp.getString(R.string.shared_pref_item_queued_button), properties.parent?.remoteConfigFile?.name + "," + properties.buttonId)
             editor.apply()
 
-            Toast.makeText(remoteDialog.context,pref.getString("queued_button",""), Toast.LENGTH_LONG).show()
+            Toast.makeText(remoteDialog.context, pref.getString(ESPUtilsApp.getString(R.string.shared_pref_item_queued_button), ""), Toast.LENGTH_LONG).show()
 
             if(appWidgetManager.isRequestPinAppWidgetSupported){
                 appWidgetManager.requestPinAppWidget(myProvider, null, null)
             }
             else{
-                Toast.makeText(remoteDialog.context,"Your launcher doesn't support this feature",
-                    Toast.LENGTH_LONG).show()
+                Toast.makeText(remoteDialog.context, R.string.launcher_no_support_feature, Toast.LENGTH_LONG).show()
             }
         } else {
-            Toast.makeText(remoteDialog.context,"Your Android version doesn't support this feature",
-                Toast.LENGTH_LONG).show()
+            Toast.makeText(remoteDialog.context,R.string.android_version_no_support_feature, Toast.LENGTH_LONG).show()
         }
     }
 }

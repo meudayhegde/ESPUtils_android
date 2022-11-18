@@ -4,7 +4,7 @@ import android.content.DialogInterface
 import android.os.Handler
 import android.os.Looper
 import com.irware.ThreadHandler
-import com.irware.remote.ESPUtils
+import com.irware.remote.ESPUtilsApp
 import com.irware.remote.MainActivity
 import com.irware.remote.R
 import com.irware.remote.listeners.IrCodeListener
@@ -17,7 +17,7 @@ object SocketClient{
 
     class Connector(address:String){
         private val adr = address.split(":")
-        private val soc = if(adr.size == 2) Socket(adr[0], adr[1].toInt()) else Socket(address, ESPUtils.ESP_COM_PORT)
+        private val soc = if(adr.size == 2) Socket(adr[0], adr[1].toInt()) else Socket(address, ESPUtilsApp.ESP_COM_PORT)
         private val br = BufferedReader(InputStreamReader(soc.getInputStream()))
         private val bw = BufferedWriter(OutputStreamWriter(soc.getOutputStream()))
 
@@ -53,8 +53,7 @@ object SocketClient{
                     }
                 }
 
-                connector.sendLine(
-                    "{\"request\":\"ir_capture\",\"username\":\"${userName}\",\"password\":\"${password}\",\"capture_mode\":${irlistener.mode}}")
+                connector.sendLine(ESPUtilsApp.getString(R.string.esp_command_read_ircode, userName, password, irlistener.mode))
                 while(connector.isConnected()) {
                     val result = JSONObject(connector.readLine())
                     when (result.getString("response")) {
@@ -104,9 +103,13 @@ object SocketClient{
             try {
                 val connector = Connector(address)
                 connector.sendLine(
-                    "{\"request\":\"ir_send\",\"username\":\"${userName}\",\"password\":\"${password}\",\"length\":\""
-                            + jsonObj.getString("length") + "\",\"protocol\":\"" + jsonObj.getString("protocol") + "\",\"irCode\":\""
-                            + jsonObj.getString("irCode") + "\"}")
+                    ESPUtilsApp.getString(
+                        R.string.esp_command_send_ircode, userName, password,
+                        jsonObj.getString("length"),
+                        jsonObj.getString("protocol"),
+                        jsonObj.getString("irCode")
+                    )
+                )
                 val result = connector.readLine()
                 connector.close()
                 irSendListener.invoke(result)
@@ -115,5 +118,4 @@ object SocketClient{
             }
         }
     }
-
 }

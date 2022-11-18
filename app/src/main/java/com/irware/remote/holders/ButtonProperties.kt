@@ -1,5 +1,7 @@
 package com.irware.remote.holders
 
+import com.irware.remote.ESPUtilsApp
+import com.irware.remote.R
 import com.irware.remote.listeners.OnRemoteButtonModificationListener
 import org.json.JSONObject
 
@@ -17,33 +19,106 @@ class ButtonProperties(var jsonObj:JSONObject) {
         parent.update()
     }
 
-    var length: String = jsonObj.getString("length")
-        get() { return jsonObj.getString("length")}
-        set(value){ field = value; jsonObj.put("length", value); parent?.update()}
-    var irCode: String = jsonObj.getString("irCode")
-        get() { return jsonObj.getString("irCode")}
-        set(value){ field = value; jsonObj.put("irCode", value); listener?.onIrModified(); parent?.update()}
-    var text: String = jsonObj.getString("text")
-        get() { return jsonObj.getString("text")}
-        set(value){ field = value; jsonObj.put("text", value); listener?.onTextModified(); parent?.update()}
-    var iconType = jsonObj.getInt("iconType")
-        get(){ return jsonObj.getInt("iconType")}
-        set(value){ field = value; jsonObj.put("iconType", value); listener?.onTypeModified(); parent?.update()}
-    var color = jsonObj.getInt("color")
-        get(){ return  jsonObj.getInt("color")}
-        set(value){ field = value; jsonObj.put("color", value); listener?.onColorModified(); parent?.update()}
-    var icon = jsonObj.getInt("icon")
-        get() { return jsonObj.getInt("icon")}
-        set(value){ field = value; jsonObj.put("icon", value); listener?.onIconModified(); parent?.update()}
-    var textColor = jsonObj.getInt("textColor")
-        get() { return jsonObj.getInt("textColor") }
-        set(value){ field = value; jsonObj.put("textColor", value); listener?.onTextColorChanged(); parent?.update()}
-    var btnPosition  = jsonObj.getInt("btnPosition")
-        get(){ return jsonObj.getInt("btnPosition")}
-        set(value){field = value; jsonObj.put("btnPosition", value); listener?.onPositionModified(); parent?.update()}
-    var buttonId: Long = jsonObj.optLong("buttonID")
-        get() { if(jsonObj.optLong("buttonID") == 0L) { jsonObj.put("buttonID", System.currentTimeMillis()); parent?.update()}; return jsonObj.getLong("buttonID")}
-        set(value){ field = value; jsonObj.put("buttonID", value); parent?.update()}
+    var length: String = jsonObj.getString(ESPUtilsApp.getString(R.string.button_prop_length))
+        get(){
+            return jsonObj.getString(ESPUtilsApp.getString(R.string.button_prop_length))
+        }
+        set(value){
+            field = value
+            jsonObj.put(ESPUtilsApp.getString(R.string.button_prop_length), value)
+            parent?.update()
+        }
+
+    var irCode: String = jsonObj.getString(ESPUtilsApp.getString(R.string.button_prop_ircode))
+        get(){
+            return jsonObj.getString(ESPUtilsApp.getString(R.string.button_prop_ircode))
+        }
+        set(value){
+            field = value
+            jsonObj.put(ESPUtilsApp.getString(R.string.button_prop_ircode), value)
+            listener?.onIrModified()
+            parent?.update()
+        }
+
+    var text: String = jsonObj.getString(ESPUtilsApp.getString(R.string.button_prop_text))
+        get(){
+            return jsonObj.getString(ESPUtilsApp.getString(R.string.button_prop_text))
+        }
+        set(value){
+            field = value
+            jsonObj.put(ESPUtilsApp.getString(R.string.button_prop_text), value)
+            listener?.onTextModified()
+            parent?.update()
+        }
+
+    var iconType = jsonObj.getInt(ESPUtilsApp.getString(R.string.button_prop_icon_type))
+        get(){
+            return jsonObj.getInt(ESPUtilsApp.getString(R.string.button_prop_icon_type))
+        }
+        set(value){
+            field = value
+            jsonObj.put(ESPUtilsApp.getString(R.string.button_prop_icon_type), value)
+            listener?.onTypeModified()
+            parent?.update()
+        }
+
+    var color = jsonObj.getInt(ESPUtilsApp.getString(R.string.button_prop_color))
+        get(){
+            return  jsonObj.getInt(ESPUtilsApp.getString(R.string.button_prop_color))
+        }
+        set(value){
+            field = value
+            jsonObj.put(ESPUtilsApp.getString(R.string.button_prop_color), value)
+            listener?.onColorModified()
+            parent?.update()
+        }
+
+    var icon = jsonObj.getInt(ESPUtilsApp.getString(R.string.button_prop_icon))
+        get(){
+            return jsonObj.getInt(ESPUtilsApp.getString(R.string.button_prop_icon))
+        }
+        set(value){
+            field = value
+            jsonObj.put(ESPUtilsApp.getString(R.string.button_prop_icon), value)
+            listener?.onIconModified()
+            parent?.update()
+        }
+
+    var textColor = jsonObj.getInt(ESPUtilsApp.getString(R.string.button_prop_text_color))
+        get(){
+            return jsonObj.getInt(ESPUtilsApp.getString(R.string.button_prop_text_color))
+        }
+        set(value){
+            field = value
+            jsonObj.put(ESPUtilsApp.getString(R.string.button_prop_text_color), value)
+            listener?.onTextColorChanged()
+            parent?.update()
+        }
+
+    var btnPosition  = jsonObj.getInt(ESPUtilsApp.getString(R.string.button_prop_btn_position))
+        get(){
+            return jsonObj.getInt(ESPUtilsApp.getString(R.string.button_prop_btn_position))
+        }
+        set(value){
+            field = value
+            jsonObj.put(ESPUtilsApp.getString(R.string.button_prop_btn_position), value)
+            listener?.onPositionModified()
+            parent?.update()
+        }
+
+    var buttonId: Long = jsonObj.optLong(ESPUtilsApp.getString(R.string.button_prop_btn_id))
+        get(){
+            if(jsonObj.optLong(ESPUtilsApp.getString(R.string.button_prop_btn_id)) == 0L){
+                jsonObj.put(ESPUtilsApp.getString(R.string.button_prop_btn_id), System.currentTimeMillis())
+                parent?.update()
+            }
+            return jsonObj.getLong(ESPUtilsApp.getString(R.string.button_prop_btn_id))
+        }
+        set(value){
+            field = value
+            jsonObj.put(ESPUtilsApp.getString(R.string.button_prop_btn_id), value)
+            parent?.update()
+        }
 
     var buttonShowAnimation = true
 

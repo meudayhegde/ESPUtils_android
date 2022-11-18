@@ -15,7 +15,7 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
-import com.irware.remote.ESPUtils
+import com.irware.remote.ESPUtilsApp
 import com.irware.remote.MainActivity
 import com.irware.remote.R
 import com.irware.remote.holders.ButtonProperties
@@ -215,7 +215,7 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnRemoteButt
 
 
         btn_icon.setOnClickListener {
-            val iconAdapter = object:ArrayAdapter<Int>(context, R.layout.drawable_layout, ESPUtils.iconDrawableList.toTypedArray()){
+            val iconAdapter = object:ArrayAdapter<Int>(context, R.layout.drawable_layout, ESPUtilsApp.iconDrawableList.toTypedArray()){
                 override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                     val drawable = ContextCompat.getDrawable(context, getItem(position)!!)
                     DrawableCompat.setTint(drawable!!, MainActivity.colorOnBackground)

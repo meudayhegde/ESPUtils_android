@@ -60,17 +60,17 @@ class RemoteParserActivity : AppCompatActivity() {
 
         val spinner = findViewById<Spinner>(R.id.select_device)
 
-        if(ESPUtils.devicePropList.isEmpty()){
-            ESPUtils.deviceConfigPath = ESPUtils.FILES_DIR + File.separator + ESPUtils.DEVICE_CONFIG_DIR
-            val deviceConfigDir = File(ESPUtils.deviceConfigPath)
+        if(ESPUtilsApp.devicePropList.isEmpty()){
+            ESPUtilsApp.deviceConfigPath = ESPUtilsApp.FILES_DIR + File.separator + ESPUtilsApp.DEVICE_CONFIG_DIR
+            val deviceConfigDir = File(ESPUtilsApp.deviceConfigPath)
             deviceConfigDir.exists() or deviceConfigDir.mkdirs()
             for(file: File in deviceConfigDir.listFiles { _, name -> name?.endsWith(".json")?: false }!!){
-                ESPUtils.devicePropList.add(DeviceProperties(file))
+                ESPUtilsApp.devicePropList.add(DeviceProperties(file))
             }
         }
 
         val devicePropList = arrayListOf<Any>(getString(R.string.select_device))
-        devicePropList.addAll(ESPUtils.devicePropList)
+        devicePropList.addAll(ESPUtilsApp.devicePropList)
         spinner.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, devicePropList)
 
         val action = intent.action
@@ -128,13 +128,13 @@ class RemoteParserActivity : AppCompatActivity() {
                 Toast.makeText(this, getString(R.string.device_not_selected_note), Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             }
-            val selectedDevice = ESPUtils.devicePropList[spinner.selectedItemPosition - 1]
+            val selectedDevice = ESPUtilsApp.devicePropList[spinner.selectedItemPosition - 1]
             jsonObject.put("deviceConfigFileName", selectedDevice.deviceConfigFile?.name)
 
             msg.visibility = View.GONE; progress.visibility = View.VISIBLE
             try{
                 val fileName= jsonObject.getString("fileName")
-                var outFile = File(ESPUtils.FILES_DIR + File.separator + ESPUtils.REMOTE_CONFIG_DIR, fileName)
+                var outFile = File(ESPUtilsApp.FILES_DIR + File.separator + ESPUtilsApp.REMOTE_CONFIG_DIR, fileName)
                 val parent = outFile.parentFile!!
                 if(!parent.exists()) parent.mkdirs()
                 var count = 1
@@ -193,7 +193,7 @@ class RemoteParserActivity : AppCompatActivity() {
 
         if(MainActivity.activity != null && !MainActivity.activity!!.isDestroyed){
             if(configFile!=null){
-                ESPUtils.remotePropList.add(RemoteProperties(configFile!!,null))
+                ESPUtilsApp.remotePropList.add(RemoteProperties(configFile!!,null))
                 MainActivity.activity?.irFragment?.notifyDataChanged()
             }
             btn.text = getString(R.string.done)

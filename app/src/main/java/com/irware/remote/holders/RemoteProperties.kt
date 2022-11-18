@@ -1,7 +1,8 @@
 package com.irware.remote.holders
 
 import android.text.TextUtils
-import com.irware.remote.ESPUtils
+import com.irware.remote.ESPUtilsApp
+import com.irware.remote.R
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -13,59 +14,59 @@ class RemoteProperties(val remoteConfigFile: File, private val eventListener: Ev
 
     private var jsonObj : JSONObject = getJSONObject()
 
-    var fileName: String = jsonObj.optString("fileName")
+    var fileName: String = jsonObj.optString(ESPUtilsApp.getString(R.string.remote_prop_filename))
         set(value){
             field = value
-            jsonObj.put("fileName",value)
+            jsonObj.put(ESPUtilsApp.getString(R.string.remote_prop_filename), value)
             update()
         }
 
-    var remoteVendor: String = jsonObj.optString("vendor")
+    var remoteVendor: String = jsonObj.optString(ESPUtilsApp.getString(R.string.remote_prop_vendor))
         set(value){
             field = value
-            jsonObj.put("vendor",value)
+            jsonObj.put(ESPUtilsApp.getString(R.string.remote_prop_vendor), value)
             update()
         }
-    var remoteName: String = jsonObj.optString("name")
+    var remoteName: String = jsonObj.optString(ESPUtilsApp.getString(R.string.remote_prop_name))
         set(value){
             field = value
-            jsonObj.put("name",value)
-            update()
-        }
-
-    var remoteID: String = jsonObj.optString("id")
-        set(value){
-            field = value
-            jsonObj.put("id",value)
+            jsonObj.put(ESPUtilsApp.getString(R.string.remote_prop_name), value)
             update()
         }
 
-    var description: String = jsonObj.optString("description")
+    var remoteID: String = jsonObj.optString(ESPUtilsApp.getString(R.string.remote_prop_id))
         set(value){
             field = value
-            jsonObj.put("description",value)
+            jsonObj.put(ESPUtilsApp.getString(R.string.remote_prop_id), value)
+            update()
+        }
+
+    var description: String = jsonObj.optString(ESPUtilsApp.getString(R.string.remote_prop_description))
+        set(value){
+            field = value
+            jsonObj.put(ESPUtilsApp.getString(R.string.remote_prop_description), value)
             update()
         }
 
     private var buttonArray: JSONArray = getButtons()
         set(value){
             field = value
-            jsonObj.put("buttons",value)
+            jsonObj.put(ESPUtilsApp.getString(R.string.remote_prop_buttons_array), value)
             update()
         }
 
 
-    var deviceConfigFileName: String = jsonObj.optString("deviceConfigFileName", "")
+    var deviceConfigFileName: String = jsonObj.optString(ESPUtilsApp.getString(R.string.remote_prop_dev_prop_file_name), "")
         set(value){
             field = value
-            jsonObj.put("deviceConfigFileName", value)
+            jsonObj.put(ESPUtilsApp.getString(R.string.remote_prop_dev_prop_file_name), value)
             update()
-            deviceProperties = ESPUtils.devicePropList.find { it.deviceConfigFile.name == deviceConfigFileName } ?:
-                    DeviceProperties(File(remoteConfigFile.parent!! + File.separator + ESPUtils.DEVICE_CONFIG_DIR, deviceConfigFileName))
+            deviceProperties = ESPUtilsApp.devicePropList.find { it.deviceConfigFile.name == deviceConfigFileName } ?:
+                    DeviceProperties(File(remoteConfigFile.parent!! + File.separator + ESPUtilsApp.DEVICE_CONFIG_DIR, deviceConfigFileName))
         }
 
-    var deviceProperties = ESPUtils.devicePropList.find { it.deviceConfigFile.name == deviceConfigFileName } ?:
-    DeviceProperties(File(remoteConfigFile.parent!! + File.separator + ESPUtils.DEVICE_CONFIG_DIR, deviceConfigFileName))
+    var deviceProperties = ESPUtilsApp.devicePropList.find { it.deviceConfigFile.name == deviceConfigFileName } ?:
+    DeviceProperties(File(remoteConfigFile.parent!! + File.separator + ESPUtilsApp.DEVICE_CONFIG_DIR, deviceConfigFileName))
 
     fun addButton(button:JSONObject):JSONObject?{
         val index = buttonArray.index(button)
@@ -86,9 +87,9 @@ class RemoteProperties(val remoteConfigFile: File, private val eventListener: Ev
 
     fun getButtons():JSONArray{
         return try{
-            jsonObj.getJSONArray("buttons")
+            jsonObj.getJSONArray(ESPUtilsApp.getString(R.string.remote_prop_buttons_array))
         }catch(ex:JSONException){
-            jsonObj.put("buttons",JSONArray())
+            jsonObj.put(ESPUtilsApp.getString(R.string.remote_prop_buttons_array), JSONArray())
             getButtons()
         }
     }
@@ -125,7 +126,7 @@ class RemoteProperties(val remoteConfigFile: File, private val eventListener: Ev
 
     private fun JSONArray.index(obj: JSONObject):Int{
         for(position in 0 until this.length()){
-            if(getJSONObject(position).optLong("buttonID") == obj.getLong("buttonID"))
+            if(getJSONObject(position).optLong(ESPUtilsApp.getString(R.string.button_prop_btn_id)) == obj.getLong(ESPUtilsApp.getString(R.string.button_prop_btn_id)))
                 return position
         }
         return -1
@@ -137,7 +138,3 @@ class RemoteProperties(val remoteConfigFile: File, private val eventListener: Ev
         return true
     }
 }
-
-
-
-

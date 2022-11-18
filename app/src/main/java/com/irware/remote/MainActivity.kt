@@ -84,7 +84,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val width = min(layoutParams.width, layoutParams.width)
         NUM_COLUMNS = when{(width > 920) -> 5; width < 720 -> 3; else -> 4}
 
-        val file = File(ESPUtils.FILES_DIR + File.separator+ ESPUtils.REMOTE_CONFIG_DIR)
+        val file = File(ESPUtilsApp.FILES_DIR + File.separator+ ESPUtilsApp.REMOTE_CONFIG_DIR)
         if(!file.exists()) file.mkdir()
 
         val lparams = RelativeLayout.LayoutParams(width, width)
@@ -383,7 +383,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onResume() {
         super.onResume()
-        ESPUtils.devicePropList.forEach { it.refreshGPIOStatus() }
+        ESPUtilsApp.devicePropList.forEach { it.refreshGPIOStatus() }
     }
 
     companion object {

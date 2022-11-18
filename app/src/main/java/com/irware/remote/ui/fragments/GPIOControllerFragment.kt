@@ -20,9 +20,8 @@ import com.github.clans.fab.FloatingActionButton
 import com.github.clans.fab.FloatingActionMenu
 import com.google.android.material.textfield.TextInputEditText
 import com.irware.ThreadHandler
-import com.irware.remote.ESPUtils
+import com.irware.remote.ESPUtilsApp
 import com.irware.remote.R
-import com.irware.remote.holders.DeviceProperties
 import com.irware.remote.holders.GPIOItem
 import com.irware.remote.holders.GPIOObject
 import com.irware.remote.listeners.OnFragmentInteractionListener
@@ -40,7 +39,7 @@ class GPIOControllerFragment : androidx.fragment.app.Fragment()  {
         if(rootView == null ){
             rootView = inflater.inflate(R.layout.fragment_gpio_controller, container, false) as RelativeLayout
             viewManager = LinearLayoutManager(context)
-            viewAdapter = GPIOListAdapter(ESPUtils.gpioObjectList, this)
+            viewAdapter = GPIOListAdapter(ESPUtilsApp.gpioObjectList, this)
             recyclerView = rootView!!.findViewById<RecyclerView>(R.id.manage_remotes_recycler_view).apply {
                 setHasFixedSize(true)
                 layoutManager = viewManager
@@ -51,7 +50,7 @@ class GPIOControllerFragment : androidx.fragment.app.Fragment()  {
             val refreshLayout = rootView!!.findViewById<SwipeRefreshLayout>(R.id.refresh_layout)
             refreshLayout.setOnRefreshListener {
                 refreshLayout.isRefreshing = true
-                ESPUtils.devicePropList.filter {
+                ESPUtilsApp.devicePropList.filter {
                     it.pinConfig.size > 0
                 }.forEach {
                     it.refreshGPIOStatus()
@@ -71,7 +70,7 @@ class GPIOControllerFragment : androidx.fragment.app.Fragment()  {
         Handler(Looper.getMainLooper()).postDelayed({
             if(manageMenu.isMenuButtonHidden)
                 manageMenu.showMenuButton(true)
-            if(ESPUtils.remotePropList.isEmpty())
+            if(ESPUtilsApp.remotePropList.isEmpty())
                 Handler(Looper.getMainLooper()).postDelayed({manageMenu.showMenu(true)},400)
         },400)
         return rootView
@@ -98,7 +97,7 @@ class GPIOControllerFragment : androidx.fragment.app.Fragment()  {
             gpioSpinner.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, gpioList)
 
             val devicePropList = arrayListOf<Any>(getString(R.string.select_device))
-            devicePropList.addAll(ESPUtils.devicePropList)
+            devicePropList.addAll(ESPUtilsApp.devicePropList)
 
             devicesSpinner.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, devicePropList)
             val nameText = gpioDialog.findViewById<TextInputEditText>(R.id.edit_text_switch_name)!!
@@ -110,7 +109,7 @@ class GPIOControllerFragment : androidx.fragment.app.Fragment()  {
 
                 gpioDialog.setTitle(R.string.edit_gpio_switch)
                 btnPositive.setText(R.string.save)
-                devicesSpinner.setSelection(ESPUtils.devicePropList.indexOf(ESPUtils.devicePropList.find { it.macAddress == gpio.macAddr }) + 1)
+                devicesSpinner.setSelection(ESPUtilsApp.devicePropList.indexOf(ESPUtilsApp.devicePropList.find { it.macAddress == gpio.macAddr }) + 1)
                 gpioSpinner.setSelection(gpioList.indexOf(gpioList.find { it.pinNumber == gpio.gpioNumber }))
 
                 gpioSpinner.isEnabled = false
@@ -124,8 +123,8 @@ class GPIOControllerFragment : androidx.fragment.app.Fragment()  {
                         .setMessage(getString(R.string.message_delete_gpio_switch, gpio.title))
                         .setNegativeButton(R.string.cancel){ _, _ -> }
                         .setPositiveButton(R.string.delete){_, _ ->
-                            val index = ESPUtils.gpioObjectList.indexOf(gpio)
-                            ESPUtils.gpioObjectList.removeAt(index)
+                            val index = ESPUtilsApp.gpioObjectList.indexOf(gpio)
+                            ESPUtilsApp.gpioObjectList.removeAt(index)
                             gpio.delete()
                             viewAdapter?.notifyItemRemoved(index)
                             gpioDialog.dismiss()
@@ -145,18 +144,18 @@ class GPIOControllerFragment : androidx.fragment.app.Fragment()  {
                         nameText.setText(R.string.name_field_cannot_be_empty)
                     }
                     else -> {
-                        val gpioObj = gpioObject?: GPIOObject(JSONObject(), ESPUtils.gpioConfig!!)
-                        gpioObj.macAddr = ESPUtils.devicePropList[devicesSpinner.selectedItemPosition - 1].macAddress
+                        val gpioObj = gpioObject?: GPIOObject(JSONObject(), ESPUtilsApp.gpioConfig!!)
+                        gpioObj.macAddr = ESPUtilsApp.devicePropList[devicesSpinner.selectedItemPosition - 1].macAddress
                         gpioObj.title = nameText.text.toString()
                         gpioObj.subTitle = description.text.toString()
                         gpioObj.subTitle = description.text.toString()
                         gpioObj.gpioNumber = gpioList[gpioSpinner.selectedItemPosition].pinNumber
 
                         if(gpioObject == null ){
-                            ESPUtils.gpioObjectList.add(gpioObj)
-                            viewAdapter?.notifyItemInserted(ESPUtils.gpioObjectList.size - 1)
+                            ESPUtilsApp.gpioObjectList.add(gpioObj)
+                            viewAdapter?.notifyItemInserted(ESPUtilsApp.gpioObjectList.size - 1)
                         }else{
-                            viewAdapter?.notifyItemChanged(ESPUtils.gpioObjectList.indexOf(gpioObj))
+                            viewAdapter?.notifyItemChanged(ESPUtilsApp.gpioObjectList.indexOf(gpioObj))
                         }
                         gpioDialog.dismiss()
                     }

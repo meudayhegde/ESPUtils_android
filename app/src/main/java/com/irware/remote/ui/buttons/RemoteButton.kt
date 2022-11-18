@@ -13,7 +13,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
-import com.irware.remote.ESPUtils
+import com.irware.remote.ESPUtilsApp
 import com.irware.remote.MainActivity
 import com.irware.remote.holders.ButtonProperties
 import com.irware.remote.listeners.OnRemoteButtonModificationListener
@@ -70,7 +70,7 @@ class RemoteButton : LinearLayout {
             }
 
             override fun onIconModified() {
-                setIcon(ESPUtils.iconDrawableList[properties.icon])
+                setIcon(ESPUtilsApp.iconDrawableList[properties.icon])
 
             }
 
@@ -104,7 +104,7 @@ class RemoteButton : LinearLayout {
         background = stateDrawable
 
         textView.setTextColor(btnProperties.textColor)
-        setIcon(ESPUtils.iconDrawableList[btnProperties.icon])
+        setIcon(ESPUtilsApp.iconDrawableList[btnProperties.icon])
     }
 
     override fun setBackgroundColor(color: Int) {
@@ -117,7 +117,7 @@ class RemoteButton : LinearLayout {
 
 
     fun setIcon(drawable_resid:Int){
-        if(drawable_resid != ESPUtils.iconDrawableList[0]){
+        if(drawable_resid != ESPUtilsApp.iconDrawableList[0]){
             var drawable = ContextCompat.getDrawable(context, drawable_resid)
             drawable = drawable?.mutate()
             DrawableCompat.setTint(drawable!!,properties!!.textColor)

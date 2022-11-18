@@ -25,7 +25,7 @@ import com.github.clans.fab.FloatingActionButton
 import com.github.clans.fab.FloatingActionMenu
 import com.google.android.material.textfield.TextInputEditText
 import com.irware.ThreadHandler
-import com.irware.remote.ESPUtils
+import com.irware.remote.ESPUtilsApp
 import com.irware.remote.MainActivity
 import com.irware.remote.R
 import com.irware.remote.holders.ARPItem
@@ -74,7 +74,7 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
             rootView = inflater.inflate(R.layout.fragment_devices, container, false) as RelativeLayout
             manageMenu = rootView!!.findViewById(R.id.fam_manage_gpio)
             viewManager = LinearLayoutManager(context)
-            viewAdapter = DeviceListAdapter(ESPUtils.devicePropList, this)
+            viewAdapter = DeviceListAdapter(ESPUtilsApp.devicePropList, this)
             recyclerView = rootView!!.findViewById<RecyclerView>(R.id.manage_remotes_recycler_view).apply {
                 setHasFixedSize(true)
                 layoutManager = viewManager
@@ -86,7 +86,7 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
             val refreshLayout = rootView!!.findViewById<SwipeRefreshLayout>(R.id.refresh_layout)
             refreshLayout.setOnRefreshListener {
                 refreshLayout.isRefreshing = true
-                ESPUtils.devicePropList.forEach {
+                ESPUtilsApp.devicePropList.forEach {
                     it.getIpAddress {  }
                 }
                 ThreadHandler.runOnFreeThread{
@@ -122,7 +122,7 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
                         onAddressVerified(requireContext(), arpItem.ipAddress, arpItem.macAddress)
                     }
 
-                    ESPUtils.arpTable.getARPItemList { arpItem ->
+                    ESPUtilsApp.arpTable.getARPItemList { arpItem ->
                         Log.d("IP Address", "${arpItem.macAddress}: ${ arpItem.ipAddress }")
                         Handler(Looper.getMainLooper()).post{
                             arpItemList.add(arpItem)
@@ -147,7 +147,7 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
         Handler(Looper.getMainLooper()).postDelayed({
             if(manageMenu.isMenuButtonHidden)
                 manageMenu.showMenuButton(true)
-            if(ESPUtils.remotePropList.isEmpty())
+            if(ESPUtilsApp.remotePropList.isEmpty())
                 Handler(Looper.getMainLooper()).postDelayed({manageMenu.showMenu(true)},400)
         },400)
         return rootView
@@ -168,9 +168,9 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
             ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE){
                 try {
                     val connector = SocketClient.Connector(address)
-                    connector.sendLine("{\"request\":\"ping\"}")
+                    connector.sendLine(ESPUtilsApp.getString(R.string.esp_command_ping))
                     val response = connector.readLine()
-                    val macAddr = JSONObject(response).getString("MAC")
+                    val macAddr = JSONObject(response).getString(ESPUtilsApp.getString(R.string.esp_response_mac))
                     Handler(Looper.getMainLooper()).post{
                         onAddressVerified(requireContext(), address, macAddr)
                     }
@@ -207,7 +207,7 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
 
             var devProp: DeviceProperties? = null
             var devExist = false
-            for(prop: DeviceProperties in ESPUtils.devicePropList){
+            for(prop: DeviceProperties in ESPUtilsApp.devicePropList){
                 if(prop.macAddress == macAddr){ devProp = prop; devExist = true; break }
             }
 
@@ -223,12 +223,16 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
                 ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE){
                     try{
                         val connector = SocketClient.Connector(address)
-                        connector.sendLine("{\"request\":\"authenticate\",\"username\":\"${userName.text.toString()}\",\"password\":\"${password.text.toString()}\",\"data\":\"__\",\"length\":\"0\"}")
+                        connector.sendLine(ESPUtilsApp.getString(
+                            R.string.esp_command_auth,
+                            userName.text.toString(),
+                            password.text.toString()
+                        ))
                         val response=connector.readLine()
                         if(JSONObject(response)["response"] != "authenticated") throw Exception()
 
                         if (!devExist) {
-                            val filePath = ESPUtils.deviceConfigPath + File.separator + devName.text.toString().replace(" ", "_") + ".json"
+                            val filePath = ESPUtilsApp.deviceConfigPath + File.separator + devName.text.toString().replace(" ", "_") + ".json"
                             File(filePath).createNewFile()
                             devProp = DeviceProperties(File(filePath))
                         }
@@ -241,11 +245,11 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
 
                         Handler(Looper.getMainLooper()).post{
                             if(devExist){
-                                viewAdapter.notifyItemChanged(ESPUtils.devicePropList.indexOf(devProp!!))
+                                viewAdapter.notifyItemChanged(ESPUtilsApp.devicePropList.indexOf(devProp!!))
                                 Toast.makeText(context, "Device Preferences Updated", Toast.LENGTH_LONG).show()
                             }else{
-                                ESPUtils.devicePropList.add(devProp!!)
-                                viewAdapter.notifyItemInserted(ESPUtils.devicePropList.indexOf(devProp!!))
+                                ESPUtilsApp.devicePropList.add(devProp!!)
+                                viewAdapter.notifyItemInserted(ESPUtilsApp.devicePropList.indexOf(devProp!!))
                                 Toast.makeText(context, "Device successfully Added", Toast.LENGTH_LONG).show()
                             }
                             dialog.dismiss()

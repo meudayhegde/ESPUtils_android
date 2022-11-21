@@ -84,7 +84,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val width = min(layoutParams.width, layoutParams.width)
         NUM_COLUMNS = when{(width > 920) -> 5; width < 720 -> 3; else -> 4}
 
-        val file = File(ESPUtilsApp.FILES_DIR + File.separator+ ESPUtilsApp.REMOTE_CONFIG_DIR)
+        val file = ESPUtilsApp.getAbsoluteFile(R.string.dir_name_remote_config)
         if(!file.exists()) file.mkdir()
 
         val lparams = RelativeLayout.LayoutParams(width, width)
@@ -93,7 +93,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         RemoteButton.onConfigChanged()
 
-        val pref= getSharedPreferences("login",0)
+        val pref= getSharedPreferences(getString(R.string.shared_pref_name_login), 0)
         val editor=pref.edit()
 
         splash?.findViewById<TextView>(R.id.skip_login)?.setOnClickListener {
@@ -102,10 +102,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
 
         val passEdit:EditText? = splash?.findViewById(R.id.editTextPassword)
-        passEdit?.setText(pref.getString("password",""))
+        passEdit?.setText(pref.getString(getString(R.string.shared_pref_item_password),""))
 
         val userEdit: EditText? = splash?.findViewById(R.id.edit_text_uname)
-        userEdit?.setText(pref.getString("username",""))
+        userEdit?.setText(pref.getString(getString(R.string.shared_pref_item_username),""))
 
         val submit: Button? = splash?.findViewById(R.id.cirLoginButton)
         val validatedListener = object: OnValidationListener{
@@ -125,8 +125,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             PASSWORD = passEdit?.text.toString()
 
             authenticated=true
-            editor.putString("username", USERNAME)
-            editor.putString("password", PASSWORD)
+            editor.putString(getString(R.string.shared_pref_item_username), USERNAME)
+            editor.putString(getString(R.string.shared_pref_item_password), PASSWORD)
             editor.apply()
 
             validatedListener.onValidated(true)
@@ -147,7 +147,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
         })
 
-        if(pref.getString("username", "") != "" && pref.getString("password", "") != "") authenticated = true
+        if(pref.getString(getString(R.string.shared_pref_item_username), "") != "" &&
+            pref.getString(getString(R.string.shared_pref_item_password), "") != "")
+            authenticated = true
 
         Handler(Looper.getMainLooper()).postDelayed({
             if(splash?.isShowing == true) {
@@ -237,7 +239,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         nav_view.setNavigationItemSelectedListener(this)
         supportFragmentManager.beginTransaction().commitAllowingStateLoss()
 
-        val homeFragment = getSharedPreferences("settings", Context.MODE_PRIVATE).getInt("home_fragment", 0)
+        val homeFragment = getSharedPreferences(
+            getString(R.string.shared_pref_name_settings), Context.MODE_PRIVATE).getInt(
+            getString(R.string.shared_pref_item_home_fragment), 0)
         replaceFragment(when(homeFragment){1 -> irFragment 2-> gpioFragment 3 -> aboutFragment else-> devicesFragment})
         nav_view.setCheckedItem(when(homeFragment){1 -> R.id.home_drawer 2-> R.id.gpio_drawer 3 -> R.id.info_drawer else-> R.id.device_drawer_item})
 

@@ -211,9 +211,9 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
                 if(prop.macAddress == macAddr){ devProp = prop; devExist = true; break }
             }
 
-            val pref = context.getSharedPreferences("login",0)
-            userName.setText(devProp?.userName?: pref?.getString("username", ""))
-            password.setText(devProp?.password?: pref?.getString("password", ""))
+            val pref = context.getSharedPreferences(getString(R.string.shared_pref_name_login), 0)
+            userName.setText(devProp?.userName?: pref?.getString(getString(R.string.shared_pref_item_username), ""))
+            password.setText(devProp?.password?: pref?.getString(getString(R.string.shared_pref_item_password), ""))
 
 
             devName.setText(devProp?.nickName?: macAddr.replace(":", "_"))
@@ -232,9 +232,12 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
                         if(JSONObject(response)["response"] != "authenticated") throw Exception()
 
                         if (!devExist) {
-                            val filePath = ESPUtilsApp.deviceConfigPath + File.separator + devName.text.toString().replace(" ", "_") + ".json"
-                            File(filePath).createNewFile()
-                            devProp = DeviceProperties(File(filePath))
+                            val devConfigFile = ESPUtilsApp.getAbsoluteFile(
+                                R.string.dir_name_device_config,
+                                devName.text.toString().replace(" ", "_") + getString(R.string.extension_json)
+                            )
+                            devConfigFile.createNewFile()
+                            devProp = DeviceProperties(devConfigFile)
                         }
 
                         devProp!!.nickName = devName.text.toString()

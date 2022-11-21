@@ -91,8 +91,8 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
                 refreshLayout.isRefreshing = true
                 ThreadHandler.runOnFreeThread{
                     ESPUtilsApp.remotePropList.clear()
-                    val files = File(ESPUtilsApp.remoteConfigPath).listFiles { pathname ->
-                        pathname!!.isFile and (pathname.name.endsWith(".json", true)) and pathname.canWrite()
+                    val files = ESPUtilsApp.getAbsoluteFile(R.string.dir_name_remote_config).listFiles { pathname ->
+                        pathname!!.isFile and (pathname.name.endsWith(getString(R.string.extension_json), true)) and pathname.canWrite()
                     }
                     files!!.forEach {
                         ESPUtilsApp.remotePropList.add(RemoteProperties(it, null))
@@ -171,13 +171,13 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
                 .replace(" ", "_").replace("\n", "").replace("/","_")
 
             val desc = inputLayout.findViewById<TextInputEditText>(R.id.remote_desc)
-            var configFile = File(ESPUtilsApp.remoteConfigPath + File.separator + id + ".json")
+            var configFile = ESPUtilsApp.getAbsoluteFile(R.string.dir_name_remote_config, id + getString(R.string.extension_json))
             var incr = 1
             while(configFile.exists()) {
-                configFile = File(ESPUtilsApp.remoteConfigPath + File.separator + id + "_" + incr + ".json")
+                configFile = ESPUtilsApp.getAbsoluteFile(R.string.dir_name_remote_config, id + "_" + incr + getString(R.string.extension_json))
                 incr++
             }
-            if(incr>1) id += "_" + (incr-1)
+            if(incr > 1) id += "_" + (incr - 1)
             if (!configFile.exists()) configFile.createNewFile()
             val remoteProperties = RemoteProperties(configFile, null)
 
@@ -188,7 +188,7 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
             remoteProperties.description = desc.text.toString()
             remoteProperties.deviceConfigFileName = selectedDevice.deviceConfigFile.name
             ESPUtilsApp.remotePropList.add(remoteProperties)
-            viewAdapter?.notifyDataSetChanged()
+            viewAdapter?.notifyItemInserted(ESPUtilsApp.remotePropList.size - 1)
             RemoteDialog(requireContext(), remoteProperties,RemoteDialog.MODE_VIEW_EDIT).show()
             dialog.dismiss()
         }

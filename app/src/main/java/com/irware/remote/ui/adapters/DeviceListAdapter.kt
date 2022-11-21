@@ -387,6 +387,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                 intent.type = "application/zip"
                 intent.addCategory(Intent.CATEGORY_OPENABLE)
                 try {
+
                     devicesFragment.espOtaChooser.launch(
                         Intent.createChooser(
                             intent,
@@ -428,10 +429,10 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
         return Runnable{
             if(prop.isConnected) {
                 val userDialog = AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
-                    .setTitle("User Settings")
+                    .setTitle(R.string.user_settings)
                     .setView(R.layout.user_settings)
                     .setIcon(R.drawable.ic_user)
-                    .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
+                    .setNegativeButton(R.string.cancel) { dialog, _ -> dialog.dismiss() }
                     .setPositiveButton(context.getString(R.string.apply)) { _, _ -> }
                     .create()
 
@@ -470,7 +471,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                         }
                         if (!hasError) {
                             AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
-                                .setTitle("Confirm")
+                                .setTitle(R.string.confirm)
                                 .setMessage(
                                     "Wrong settings may result in inaccessibility of iRWaRE device (full reset will be required to recover))."
                                             + "Make Sure UserName and password are correct"
@@ -502,7 +503,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                                                         ) "Success" else "Failed"
                                                     )
                                                     .setMessage(resultObj.getString("response"))
-                                                    .setPositiveButton("Done") { dg, _ -> dg.dismiss() }
+                                                    .setPositiveButton(R.string.done) { dg, _ -> dg.dismiss() }
                                                     .show()
                                             }
                                             connector.close()
@@ -511,7 +512,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                                                 AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
                                                     .setTitle("Failed")
                                                     .setMessage("Failed to apply user settings\n$ex")
-                                                    .setPositiveButton("Close") { dg, _ -> dg.dismiss() }
+                                                    .setPositiveButton(R.string.close) { dg, _ -> dg.dismiss() }
                                                     .show()
                                             }
                                         }

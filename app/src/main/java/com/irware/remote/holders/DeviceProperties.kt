@@ -14,7 +14,7 @@ import java.io.File
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 
-class DeviceProperties(val deviceConfigFile: File = File(ESPUtilsApp.FILES_DIR + File.separator + "Dummy.json"))  {
+class DeviceProperties(val deviceConfigFile: File = ESPUtilsApp.getAbsoluteFile(R.string.file_name_dummy_json))  {
     var onDeviceStatusListener: OnDeviceStatusListener? = null
     private var jsonObj : JSONObject = getJSONObject()
     var isConnected = false

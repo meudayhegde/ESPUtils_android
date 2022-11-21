@@ -36,17 +36,22 @@ class WidgetConfiguratorActivity : AppCompatActivity(),SwipeRefreshLayout.OnRefr
 
         widgetId = intent?.extras?.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID) ?: AppWidgetManager.INVALID_APPWIDGET_ID
 
-        val pref = getSharedPreferences("widget_associations",Context.MODE_PRIVATE)
+        val pref = getSharedPreferences(getString(R.string.shared_pref_name_widget_associations), Context.MODE_PRIVATE)
 
         if(!pref.getString(widgetId.toString(),"").isNullOrEmpty()){
             updateAppWidget()
-        }else if(!pref.getString("queued_button","").isNullOrEmpty()){
-            pref.edit().putString("queued_button","").apply()
+        }else if(!pref.getString(getString(R.string.shared_pref_item_queued_button), "").isNullOrEmpty()){
+            pref.edit().putString(getString(R.string.shared_pref_item_queued_button), "").apply()
             updateAppWidget()
         }
 
-        when(getSharedPreferences("theme_setting", Context.MODE_PRIVATE).getInt("application_theme",if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) { 0 }else{ 2 }))
-        {1-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);2-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)}
+        when(getSharedPreferences(getString(R.string.shared_pref_name_settings), Context.MODE_PRIVATE)
+            .getInt(getString(R.string.shared_pref_item_application_theme), if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
+            { 0 }else{ 2 })
+        ){
+            1-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            2-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        }
         setContentView(R.layout.activity_widget_configurator)
 
         window?.setBackgroundDrawableResource(R.drawable.layout_border_round_corner)
@@ -88,11 +93,8 @@ class WidgetConfiguratorActivity : AppCompatActivity(),SwipeRefreshLayout.OnRefr
         (remote_refresh_layout as SwipeRefreshLayout).isRefreshing = true
         ThreadHandler.runOnFreeThread{
             remotePropList.clear()
-            val files = File(ESPUtilsApp.FILES_DIR + File.separator + ESPUtilsApp.REMOTE_CONFIG_DIR).listFiles { pathname ->
-                pathname!!.isFile and (pathname.name.endsWith(
-                    ".json",
-                    true
-                )) and pathname.canWrite()
+            val files = ESPUtilsApp.getAbsoluteFile(R.string.dir_name_remote_config).listFiles { pathname ->
+                pathname!!.isFile and (pathname.name.endsWith(getString(R.string.extension_json), true)) and pathname.canWrite()
             }
             files?.forEach {
                 remotePropList.add(RemoteProperties(it, null))

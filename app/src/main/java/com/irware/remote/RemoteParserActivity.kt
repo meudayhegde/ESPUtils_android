@@ -36,8 +36,14 @@ class RemoteParserActivity : AppCompatActivity() {
     private var configFile :File? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        when(getSharedPreferences("settings", Context.MODE_PRIVATE).getInt("application_theme",if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) { 0 }else{ 2 }))
-        {1-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);2-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)}
+        when(getSharedPreferences(
+            getString(R.string.shared_pref_name_settings), Context.MODE_PRIVATE).getInt(
+            getString(R.string.shared_pref_item_application_theme), if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
+            { 0 } else { 2 })
+        ){
+            1-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            2-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        }
         setContentView(R.layout.import_remote_activity)
         setFinishOnTouchOutside(false)
 
@@ -61,10 +67,9 @@ class RemoteParserActivity : AppCompatActivity() {
         val spinner = findViewById<Spinner>(R.id.select_device)
 
         if(ESPUtilsApp.devicePropList.isEmpty()){
-            ESPUtilsApp.deviceConfigPath = ESPUtilsApp.FILES_DIR + File.separator + ESPUtilsApp.DEVICE_CONFIG_DIR
-            val deviceConfigDir = File(ESPUtilsApp.deviceConfigPath)
+            val deviceConfigDir = ESPUtilsApp.getAbsoluteFile(R.string.dir_name_device_config)
             deviceConfigDir.exists() or deviceConfigDir.mkdirs()
-            for(file: File in deviceConfigDir.listFiles { _, name -> name?.endsWith(".json")?: false }!!){
+            for(file: File in deviceConfigDir.listFiles { _, name -> name?.endsWith(getString(R.string.extension_json))?: false } ?: emptyArray()){
                 ESPUtilsApp.devicePropList.add(DeviceProperties(file))
             }
         }
@@ -129,28 +134,32 @@ class RemoteParserActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
             val selectedDevice = ESPUtilsApp.devicePropList[spinner.selectedItemPosition - 1]
-            jsonObject.put("deviceConfigFileName", selectedDevice.deviceConfigFile?.name)
+            jsonObject.put(getString(R.string.remote_prop_dev_prop_file_name), selectedDevice.deviceConfigFile.name)
 
             msg.visibility = View.GONE; progress.visibility = View.VISIBLE
             try{
-                val fileName= jsonObject.getString("fileName")
-                var outFile = File(ESPUtilsApp.FILES_DIR + File.separator + ESPUtilsApp.REMOTE_CONFIG_DIR, fileName)
+                val fileName= jsonObject.getString(getString(R.string.remote_prop_filename))
+                var outFile = ESPUtilsApp.getAbsoluteFile(R.string.dir_name_remote_config, fileName)
                 val parent = outFile.parentFile!!
                 if(!parent.exists()) parent.mkdirs()
                 var count = 1
                 if(outFile.exists()){
-                    AlertDialog.Builder(this).setTitle("Confirm").setMessage("This remote controller configuration already exists!!")
-                        .setNegativeButton("Quit") { _, _ -> finish() }
+                    AlertDialog.Builder(this)
+                        .setTitle(R.string.confirm)
+                        .setMessage("This remote controller configuration already exists!!")
+                        .setNegativeButton(R.string.cancel) { _, _ -> finish() }
                         .setNeutralButton("Keep both"){ dialog,_ ->
                             while(outFile.exists()) {
-                                outFile = File(outFile.parent, fileName.removeSuffix(".json")+"_"+count.toString()+".json")
+                                outFile = File(outFile.parent,
+                                    fileName.removeSuffix(getString(R.string.extension_json)) +
+                                            "_" + count.toString() + getString(R.string.extension_json))
                                 count++
                             }
                             outFile.createNewFile()
-                            jsonObject.put("fileName", outFile.name)
-                            writeFile(outFile,jsonObject)
+                            jsonObject.put(getString(R.string.remote_prop_filename), outFile.name)
+                            writeFile(outFile, jsonObject)
                             configFile = outFile
-                            onSuccess(progress,imV,msg,import)
+                            onSuccess(progress, imV, msg, import)
                             dialog.dismiss()
                         }
                         .setPositiveButton("Overwrite"){dialog,_ ->
@@ -247,24 +256,23 @@ class RemoteParserActivity : AppCompatActivity() {
 
     private fun onIntentRead(ins:InputStream?):JSONObject{
         val insr = InputStreamReader(ins)
-        val out = TextUtils.join("",insr.readLines())
+        val out = TextUtils.join("", insr.readLines())
 
         insr.close()
 
         val jsonObj = JSONObject(out)
-        jsonObj.getString("name")
-        jsonObj.getString("vendor")
-        jsonObj.getString("fileName")
-        jsonObj.getString("id")
+        jsonObj.getString(getString(R.string.remote_prop_name))
+        jsonObj.getString(getString(R.string.remote_prop_vendor))
+        jsonObj.getString(getString(R.string.remote_prop_filename))
+        jsonObj.getString(getString(R.string.remote_prop_id))
 
-        val buttons = jsonObj.getJSONArray("buttons")
+        val buttons = jsonObj.getJSONArray(getString(R.string.remote_prop_buttons_array))
         for(i in 0 until buttons.length()){
             val button = buttons.getJSONObject(i)
-            button.getString("protocol")
-            button.getString("irCode")
-            button.getString("length")
+            button.getString(getString(R.string.button_prop_protocol))
+            button.getString(getString(R.string.button_prop_ircode))
+            button.getString(getString(R.string.button_prop_length))
         }
-
         return jsonObj
     }
 }

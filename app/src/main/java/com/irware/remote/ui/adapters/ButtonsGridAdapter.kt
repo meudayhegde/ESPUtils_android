@@ -101,9 +101,9 @@ class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>, pri
 
     @SuppressLint("ApplySharedPref")
     private fun associateWidget(context: Context, buttonProp:ButtonProperties){
-        val pref = context.getSharedPreferences("widget_associations",Context.MODE_PRIVATE)
+        val pref = context.getSharedPreferences(context.getString(R.string.shared_pref_name_widget_associations), Context.MODE_PRIVATE)
         val editor = pref.edit()
-        editor.putString(WidgetConfiguratorActivity.activity?.widgetId.toString(),buttonProp.parent?.remoteConfigFile?.name+","+buttonProp.buttonId)
+        editor.putString(WidgetConfiguratorActivity.activity?.widgetId.toString(), buttonProp.parent?.remoteConfigFile?.name + "," + buttonProp.buttonId)
         editor.commit()
         updateWidgets()
         Handler(Looper.getMainLooper()).postDelayed({
@@ -119,14 +119,14 @@ class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>, pri
         return arrayList.size-1
     }
 
-    private fun notifyItemChanged(position:Int, animation:Boolean){
+    private fun notifyItemChanged(position: Int, animation: Boolean){
         arrayList[position]?.buttonShowAnimation = animation
         notifyItemChanged(position)
     }
     /*
      * Notify adapter without loading item animation
      */
-    fun notifyDataSetChanged(animation:Boolean){
+    fun notifyDataSetChanged(animation: Boolean){
         if(!animation) arrayList.forEach { it?.buttonShowAnimation = false }
         notifyDataSetChanged()
     }

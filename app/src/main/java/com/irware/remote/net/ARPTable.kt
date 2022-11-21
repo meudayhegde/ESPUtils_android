@@ -16,7 +16,7 @@ import java.io.OutputStreamWriter
 import java.net.InetAddress
 
 class ARPTable(private val scanCount: Int = 1) {
-    private var arpTableFile: File = File(ESPUtilsApp.FILES_DIR + File.separator + ARP_TABLE_FILE)
+    private var arpTableFile: File = ESPUtilsApp.getAbsoluteFile(R.string.file_name_arp_table)
     private var jsonObj: JSONObject = getJSONObject()
 
     init{
@@ -139,14 +139,14 @@ class ARPTable(private val scanCount: Int = 1) {
             var currentScanCount = 0
             while((scanCount == -1) or (currentScanCount < scanCount)){
                 for(myIp in Utils.getIPAddress()){
-                    @Suppress("NAME_SHADOWING") val myIp = myIp.split(".")
-                    val myIpInt = myIp[3].toInt()
+                    val intArr = myIp.split(".")
+                    val myIpInt = intArr[3].toInt()
                     for(i in 1 until 255){
-                        val addrIntAbove = myIpInt + i
-                        val addrIntBelow = myIpInt - i
-                        if(addrIntAbove < 255){verifyAddress("${myIp[0]}.${myIp[1]}.${myIp[2]}.$addrIntAbove")}
-                        if(addrIntBelow >= 0){verifyAddress("${myIp[0]}.${myIp[1]}.${myIp[2]}.$addrIntBelow")}
-                        if((addrIntAbove > 254) and (addrIntBelow < 0)) break
+                        val ipIntAbove = myIpInt + i
+                        val ipIntBelow = myIpInt - i
+                        if(ipIntAbove < 255){verifyAddress("${intArr[0]}.${intArr[1]}.${intArr[2]}.$ipIntAbove")}
+                        if(ipIntBelow >= 0){verifyAddress("${intArr[0]}.${intArr[1]}.${intArr[2]}.$ipIntBelow")}
+                        if((ipIntAbove > 254) and (ipIntBelow < 0)) break
                     }
                 }
                 currentScanCount ++
@@ -156,8 +156,8 @@ class ARPTable(private val scanCount: Int = 1) {
     }
 
     private fun verifyAddress(address: String): Boolean{
-        val inetAddr = InetAddress.getByName(address)
-        if(inetAddr.isReachable(10)){
+        val inetAddress = InetAddress.getByName(address)
+        if(inetAddress.isReachable(10)){
             try{
                 val macAddress = getMacForIP(address)
                 val ipList = jsonObj.optJSONArray(macAddress) ?: JSONArray()
@@ -182,7 +182,6 @@ class ARPTable(private val scanCount: Int = 1) {
     }
 
     companion object{
-        const val ARP_TABLE_FILE = "ARPTable.json"
         const val MAX_RETRY = 3
     }
 

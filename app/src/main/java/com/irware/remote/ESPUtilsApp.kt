@@ -1,9 +1,11 @@
 package com.irware.remote
 
-import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
 import android.os.Build
+import android.os.Environment
+import android.os.FileUtils
+import android.text.TextUtils
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import com.irware.ThreadHandler
@@ -13,15 +15,20 @@ import com.irware.remote.holders.GPIOObject
 import com.irware.remote.holders.RemoteProperties
 import com.irware.remote.net.ARPTable
 import java.io.File
+import java.lang.ref.WeakReference
+import java.nio.file.FileSystem
 
 class ESPUtilsApp: Application() {
     override fun onCreate() {
         super.onCreate()
-        context = this
-        FILES_DIR = filesDir.absolutePath
+        contextRef = WeakReference(this)
         arpTable = ARPTable(-1)
 
-        when(getSharedPreferences("settings", Context.MODE_PRIVATE).getInt("application_theme", if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) { 0 }else{ 2 })) {
+        when(getSharedPreferences(
+            getString(R.string.shared_pref_name_settings), Context.MODE_PRIVATE).getInt(
+            getString(R.string.shared_pref_item_application_theme), if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
+            { 0 }else{ 2 })
+        ){
             1-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
             2-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         }
@@ -36,16 +43,14 @@ class ESPUtilsApp: Application() {
             iconDrawableList[i] = arr.getResourceId(i, 0)
         arr.recycle()
 
-        remoteConfigPath = FILES_DIR + File.separator + REMOTE_CONFIG_DIR
-        deviceConfigPath = FILES_DIR + File.separator + DEVICE_CONFIG_DIR
-
-        val deviceConfigDir = File(deviceConfigPath)
+        val deviceConfigDir = getAbsoluteFile(R.string.dir_name_device_config)
         deviceConfigDir.exists() or deviceConfigDir.mkdirs()
-        for(file: File in deviceConfigDir.listFiles { _, name -> name?.endsWith(".json")?: false }!!){
+        for(file: File in deviceConfigDir.listFiles { _, name ->
+            name?.endsWith(getString(R.string.extension_json))?: false }!!) {
             devicePropList.add(DeviceProperties(file))
         }
 
-        val gpioConfigFile = File(FILES_DIR + File.separator + "GPIOConfig.json")
+        val gpioConfigFile = getAbsoluteFile(R.string.file_name_gpio_config)
         if (!gpioConfigFile.exists()) gpioConfigFile.createNewFile()
         gpioConfig = GPIOConfig(gpioConfigFile)
         val gpioObjectArray = gpioConfig!!.gpioObjectArray
@@ -54,8 +59,8 @@ class ESPUtilsApp: Application() {
         }
 
         ThreadHandler.runOnFreeThread {
-            val files = File(remoteConfigPath).listFiles { pathname ->
-                pathname!!.isFile and (pathname.name.endsWith(".json", true)) and pathname.canWrite()
+            val files = getAbsoluteFile(R.string.dir_name_remote_config).listFiles { pathname ->
+                pathname!!.isFile and (pathname.name.endsWith(getString(R.string.extension_json), true)) and pathname.canWrite()
             }
             files?.forEach { file ->
                 remotePropList.add(RemoteProperties(file, null))
@@ -64,27 +69,53 @@ class ESPUtilsApp: Application() {
     }
 
     companion object{
-        lateinit var FILES_DIR: String
         lateinit var arpTable: ARPTable
 
-        @SuppressLint("StaticFieldLeak")
-        private var context: Context? = null
+        private var contextRef: WeakReference<Context>? = null
 
         val remotePropList = ArrayList<RemoteProperties>()
         val devicePropList = ArrayList<DeviceProperties>()
         val gpioObjectList = ArrayList<GPIOObject>()
-        var iconDrawableList:IntArray = intArrayOf()
+        var iconDrawableList: IntArray = intArrayOf()
 
         var gpioConfig: GPIOConfig? = null
-        var remoteConfigPath = ""
-        var deviceConfigPath = ""
 
         const val ESP_COM_PORT = 48321
-        const val REMOTE_CONFIG_DIR = "remotes"
-        const val DEVICE_CONFIG_DIR = "devices"
 
+        /**
+         * Static function to get string resource without access to context from any class
+         */
         fun getString(@StringRes stringRes: Int, vararg formatArgs: Any = emptyArray()): String{
-            return context?.getString(stringRes, *formatArgs)?: ""
+            return contextRef?.get()?.getString(stringRes, *formatArgs)?: ""
+        }
+
+        /**
+         * @param dirFileNames directory names (String or StringRes) in the dirTree of the required file
+         * @return complete file path of the required file from filesystem root. By default the mentioned file/dir will be stored in private storage
+         */
+        fun getAbsolutePath(vararg dirFileNames: Any = emptyArray()): String{
+            val filesDir = contextRef?.get()?.filesDir?.absolutePath?:
+            Environment.getExternalStorageDirectory().absolutePath
+            val dirTree = arrayListOf<String>(filesDir)
+            dirFileNames.forEach {
+                when(it){
+                    is String -> if("?" !in it && "/" !in it) dirTree.add(it)
+                    is Int -> {
+                        val st = getString(it)
+                        if("?" !in st && "/" !in st) dirTree.add(st)
+                    }
+                    else -> throw IllegalArgumentException()
+                }
+            }
+            return TextUtils.join(File.separator, dirTree)
+        }
+
+        /**
+         * @param dirFileNames directory names (String or StringRes) in the dirTree of the required file
+         * @return File object. By default the mentioned file/dir will be stored in private storage.
+         */
+        fun getAbsoluteFile(vararg dirFileNames: Any = emptyArray()): File{
+            return File(getAbsolutePath(*dirFileNames))
         }
     }
 }

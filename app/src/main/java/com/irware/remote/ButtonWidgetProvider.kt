@@ -94,40 +94,40 @@ class ButtonWidgetProvider: AppWidgetProvider() {
     override fun onDeleted(context: Context?, appWidgetIds: IntArray?) {
         super.onDeleted(context, appWidgetIds)
         appWidgetIds?.forEach {
-            val pref = context?.getSharedPreferences("widget_associations", Context.MODE_PRIVATE)
+            val pref = context?.getSharedPreferences(context.getString(R.string.shared_pref_name_widget_associations), Context.MODE_PRIVATE)
             val editor = pref?.edit()
             editor?.remove(it.toString())
             editor?.apply()
         }
     }
 
-    private fun getJSONObject(context:Context,widgetID:Int,views:RemoteViews): ArrayList<Any>{
-        val pref = context.getSharedPreferences("widget_associations", Context.MODE_PRIVATE)
+    private fun getJSONObject(context:Context, widgetID:Int, views:RemoteViews): ArrayList<Any>{
+        val pref = context.getSharedPreferences(context.getString(R.string.shared_pref_name_widget_associations), Context.MODE_PRIVATE)
         val editor = pref.edit()
         var buttonInfo = pref.getString(widgetID.toString(),"")
         if(buttonInfo.isNullOrEmpty()){
-            val queuedButton = pref.getString("queued_button","")
+            val queuedButton = pref.getString(context.getString(R.string.shared_pref_item_queued_button),"")
             Toast.makeText(context, queuedButton, Toast.LENGTH_LONG).show()
             if(!queuedButton.isNullOrEmpty()){
                 editor.putString(widgetID.toString(), queuedButton)
-                editor.putString("queued_button", "")
+                editor.putString(context.getString(R.string.shared_pref_item_queued_button), "")
                 editor.apply()
                 buttonInfo = pref.getString(widgetID.toString(),"")
             }else{
-            //    Toast.makeText(context,"Button Not configured, Click to configure",Toast.LENGTH_LONG).show()
+                Toast.makeText(context,"Button Not configured, Click to configure",Toast.LENGTH_LONG).show()
                 setConfigureOnClick(context, widgetID, views)
                 return ArrayList()
             }
         }
         try{
             val remoteProp = RemoteProperties(
-                File(ESPUtilsApp.FILES_DIR + File.separator + ESPUtilsApp.REMOTE_CONFIG_DIR + File.separator + buttonInfo!!.split(",")[0]),
+                ESPUtilsApp.getAbsoluteFile(R.string.dir_name_remote_config, buttonInfo!!.split(",")[0]),
                 null
             )
             val buttonProps = remoteProp.getButtons()
             for(i in 0 until buttonProps.length()){
                 val jsonObj = buttonProps.getJSONObject(i)
-                if(jsonObj.optLong("buttonID") == buttonInfo.split(",")[1].toLong()){
+                if(jsonObj.optLong(context.getString(R.string.button_prop_btn_id)) == buttonInfo.split(",")[1].toLong()){
                     return arrayListOf(remoteProp, ButtonProperties(jsonObj))
                 }
             }

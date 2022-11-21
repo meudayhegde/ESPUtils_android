@@ -30,8 +30,13 @@ class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        when(getSharedPreferences("theme_setting", Context.MODE_PRIVATE).getInt("application_theme",if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) { 0 }else{ 2 }))
-        {1-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);2-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)}
+        when(getSharedPreferences(
+            getString(R.string.shared_pref_name_settings), Context.MODE_PRIVATE).getInt(
+            getString(R.string.shared_pref_item_application_theme), if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
+            { 0 }else{ 2 })){
+            1-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            2-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        }
         setContentView(R.layout.activity_settings)
 
         toolbar_settings.setNavigationOnClickListener {
@@ -50,17 +55,22 @@ class SettingsActivity : AppCompatActivity() {
         for(i in 0..1) if(fragmentList.size != 0 ) fragmentList.removeAt(fragmentList.size - 1)
 
         viewAdapter = SettingsAdapter(arrayListOf(
-            SettingsItem("Application Theme","UI theme for iRWaRE Application", selectionDialog("Application Theme", R.drawable.icon_theme, "application_theme", arrayListOf("Follow System Theme", "Light Theme", "Dark Theme")) {
+            SettingsItem(
+                getString(R.string.settings_item_application_theme),
+                getString(R.string.settings_item_application_theme_subtitle),
+                selectionDialog(getString(R.string.settings_item_application_theme),
+                    R.drawable.icon_theme, getString(R.string.shared_pref_item_application_theme),
+                    resources.getStringArray(R.array.settings_theme_list).asList()) {
                 themeChanged = true
                 AppCompatDelegate.setDefaultNightMode(
-                    when (getSharedPreferences("settings", MODE_PRIVATE).getInt("application_theme", 0)) {
+                    when (getSharedPreferences(getString(R.string.shared_pref_name_settings), MODE_PRIVATE).getInt(getString(R.string.shared_pref_item_application_theme), 0)) {
                         1 -> { AppCompatDelegate.MODE_NIGHT_NO }
                         2 -> { AppCompatDelegate.MODE_NIGHT_YES }
                         else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
                     }
                 )
             }, R.drawable.icon_theme),
-            SettingsItem("Home Fragment","Fragment that opens on app launch", selectionDialog("Home Fragment", R.drawable.icon_home, "home_fragment", fragmentList, null), R.drawable.icon_home)
+            SettingsItem(getString(R.string.settings_item_home_fragment),getString(R.string.settings_item_home_fragment_subtitle), selectionDialog(getString(R.string.settings_item_home_fragment), R.drawable.icon_home, getString(R.string.shared_pref_item_home_fragment), fragmentList, null), R.drawable.icon_home)
         ))
 
         recyclerView = findViewById<RecyclerView>(R.id.settings_list).apply {
@@ -79,9 +89,8 @@ class SettingsActivity : AppCompatActivity() {
         return true
     }
 
-    @SuppressLint("ApplySharedPref", "InflateParams")
     private fun selectionDialog(title: String, icon: Int, prefName: String, optList: List<String>, action: Runnable?): AlertDialog{
-        val pref = getSharedPreferences("settings", Context.MODE_PRIVATE)
+        val pref = getSharedPreferences(getString(R.string.shared_pref_name_settings), Context.MODE_PRIVATE)
         val editor = pref.edit()
 
         val content = RadioGroup(this)

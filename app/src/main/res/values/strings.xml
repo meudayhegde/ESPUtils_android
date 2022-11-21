@@ -41,6 +41,10 @@
     <string name="ir_remote_controller">IR Remote Controller</string>
     <string name="gpio_controller">GPIO Controller</string>
     <string name="home">Home</string>
+    <string name="settings_item_home_fragment">Home Fragment</string>
+    <string name="settings_item_home_fragment_subtitle">Fragment that opens on app launch</string>
+    <string name="settings_item_application_theme">Application Theme</string>
+    <string name="settings_item_application_theme_subtitle">UI theme for iRWaRE Application</string>
     <string name="about">About</string>
     <string name="close">Close</string>
     <string name="communicate">Communicate</string>
@@ -161,6 +165,7 @@
     <string name="extension_zip">.zip</string>
     <string name="extension_bin">.bin</string>
     <string name="extension_hash">.hash</string>
+    <string name="extension_json">.json</string>
 
     <string name="message_delete_gpio_switch">Delete GPIO Switch %1$s ?</string>
     <string name="parentheses">(%1$s)</string>
@@ -185,12 +190,18 @@
     <string name="esp_command_auth">{\"request\": \"authenticate\", \"username\": \"%1$s\", \"password\": \"%2$s\"}</string>
     <string name="esp_command_ping">{\"request\": \"ping\"}</string>
 
+    <string name="esp_response">response</string>
     <string name="esp_response_pin_number">pinNumber</string>
     <string name="esp_response_pin_value">pinValue</string>
     <string name="esp_response_mac">MAC</string>
+    <string name="esp_response_success">success</string>
+    <string name="esp_response_timeout">timeout</string>
+    <string name="esp_response_progress">progress</string>
+    <string name="esp_response_value">value</string>
 
     <string name="button_prop_length">length</string>
     <string name="button_prop_ircode">irCode</string>
+    <string name="button_prop_protocol">protocol</string>
     <string name="button_prop_text">text</string>
     <string name="button_prop_icon_type">iconType</string>
     <string name="button_prop_color">color</string>
@@ -223,4 +234,16 @@
 
     <string name="shared_pref_name_widget_associations">widget_associations</string>
     <string name="shared_pref_item_queued_button">queued_button</string>
+    <string name="shared_pref_name_settings">queued_button</string>
+    <string name="shared_pref_item_application_theme">application_theme</string>
+    <string name="shared_pref_item_home_fragment">home_fragment</string>
+    <string name="shared_pref_name_login">login</string>
+    <string name="shared_pref_item_password">password</string>
+    <string name="shared_pref_item_username">username</string>
+
+    <string name="dir_name_device_config">devices</string>
+    <string name="dir_name_remote_config">remotes</string>
+    <string name="file_name_gpio_config">GPIOConfig.json</string>
+    <string name="file_name_arp_table">ARPTable.json</string>
+    <string name="file_name_dummy_json">Dummy.json</string>
 </resources>

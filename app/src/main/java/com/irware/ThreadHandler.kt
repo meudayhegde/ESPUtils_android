@@ -1,9 +1,5 @@
 package com.irware
 
-/**
- *
- * @author hegdeuday
- */
 class ThreadHandler {
     private val threadList = ArrayList<InfiniteThread>()
     private var maxThreadCount = MAX_THREAD_COUNT

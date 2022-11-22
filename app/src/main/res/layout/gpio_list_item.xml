@@ -30,7 +30,7 @@
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
                 app:tint="?attr/colorOnBackground"
-                android:contentDescription="@string/icon_for_settings_list_item"/>
+                android:contentDescription="@string/img_desc_icon_for_settings_list_item"/>
 
         <TextView
                 android:id="@+id/gpio_name"
@@ -83,7 +83,7 @@
                     android:id="@+id/img_offline"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:contentDescription="@string/icon_device_offline"
+                    android:contentDescription="@string/img_desc_icon_device_offline"
                     android:visibility="gone"
                     app:srcCompat="@drawable/icon_cancel"
                     app:tint="@color/design_default_color_error" />

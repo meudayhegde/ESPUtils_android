@@ -15,7 +15,6 @@ import com.irware.remote.holders.ButtonProperties
 import com.irware.remote.holders.RemoteProperties
 import com.irware.remote.net.SocketClient
 import org.json.JSONObject
-import java.io.File
 import java.io.FileNotFoundException
 
 
@@ -83,7 +82,7 @@ class ButtonWidgetProvider: AppWidgetProvider() {
                     SocketClient.sendIrCode(address, userName, password, buttonProp.jsonObj) { result ->
                             handler.post {
                                 if(result.contains("success")) Toast.makeText(context, buttonProp.text + ": " + JSONObject(result).getString("response"), Toast.LENGTH_LONG).show()
-                                else Toast.makeText(context, context.getString(R.string.device_not_connected), Toast.LENGTH_LONG).show()
+                                else Toast.makeText(context, context.getString(R.string.message_device_not_connected), Toast.LENGTH_LONG).show()
                             }
                         }
                     manager.updateAppWidget(watchWidget, remoteViews)
@@ -121,7 +120,7 @@ class ButtonWidgetProvider: AppWidgetProvider() {
         }
         try{
             val remoteProp = RemoteProperties(
-                ESPUtilsApp.getAbsoluteFile(R.string.dir_name_remote_config, buttonInfo!!.split(",")[0]),
+                ESPUtilsApp.getAbsoluteFile(R.string.name_dir_remote_config, buttonInfo!!.split(",")[0]),
                 null
             )
             val buttonProps = remoteProp.getButtons()

@@ -102,7 +102,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="@dimen/margin_medium"
-                        android:text="@string/floating_action_button"
+                        android:text="@string/module_name_floating_action_button"
                         android:textColor="@color/sky_blue_variant_1"
                         android:textSize="@dimen/text_size_title"
                         android:textStyle="bold" />
@@ -141,7 +141,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="@dimen/margin_medium"
-                        android:text="@string/pikolo_colorpicker"
+                        android:text="@string/module_name_pikolo_color_picker"
                         android:textColor="@color/sky_blue_variant_1"
                         android:textSize="@dimen/text_size_title"
                         android:textStyle="bold" />
@@ -180,7 +180,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="@dimen/margin_medium"
-                        android:text="@string/material_components_android"
+                        android:text="@string/module_name_material_components_android"
                         android:textColor="@color/sky_blue_variant_1"
                         android:textSize="@dimen/text_size_title"
                         android:textStyle="bold" />

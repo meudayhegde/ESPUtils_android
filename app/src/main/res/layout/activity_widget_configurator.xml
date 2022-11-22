@@ -11,7 +11,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             style="@style/TextAppearance.AppCompat.Title"
-            android:text="@string/select_remote_controller_button"
+            android:text="@string/title_select_remote_button"
             android:layout_margin="@dimen/margin_high"/>
 
     <include layout="@layout/controllers_refresh_layout"

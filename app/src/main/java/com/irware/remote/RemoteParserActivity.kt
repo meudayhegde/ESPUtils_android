@@ -67,7 +67,7 @@ class RemoteParserActivity : AppCompatActivity() {
         val spinner = findViewById<Spinner>(R.id.select_device)
 
         if(ESPUtilsApp.devicePropList.isEmpty()){
-            val deviceConfigDir = ESPUtilsApp.getAbsoluteFile(R.string.dir_name_device_config)
+            val deviceConfigDir = ESPUtilsApp.getAbsoluteFile(R.string.name_dir_device_config)
             deviceConfigDir.exists() or deviceConfigDir.mkdirs()
             for(file: File in deviceConfigDir.listFiles { _, name -> name?.endsWith(getString(R.string.extension_json))?: false } ?: emptyArray()){
                 ESPUtilsApp.devicePropList.add(DeviceProperties(file))
@@ -123,14 +123,14 @@ class RemoteParserActivity : AppCompatActivity() {
                 DrawableCompat.setTint(drawable!!,Color.RED)
                 imV.setImageDrawable(drawable)
                 msg.visibility = View.VISIBLE
-                msg.text = getString(R.string.import_error)
+                msg.text = getString(R.string.message_import_error)
             }
         }
 
         cancel.setOnClickListener { finish() }
         import.setOnClickListener {
             if(spinner.selectedItemPosition == 0){
-                Toast.makeText(this, getString(R.string.device_not_selected_note), Toast.LENGTH_LONG).show()
+                Toast.makeText(this, getString(R.string.message_device_not_selected_note), Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             }
             val selectedDevice = ESPUtilsApp.devicePropList[spinner.selectedItemPosition - 1]
@@ -139,7 +139,7 @@ class RemoteParserActivity : AppCompatActivity() {
             msg.visibility = View.GONE; progress.visibility = View.VISIBLE
             try{
                 val fileName= jsonObject.getString(getString(R.string.remote_prop_filename))
-                var outFile = ESPUtilsApp.getAbsoluteFile(R.string.dir_name_remote_config, fileName)
+                var outFile = ESPUtilsApp.getAbsoluteFile(R.string.name_dir_remote_config, fileName)
                 val parent = outFile.parentFile!!
                 if(!parent.exists()) parent.mkdirs()
                 var count = 1
@@ -185,7 +185,7 @@ class RemoteParserActivity : AppCompatActivity() {
                 DrawableCompat.setTint(drawable!!,Color.RED)
                 imV.setImageDrawable(drawable)
                 msg.visibility = View.VISIBLE
-                msg.text = getString(R.string.import_error)
+                msg.text = getString(R.string.message_import_error)
             }
         }
 
@@ -198,7 +198,7 @@ class RemoteParserActivity : AppCompatActivity() {
         DrawableCompat.setTint(drawable!!, Color.GREEN)
         imV.setImageDrawable(drawable)
 
-        msg.text = getString(R.string.import_success)
+        msg.text = getString(R.string.message_import_success)
 
         if(MainActivity.activity != null && !MainActivity.activity!!.isDestroyed){
             if(configFile!=null){

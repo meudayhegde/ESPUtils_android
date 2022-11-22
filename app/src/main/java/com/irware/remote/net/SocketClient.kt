@@ -86,7 +86,7 @@ object SocketClient{
                                 irlistener.onProgress(result.getInt(ESPUtilsApp.getString(R.string.esp_response_value)))
                             }
                         }
-                        else -> irlistener.onDeny(MainActivity.activity?.getString(R.string.auth_failed_login_again))
+                        else -> irlistener.onDeny(MainActivity.activity?.getString(R.string.message_auth_failed_login_again))
                     }
                 }
             }catch(ex: IOException){

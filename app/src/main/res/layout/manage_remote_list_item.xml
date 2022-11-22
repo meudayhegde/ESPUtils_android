@@ -99,7 +99,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_marginTop="@dimen/margin_min"
                 android:layout_marginEnd="@dimen/margin_medium"
-                android:contentDescription="@string/icon_to_share_remote"
+                android:contentDescription="@string/img_desc_icon_to_share_remote"
                 app:srcCompat="@drawable/icon_share"
                 app:tint="?attr/colorOnBackground" />
 

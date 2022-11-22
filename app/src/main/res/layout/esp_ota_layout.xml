@@ -11,7 +11,7 @@
             android:textSize="@dimen/text_size_title"
             android:textColor="?attr/colorOnBackground"
             android:layout_margin="@dimen/margin_max"
-            android:text="@string/confirm_update_device" />
+            android:text="@string/message_confirm_update_device" />
 
     <ProgressBar
             android:id="@+id/update_progress_bar"

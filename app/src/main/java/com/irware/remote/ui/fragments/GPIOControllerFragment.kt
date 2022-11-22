@@ -135,13 +135,13 @@ class GPIOControllerFragment : androidx.fragment.app.Fragment()  {
             btnPositive.setOnClickListener {
                 when {
                     devicesSpinner.selectedItemPosition == 0 -> {
-                        Toast.makeText(requireContext(), R.string.please_select_device, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), R.string.message_gpio_device_no_selection, Toast.LENGTH_SHORT).show()
                     }
                     gpioSpinner.selectedItemPosition == 0 -> {
-                        Toast.makeText(requireContext(), R.string.please_select_gpio_pin_number, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), R.string.message_gpio_pin_no_selection, Toast.LENGTH_SHORT).show()
                     }
                     nameText.text?.isEmpty()?: false -> {
-                        nameText.setText(R.string.name_field_cannot_be_empty)
+                        nameText.setText(R.string.message_name_field_empty)
                     }
                     else -> {
                         val gpioObj = gpioObject?: GPIOObject(JSONObject(), ESPUtilsApp.gpioConfig!!)

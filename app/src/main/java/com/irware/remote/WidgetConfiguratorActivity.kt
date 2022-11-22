@@ -20,7 +20,6 @@ import com.irware.remote.ui.buttons.RemoteButton
 import com.irware.remote.ui.dialogs.RemoteDialog
 import kotlinx.android.synthetic.main.activity_widget_configurator.*
 import kotlinx.android.synthetic.main.controllers_refresh_layout.*
-import java.io.File
 import kotlin.math.min
 
 class WidgetConfiguratorActivity : AppCompatActivity(),SwipeRefreshLayout.OnRefreshListener {
@@ -93,7 +92,7 @@ class WidgetConfiguratorActivity : AppCompatActivity(),SwipeRefreshLayout.OnRefr
         (remote_refresh_layout as SwipeRefreshLayout).isRefreshing = true
         ThreadHandler.runOnFreeThread{
             remotePropList.clear()
-            val files = ESPUtilsApp.getAbsoluteFile(R.string.dir_name_remote_config).listFiles { pathname ->
+            val files = ESPUtilsApp.getAbsoluteFile(R.string.name_dir_remote_config).listFiles { pathname ->
                 pathname!!.isFile and (pathname.name.endsWith(getString(R.string.extension_json), true)) and pathname.canWrite()
             }
             files?.forEach {

@@ -98,10 +98,10 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnRemoteButt
         ir_capture_progress.visibility = View.VISIBLE
         ir_capture_error_logo.visibility = View.GONE
 
-        ir_capture_status.text = context.getString(R.string.waiting_for_ir_signal)
+        ir_capture_status.text = context.getString(R.string.message_waiting_ir_code)
         ir_capture_instruction.visibility = View.VISIBLE
         if(mode == MODE_MULTI)
-            ir_capture_instruction.text = "${context.getString(R.string.ir_capture_instruction)}\n${context.getString(R.string.multi_capture_hint)}"
+            ir_capture_instruction.text = "${context.getString(R.string.message_ir_capture_instruction)}\n${context.getString(R.string.message_multi_capture_hint)}"
         SocketClient.readIrCode(address, userName, password,this,jsonObj)
     }
 
@@ -126,7 +126,7 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnRemoteButt
             Toast.makeText(context, "TimeOut", Toast.LENGTH_LONG).show()
             ir_capture_progress.visibility = View.GONE
             ir_capture_error_logo.visibility = View.VISIBLE
-            ir_capture_status.text = context.getString(R.string.ir_cap_status_timeout)
+            ir_capture_status.text = context.getString(R.string.message_ir_cap_status_timeout)
             ir_capture_instruction.visibility = View.GONE
 
             buttonPositive.text = context.getString(R.string.retry)
@@ -138,7 +138,7 @@ class ButtonPropertiesDialog(context:Context, private var listener: OnRemoteButt
             if(mode == MODE_MULTI && capturedCount>0){
                 ir_capture_error_logo.visibility = View.GONE
                 ir_capture_success_logo.visibility = View.VISIBLE
-                ir_capture_status.text = context.getString(R.string.multi_capture_count).replace("#n",capturedCount.toString())
+                ir_capture_status.text = context.getString(R.string.message_multi_capture_count, capturedCount)
             }
         }
     }

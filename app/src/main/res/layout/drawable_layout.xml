@@ -11,5 +11,5 @@
             android:id="@+id/btn_icon_grid"
             android:background="@drawable/checkable_bg"
             app:srcCompat="@drawable/icon_alert"
-            android:contentDescription="@string/icons_for_remote_controller_buttons" />
+            android:contentDescription="@string/img_desc_icons_remote_buttons" />
 </LinearLayout>

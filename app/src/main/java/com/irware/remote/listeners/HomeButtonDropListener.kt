@@ -59,10 +59,10 @@ class HomeButtonDropListener(private val remoteDialog: RemoteDialog): View.OnDra
                 appWidgetManager.requestPinAppWidget(myProvider, null, null)
             }
             else{
-                Toast.makeText(remoteDialog.context, R.string.launcher_no_support_feature, Toast.LENGTH_LONG).show()
+                Toast.makeText(remoteDialog.context, R.string.message_launcher_no_support, Toast.LENGTH_LONG).show()
             }
         } else {
-            Toast.makeText(remoteDialog.context,R.string.android_version_no_support_feature, Toast.LENGTH_LONG).show()
+            Toast.makeText(remoteDialog.context,R.string.message_android_version_no_support, Toast.LENGTH_LONG).show()
         }
     }
 }

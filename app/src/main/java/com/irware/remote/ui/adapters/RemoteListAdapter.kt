@@ -163,7 +163,7 @@ class RemoteListAdapter(private val propList: ArrayList<RemoteProperties>, priva
         btnCancel.setOnClickListener { dialog.dismiss() }
         btnFinish.setOnClickListener {
             if(spinner.selectedItemPosition == 0){
-                Toast.makeText(card.context, card.context.getString(R.string.device_not_selected_note), Toast.LENGTH_LONG).show()
+                Toast.makeText(card.context, card.context.getString(R.string.message_device_not_selected_note), Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             }
             val selectedDevice = ESPUtilsApp.devicePropList[spinner.selectedItemPosition - 1]

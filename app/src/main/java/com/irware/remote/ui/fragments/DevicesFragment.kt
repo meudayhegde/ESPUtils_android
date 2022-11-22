@@ -233,7 +233,7 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
 
                         if (!devExist) {
                             val devConfigFile = ESPUtilsApp.getAbsoluteFile(
-                                R.string.dir_name_device_config,
+                                R.string.name_dir_device_config,
                                 devName.text.toString().replace(" ", "_") + getString(R.string.extension_json)
                             )
                             devConfigFile.createNewFile()

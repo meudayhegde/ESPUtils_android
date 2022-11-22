@@ -34,7 +34,7 @@
                 android:textSize="@dimen/text_size_subtitle"
                 android:textColor="?attr/colorOnBackground"
                 android:layout_height="wrap_content"
-                android:text="@string/select_the_device_to_use_this_remote_configuration" />
+                android:text="@string/message_remote_conf_device_no_selection" />
 
         <Spinner
                 android:layout_width="match_parent"

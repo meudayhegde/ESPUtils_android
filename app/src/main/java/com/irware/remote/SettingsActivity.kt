@@ -56,9 +56,9 @@ class SettingsActivity : AppCompatActivity() {
 
         viewAdapter = SettingsAdapter(arrayListOf(
             SettingsItem(
-                getString(R.string.settings_item_application_theme),
-                getString(R.string.settings_item_application_theme_subtitle),
-                selectionDialog(getString(R.string.settings_item_application_theme),
+                getString(R.string.title_application_theme),
+                getString(R.string.title_sub_application_theme),
+                selectionDialog(getString(R.string.title_application_theme),
                     R.drawable.icon_theme, getString(R.string.shared_pref_item_application_theme),
                     resources.getStringArray(R.array.settings_theme_list).asList()) {
                 themeChanged = true
@@ -70,7 +70,7 @@ class SettingsActivity : AppCompatActivity() {
                     }
                 )
             }, R.drawable.icon_theme),
-            SettingsItem(getString(R.string.settings_item_home_fragment),getString(R.string.settings_item_home_fragment_subtitle), selectionDialog(getString(R.string.settings_item_home_fragment), R.drawable.icon_home, getString(R.string.shared_pref_item_home_fragment), fragmentList, null), R.drawable.icon_home)
+            SettingsItem(getString(R.string.title_home_fragment),getString(R.string.title_sub_home_fragment), selectionDialog(getString(R.string.title_home_fragment), R.drawable.icon_home, getString(R.string.shared_pref_item_home_fragment), fragmentList, null), R.drawable.icon_home)
         ))
 
         recyclerView = findViewById<RecyclerView>(R.id.settings_list).apply {

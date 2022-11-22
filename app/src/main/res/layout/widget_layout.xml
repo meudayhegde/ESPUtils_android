@@ -11,5 +11,5 @@
             android:layout_height="wrap_content"
             android:textColor="@color/white"
             android:background="@drawable/widget_button_bg_normal"
-            android:contentDescription="@string/remote_controller_button" />
+            android:contentDescription="@string/img_desc_remote_controller_button" />
 </LinearLayout>

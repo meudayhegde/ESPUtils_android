@@ -109,7 +109,7 @@ class GPIOListAdapter(private val gpioList: ArrayList<GPIOObject>,
         holder.progressImg.visibility = View.VISIBLE
         holder.progressText.text = holder.cardView.context.getString(R.string.offline)
         holder.cardView.setOnClickListener {
-            Toast.makeText(holder.cardView.context, holder.cardView.context.getString(R.string.device_offline), Toast.LENGTH_SHORT).show()
+            Toast.makeText(holder.cardView.context, holder.cardView.context.getString(R.string.message_device_offline), Toast.LENGTH_SHORT).show()
         }
     }
 

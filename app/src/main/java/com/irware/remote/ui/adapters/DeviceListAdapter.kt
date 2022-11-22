@@ -125,23 +125,23 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                 .create()
             settingsDialog.setOnShowListener {
                 val settingsList = arrayListOf(
-                    SettingsItem(context.getString(R.string.wireless_settings), context.getString(R.string.wireless_settings_subtitle),
+                    SettingsItem(context.getString(R.string.title_wireless_settings), context.getString(R.string.title_sub_wireless_settings),
                         null, R.drawable.icon_wifi, wirelessSettingsClickAction(context, prop), prop
                     ),
                     SettingsItem(
-                        context.getString(R.string.user_settings), context.getString(R.string.user_settings_subtitle),
+                        context.getString(R.string.title_user_settings), context.getString(R.string.title_sub_user_settings),
                         null, R.drawable.ic_user, userSettingsClickAction(context, prop), prop
                     ),
-                    SettingsItem(context.getString(R.string.reboot), context.getString(R.string.reboot_subtitle), null,
+                    SettingsItem(context.getString(R.string.reboot), context.getString(R.string.title_sub_reboot), null,
                         R.drawable.icon_power, restartConfirmClickAction(context, prop), prop
                     ),
-                    SettingsItem(context.getString(R.string.install_update), context.getString(R.string.install_update_subtitle),
+                    SettingsItem(context.getString(R.string.title_install_update), context.getString(R.string.title_sub_install_update),
                         null, R.drawable.ic_system_update, updateClickAction(context, prop), prop
                     ),
-                    SettingsItem(context.getString(R.string.remove_device), context.getString(R.string.remove_device_subtitle),
+                    SettingsItem(context.getString(R.string.title_remove_device), context.getString(R.string.title_sub_remove_device),
                         null, R.drawable.icon_delete, deleteClickAction(context, holder.adapterPosition, settingsDialog)
                     ),
-                    SettingsItem(context.getString(R.string.edit_properties), context.getString(R.string.edit_properties_subtitle),
+                    SettingsItem(context.getString(R.string.title_edit_properties), context.getString(R.string.title_sub_edit_properties),
                         null, R.drawable.icon_edit, editClickAction(context, prop)
                     )
                 )
@@ -183,7 +183,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                 AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
                     .setTitle(context.resources.getString(R.string.confirm_restart))
                     .setIcon(R.drawable.icon_power)
-                    .setMessage(context.resources.getString(R.string.confirm_restart_note))
+                    .setMessage(context.resources.getString(R.string.message_confirm_restart_note))
                     .setNegativeButton(context.resources.getString(R.string.cancel)) { dialog, _ -> dialog.dismiss() }
                     .setPositiveButton(context.resources.getString(R.string.restart)) { dialog, _ ->
                         dialog.dismiss()
@@ -192,18 +192,18 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                                 val connector = SocketClient.Connector(prop.ipAddress)
                                 connector.sendLine(context.getString(R.string.esp_command_restart, prop.userName, prop.password))
                                 Handler(Looper.getMainLooper()).post {
-                                    Toast.makeText(context, context.getString(R.string.restart_command_successfully_sent), Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, context.getString(R.string.message_esp_restart_success), Toast.LENGTH_SHORT).show()
                                 }
                             } catch (ex: Exception) {
                                 Handler(Looper.getMainLooper()).post {
-                                    Toast.makeText(context, context.getString(R.string.failed_to_send_restart_command), Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, context.getString(R.string.message_esp_restart_failure), Toast.LENGTH_SHORT).show()
                                 }
                             }
                         }
                     }
                     .show()
             }
-            else Toast.makeText(context, context.resources.getString(R.string.device_offline), Toast.LENGTH_SHORT).show()
+            else Toast.makeText(context, context.resources.getString(R.string.message_device_offline), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -212,7 +212,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
             AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
                 .setIcon(R.drawable.icon_delete)
                 .setTitle(context.resources.getString(R.string.confirm_delete))
-                .setMessage(context.resources.getString(R.string.confirm_delete_note))
+                .setMessage(context.resources.getString(R.string.message_confirm_delete_note))
                 .setNegativeButton(context.resources.getString(R.string.cancel)) { dialog, _ -> dialog.dismiss() }
                 .setPositiveButton(context.resources.getString(R.string.remove)) { dialog, _ ->
                     dialog.dismiss()
@@ -220,7 +220,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                     propList.removeAt(position)
                     notifyItemRemoved(position)
                     settingsDialog.dismiss()
-                    Toast.makeText(context, context.getString(R.string.device_successfully_removed), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, context.getString(R.string.message_device_delete), Toast.LENGTH_SHORT).show()
                 }
                 .show()
         }
@@ -233,10 +233,10 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
     }
 
     private fun extractUpdate(file: File, updateIntermediateListener: OnOTAIntermediateListener?): File?{
-        updateIntermediateListener?.onStatusUpdate(context.getString(R.string.extracting_update_file), true)
+        updateIntermediateListener?.onStatusUpdate(context.getString(R.string.message_extracting_update_file), true)
         if(file.exists() and file.isFile){
             if(!file.absolutePath.endsWith(context.getString(R.string.extension_zip))){
-                updateIntermediateListener?.onError(context.getString(R.string.err_update_file_is_not_valid))
+                updateIntermediateListener?.onError(context.getString(R.string.message_err_update_file_is_not_valid))
                 return null
             }
 
@@ -266,7 +266,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
             file.delete()
             return extractDir
         }
-        updateIntermediateListener?.onError(context.getString(R.string.err_update_file_does_not_exist))
+        updateIntermediateListener?.onError(context.getString(R.string.message_err_update_file_does_not_exist))
         return null
     }
 
@@ -401,7 +401,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                     ).show()
                 }
             }
-            else Toast.makeText(context, context.resources.getString(R.string.device_offline), Toast.LENGTH_SHORT).show()
+            else Toast.makeText(context, context.resources.getString(R.string.message_device_offline), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -429,7 +429,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
         return Runnable{
             if(prop.isConnected) {
                 val userDialog = AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
-                    .setTitle(R.string.user_settings)
+                    .setTitle(R.string.title_user_settings)
                     .setView(R.layout.user_settings)
                     .setIcon(R.drawable.ic_user)
                     .setNegativeButton(R.string.cancel) { dialog, _ -> dialog.dismiss() }
@@ -460,13 +460,13 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                         for (tiet in listOf(cUname, cPass, nUname, nPass, nPassCon)) {
                             if (tiet.text.isNullOrEmpty()) {
                                 (tiet.parent.parent as TextInputLayout).error =
-                                    context.getString(R.string.empty_field)
+                                    context.getString(R.string.message_empty_field)
                                 hasError = true
                             }
                         }
                         if (nPassCon.text != nPass.text) {
                             (nPassCon.parent.parent as TextInputLayout).error =
-                                context.getString(R.string.passwd_mismatch)
+                                context.getString(R.string.message_passwd_mismatch)
                             hasError = true
                         }
                         if (!hasError) {
@@ -524,7 +524,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                 }
                 userDialog.show()
             }
-            else Toast.makeText(context, context.resources.getString(R.string.device_offline), Toast.LENGTH_SHORT).show()
+            else Toast.makeText(context, context.resources.getString(R.string.message_device_offline), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -533,7 +533,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
         return Runnable {
             if(prop.isConnected) {
                 val dialog = AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
-                    .setTitle(R.string.wireless_settings)
+                    .setTitle(R.string.title_wireless_settings)
                     .setView(R.layout.wireless_settings)
                     .setNegativeButton(R.string.cancel) { dialog, _ -> dialog.dismiss() }
                     .setPositiveButton(context.getString(R.string.apply)) { _, _ -> }
@@ -649,10 +649,10 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                     positiveButton.setOnClickListener {
                         if (ssid.text.isNullOrEmpty())
                             (ssid.parent.parent as TextInputLayout).error =
-                                context.getString(R.string.empty_ssid)
+                                context.getString(R.string.message_empty_ssid)
                         if ((pass.text?.length ?: 8) < 8)
                             (pass.parent.parent as TextInputLayout).error =
-                                context.getString(R.string.empty_password)
+                                context.getString(R.string.message_empty_password)
                         if (ssid.text!!.isNotEmpty() and ((pass.text?.length ?: 0) >= 8)) {
                             AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
                                 .setTitle(R.string.confirm)
@@ -707,7 +707,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                 }
                 dialog.show()
             }
-            else Toast.makeText(context, context.resources.getString(R.string.device_offline), Toast.LENGTH_SHORT).show()
+            else Toast.makeText(context, context.resources.getString(R.string.message_device_offline), Toast.LENGTH_SHORT).show()
         }
     }
 

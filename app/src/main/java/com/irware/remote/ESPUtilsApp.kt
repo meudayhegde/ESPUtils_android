@@ -4,7 +4,6 @@ import android.app.Application
 import android.content.Context
 import android.os.Build
 import android.os.Environment
-import android.os.FileUtils
 import android.text.TextUtils
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
@@ -16,7 +15,6 @@ import com.irware.remote.holders.RemoteProperties
 import com.irware.remote.net.ARPTable
 import java.io.File
 import java.lang.ref.WeakReference
-import java.nio.file.FileSystem
 
 class ESPUtilsApp: Application() {
     override fun onCreate() {
@@ -43,14 +41,14 @@ class ESPUtilsApp: Application() {
             iconDrawableList[i] = arr.getResourceId(i, 0)
         arr.recycle()
 
-        val deviceConfigDir = getAbsoluteFile(R.string.dir_name_device_config)
+        val deviceConfigDir = getAbsoluteFile(R.string.name_dir_device_config)
         deviceConfigDir.exists() or deviceConfigDir.mkdirs()
         for(file: File in deviceConfigDir.listFiles { _, name ->
             name?.endsWith(getString(R.string.extension_json))?: false }!!) {
             devicePropList.add(DeviceProperties(file))
         }
 
-        val gpioConfigFile = getAbsoluteFile(R.string.file_name_gpio_config)
+        val gpioConfigFile = getAbsoluteFile(R.string.name_file_gpio_config)
         if (!gpioConfigFile.exists()) gpioConfigFile.createNewFile()
         gpioConfig = GPIOConfig(gpioConfigFile)
         val gpioObjectArray = gpioConfig!!.gpioObjectArray
@@ -59,7 +57,7 @@ class ESPUtilsApp: Application() {
         }
 
         ThreadHandler.runOnFreeThread {
-            val files = getAbsoluteFile(R.string.dir_name_remote_config).listFiles { pathname ->
+            val files = getAbsoluteFile(R.string.name_dir_remote_config).listFiles { pathname ->
                 pathname!!.isFile and (pathname.name.endsWith(getString(R.string.extension_json), true)) and pathname.canWrite()
             }
             files?.forEach { file ->

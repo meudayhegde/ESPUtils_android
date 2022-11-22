@@ -12,7 +12,7 @@
             android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_gravity="center"
             android:layout_marginTop="@dimen/margin_high" android:layout_marginStart="@dimen/margin_high" android:layout_marginEnd="@dimen/margin_high"
             android:paddingStart="@dimen/margin_medium" android:gravity="center" android:textColor="?attr/colorOnBackground"
-            android:text="@string/long_press_remote_item_card_to_edit_remote_controller_information" android:textSize="@dimen/text_size_title"
+            android:text="@string/message_long_press_item_edit" android:textSize="@dimen/text_size_title"
             tools:targetApi="m" tools:ignore="RtlSymmetry" android:textStyle="bold"
             fab:drawableStartCompat="@drawable/icon_info"
             fab:drawableTint="?attr/colorOnBackground" />

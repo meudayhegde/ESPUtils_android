@@ -132,7 +132,7 @@
                     android:id="@+id/img_online"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:contentDescription="@string/icon_device_online"
+                    android:contentDescription="@string/img_desc_icon_device_online"
                     android:visibility="gone"
                     app:srcCompat="@drawable/icon_check_circle"
                     app:tint="@color/sky_blue" />
@@ -141,7 +141,7 @@
                     android:id="@+id/img_offline"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:contentDescription="@string/icon_device_offline"
+                    android:contentDescription="@string/img_desc_icon_device_offline"
                     android:visibility="gone"
                     app:srcCompat="@drawable/icon_cancel"
                     app:tint="@color/design_default_color_error" />

@@ -10,7 +10,6 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -123,7 +122,6 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
                     }
 
                     ESPUtilsApp.arpTable.getARPItemList { arpItem ->
-                        Log.d("IP Address", "${arpItem.macAddress}: ${ arpItem.ipAddress }")
                         Handler(Looper.getMainLooper()).post{
                             arpItemList.add(arpItem)
                             viewAdapterScanner.notifyDataSetChanged()
@@ -176,7 +174,7 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
                     }
                 }catch(ex: Exception){
                     Handler(Looper.getMainLooper()).post{
-                        Toast.makeText(context, "Err: Failed to contact $address", Toast.LENGTH_LONG).show()
+                        Toast.makeText(context, context?.getString(R.string.message_err_failed_to_contact_device, address), Toast.LENGTH_LONG).show()
                     }
                 }
             }
@@ -232,7 +230,7 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
                         if(JSONObject(response)["response"] != "authenticated") throw Exception()
 
                         if (!devExist) {
-                            val devConfigFile = ESPUtilsApp.getAbsoluteFile(
+                            val devConfigFile = ESPUtilsApp.getPrivateFile(
                                 R.string.name_dir_device_config,
                                 devName.text.toString().replace(" ", "_") + getString(R.string.extension_json)
                             )

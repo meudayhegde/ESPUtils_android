@@ -41,14 +41,14 @@ class ESPUtilsApp: Application() {
             iconDrawableList[i] = arr.getResourceId(i, 0)
         arr.recycle()
 
-        val deviceConfigDir = getAbsoluteFile(R.string.name_dir_device_config)
+        val deviceConfigDir = getPrivateFile(R.string.name_dir_device_config)
         deviceConfigDir.exists() or deviceConfigDir.mkdirs()
         for(file: File in deviceConfigDir.listFiles { _, name ->
             name?.endsWith(getString(R.string.extension_json))?: false }!!) {
             devicePropList.add(DeviceProperties(file))
         }
 
-        val gpioConfigFile = getAbsoluteFile(R.string.name_file_gpio_config)
+        val gpioConfigFile = getPrivateFile(R.string.name_file_gpio_config)
         if (!gpioConfigFile.exists()) gpioConfigFile.createNewFile()
         gpioConfig = GPIOConfig(gpioConfigFile)
         val gpioObjectArray = gpioConfig!!.gpioObjectArray
@@ -57,7 +57,7 @@ class ESPUtilsApp: Application() {
         }
 
         ThreadHandler.runOnFreeThread {
-            val files = getAbsoluteFile(R.string.name_dir_remote_config).listFiles { pathname ->
+            val files = getPrivateFile(R.string.name_dir_remote_config).listFiles { pathname ->
                 pathname!!.isFile and (pathname.name.endsWith(getString(R.string.extension_json), true)) and pathname.canWrite()
             }
             files?.forEach { file ->
@@ -87,14 +87,9 @@ class ESPUtilsApp: Application() {
             return contextRef?.get()?.getString(stringRes, *formatArgs)?: ""
         }
 
-        /**
-         * @param dirFileNames directory names (String or StringRes) in the dirTree of the required file
-         * @return complete file path of the required file from filesystem root. By default the mentioned file/dir will be stored in private storage
-         */
-        fun getAbsolutePath(vararg dirFileNames: Any = emptyArray()): String{
-            val filesDir = contextRef?.get()?.filesDir?.absolutePath?:
-            Environment.getExternalStorageDirectory().absolutePath
-            val dirTree = arrayListOf<String>(filesDir)
+        private fun getAbsolutePath(root: File?, vararg dirFileNames: Any = emptyArray()): String{
+            val rootDir = (root?: Environment.getExternalStorageDirectory()).absolutePath
+            val dirTree = arrayListOf<String>(rootDir)
             dirFileNames.forEach {
                 when(it){
                     is String -> if("?" !in it && "/" !in it) dirTree.add(it)
@@ -110,10 +105,35 @@ class ESPUtilsApp: Application() {
 
         /**
          * @param dirFileNames directory names (String or StringRes) in the dirTree of the required file
-         * @return File object. By default the mentioned file/dir will be stored in private storage.
+         * @return File object. By default the mentioned file/dir will be stored in app private storage.
+         * Note: Files stored in this directory will not be available to any other application (without root access).
          */
-        fun getAbsoluteFile(vararg dirFileNames: Any = emptyArray()): File{
-            return File(getAbsolutePath(*dirFileNames))
+        fun getPrivateFile(vararg dirFileNames: Any = emptyArray()): File{
+            return File(getAbsolutePath(contextRef?.get()?.filesDir?: Environment.getExternalStorageDirectory(),
+                *dirFileNames)
+            )
+        }
+
+        /**
+         * @param dirFileNames directory names (String or StringRes) in the dirTree of the required file
+         * @return File object. By default the mentioned file/dir will be stored in external cache directory.
+         * Note: Files stored in this directory will be available to any application with storage permissions.
+         */
+        fun getExternalCache(vararg dirFileNames: Any = emptyArray()): File{
+            return File(getAbsolutePath(contextRef?.get()?.externalCacheDir?:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) Environment.getStorageDirectory()
+                else Environment.getExternalStorageDirectory(), *dirFileNames)
+            )
+        }
+
+        /**
+         * @param dirFileNames directory names (String or StringRes) in the dirTree of the required file
+         * @return File object. By default the mentioned file/dir will be stored in private cache directory.
+         * Note: Files stored in this directory will be available to any application with storage permissions.
+         */
+        fun getCache(vararg dirFileNames: Any = emptyArray()): File{
+            return File(getAbsolutePath(contextRef?.get()?.cacheDir, *dirFileNames)
+            )
         }
     }
 }

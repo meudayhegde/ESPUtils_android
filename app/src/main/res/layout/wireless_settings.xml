@@ -33,6 +33,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_max"
+                android:background="@drawable/layout_border_round_corner"
                 android:id="@+id/spinner_wireless_mode"
                 android:layout_marginEnd="@dimen/margin_max"/>
 

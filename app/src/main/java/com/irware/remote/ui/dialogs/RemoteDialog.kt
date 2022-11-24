@@ -43,9 +43,9 @@ class RemoteDialog(context: Context,val properties:RemoteProperties, val mode:In
         val buttons = properties.getButtons()
         for(i in 0 until buttons.length()){
             val obj = buttons.getJSONObject(i)
-            val btnProp = ButtonProperties(obj,properties)
-            if(length<btnProp.btnPosition) {
-                arrayList.addAll(arrayOfNulls(btnProp.btnPosition-length+1))
+            val btnProp = ButtonProperties(obj, properties)
+            if(btnProp.btnPosition >= length) {
+                arrayList.addAll(arrayOfNulls(btnProp.btnPosition - length + 1))
                 length = btnProp.btnPosition
             }
             arrayList[btnProp.btnPosition] = btnProp
@@ -95,17 +95,17 @@ class RemoteDialog(context: Context,val properties:RemoteProperties, val mode:In
 
     override fun onSelected(jsonObject: JSONObject) {
         try{
-            var pos = jsonObject.getInt("btnPosition")
+            var pos = jsonObject.getInt(context.getString(R.string.button_prop_btn_position))
             if(pos < 0){
                 pos = adapter.getEmptyPosition()
-                jsonObject.put("btnPosition", pos)
+                jsonObject.put(context.getString(R.string.button_prop_btn_position), pos)
             }
             val btnProp = ButtonProperties(jsonObject, properties)
             arrayList[pos] = btnProp
             adapter.notifyItemChanged(pos)
         }catch(ex:JSONException){
             val pos= adapter.getEmptyPosition()
-            jsonObject.put("btnPosition",pos)
+            jsonObject.put(context.getString(R.string.button_prop_btn_position), pos)
             val btnProp = ButtonProperties(jsonObject,properties)
             arrayList[pos] = btnProp
             adapter.notifyItemChanged(pos)
@@ -117,10 +117,10 @@ class RemoteDialog(context: Context,val properties:RemoteProperties, val mode:In
             DragEvent.ACTION_DROP -> {
                 val view = event.localState as RemoteButton
                 AlertDialog.Builder(context)
-                    .setTitle("Confirm")
-                    .setMessage("This action can't be undone.\nAre you sure you want to delete this button?")
-                    .setNegativeButton("cancel") { dialog, _ -> dialog.dismiss()}
-                    .setPositiveButton("delete"){ dialog, _ ->
+                    .setTitle(R.string.confirm)
+                    .setMessage(R.string.message_dialog_delete_remote_button)
+                    .setNegativeButton(R.string.cancel) { dialog, _ -> dialog.dismiss()}
+                    .setPositiveButton(R.string.delete){ dialog, _ ->
                         val position = view.getProperties().btnPosition
                         properties.removeButton(view.getProperties().jsonObj)
                         arrayList[position] = null

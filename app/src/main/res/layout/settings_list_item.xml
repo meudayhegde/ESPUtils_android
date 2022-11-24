@@ -2,54 +2,36 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:cardUseCompatPadding="true"
-        app:cardElevation="@dimen/card_elevation"
-        app:cardCornerRadius="@dimen/list_item_card_radius"
+        android:orientation="vertical" android:layout_width="match_parent"
+        android:layout_height="wrap_content" app:cardUseCompatPadding="true"
+        app:cardElevation="@dimen/card_elevation" app:cardCornerRadius="@dimen/list_item_card_radius"
         android:descendantFocusability="blocksDescendants">
 
     <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
             android:foreground="?android:attr/selectableItemBackground"
-            android:background="@drawable/layout_border_round_corner"
-            android:layout_gravity="center_vertical"
-            android:padding="@dimen/margin_low"
-            android:orientation="vertical"
-            tools:ignore="UnusedAttribute">
+            android:background="@drawable/layout_border_round_corner" android:layout_gravity="center_vertical"
+            android:padding="@dimen/margin_low" android:orientation="vertical" tools:ignore="UnusedAttribute">
 
         <ImageView
-                android:id="@+id/ic_settings"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/margin_low"
-                android:src="@drawable/ic_settings"
-                android:layout_alignParentStart="true"
-                android:layout_centerVertical="true"
+                android:id="@+id/ic_settings" android:layout_width="@dimen/list_item_icon_size_small"
+                android:layout_height="@dimen/list_item_icon_size_small"
+                android:layout_margin="@dimen/margin_low" android:src="@drawable/ic_settings"
+                android:layout_alignParentStart="true" android:layout_centerVertical="true"
                 app:tint="?attr/colorOnBackground"
                 android:contentDescription="@string/img_desc_icon_for_settings_list_item"/>
 
         <TextView
-                android:id="@+id/setting_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/text_size_title"
-                android:layout_toEndOf="@id/ic_settings"
-                android:textColor="?attr/colorOnBackground"
-                android:layout_marginStart="@dimen/margin_low"
-                android:text="@string/title" />
+                android:id="@+id/setting_title" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:textSize="@dimen/text_size_title"
+                android:layout_toEndOf="@id/ic_settings" android:textColor="?attr/colorOnBackground"
+                android:layout_marginStart="@dimen/margin_low" android:text="@string/title" />
 
         <TextView
-                android:id="@+id/setting_subtitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/setting_title"
-                android:layout_toEndOf="@id/ic_settings"
-                android:layout_marginStart="@dimen/margin_low"
-                android:textSize="@dimen/text_size_subtitle"
-                android:text="@string/subtitle" />
+                android:id="@+id/setting_subtitle" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:layout_below="@id/setting_title"
+                android:layout_toEndOf="@id/ic_settings" android:layout_marginStart="@dimen/margin_low"
+                android:textSize="@dimen/text_size_subtitle" android:text="@string/subtitle" />
 
     </RelativeLayout>
 

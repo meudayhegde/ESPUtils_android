@@ -59,11 +59,11 @@ class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>, pri
                         vibrate(50)
                     }
                 }
-                SocketClient.sendIrCode(address, userName , password,(it as RemoteButton).getProperties().jsonObj) { result ->
+                SocketClient.sendIrCode(address, userName , password, (it as RemoteButton).getProperties().jsonObj) { result ->
                     Handler(Looper.getMainLooper()).post{
                         try {
                             val jsonObj = JSONObject(result)
-                            Toast.makeText(context, jsonObj.getString("response"), Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, jsonObj.getString(context.getString(R.string.esp_response)), Toast.LENGTH_SHORT).show()
                         } catch (ex: JSONException) {
                             Toast.makeText(context, result, Toast.LENGTH_SHORT).show()
                         }

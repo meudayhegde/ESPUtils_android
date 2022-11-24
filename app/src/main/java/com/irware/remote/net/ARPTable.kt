@@ -16,7 +16,7 @@ import java.io.OutputStreamWriter
 import java.net.InetAddress
 
 class ARPTable(private val scanCount: Int = 1) {
-    private var arpTableFile: File = ESPUtilsApp.getAbsoluteFile(R.string.name_file_arp_table)
+    private var arpTableFile: File = ESPUtilsApp.getPrivateFile(R.string.name_file_arp_table)
     private var jsonObj: JSONObject = getJSONObject()
 
     init{

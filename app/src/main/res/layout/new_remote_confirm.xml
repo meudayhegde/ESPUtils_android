@@ -1,20 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
-        android:background="@drawable/layout_border_round_corner"
         android:layout_height="wrap_content">
 
     <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-
-        <TextView
-                android:id="@+id/title_new_remote_confirm" android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:textColor="?attr/colorOnBackground"
-                android:gravity="center" android:layout_marginTop="@dimen/margin_medium" android:layout_marginStart="@dimen/margin_high"
-                android:layout_marginEnd="@dimen/margin_high" android:layout_marginBottom="@dimen/margin_high" android:textSize="@dimen/text_size_title"/>
 
         <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
@@ -67,63 +59,12 @@
 
         <Spinner
                 android:id="@+id/select_device"
+                android:background="@drawable/layout_border_round_corner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_high"
                 android:layout_marginEnd="@dimen/margin_high"
                 android:layout_marginTop="@dimen/margin_min"/>
 
-        <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_high">
-
-            <Button
-                    android:id="@+id/_edit_buttons"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/margin_high"
-                    android:layout_marginStart="@dimen/margin_high"
-                    android:text="@string/edit_buttons"
-                    app:icon="@drawable/icon_edit"
-                    android:visibility="gone"/>
-
-            <Button
-                    android:id="@+id/delete_remote"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/margin_high"
-                    android:layout_marginEnd="@dimen/margin_high"
-                    android:text="@string/delete_remote"
-                    app:icon="@drawable/icon_delete"
-                    android:layout_alignParentStart="true"
-                    android:layout_below="@id/_edit_buttons"/>
-
-            <Button
-                    android:id="@+id/cancel"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/margin_high"
-                    android:text="@string/cancel"
-                    app:icon="@drawable/icon_cancel"
-                    android:layout_below="@id/delete_remote"
-                    android:layout_alignParentStart="true"/>
-
-            <Button
-                    android:id="@+id/button_done"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/margin_high"
-                    android:layout_marginEnd="@dimen/margin_high"
-                    android:layout_marginBottom="@dimen/margin_low"
-                    android:text="@string/done"
-                    app:icon="@drawable/icon_done"
-                    android:layout_alignParentEnd="true"
-                    android:layout_below="@id/delete_remote"/>
-        </RelativeLayout>
     </LinearLayout>
 </ScrollView>

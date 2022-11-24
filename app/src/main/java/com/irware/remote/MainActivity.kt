@@ -8,8 +8,9 @@ import android.content.pm.ApplicationInfo
 import android.content.res.Configuration
 import android.graphics.Color
 import android.net.Uri
-import android.os.*
-import android.os.Environment.getExternalStorageDirectory
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
@@ -84,7 +85,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val width = min(layoutParams.width, layoutParams.width)
         NUM_COLUMNS = when{(width > 920) -> 5; width < 720 -> 3; else -> 4}
 
-        val file = ESPUtilsApp.getAbsoluteFile(R.string.name_dir_remote_config)
+        val file = ESPUtilsApp.getPrivateFile(R.string.name_dir_remote_config)
         if(!file.exists()) file.mkdir()
 
         val lparams = RelativeLayout.LayoutParams(width, width)
@@ -320,10 +321,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             val filePath: String = app.sourceDir
 
             val intent = Intent(Intent.ACTION_SEND)
-            intent.type = "*/*"
+            intent.type = getString(R.string.intent_type_all)
             val originalApk = File(filePath)
 
-            @Suppress("DEPRECATION") val tempFile = File("${(externalCacheDir?: if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {Environment.getStorageDirectory()} else getExternalStorageDirectory()).absolutePath}${File.separator}${getString(app.labelRes)}.apk")
+            val tempFile = ESPUtilsApp.getExternalCache(getString(app.labelRes) + getString(R.string.extension_apk))
             if (tempFile.exists()) {
                 tempFile.delete()
             }
@@ -339,11 +340,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             `in`.close()
             out.close()
-            println("File copied.")
+
             val uri: Uri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".provider", tempFile)
             intent.putExtra(Intent.EXTRA_STREAM, uri)
 
-            startActivity(Intent.createChooser(intent, "Share app via"))
+            startActivity(Intent.createChooser(intent, getString(R.string.intent_title_share_app)))
         }catch(ex: java.lang.Exception){
             Toast.makeText(this, "Error while sharing application.\n${ex.message}", Toast.LENGTH_LONG).show()
         }
@@ -400,12 +401,4 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private var restart = false
-    fun onRestartClicked(view: View) {
-        view.visibility = View.VISIBLE
-        if(restart) recreate()
-        else Toast.makeText(this, "Press again to Restart",Toast.LENGTH_SHORT).show()
-        restart = true
-
-        Handler(Looper.getMainLooper()).postDelayed({ restart = false },1400)
-    }
 }

@@ -269,9 +269,9 @@ class RemoteParserActivity : AppCompatActivity() {
         val buttons = jsonObj.getJSONArray(getString(R.string.remote_prop_buttons_array))
         for(i in 0 until buttons.length()){
             val button = buttons.getJSONObject(i)
-            button.getString(getString(R.string.button_prop_protocol))
-            button.getString(getString(R.string.button_prop_ircode))
-            button.getString(getString(R.string.button_prop_length))
+            button.getString(Strings.btnPropProtocol)
+            button.getString(Strings.btnPropIrcode)
+            button.getString(Strings.btnPropLength)
         }
         return jsonObj
     }

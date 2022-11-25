@@ -4,6 +4,7 @@ import android.text.TextUtils
 import android.util.Log
 import com.irware.ThreadHandler
 import com.irware.Utils
+import com.irware.remote.Strings
 import com.irware.remote.ESPUtilsApp
 import com.irware.remote.R
 import com.irware.remote.holders.ARPItem
@@ -15,8 +16,7 @@ import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 import java.net.InetAddress
 
-class ARPTable(private val scanCount: Int = 1) {
-    private var arpTableFile: File = ESPUtilsApp.getPrivateFile(R.string.name_file_arp_table)
+class ARPTable(private val scanCount: Int = 1, private val arpTableFile: File = ESPUtilsApp.getPrivateFile(R.string.name_file_arp_table)) {
     private var jsonObj: JSONObject = getJSONObject()
 
     init{
@@ -87,8 +87,8 @@ class ARPTable(private val scanCount: Int = 1) {
                     if(InetAddress.getByName(address).isReachable(50)){
                         try{
                             val connector = SocketClient.Connector(address)
-                            connector.sendLine(ESPUtilsApp.getString(R.string.esp_command_ping))
-                            if(JSONObject(connector.readLine()).getString(ESPUtilsApp.getString(R.string.esp_response_mac)) == mac) {
+                            connector.sendLine(Strings.espCommandPing)
+                            if(JSONObject(connector.readLine()).getString(Strings.espResponseMac) == mac) {
                                 if(i != 0){
                                     addresses.remove(i)
                                     addresses.insert(0, address)
@@ -112,10 +112,9 @@ class ARPTable(private val scanCount: Int = 1) {
         return null
     }
 
-    private fun getJSONObject():JSONObject{
+    private fun getJSONObject(): JSONObject{
         if(!arpTableFile.exists()) {
             arpTableFile.createNewFile()
-            arpTableFile = File(arpTableFile.absolutePath)
         }
         val isr = InputStreamReader(arpTableFile.inputStream())
         val content = TextUtils.join("\n", isr.readLines())
@@ -129,6 +128,7 @@ class ARPTable(private val scanCount: Int = 1) {
 
     private fun update(){
         val osr = OutputStreamWriter(arpTableFile.outputStream())
+        Log.d(javaClass.simpleName, jsonObj.toString(4))
         osr.write(jsonObj.toString(4))
         osr.flush()
         osr.close()
@@ -175,10 +175,10 @@ class ARPTable(private val scanCount: Int = 1) {
 
     private fun getMacForIP(address: String): String{
         val connector = SocketClient.Connector(address)
-        connector.sendLine(ESPUtilsApp.getString(R.string.esp_command_ping))
+        connector.sendLine(Strings.espCommandPing)
         val response = connector.readLine()
         connector.close()
-        return JSONObject(response).optString(ESPUtilsApp.getString(R.string.esp_response_mac))
+        return JSONObject(response).optString(Strings.espResponseMac)
     }
 
     companion object{

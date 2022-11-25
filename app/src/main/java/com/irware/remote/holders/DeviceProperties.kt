@@ -3,6 +3,7 @@ package com.irware.remote.holders
 import android.os.Handler
 import android.os.Looper
 import android.text.TextUtils
+import com.irware.remote.Strings
 import com.irware.remote.ESPUtilsApp
 import com.irware.remote.R
 import com.irware.remote.listeners.OnDeviceStatusListener
@@ -25,58 +26,58 @@ class DeviceProperties(val deviceConfigFile: File = ESPUtilsApp.getPrivateFile(R
             }
         }
 
-    var nickName: String = jsonObj.optString(ESPUtilsApp.getString(R.string.device_prop_nickname), "")
+    var nickName: String = jsonObj.optString(Strings.devPropNickname, "")
         get(){
-            return jsonObj.optString(ESPUtilsApp.getString(R.string.device_prop_nickname), "")
+            return jsonObj.optString(Strings.devPropNickname, "")
         }
         set(value){
             field = value
-            jsonObj.put(ESPUtilsApp.getString(R.string.device_prop_nickname), value)
+            jsonObj.put(Strings.devPropNickname, value)
             update()
         }
 
-    var userName: String = jsonObj.optString(ESPUtilsApp.getString(R.string.device_prop_username), "")
+    var userName: String = jsonObj.optString(Strings.devPropUsername, "")
         get(){
-            return jsonObj.optString(ESPUtilsApp.getString(R.string.device_prop_username), "")
+            return jsonObj.optString(Strings.devPropUsername, "")
         }
         set(value){
             field = value
-            jsonObj.put(ESPUtilsApp.getString(R.string.device_prop_username), value)
+            jsonObj.put(Strings.devPropUsername, value)
             update()
         }
 
-    var password: String = jsonObj.optString(ESPUtilsApp.getString(R.string.device_prop_password), "")
+    var password: String = jsonObj.optString(Strings.devPropPassword, "")
         get(){
-            return jsonObj.optString(ESPUtilsApp.getString(R.string.device_prop_password), "")
+            return jsonObj.optString(Strings.devPropPassword, "")
         }
         set(value){
             field = value
-            jsonObj.put(ESPUtilsApp.getString(R.string.device_prop_password), value)
+            jsonObj.put(Strings.devPropPassword, value)
             update()
         }
 
-    var macAddress: String = jsonObj.optString(ESPUtilsApp.getString(R.string.device_prop_mac_address))
+    var macAddress: String = jsonObj.optString(Strings.devPropMacAddress)
         get(){
-            return jsonObj.optString(ESPUtilsApp.getString(R.string.device_prop_mac_address), "")
+            return jsonObj.optString(Strings.devPropMacAddress, "")
         }
         set(value){
             field = value
-            jsonObj.put(ESPUtilsApp.getString(R.string.device_prop_mac_address), value)
+            jsonObj.put(Strings.devPropMacAddress, value)
             update()
         }
 
     val ipAddress: String
         get(){
-            return ESPUtilsApp.arpTable.getIpFromMac(macAddress)?: ""
+            return ESPUtilsApp.arpTable?.getIpFromMac(macAddress)?: ""
         }
 
-    var description: String = jsonObj.optString(ESPUtilsApp.getString(R.string.device_prop_description), "")
+    var description: String = jsonObj.optString(Strings.devPropDescription, "")
         get(){
-            return jsonObj.optString(ESPUtilsApp.getString(R.string.device_prop_description), "")
+            return jsonObj.optString(Strings.devPropDescription, "")
         }
         set(value){
             field = value
-            jsonObj.put(ESPUtilsApp.getString(R.string.device_prop_description), value)
+            jsonObj.put(Strings.devPropDescription, value)
             update()
         }
 
@@ -86,7 +87,7 @@ class DeviceProperties(val deviceConfigFile: File = ESPUtilsApp.getPrivateFile(R
         Handler(Looper.getMainLooper()).post{
             onDeviceStatusListener?.onBeginRefresh()
         }
-        ESPUtilsApp.arpTable.getIpFromMac(macAddress){
+        ESPUtilsApp.arpTable!!.getIpFromMac(macAddress){
             isConnected = !(it == null || it.isEmpty())
             listener.invoke(it)
         }
@@ -125,7 +126,7 @@ class DeviceProperties(val deviceConfigFile: File = ESPUtilsApp.getPrivateFile(R
         getIpAddress{ address ->
             if (isConnected){
                 val connector = SocketClient.Connector(address!!)
-                connector.sendLine(ESPUtilsApp.getString(R.string.esp_command_get_gpio, userName, password))
+                connector.sendLine(Strings.espCommandGetGpio(userName, password))
                 val response = connector.readLine()
                 connector.close()
                 val pinJson = JSONArray(response)
@@ -133,8 +134,8 @@ class DeviceProperties(val deviceConfigFile: File = ESPUtilsApp.getPrivateFile(R
                 for(j in 0 until pinJson.length()){
                     val gpioObj = pinJson.getJSONObject(j)
                     for(gpio in pinConfig){
-                        if(gpio.gpioNumber == gpioObj.getInt(ESPUtilsApp.getString(R.string.esp_response_pin_number))){
-                            gpio.pinValue = gpioObj.getInt(ESPUtilsApp.getString(R.string.esp_response_pin_value))
+                        if(gpio.gpioNumber == gpioObj.getInt(Strings.espResponsePinNumber)){
+                            gpio.pinValue = gpioObj.getInt(Strings.espResponsePinValue)
                             Handler(Looper.getMainLooper()).post{
                                 gpio.onGPIORefreshListener?.onRefresh(gpio.pinValue)
                             }

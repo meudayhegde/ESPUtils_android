@@ -5,6 +5,8 @@ import android.content.DialogInterface
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,6 +21,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.github.clans.fab.FloatingActionButton
 import com.github.clans.fab.FloatingActionMenu
 import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import com.irware.ThreadHandler
 import com.irware.remote.ESPUtilsApp
 import com.irware.remote.R
@@ -132,7 +135,19 @@ class GPIOControllerFragment : androidx.fragment.app.Fragment()  {
                 }
             }
 
+            nameText.addTextChangedListener(object : TextWatcher {
+                override fun afterTextChanged(s: Editable?) {}
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    (nameText.parent.parent as TextInputLayout).error = null
+                }
+            })
+
             btnPositive.setOnClickListener {
+                if(nameText.text?.isEmpty() != false){
+                    (nameText.parent.parent as TextInputLayout).error =
+                        context?.getString(R.string.message_name_field_empty)
+                }
                 when {
                     devicesSpinner.selectedItemPosition == 0 -> {
                         Toast.makeText(requireContext(), R.string.message_gpio_device_no_selection, Toast.LENGTH_SHORT).show()
@@ -141,7 +156,7 @@ class GPIOControllerFragment : androidx.fragment.app.Fragment()  {
                         Toast.makeText(requireContext(), R.string.message_gpio_pin_no_selection, Toast.LENGTH_SHORT).show()
                     }
                     nameText.text?.isEmpty()?: false -> {
-                        nameText.setText(R.string.message_name_field_empty)
+                        Toast.makeText(context, R.string.message_name_field_empty, Toast.LENGTH_SHORT).show()
                     }
                     else -> {
                         val gpioObj = gpioObject?: GPIOObject(JSONObject(), ESPUtilsApp.gpioConfig!!)

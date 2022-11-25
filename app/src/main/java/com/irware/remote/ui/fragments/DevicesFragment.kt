@@ -2,18 +2,14 @@ package com.irware.remote.ui.fragments
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -24,8 +20,8 @@ import com.github.clans.fab.FloatingActionButton
 import com.github.clans.fab.FloatingActionMenu
 import com.google.android.material.textfield.TextInputEditText
 import com.irware.ThreadHandler
+import com.irware.remote.Strings
 import com.irware.remote.ESPUtilsApp
-import com.irware.remote.MainActivity
 import com.irware.remote.R
 import com.irware.remote.holders.ARPItem
 import com.irware.remote.holders.DeviceProperties
@@ -35,7 +31,6 @@ import com.irware.remote.ui.adapters.DeviceListAdapter
 import com.irware.remote.ui.adapters.ScanDeviceListAdapter
 import org.json.JSONObject
 import java.io.File
-import kotlin.math.min
 
 class DevicesFragment : androidx.fragment.app.Fragment()  {
     private var listener: OnFragmentInteractionListener? = null
@@ -121,11 +116,16 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
                         onAddressVerified(requireContext(), arpItem.ipAddress, arpItem.macAddress)
                     }
 
-                    ESPUtilsApp.arpTable.getARPItemList { arpItem ->
+                    ESPUtilsApp.arpTable!!.getARPItemList { arpItem ->
                         Handler(Looper.getMainLooper()).post{
                             arpItemList.add(arpItem)
+                            ESPUtilsApp.devicePropList.forEach {
+                                if(it.macAddress == arpItem.macAddress){
+                                    arpItem.devNickName = it.nickName
+                                    return@forEach
+                                }
+                            }
                             viewAdapterScanner.notifyDataSetChanged()
-//                            viewAdapterScanner.notifyItemInserted(arpItemList.indexOf(arpItem))
                         }
                     }.enqueueTask {
                         Handler(Looper.getMainLooper()).post {
@@ -151,43 +151,42 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
         return rootView
     }
 
-    @SuppressLint("InflateParams")
-    fun newDeviceEnterAddress(){
-        val content = LayoutInflater.from(context).inflate(R.layout.add_new_device,null) as LinearLayout
-        val btnCancel = content.findViewById<Button>(R.id.cancel)
-        val btnNext = content.findViewById<Button>(R.id.button_done)
-        val devAddr = content.findViewById<TextInputEditText>(R.id.device_address)
-
-        val dialog = Dialog(requireContext())
-        dialog.setContentView(content)
-        btnCancel.setOnClickListener { dialog.cancel() }
-        btnNext.setOnClickListener {
-            val address = devAddr.text.toString()
-            ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE){
-                try {
-                    val connector = SocketClient.Connector(address)
-                    connector.sendLine(ESPUtilsApp.getString(R.string.esp_command_ping))
-                    val response = connector.readLine()
-                    val macAddr = JSONObject(response).getString(ESPUtilsApp.getString(R.string.esp_response_mac))
-                    Handler(Looper.getMainLooper()).post{
-                        onAddressVerified(requireContext(), address, macAddr)
-                    }
-                }catch(ex: Exception){
-                    Handler(Looper.getMainLooper()).post{
-                        Toast.makeText(context, context?.getString(R.string.message_err_failed_to_contact_device, address), Toast.LENGTH_LONG).show()
+    private fun newDeviceEnterAddress(){
+        val newDevDialog = AlertDialog.Builder(requireContext(), R.style.AppTheme_AlertDialog)
+            .setView(R.layout.add_new_device)
+            .setTitle(R.string.add_new_device)
+            .setIcon(R.drawable.ic_refresh)
+            .setNegativeButton(R.string.cancel){_, _ ->}
+            .setPositiveButton(R.string.next){_, _ ->}
+            .create()
+        newDevDialog.setOnShowListener {
+            val btnNext = newDevDialog.getButton(DialogInterface.BUTTON_POSITIVE)
+            val devAddress = newDevDialog.findViewById<TextInputEditText>(R.id.device_address)
+            btnNext.setOnClickListener {
+                val address = devAddress?.text.toString()
+                ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE){
+                    try {
+                        val connector = SocketClient.Connector(address)
+                        connector.sendLine(Strings.espCommandPing)
+                        val response = connector.readLine()
+                        val macAddress = JSONObject(response).getString(Strings.espResponseMac)
+                        Handler(Looper.getMainLooper()).post{
+                            newDevDialog.dismiss()
+                            onAddressVerified(requireContext(), address, macAddress)
+                        }
+                    }catch(ex: Exception){
+                        Handler(Looper.getMainLooper()).post{
+                            Toast.makeText(context, context?.getString(R.string.message_err_failed_to_contact_device, address), Toast.LENGTH_LONG).show()
+                        }
                     }
                 }
             }
         }
-
-        dialog.show()
-        val width = min(MainActivity.layoutParams.width, MainActivity.layoutParams.height)
-        dialog.window?.setLayout(width - width/8, WindowManager.LayoutParams.WRAP_CONTENT)
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        newDevDialog.show()
         manageMenu.close(true)
     }
 
-    fun onAddressVerified(context: Context, address: String, macAddr: String){
+    fun onAddressVerified(context: Context, address: String, macAddress: String){
         val dialog = AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
             .setView(R.layout.device_properties)
             .setIcon(R.drawable.icon_edit)
@@ -206,7 +205,7 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
             var devProp: DeviceProperties? = null
             var devExist = false
             for(prop: DeviceProperties in ESPUtilsApp.devicePropList){
-                if(prop.macAddress == macAddr){ devProp = prop; devExist = true; break }
+                if(prop.macAddress == macAddress){ devProp = prop; devExist = true; break }
             }
 
             val pref = context.getSharedPreferences(getString(R.string.shared_pref_name_login), 0)
@@ -214,20 +213,20 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
             password.setText(devProp?.password?: pref?.getString(getString(R.string.shared_pref_item_password), ""))
 
 
-            devName.setText(devProp?.nickName?: macAddr.replace(":", "_"))
+            devName.setText(devProp?.nickName?: macAddress.replace(":", "_"))
             devDescription.setText(devProp?.description?: "")
 
             btnAdd.setOnClickListener{
                 ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE){
                     try{
                         val connector = SocketClient.Connector(address)
-                        connector.sendLine(ESPUtilsApp.getString(
-                            R.string.esp_command_auth,
+                        connector.sendLine(Strings.espCommandAuth(
                             userName.text.toString(),
                             password.text.toString()
                         ))
-                        val response=connector.readLine()
-                        if(JSONObject(response)["response"] != "authenticated") throw Exception()
+                        val response = connector.readLine()
+
+                        if(JSONObject(response)[Strings.espResponse] != "authenticated") throw Exception()
 
                         if (!devExist) {
                             val devConfigFile = ESPUtilsApp.getPrivateFile(
@@ -239,7 +238,7 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
                         }
 
                         devProp!!.nickName = devName.text.toString()
-                        devProp!!.macAddress = macAddr
+                        devProp!!.macAddress = macAddress
                         devProp!!.description = devDescription.text.toString()
                         devProp!!.userName = userName.text.toString()
                         devProp!!.password = password.text.toString()
@@ -255,7 +254,7 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
                             }
                             dialog.dismiss()
                         }
-                    }catch(ex:Exception){
+                    }catch(ex: Exception){
                         Handler(Looper.getMainLooper()).post{
                             Toast.makeText(context, "Err: Authentication Failed", Toast.LENGTH_LONG).show()
                         }

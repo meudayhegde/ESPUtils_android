@@ -15,17 +15,6 @@
     <string name="apply">Apply</string>
     <string name="button_horizontal">Button Horizontal</string>
 
-    <string name="button_prop_btn_id">buttonID</string>
-    <string name="button_prop_btn_position">btnPosition</string>
-    <string name="button_prop_color">color</string>
-    <string name="button_prop_icon">icon</string>
-    <string name="button_prop_icon_type">iconType</string>
-    <string name="button_prop_ircode">irCode</string>
-    <string name="button_prop_length">length</string>
-    <string name="button_prop_protocol">protocol</string>
-    <string name="button_prop_text">text</string>
-    <string name="button_prop_text_color">textColor</string>
-
     <string name="button_text">Button Text</string>
     <string name="button_to_delete_remotebutton">button to delete RemoteButton</string>
     <string name="button_vertical">Button vertical</string>
@@ -46,40 +35,16 @@
     <string name="device_address">Device Address (ip:port/url)</string>
     <string name="device_name">Device Name</string>
 
-    <string name="device_prop_description">description</string>
-    <string name="device_prop_mac_address">macAddress</string>
-    <string name="device_prop_nickname">nickName</string>
-    <string name="device_prop_password">password</string>
-    <string name="device_prop_username">userName</string>
-
     <string name="done">Done</string>
     <string name="edit_buttons">Edit Buttons</string>
     <string name="edit_gpio_switch">Edit GPIO Switch</string>
     <string name="edit_remote_information">Edit remote Information</string>
     <string name="enter_remote_details">Enter Remote Details</string>
 
-    <string name="esp_command_auth">{\"request\": \"authenticate\", \"username\": \"%1$s\", \"password\": \"%2$s\"}</string>
-    <string name="esp_command_change_user">{\"request\": \"set_user\", \"username\": \"%1$s\", \"password\": \"%2$s\", \"new_username\": \"%3$s\", \"new_password\": \"%4$s\"}</string>
-    <string name="esp_command_change_wireless">{\"request\": \"set_wireless\", \"username\": \"%1$s\", \"password\": \"%2$s\", \"wireless_mode\": \"%3$s\", \"new_ssid\": \"%4$s\", \"new_pass\": \"%5$s\"}</string>
-    <string name="esp_command_get_gpio">{\"request\": \"gpio_get\", \"username\": \"%1$s\", \"password\": \"%2$s\", \"pinNumber\": -1}</string>
-    <string name="esp_command_get_wireless">{\"request\": \"get_wireless\", \"username\": \"%1$s\", \"password\": \"%2$s\"}</string>
-    <string name="esp_command_ping">{\"request\": \"ping\"}</string>
-    <string name="esp_command_read_ircode">{\"request\": \"ir_capture\", \"username\": \"%1$s\", \"password\": \"%2$s\", \"capture_mode\": %3$d}</string>
-    <string name="esp_command_restart">{\"request\": \"restart\", \"username\": \"%1$s\", \"password\": \"%2$s\"}</string>
-    <string name="esp_command_send_ircode">{\"request\": \"ir_send\", \"username\": \"%1$s\", \"password\": \"%2$s\", \"length\": \"%3$s\", \"protocol\": \"%4$s\", \"irCode\": \"%5$s\"}</string>
-    <string name="esp_command_set_gpio">{\"request\": \"gpio_set\", \"username\": \"%1$s\", \"password\": \"%2$s\", \"pinMode\": \"OUTPUT\", \"pinNumber\": %3$d, \"pinValue\": %4$d}</string>
-
     <string name="esp_devices">ESP Devices</string>
     <string name="esp_ota_update">Esp Ota Update</string>
 
-    <string name="esp_response">response</string>
-    <string name="esp_response_mac">MAC</string>
-    <string name="esp_response_pin_number">pinNumber</string>
-    <string name="esp_response_pin_value">pinValue</string>
-    <string name="esp_response_progress">progress</string>
-    <string name="esp_response_success">success</string>
-    <string name="esp_response_timeout">timeout</string>
-    <string name="esp_response_value">value</string>
+
 
     <string name="exit">Exit</string>
 
@@ -185,6 +150,7 @@
     <string name="offline">Offline</string>
     <string name="online">Online</string>
     <string name="parentheses">(%1$s)</string>
+    <string name="scan_list_item_ip_text">%1$s (%2$s)</string>
     <string name="password">Password</string>
     <string name="pin">-GPIO-</string>
     <string name="rate">Rate</string>

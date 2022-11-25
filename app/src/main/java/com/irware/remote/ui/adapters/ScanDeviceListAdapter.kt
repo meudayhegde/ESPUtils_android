@@ -11,8 +11,8 @@ import com.irware.remote.holders.ARPItem
 class ScanDeviceListAdapter(private val arpItemList: ArrayList<ARPItem>) : RecyclerView.Adapter<ScanDeviceListAdapter.DeviceScanListViewHolder>() {
 
     class DeviceScanListViewHolder(val cardView: CardView) : RecyclerView.ViewHolder(cardView){
-        val ipAddrView: TextView = cardView.findViewById(R.id.device_ip_address)
-        val macAddrView: TextView = cardView.findViewById(R.id.device_mac_address)
+        val ipAddressView: TextView = cardView.findViewById(R.id.device_ip_address)
+        val macAddressView: TextView = cardView.findViewById(R.id.device_mac_address)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DeviceScanListViewHolder {
@@ -28,8 +28,11 @@ class ScanDeviceListAdapter(private val arpItemList: ArrayList<ARPItem>) : Recyc
 
     override fun onBindViewHolder(holder: DeviceScanListViewHolder, position: Int) {
         val item = arpItemList[position]
-        holder.ipAddrView.text = item.ipAddress
-        holder.macAddrView.text = item.macAddress
+        holder.ipAddressView.text = item.ipAddress
+        item.devNickName?.let {
+            holder.ipAddressView.text = holder.cardView.context.getString(R.string.scan_list_item_ip_text, item.ipAddress, it)
+        }
+        holder.macAddressView.text = item.macAddress
         holder.cardView.setOnClickListener { onARPItemSelectedListener?.invoke(item) }
     }
 

@@ -69,8 +69,12 @@
     <style name="TextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="boxStrokeColor">@color/edit_text_bg_white</item>
+        <item name="boxStrokeColor">@color/edit_text_bg</item>
         <item name="boxStrokeWidth">2dp</item>
+        <item name="errorIconDrawable">@drawable/icon_info</item>
+        <item name="errorIconTint">@color/red_light</item>
+        <item name="boxStrokeErrorColor">@color/red_light</item>
+        <item name="errorTextColor">@color/red_light</item>
     </style>
 
     <style name="viewParent">

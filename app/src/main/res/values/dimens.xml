@@ -14,10 +14,13 @@
 
     <dimen name="card_elevation">3dp</dimen>
     <dimen name="card_radius">4dp</dimen>
-    <dimen name="list_item_card_radius">10dp</dimen>
+    <dimen name="list_item_card_radius">8dp</dimen>
+    <dimen name="spinner_radius">4dp</dimen>
 
     <dimen name="list_item_icon_size">42dp</dimen>
     <dimen name="list_item_icon_size_small">28dp</dimen>
 
     <dimen name="height_progress_bar_linear">10dp</dimen>
+    <dimen name="layout_border_thickness">1.6dp</dimen>
+    <dimen name="spinner_border_thickness">2dp</dimen>
 </resources>

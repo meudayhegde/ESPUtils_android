@@ -4,6 +4,7 @@ import android.content.DialogInterface
 import android.os.Handler
 import android.os.Looper
 import com.irware.ThreadHandler
+import com.irware.remote.Strings
 import com.irware.remote.ESPUtilsApp
 import com.irware.remote.MainActivity
 import com.irware.remote.R
@@ -53,37 +54,37 @@ object SocketClient{
                     }
                 }
 
-                connector.sendLine(ESPUtilsApp.getString(R.string.esp_command_read_ircode, userName, password, irlistener.mode))
+                connector.sendLine(Strings.espCommandReadIrcode(userName, password, irlistener.mode))
                 while(connector.isConnected()) {
                     val result = JSONObject(connector.readLine())
-                    when (result.getString(ESPUtilsApp.getString(R.string.esp_response))) {
-                        ESPUtilsApp.getString(R.string.esp_response_success) -> {
-                            result.remove(ESPUtilsApp.getString(R.string.esp_response))
+                    when (result.getString(Strings.espResponse)) {
+                        Strings.espResponseSuccess -> {
+                            result.remove(Strings.espResponse)
 
                             if (jsonObj != null) {
-                                jsonObj.put(ESPUtilsApp.getString(R.string.button_prop_length), result.getString(ESPUtilsApp.getString(R.string.button_prop_length)))
-                                jsonObj.put(ESPUtilsApp.getString(R.string.button_prop_ircode), result.getString(ESPUtilsApp.getString(R.string.button_prop_ircode)))
+                                jsonObj.put(Strings.btnPropLength, result.getString(Strings.btnPropLength))
+                                jsonObj.put(Strings.btnPropIrcode, result.getString(Strings.btnPropIrcode))
                                 irlistener.onIrRead(jsonObj)
                             } else {
-                                if(irlistener.mode == ButtonPropertiesDialog.MODE_SINGLE) result.put(ESPUtilsApp.getString(R.string.button_prop_text), "")
+                                if(irlistener.mode == ButtonPropertiesDialog.MODE_SINGLE) result.put(Strings.btnPropText, "")
                                 else{
-                                    result.put(ESPUtilsApp.getString(R.string.button_prop_text), ButtonPropertiesDialog.textInt)
+                                    result.put(Strings.btnPropText, ButtonPropertiesDialog.textInt)
                                     ButtonPropertiesDialog.textInt++
                                 }
-                                result.put(ESPUtilsApp.getString(R.string.button_prop_icon_type), ButtonPropertiesDialog.jsonObj.getInt(ESPUtilsApp.getString(R.string.button_prop_icon_type)))
-                                result.put(ESPUtilsApp.getString(R.string.button_prop_color), ButtonPropertiesDialog.jsonObj.getInt(ESPUtilsApp.getString(R.string.button_prop_color)))
-                                result.put(ESPUtilsApp.getString(R.string.button_prop_icon), ButtonPropertiesDialog.jsonObj.getInt(ESPUtilsApp.getString(R.string.button_prop_icon)))
-                                result.put(ESPUtilsApp.getString(R.string.button_prop_text_color), ButtonPropertiesDialog.jsonObj.getInt(ESPUtilsApp.getString(R.string.button_prop_text_color)))
+                                result.put(Strings.btnPropIconType, ButtonPropertiesDialog.jsonObj.getInt(Strings.btnPropIconType))
+                                result.put(Strings.btnPropColor, ButtonPropertiesDialog.jsonObj.getInt(Strings.btnPropColor))
+                                result.put(Strings.btnPropIcon, ButtonPropertiesDialog.jsonObj.getInt(Strings.btnPropIcon))
+                                result.put(Strings.btnPropTextColor, ButtonPropertiesDialog.jsonObj.getInt(Strings.btnPropTextColor))
                                 irlistener.onIrRead(result)
                             }
                         }
-                        ESPUtilsApp.getString(R.string.esp_response_timeout) -> {
+                        Strings.espResponseTimeout -> {
                             irlistener.onTimeout()
                             break
                         }
-                        ESPUtilsApp.getString(R.string.esp_response_progress) -> {
+                        Strings.espResponseProgress -> {
                             Handler(Looper.getMainLooper()).post  {
-                                irlistener.onProgress(result.getInt(ESPUtilsApp.getString(R.string.esp_response_value)))
+                                irlistener.onProgress(result.getInt(Strings.espResponseValue))
                             }
                         }
                         else -> irlistener.onDeny(MainActivity.activity?.getString(R.string.message_auth_failed_login_again))
@@ -103,11 +104,10 @@ object SocketClient{
             try {
                 val connector = Connector(address)
                 connector.sendLine(
-                    ESPUtilsApp.getString(
-                        R.string.esp_command_send_ircode, userName, password,
-                        jsonObj.getString("length"),
-                        jsonObj.getString("protocol"),
-                        jsonObj.getString("irCode")
+                    Strings.espCommandSendIrcode(userName, password,
+                        jsonObj.getString(Strings.btnPropLength),
+                        jsonObj.getString(Strings.btnPropProtocol),
+                        jsonObj.getString(Strings.btnPropIrcode)
                     )
                 )
                 val result = connector.readLine()

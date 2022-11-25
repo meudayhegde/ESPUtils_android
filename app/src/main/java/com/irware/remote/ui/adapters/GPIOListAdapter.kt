@@ -15,6 +15,7 @@ import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.irware.ThreadHandler
+import com.irware.remote.Strings
 import com.irware.remote.ESPUtilsApp
 import com.irware.remote.MainActivity
 import com.irware.remote.R
@@ -141,8 +142,7 @@ class GPIOListAdapter(private val gpioList: ArrayList<GPIOObject>,
         ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE){
             val success = try{
                 val connector = SocketClient.Connector(prop.deviceProperties.ipAddress)
-                connector.sendLine(ESPUtilsApp.getString(
-                    R.string.esp_command_set_gpio,
+                connector.sendLine(Strings.espCommandSetGpio(
                     prop.deviceProperties.userName,
                     prop.deviceProperties.password,
                     prop.gpioNumber,

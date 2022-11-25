@@ -24,6 +24,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.irware.ThreadHandler
 import com.irware.Utils
+import com.irware.remote.Strings
 import com.irware.remote.MainActivity
 import com.irware.remote.R
 import com.irware.remote.holders.DeviceProperties
@@ -190,7 +191,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                         ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE) {
                             try {
                                 val connector = SocketClient.Connector(prop.ipAddress)
-                                connector.sendLine(context.getString(R.string.esp_command_restart, prop.userName, prop.password))
+                                connector.sendLine(Strings.espCommandRestart(prop.userName, prop.password))
                                 Handler(Looper.getMainLooper()).post {
                                     Toast.makeText(context, context.getString(R.string.message_esp_restart_success), Toast.LENGTH_SHORT).show()
                                 }
@@ -483,7 +484,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                                         try {
                                             val connector = SocketClient.Connector(prop.ipAddress)
                                             connector.sendLine(
-                                                context.getString(R.string.esp_command_change_user,
+                                                Strings.espCommandChangeUser(
                                                     cUname.text.toString(),
                                                     cPass.text.toString(),
                                                     nUname.text.toString(),
@@ -667,7 +668,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                                         try {
                                             val connector = SocketClient.Connector(prop.ipAddress)
                                             connector.sendLine(
-                                                context.getString(R.string.esp_command_change_wireless,
+                                                Strings.espCommandChangeWireless(
                                                     prop.userName, prop.password, mode, ssid.text.toString(), pass.text.toString()
                                                 )
                                             )
@@ -711,11 +712,11 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
         }
     }
 
-    private fun getWirelessSettings(address: String, userName: String?, password: String?, onReadWiFiConfig: ((data: JSONObject) -> Unit)){
+    private fun getWirelessSettings(address: String, userName: String, password: String, onReadWiFiConfig: ((data: JSONObject) -> Unit)){
         ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE){
             try {
                 val connector = SocketClient.Connector(address)
-                connector.sendLine(context.getString(R.string.esp_command_get_wireless, userName, password))
+                connector.sendLine(Strings.espCommandGetWireless(userName, password))
                 val result = connector.readLine()
                 val resultObj = JSONObject(result)
                 Handler(Looper.getMainLooper()).post{

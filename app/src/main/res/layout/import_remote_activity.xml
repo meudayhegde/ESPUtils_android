@@ -43,7 +43,8 @@
                 android:layout_marginEnd="@dimen/margin_high"
                 android:layout_marginTop="@dimen/margin_low"
                 android:layout_gravity="center_horizontal"
-                android:id="@+id/select_device"/>
+                android:id="@+id/select_device"
+                android:background="@drawable/spinner_background" />
 
     </LinearLayout>
 

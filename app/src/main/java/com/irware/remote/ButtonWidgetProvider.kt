@@ -21,7 +21,7 @@ import java.io.FileNotFoundException
 class ButtonWidgetProvider: AppWidgetProvider() {
 
     override fun onUpdate(context: Context?, appWidgetManager: AppWidgetManager?, appWidgetIds: IntArray?) {
-
+        context?.let { ESPUtilsApp.updateStaticContext(it) }
         val thisWidget = ComponentName(context!!, ButtonWidgetProvider::class.java)
         val allWidgetIds = appWidgetManager!!.getAppWidgetIds(thisWidget)
 
@@ -34,7 +34,7 @@ class ButtonWidgetProvider: AppWidgetProvider() {
         for (widgetId in allWidgetIds) {
 
             val remoteViews = RemoteViews(context.packageName, R.layout.widget_layout)
-            val objList = getJSONObject(context,widgetId,remoteViews)
+            val objList = getJSONObject(context, widgetId, remoteViews)
             if(objList.isEmpty()) return
             val buttonProp = objList[1] as ButtonProperties
 
@@ -57,12 +57,13 @@ class ButtonWidgetProvider: AppWidgetProvider() {
 
     override fun onReceive(context: Context?, intent: Intent?) {
         super.onReceive(context, intent)
+        context?.let { ESPUtilsApp.updateStaticContext(it) }
         if(BUTTON_CLICK == intent?.action){
             val manager = AppWidgetManager.getInstance(context)
             val remoteViews = RemoteViews(context?.packageName,R.layout.widget_layout)
             val watchWidget = ComponentName(context!!,ButtonWidgetProvider::class.java)
 
-            val widgetID = intent.getIntExtra("WidgetID",0)
+            val widgetID = intent.getIntExtra("WidgetID", 0)
             val objList = getJSONObject(context, widgetID, remoteViews)
             if(objList.isEmpty()) return
             val remoteProp = objList[0] as RemoteProperties
@@ -72,6 +73,7 @@ class ButtonWidgetProvider: AppWidgetProvider() {
             remoteProp.deviceProperties.getIpAddress { address ->
                     val userName = remoteProp.deviceProperties.userName
                     val password = remoteProp.deviceProperties.password
+
                     if (address  == null){
                         handler.post {
                             Toast.makeText(context, "Err: Device not reachable", Toast.LENGTH_LONG).show()
@@ -81,7 +83,10 @@ class ButtonWidgetProvider: AppWidgetProvider() {
                     }
                     SocketClient.sendIrCode(address, userName, password, buttonProp.jsonObj) { result ->
                             handler.post {
-                                if(result.contains("success")) Toast.makeText(context, buttonProp.text + ": " + JSONObject(result).getString("response"), Toast.LENGTH_LONG).show()
+                                if(result.contains(Strings.espResponseSuccess))
+                                    Toast.makeText(context,
+                                        buttonProp.text + ": " + JSONObject(result).getString(Strings.espResponse),
+                                        Toast.LENGTH_LONG).show()
                                 else Toast.makeText(context, context.getString(R.string.message_device_not_connected), Toast.LENGTH_LONG).show()
                             }
                         }
@@ -92,6 +97,7 @@ class ButtonWidgetProvider: AppWidgetProvider() {
 
     override fun onDeleted(context: Context?, appWidgetIds: IntArray?) {
         super.onDeleted(context, appWidgetIds)
+        context?.let { ESPUtilsApp.updateStaticContext(it) }
         appWidgetIds?.forEach {
             val pref = context?.getSharedPreferences(context.getString(R.string.shared_pref_name_widget_associations), Context.MODE_PRIVATE)
             val editor = pref?.edit()
@@ -100,7 +106,7 @@ class ButtonWidgetProvider: AppWidgetProvider() {
         }
     }
 
-    private fun getJSONObject(context:Context, widgetID:Int, views:RemoteViews): ArrayList<Any>{
+    private fun getJSONObject(context: Context, widgetID: Int, views: RemoteViews): ArrayList<Any>{
         val pref = context.getSharedPreferences(context.getString(R.string.shared_pref_name_widget_associations), Context.MODE_PRIVATE)
         val editor = pref.edit()
         var buttonInfo = pref.getString(widgetID.toString(),"")
@@ -120,17 +126,16 @@ class ButtonWidgetProvider: AppWidgetProvider() {
         }
         try{
             val remoteProp = RemoteProperties(
-                ESPUtilsApp.getPrivateFile(R.string.name_dir_remote_config, buttonInfo!!.split(",")[0]),
-                null
+                ESPUtilsApp.getPrivateFile(R.string.name_dir_remote_config, buttonInfo!!.split(",")[0])
             )
             val buttonProps = remoteProp.getButtons()
             for(i in 0 until buttonProps.length()){
                 val jsonObj = buttonProps.getJSONObject(i)
-                if(jsonObj.optLong(context.getString(R.string.button_prop_btn_id)) == buttonInfo.split(",")[1].toLong()){
+                if(jsonObj.optLong(Strings.btnPropBtnId) == buttonInfo.split(",")[1].toLong()){
                     return arrayListOf(remoteProp, ButtonProperties(jsonObj))
                 }
             }
-        }catch(ex:FileNotFoundException){
+        }catch(ex: FileNotFoundException){
             Toast.makeText(context,"Remote Configuration Deleted, click button to configure. $ex", Toast.LENGTH_LONG).show()
             setConfigureOnClick(context, widgetID, views)
             return ArrayList()

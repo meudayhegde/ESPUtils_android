@@ -1,6 +1,7 @@
 package com.irware.remote.holders
 
 import android.text.TextUtils
+import com.irware.remote.Strings
 import com.irware.remote.ESPUtilsApp
 import com.irware.remote.R
 import org.json.JSONArray
@@ -10,7 +11,7 @@ import java.io.File
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 
-class RemoteProperties(val remoteConfigFile: File, private val eventListener: EventListener?)  {
+class RemoteProperties(val remoteConfigFile: File, private val eventListener: EventListener? = null)  {
 
     private var jsonObj : JSONObject = getJSONObject()
 
@@ -126,7 +127,7 @@ class RemoteProperties(val remoteConfigFile: File, private val eventListener: Ev
 
     private fun JSONArray.index(obj: JSONObject):Int{
         for(position in 0 until this.length()){
-            if(getJSONObject(position).optLong(ESPUtilsApp.getString(R.string.button_prop_btn_id)) == obj.getLong(ESPUtilsApp.getString(R.string.button_prop_btn_id)))
+            if(getJSONObject(position).optLong(Strings.btnPropBtnId) == obj.getLong(Strings.btnPropBtnId))
                 return position
         }
         return -1

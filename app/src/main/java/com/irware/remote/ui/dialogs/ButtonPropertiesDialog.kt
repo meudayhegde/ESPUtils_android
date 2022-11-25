@@ -14,6 +14,7 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
+import com.irware.remote.Strings
 import com.irware.remote.ESPUtilsApp
 import com.irware.remote.MainActivity
 import com.irware.remote.R
@@ -172,9 +173,9 @@ class ButtonPropertiesDialog(context: Context, private var listener: OnRemoteBut
     private fun manageButtonProperties(jsonObj:JSONObject){
         setTitle(context.getString(R.string.dialog_title_btn_prop))
         try{
-            jsonObj.getInt(context.getString(R.string.button_prop_btn_position))
+            jsonObj.getInt(Strings.btnPropBtnPosition)
         }catch(ex:JSONException){
-            jsonObj.put(context.getString(R.string.button_prop_btn_position), -1)
+            jsonObj.put(Strings.btnPropBtnPosition, -1)
         }
         ButtonPropertiesDialog.jsonObj = jsonObj
         buttonProperties = ButtonProperties(jsonObj)
@@ -193,11 +194,11 @@ class ButtonPropertiesDialog(context: Context, private var listener: OnRemoteBut
             }
         })
 
-        val text = context.getString(R.string.length_of_captured_ir_signal, jsonObj.getString(context.getString(R.string.button_prop_length)).toLong(16).toString())
+        val text = context.getString(R.string.length_of_captured_ir_signal, jsonObj.getString(Strings.btnPropLength).toLong(16).toString())
         text_ir_size.text = text
         text_ir_size.setOnLongClickListener{
-            Toast.makeText(context, "Protocol :" + jsonObj.getString(context.getString(R.string.button_prop_protocol)) +
-                    " " + jsonObj.getString(context.getString(R.string.button_prop_ircode))
+            Toast.makeText(context, "Protocol :" + jsonObj.getString(Strings.btnPropProtocol) +
+                    " " + jsonObj.getString(Strings.btnPropIrcode)
                 .replace(" ", "").replace("\n", ""), Toast.LENGTH_LONG).show()
             true
         }

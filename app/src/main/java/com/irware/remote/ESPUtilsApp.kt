@@ -21,7 +21,6 @@ class ESPUtilsApp: Application() {
         super.onCreate()
         contextRef = WeakReference(this)
         arpTable = ARPTable(-1)
-
         when(getSharedPreferences(
             getString(R.string.shared_pref_name_settings), Context.MODE_PRIVATE).getInt(
             getString(R.string.shared_pref_item_application_theme), if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
@@ -67,7 +66,11 @@ class ESPUtilsApp: Application() {
     }
 
     companion object{
-        lateinit var arpTable: ARPTable
+        var arpTable: ARPTable? = null
+            get() {
+                if(field == null) field = ARPTable()
+                return field
+            }
 
         private var contextRef: WeakReference<Context>? = null
 
@@ -83,18 +86,18 @@ class ESPUtilsApp: Application() {
         /**
          * Static function to get string resource without access to context from any class
          */
-        fun getString(@StringRes stringRes: Int, vararg formatArgs: Any = emptyArray()): String{
-            return contextRef?.get()?.getString(stringRes, *formatArgs)?: ""
+        fun getString(@StringRes stringRes: Int, vararg formatArgs: Any = emptyArray(),  context: Context? = contextRef?.get()): String{
+            return context?.getString(stringRes, *formatArgs)?: ""
         }
 
-        private fun getAbsolutePath(root: File?, vararg dirFileNames: Any = emptyArray()): String{
+        private fun getAbsolutePath(root: File?, vararg dirFileNames: Any = emptyArray(), context: Context? = contextRef?.get()): String{
             val rootDir = (root?: Environment.getExternalStorageDirectory()).absolutePath
             val dirTree = arrayListOf<String>(rootDir)
             dirFileNames.forEach {
                 when(it){
                     is String -> if("?" !in it && "/" !in it) dirTree.add(it)
                     is Int -> {
-                        val st = getString(it)
+                        val st = getString(it, context = context)
                         if("?" !in st && "/" !in st) dirTree.add(st)
                     }
                     else -> throw IllegalArgumentException()
@@ -108,8 +111,8 @@ class ESPUtilsApp: Application() {
          * @return File object. By default the mentioned file/dir will be stored in app private storage.
          * Note: Files stored in this directory will not be available to any other application (without root access).
          */
-        fun getPrivateFile(vararg dirFileNames: Any = emptyArray()): File{
-            return File(getAbsolutePath(contextRef?.get()?.filesDir?: Environment.getExternalStorageDirectory(),
+        fun getPrivateFile(vararg dirFileNames: Any = emptyArray(), context: Context? = contextRef?.get()): File{
+            return File(getAbsolutePath(context?.filesDir?: Environment.getExternalStorageDirectory(),
                 *dirFileNames)
             )
         }
@@ -119,8 +122,8 @@ class ESPUtilsApp: Application() {
          * @return File object. By default the mentioned file/dir will be stored in external cache directory.
          * Note: Files stored in this directory will be available to any application with storage permissions.
          */
-        fun getExternalCache(vararg dirFileNames: Any = emptyArray()): File{
-            return File(getAbsolutePath(contextRef?.get()?.externalCacheDir?:
+        fun getExternalCache(vararg dirFileNames: Any = emptyArray(), context: Context? = contextRef?.get()): File{
+            return File(getAbsolutePath(context?.externalCacheDir?:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) Environment.getStorageDirectory()
                 else Environment.getExternalStorageDirectory(), *dirFileNames)
             )
@@ -131,9 +134,13 @@ class ESPUtilsApp: Application() {
          * @return File object. By default the mentioned file/dir will be stored in private cache directory.
          * Note: Files stored in this directory will be available to any application with storage permissions.
          */
-        fun getCache(vararg dirFileNames: Any = emptyArray()): File{
-            return File(getAbsolutePath(contextRef?.get()?.cacheDir, *dirFileNames)
+        fun getCache(vararg dirFileNames: Any = emptyArray(), context: Context? = contextRef?.get()): File{
+            return File(getAbsolutePath(context?.cacheDir, *dirFileNames)
             )
+        }
+
+        fun updateStaticContext(context: Context){
+            contextRef = WeakReference(context)
         }
     }
 }

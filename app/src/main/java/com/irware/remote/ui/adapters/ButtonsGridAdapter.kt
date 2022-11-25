@@ -19,6 +19,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.irware.remote.ButtonWidgetProvider
 import com.irware.remote.R
+import com.irware.remote.Strings
 import com.irware.remote.WidgetConfiguratorActivity
 import com.irware.remote.holders.ButtonProperties
 import com.irware.remote.net.SocketClient
@@ -63,7 +64,7 @@ class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>, pri
                     Handler(Looper.getMainLooper()).post{
                         try {
                             val jsonObj = JSONObject(result)
-                            Toast.makeText(context, jsonObj.getString(context.getString(R.string.esp_response)), Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, jsonObj.getString(Strings.espResponse), Toast.LENGTH_SHORT).show()
                         } catch (ex: JSONException) {
                             Toast.makeText(context, result, Toast.LENGTH_SHORT).show()
                         }

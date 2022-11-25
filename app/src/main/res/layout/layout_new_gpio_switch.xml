@@ -18,9 +18,9 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:paddingStart="@dimen/margin_medium"
-                android:paddingEnd="@dimen/margin_medium"
-                android:prompt="@string/pin">
-        </Spinner>
+                android:paddingEnd="@dimen/margin_max"
+                android:prompt="@string/pin"
+                android:background="@drawable/spinner_background"/>
 
         <Spinner
                 android:id="@+id/select_device"
@@ -29,8 +29,8 @@
                 android:layout_marginEnd="@dimen/margin_high"
                 android:layout_toStartOf="@id/pin_number"
                 android:layout_alignParentStart="true"
-                android:prompt="@string/select_device">
-        </Spinner>
+                android:prompt="@string/select_device"
+                android:background="@drawable/spinner_background"/>
 
     </RelativeLayout>
 

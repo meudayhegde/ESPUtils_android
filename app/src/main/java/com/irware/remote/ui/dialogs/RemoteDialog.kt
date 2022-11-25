@@ -11,6 +11,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import com.github.clans.fab.FloatingActionButton
+import com.irware.remote.Strings
 import com.irware.remote.MainActivity
 import com.irware.remote.R
 import com.irware.remote.holders.ButtonProperties
@@ -95,18 +96,18 @@ class RemoteDialog(context: Context,val properties:RemoteProperties, val mode:In
 
     override fun onSelected(jsonObject: JSONObject) {
         try{
-            var pos = jsonObject.getInt(context.getString(R.string.button_prop_btn_position))
+            var pos = jsonObject.getInt(Strings.btnPropBtnPosition)
             if(pos < 0){
                 pos = adapter.getEmptyPosition()
-                jsonObject.put(context.getString(R.string.button_prop_btn_position), pos)
+                jsonObject.put(Strings.btnPropBtnPosition, pos)
             }
             val btnProp = ButtonProperties(jsonObject, properties)
             arrayList[pos] = btnProp
             adapter.notifyItemChanged(pos)
         }catch(ex:JSONException){
             val pos= adapter.getEmptyPosition()
-            jsonObject.put(context.getString(R.string.button_prop_btn_position), pos)
-            val btnProp = ButtonProperties(jsonObject,properties)
+            jsonObject.put(Strings.btnPropBtnPosition, pos)
+            val btnProp = ButtonProperties(jsonObject, properties)
             arrayList[pos] = btnProp
             adapter.notifyItemChanged(pos)
         }

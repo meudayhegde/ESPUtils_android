@@ -64,4 +64,10 @@ object Strings {
     const val espResponseSuccess = "success"
     const val espResponseTimeout = "timeout"
     const val espResponseValue = "value"
+
+    const val nameDirDeviceConfig = "devices"
+    const val nameDirRemoteConfig = "remotes"
+    const val nameFileARPTable = "ARPTable.json"
+    const val nameFileDummyJson = "Dummy.json"
+    const val nameFileGPIOConfig = "GPIOConfig.json"
 }                                  

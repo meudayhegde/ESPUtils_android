@@ -28,6 +28,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.irware.ThreadHandler
 import com.irware.remote.ESPUtilsApp
 import com.irware.remote.R
+import com.irware.remote.Strings
 import com.irware.remote.holders.RemoteProperties
 import com.irware.remote.listeners.OnFragmentInteractionListener
 import com.irware.remote.ui.adapters.RemoteListAdapter
@@ -89,7 +90,7 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
                 refreshLayout.isRefreshing = true
                 ThreadHandler.runOnFreeThread{
                     ESPUtilsApp.remotePropList.clear()
-                    val files = ESPUtilsApp.getPrivateFile(R.string.name_dir_remote_config).listFiles { pathname ->
+                    val files = ESPUtilsApp.getPrivateFile(Strings.nameDirRemoteConfig).listFiles { pathname ->
                         pathname!!.isFile and (pathname.name.endsWith(getString(R.string.extension_json), true)) and pathname.canWrite()
                     }
                     files!!.forEach {
@@ -169,10 +170,10 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
                 var id = ("${vendor?.text.toString()} ${name?.text.toString()}").lowercase(Locale.getDefault())
                     .replace(" ", "_").replace("\n", "").replace("/","_")
 
-                var configFile = ESPUtilsApp.getPrivateFile(R.string.name_dir_remote_config, id + getString(R.string.extension_json))
+                var configFile = ESPUtilsApp.getPrivateFile(Strings.nameDirRemoteConfig, id + getString(R.string.extension_json))
                 var incr = 1
                 while(configFile.exists()) {
-                    configFile = ESPUtilsApp.getPrivateFile(R.string.name_dir_remote_config, id + "_" + incr + getString(R.string.extension_json))
+                    configFile = ESPUtilsApp.getPrivateFile(Strings.nameDirRemoteConfig, id + "_" + incr + getString(R.string.extension_json))
                     incr++
                 }
                 if(incr > 1) id += "_" + (incr - 1)

@@ -126,7 +126,7 @@ class ButtonWidgetProvider: AppWidgetProvider() {
         }
         try{
             val remoteProp = RemoteProperties(
-                ESPUtilsApp.getPrivateFile(R.string.name_dir_remote_config, buttonInfo!!.split(",")[0])
+                ESPUtilsApp.getPrivateFile(Strings.nameDirRemoteConfig, buttonInfo!!.split(",")[0])
             )
             val buttonProps = remoteProp.getButtons()
             for(i in 0 until buttonProps.length()){

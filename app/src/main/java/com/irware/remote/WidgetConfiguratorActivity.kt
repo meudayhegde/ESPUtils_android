@@ -92,7 +92,7 @@ class WidgetConfiguratorActivity : AppCompatActivity(),SwipeRefreshLayout.OnRefr
         (remote_refresh_layout as SwipeRefreshLayout).isRefreshing = true
         ThreadHandler.runOnFreeThread{
             remotePropList.clear()
-            val files = ESPUtilsApp.getPrivateFile(R.string.name_dir_remote_config).listFiles { pathname ->
+            val files = ESPUtilsApp.getPrivateFile(Strings.nameDirRemoteConfig).listFiles { pathname ->
                 pathname!!.isFile and (pathname.name.endsWith(getString(R.string.extension_json), true)) and pathname.canWrite()
             }
             files?.forEach {

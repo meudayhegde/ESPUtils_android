@@ -1,6 +1,5 @@
 package com.irware.remote.ui.fragments
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
@@ -10,7 +9,9 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.ProgressBar
+import android.widget.RelativeLayout
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,9 +21,9 @@ import com.github.clans.fab.FloatingActionButton
 import com.github.clans.fab.FloatingActionMenu
 import com.google.android.material.textfield.TextInputEditText
 import com.irware.ThreadHandler
-import com.irware.remote.Strings
 import com.irware.remote.ESPUtilsApp
 import com.irware.remote.R
+import com.irware.remote.Strings
 import com.irware.remote.holders.ARPItem
 import com.irware.remote.holders.DeviceProperties
 import com.irware.remote.listeners.OnFragmentInteractionListener
@@ -230,7 +231,7 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
 
                         if (!devExist) {
                             val devConfigFile = ESPUtilsApp.getPrivateFile(
-                                R.string.name_dir_device_config,
+                                Strings.nameDirDeviceConfig,
                                 devName.text.toString().replace(" ", "_") + getString(R.string.extension_json)
                             )
                             devConfigFile.createNewFile()

@@ -4,9 +4,8 @@ import android.text.TextUtils
 import android.util.Log
 import com.irware.ThreadHandler
 import com.irware.Utils
-import com.irware.remote.Strings
 import com.irware.remote.ESPUtilsApp
-import com.irware.remote.R
+import com.irware.remote.Strings
 import com.irware.remote.holders.ARPItem
 import org.json.JSONArray
 import org.json.JSONException
@@ -16,7 +15,7 @@ import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 import java.net.InetAddress
 
-class ARPTable(private val scanCount: Int = 1, private val arpTableFile: File = ESPUtilsApp.getPrivateFile(R.string.name_file_arp_table)) {
+class ARPTable(private val scanCount: Int = 1, private val arpTableFile: File = ESPUtilsApp.getPrivateFile(Strings.nameFileARPTable)) {
     private var jsonObj: JSONObject = getJSONObject()
 
     init{

@@ -3,9 +3,8 @@ package com.irware.remote.holders
 import android.os.Handler
 import android.os.Looper
 import android.text.TextUtils
-import com.irware.remote.Strings
 import com.irware.remote.ESPUtilsApp
-import com.irware.remote.R
+import com.irware.remote.Strings
 import com.irware.remote.listeners.OnDeviceStatusListener
 import com.irware.remote.net.SocketClient
 import org.json.JSONArray
@@ -15,7 +14,7 @@ import java.io.File
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 
-class DeviceProperties(val deviceConfigFile: File = ESPUtilsApp.getPrivateFile(R.string.name_file_dummy_json))  {
+class DeviceProperties(val deviceConfigFile: File = ESPUtilsApp.getPrivateFile(Strings.nameFileDummyJson))  {
     var onDeviceStatusListener: OnDeviceStatusListener? = null
     private var jsonObj : JSONObject = getJSONObject()
     var isConnected = false

@@ -134,12 +134,6 @@
     <string name="module_name_material_components_android">Material Components Android</string>
     <string name="module_name_pikolo_color_picker">Pikolo - ColorPicker</string>
 
-    <string name="name_dir_device_config">devices</string>
-    <string name="name_dir_remote_config">remotes</string>
-    <string name="name_file_arp_table">ARPTable.json</string>
-    <string name="name_file_dummy_json">Dummy.json</string>
-    <string name="name_file_gpio_config">GPIOConfig.json</string>
-
     <string name="nav_header_desc">Navigation header</string>
     <string name="nav_header_subtitle">Wireless utilities for ESP8266 and ESP32</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -235,5 +229,12 @@
     <string name="confirm_deletion">Confirm Deletion</string>
     <string name="intent_type_all">*/*</string>
     <string name="intent_title_share_app">Share app via</string>
+    <string name="btn_text_keep_both">Keep both</string>
+    <string name="message_remote_conf_exists">This remote controller configuration already exists!!</string>
+    <string name="btn_text_overwrite">Overwrite</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="configure">Configure</string>
+    <string name="add_widget">Add widget</string>
+    <string name="app_widget_description">This is an app widget description</string>
 
 </resources>

@@ -85,7 +85,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val width = min(layoutParams.width, layoutParams.width)
         NUM_COLUMNS = when{(width > 920) -> 5; width < 720 -> 3; else -> 4}
 
-        val file = ESPUtilsApp.getPrivateFile(R.string.name_dir_remote_config)
+        val file = ESPUtilsApp.getPrivateFile(Strings.nameDirRemoteConfig)
         if(!file.exists()) file.mkdir()
 
         val lparams = RelativeLayout.LayoutParams(width, width)
@@ -399,6 +399,4 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         var activity: MainActivity? = null
         var layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
     }
-
-    private var restart = false
 }

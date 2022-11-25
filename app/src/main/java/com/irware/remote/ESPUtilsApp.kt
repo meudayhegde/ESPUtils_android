@@ -40,14 +40,14 @@ class ESPUtilsApp: Application() {
             iconDrawableList[i] = arr.getResourceId(i, 0)
         arr.recycle()
 
-        val deviceConfigDir = getPrivateFile(R.string.name_dir_device_config)
+        val deviceConfigDir = getPrivateFile(Strings.nameDirDeviceConfig)
         deviceConfigDir.exists() or deviceConfigDir.mkdirs()
         for(file: File in deviceConfigDir.listFiles { _, name ->
             name?.endsWith(getString(R.string.extension_json))?: false }!!) {
             devicePropList.add(DeviceProperties(file))
         }
 
-        val gpioConfigFile = getPrivateFile(R.string.name_file_gpio_config)
+        val gpioConfigFile = getPrivateFile(Strings.nameFileGPIOConfig)
         if (!gpioConfigFile.exists()) gpioConfigFile.createNewFile()
         gpioConfig = GPIOConfig(gpioConfigFile)
         val gpioObjectArray = gpioConfig!!.gpioObjectArray
@@ -56,7 +56,7 @@ class ESPUtilsApp: Application() {
         }
 
         ThreadHandler.runOnFreeThread {
-            val files = getPrivateFile(R.string.name_dir_remote_config).listFiles { pathname ->
+            val files = getPrivateFile(Strings.nameDirRemoteConfig).listFiles { pathname ->
                 pathname!!.isFile and (pathname.name.endsWith(getString(R.string.extension_json), true)) and pathname.canWrite()
             }
             files?.forEach { file ->

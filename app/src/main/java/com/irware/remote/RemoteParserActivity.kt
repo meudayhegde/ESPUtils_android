@@ -67,7 +67,7 @@ class RemoteParserActivity : AppCompatActivity() {
         val spinner = findViewById<Spinner>(R.id.select_device)
 
         if(ESPUtilsApp.devicePropList.isEmpty()){
-            val deviceConfigDir = ESPUtilsApp.getPrivateFile(R.string.name_dir_device_config)
+            val deviceConfigDir = ESPUtilsApp.getPrivateFile(Strings.nameDirDeviceConfig)
             deviceConfigDir.exists() or deviceConfigDir.mkdirs()
             for(file: File in deviceConfigDir.listFiles { _, name -> name?.endsWith(getString(R.string.extension_json))?: false } ?: emptyArray()){
                 ESPUtilsApp.devicePropList.add(DeviceProperties(file))
@@ -139,16 +139,16 @@ class RemoteParserActivity : AppCompatActivity() {
             msg.visibility = View.GONE; progress.visibility = View.VISIBLE
             try{
                 val fileName= jsonObject.getString(getString(R.string.remote_prop_filename))
-                var outFile = ESPUtilsApp.getPrivateFile(R.string.name_dir_remote_config, fileName)
+                var outFile = ESPUtilsApp.getPrivateFile(Strings.nameDirRemoteConfig, fileName)
                 val parent = outFile.parentFile!!
                 if(!parent.exists()) parent.mkdirs()
                 var count = 1
                 if(outFile.exists()){
                     AlertDialog.Builder(this)
                         .setTitle(R.string.confirm)
-                        .setMessage("This remote controller configuration already exists!!")
+                        .setMessage(R.string.message_remote_conf_exists)
                         .setNegativeButton(R.string.cancel) { _, _ -> finish() }
-                        .setNeutralButton("Keep both"){ dialog,_ ->
+                        .setNeutralButton(R.string.btn_text_keep_both){ dialog, _ ->
                             while(outFile.exists()) {
                                 outFile = File(outFile.parent,
                                     fileName.removeSuffix(getString(R.string.extension_json)) +
@@ -162,7 +162,7 @@ class RemoteParserActivity : AppCompatActivity() {
                             onSuccess(progress, imV, msg, import)
                             dialog.dismiss()
                         }
-                        .setPositiveButton("Overwrite"){dialog,_ ->
+                        .setPositiveButton(R.string.btn_text_overwrite){ dialog, _ ->
                             outFile.delete()
                             outFile.createNewFile()
                             writeFile(outFile,jsonObject)

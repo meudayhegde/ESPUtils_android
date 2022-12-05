@@ -19,15 +19,15 @@ import com.irware.remote.ui.adapters.RemoteListAdapter
 import com.irware.remote.ui.buttons.RemoteButton
 import com.irware.remote.ui.dialogs.RemoteDialog
 import kotlinx.android.synthetic.main.activity_widget_configurator.*
-import kotlinx.android.synthetic.main.controllers_refresh_layout.*
+import kotlinx.android.synthetic.main.recycler_refresh_layout.*
 import kotlin.math.min
 
-class WidgetConfiguratorActivity : AppCompatActivity(),SwipeRefreshLayout.OnRefreshListener {
+class RemoteBtnWidgetConfActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
 
     var widgetId = 0
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
-    val remotePropList = ArrayList<RemoteProperties>()
+    private val remotePropList = ArrayList<RemoteProperties>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,25 +35,24 @@ class WidgetConfiguratorActivity : AppCompatActivity(),SwipeRefreshLayout.OnRefr
 
         widgetId = intent?.extras?.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID) ?: AppWidgetManager.INVALID_APPWIDGET_ID
 
-        val pref = getSharedPreferences(getString(R.string.shared_pref_name_widget_associations), Context.MODE_PRIVATE)
+        val pref = getSharedPreferences(Strings.sharedPrefNameWidgetAssociations, Context.MODE_PRIVATE)
 
-        if(!pref.getString(widgetId.toString(),"").isNullOrEmpty()){
+        if(!pref.getString(widgetId.toString(), "").isNullOrEmpty()){
             updateAppWidget()
-        }else if(!pref.getString(getString(R.string.shared_pref_item_queued_button), "").isNullOrEmpty()){
-            pref.edit().putString(getString(R.string.shared_pref_item_queued_button), "").apply()
+        }else if(!pref.getString(Strings.sharedPrefItemQueuedButton, "").isNullOrEmpty()){
+            pref.edit().putString(Strings.sharedPrefItemQueuedButton, "").apply()
             updateAppWidget()
         }
 
-        when(getSharedPreferences(getString(R.string.shared_pref_name_settings), Context.MODE_PRIVATE)
-            .getInt(getString(R.string.shared_pref_item_application_theme), if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
-            { 0 }else{ 2 })
-        ){
+        when(getSharedPreferences(Strings.sharedPrefNameSettings, Context.MODE_PRIVATE)
+            .getInt(Strings.sharedPrefItemApplicationTheme, if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
+            { 0 } else { 2 })){
             1-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
             2-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         }
+
         setContentView(R.layout.activity_widget_configurator)
 
-        window?.setBackgroundDrawableResource(R.drawable.layout_border_round_corner)
         val lWindowParams = WindowManager.LayoutParams()
         lWindowParams.copyFrom(window?.attributes)
         lWindowParams.width = WindowManager.LayoutParams.MATCH_PARENT
@@ -64,7 +63,7 @@ class WidgetConfiguratorActivity : AppCompatActivity(),SwipeRefreshLayout.OnRefr
         MainActivity.layoutParams.height = resources.displayMetrics.heightPixels
 
         val width = min(MainActivity.layoutParams.width, MainActivity.layoutParams.height)
-        MainActivity.NUM_COLUMNS = when{width > 920 -> 5; width < 720 -> 3; else -> 4}
+        MainActivity.NUM_COLUMNS = when{ width > 920 -> 5; width < 720 -> 3; else -> 4}
         lWindowParams.width = MainActivity.layoutParams.width * 7 / 8
         lWindowParams.height = MainActivity.layoutParams.height * 6 / 8
         window?.attributes = lWindowParams
@@ -78,7 +77,7 @@ class WidgetConfiguratorActivity : AppCompatActivity(),SwipeRefreshLayout.OnRefr
 
         viewManager = LinearLayoutManager(this)
         viewAdapter = RemoteListAdapter(remotePropList,RemoteDialog.MODE_SELECT_BUTTON)
-        manage_remotes_recycler_view.apply {
+        refresh_layout_recycler_view.apply {
             setHasFixedSize(true)
             layoutManager = viewManager
             adapter = viewAdapter
@@ -93,7 +92,7 @@ class WidgetConfiguratorActivity : AppCompatActivity(),SwipeRefreshLayout.OnRefr
         ThreadHandler.runOnFreeThread{
             remotePropList.clear()
             val files = ESPUtilsApp.getPrivateFile(Strings.nameDirRemoteConfig).listFiles { pathname ->
-                pathname!!.isFile and (pathname.name.endsWith(getString(R.string.extension_json), true)) and pathname.canWrite()
+                pathname!!.isFile and (pathname.name.endsWith(Strings.extensionJson, true)) and pathname.canWrite()
             }
             files?.forEach {
                 remotePropList.add(RemoteProperties(it, null))
@@ -106,9 +105,9 @@ class WidgetConfiguratorActivity : AppCompatActivity(),SwipeRefreshLayout.OnRefr
     }
 
     private fun updateAppWidget(){
-        val intent = Intent(this, ButtonWidgetProvider::class.java)
+        val intent = Intent(this, RemoteButtonWidget::class.java)
         intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
-        val  ids = AppWidgetManager.getInstance(this).getAppWidgetIds(ComponentName(this,ButtonWidgetProvider::class.java))
+        val  ids = AppWidgetManager.getInstance(this).getAppWidgetIds(ComponentName(this,RemoteButtonWidget::class.java))
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
         sendBroadcast(intent)
 
@@ -120,6 +119,6 @@ class WidgetConfiguratorActivity : AppCompatActivity(),SwipeRefreshLayout.OnRefr
     }
 
     companion object{
-        var activity:WidgetConfiguratorActivity? = null
+        var activity:RemoteBtnWidgetConfActivity? = null
     }
 }

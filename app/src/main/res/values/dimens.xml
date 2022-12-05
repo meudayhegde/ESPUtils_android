@@ -23,4 +23,8 @@
     <dimen name="height_progress_bar_linear">10dp</dimen>
     <dimen name="layout_border_thickness">1.6dp</dimen>
     <dimen name="spinner_border_thickness">2dp</dimen>
+
+    <dimen name="gpio_widget_border_thickness">3dp</dimen>
+    <dimen name="gpio_widget_radius">6dp</dimen>
+    <dimen name="gpio_widget_corner">18dp</dimen>
 </resources>

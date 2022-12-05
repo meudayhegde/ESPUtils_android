@@ -25,4 +25,6 @@
 
     <color name="sky_blue_variant_1">#039BE5</color>
 
+    <color name="color_gpio_button_border">#BA000000</color>
+
 </resources>

@@ -70,4 +70,37 @@ object Strings {
     const val nameFileARPTable = "ARPTable.json"
     const val nameFileDummyJson = "Dummy.json"
     const val nameFileGPIOConfig = "GPIOConfig.json"
+
+    const val remotePropButtonsArray = "buttons"
+    const val remotePropDescription = "description"
+    const val remotePropDevPropFileName = "deviceConfigFileName"
+    const val remotePropFileName = "fileName"
+    const val remotePropID = "id"
+    const val remotePropName = "name"
+    const val remotePropVendor = "vendor"
+
+    const val gpioConfigDescription = "description"
+    const val gpioConfigObjArray = "GPIOObjectArray"
+    const val gpioObjMACAddress = "macAddress"
+    const val gpioObjPinNumber = "gpioNumber"
+    const val gpioObjSubtitle = "subTitle"
+    const val gpioObjTitle = "title"
+
+    const val extensionBin = ".bin"
+    const val extensionHash = ".hash"
+    const val extensionJson = ".json"
+    const val extensionZip = ".zip"
+    const val extensionApk = ".apk"
+    const val extensionProvider = ".provider"
+
+    const val sharedPrefItemApplicationTheme = "application_theme"
+    const val sharedPrefItemHomeFragment = "home_fragment"
+    const val sharedPrefItemPassword = "password"
+    const val sharedPrefItemQueuedButton = "queued_button"
+    const val sharedPrefItemUsername = "username"
+    const val sharedPrefNameLogin = "login"
+    const val sharedPrefNameSettings = "settings"
+    const val sharedPrefNameWidgetAssociations = "widget_associations"
+
+    const val intentExtraWidgetID = "WidgetID"
 }                                  

@@ -51,12 +51,12 @@ class ButtonPropertiesDialog(context: Context, private var listener: OnRemoteBut
     init{
         parentDialog = this
         setView(layoutInflater.inflate(R.layout.create_button_dialog_layout, window?.decorView as ViewGroup, false))
-        setButton(DialogInterface.BUTTON_NEUTRAL,context.getString(R.string.dialog_btn_prop_button_recapture)) { dialog, _ -> dialog!!.dismiss() }
-        setButton(DialogInterface.BUTTON_NEGATIVE,context.getString(R.string.cancel)) { dialog, _ -> dialog!!.dismiss() }
-        setButton(DialogInterface.BUTTON_POSITIVE,context.getString(R.string.add)){ _, _ -> }
+        setButton(DialogInterface.BUTTON_NEUTRAL, context.getString(R.string.dialog_btn_prop_button_recapture)) { dialog, _ -> dialog!!.dismiss() }
+        setButton(DialogInterface.BUTTON_NEGATIVE, context.getString(R.string.cancel)) { dialog, _ -> dialog!!.dismiss() }
+        setButton(DialogInterface.BUTTON_POSITIVE, context.getString(R.string.add)){ _, _ -> }
         show()
         setCanceledOnTouchOutside(false)
-        setTitle(context.getString(R.string.dialog_title_ir_capture))
+        setTitle(R.string.dialog_title_ir_capture)
         buttonPositive=getButton(DialogInterface.BUTTON_POSITIVE)
         buttonNegative=getButton(DialogInterface.BUTTON_NEGATIVE)
         buttonNeutral = getButton(DialogInterface.BUTTON_NEUTRAL)

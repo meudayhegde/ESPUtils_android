@@ -2,6 +2,7 @@ package com.irware.remote.holders
 
 import com.irware.remote.ESPUtilsApp
 import com.irware.remote.R
+import com.irware.remote.Strings
 import com.irware.remote.listeners.OnGPIORefreshListener
 import org.json.JSONObject
 
@@ -16,43 +17,43 @@ class GPIOObject(var jsonObj: JSONObject) {
             return DeviceProperties()
         }
 
-    var title: String = jsonObj.optString(ESPUtilsApp.getString(R.string.gpio_obj_title), "")
+    var title: String = jsonObj.optString(Strings.gpioObjTitle, "")
         get() {
-            return jsonObj.optString(ESPUtilsApp.getString(R.string.gpio_obj_title), "")
+            return jsonObj.optString(Strings.gpioObjTitle, "")
         }
         set(value){
             field = value
-            jsonObj.put(ESPUtilsApp.getString(R.string.gpio_obj_title), value)
+            jsonObj.put(Strings.gpioObjTitle, value)
             parent?.update()
         }
 
-    var subTitle: String = jsonObj.optString(ESPUtilsApp.getString(R.string.gpio_obj_subtitle), "")
+    var subTitle: String = jsonObj.optString(Strings.gpioObjSubtitle, "")
         get(){
-            return jsonObj.optString(ESPUtilsApp.getString(R.string.gpio_obj_subtitle), "")
+            return jsonObj.optString(Strings.gpioObjSubtitle, "")
         }
         set(value){
             field = value
-            jsonObj.put(ESPUtilsApp.getString(R.string.gpio_obj_subtitle), value)
+            jsonObj.put(Strings.gpioObjSubtitle, value)
             parent?.update()
         }
 
-    var macAddr: String = jsonObj.optString(ESPUtilsApp.getString(R.string.gpio_obj_mac_address), "")
+    var macAddr: String = jsonObj.optString(Strings.gpioObjMACAddress, "")
         get() {
-            return jsonObj.optString(ESPUtilsApp.getString(R.string.gpio_obj_mac_address), "")
+            return jsonObj.optString(Strings.gpioObjMACAddress, "")
         }
         set(value){
             field = value
-            jsonObj.put(ESPUtilsApp.getString(R.string.gpio_obj_mac_address), value)
+            jsonObj.put(Strings.gpioObjMACAddress, value)
             parent?.update()
         }
 
-    var gpioNumber: Int = jsonObj.optInt(ESPUtilsApp.getString(R.string.gpio_obj_pin_number), 0)
+    var gpioNumber: Int = jsonObj.optInt(Strings.gpioObjPinNumber, 0)
         get() {
-            return jsonObj.optInt(ESPUtilsApp.getString(R.string.gpio_obj_pin_number), 0)
+            return jsonObj.optInt(Strings.gpioObjPinNumber, 0)
         }
         set(value){
             field = value
-            jsonObj.put(ESPUtilsApp.getString(R.string.gpio_obj_pin_number), value)
+            jsonObj.put(Strings.gpioObjPinNumber, value)
             parent?.update()
         }
 

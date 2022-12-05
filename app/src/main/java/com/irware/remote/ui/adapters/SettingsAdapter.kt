@@ -20,7 +20,7 @@ class SettingsAdapter(private val list: ArrayList<SettingsItem>) : RecyclerView.
     override fun onCreateViewHolder(parent: ViewGroup,
                                     viewType: Int): SettingsListViewHolder {
         val cardView = LayoutInflater.from(parent.context)
-            .inflate(R.layout.settings_list_item, parent, false) as CardView
+            .inflate(R.layout.common_list_item, parent, false) as CardView
 
         return SettingsListViewHolder(cardView)
     }

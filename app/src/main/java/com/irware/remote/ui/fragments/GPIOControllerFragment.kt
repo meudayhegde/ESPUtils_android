@@ -43,7 +43,7 @@ class GPIOControllerFragment : androidx.fragment.app.Fragment()  {
             rootView = inflater.inflate(R.layout.fragment_gpio_controller, container, false) as RelativeLayout
             viewManager = LinearLayoutManager(context)
             viewAdapter = GPIOListAdapter(ESPUtilsApp.gpioObjectList, this)
-            recyclerView = rootView!!.findViewById<RecyclerView>(R.id.manage_remotes_recycler_view).apply {
+            recyclerView = rootView!!.findViewById<RecyclerView>(R.id.refresh_layout_recycler_view).apply {
                 setHasFixedSize(true)
                 layoutManager = viewManager
                 adapter = viewAdapter

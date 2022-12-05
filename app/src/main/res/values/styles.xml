@@ -27,8 +27,7 @@
         <item name="colorAccent">@color/blue_light</item>
         <item name="colorControlNormal">@color/white</item>
         <item name="android:navigationBarColor" >@color/blue_dark</item>
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
+        <item name="android:windowBackground">@drawable/layout_border_round_corner</item>
     </style>
 
     <style name="AppTheme.NoActionBar" parent="AppTheme">

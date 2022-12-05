@@ -70,7 +70,7 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
             manageMenu = rootView!!.findViewById(R.id.fam_manage_gpio)
             viewManager = LinearLayoutManager(context)
             viewAdapter = DeviceListAdapter(ESPUtilsApp.devicePropList, this)
-            recyclerView = rootView!!.findViewById<RecyclerView>(R.id.manage_remotes_recycler_view).apply {
+            recyclerView = rootView!!.findViewById<RecyclerView>(R.id.refresh_layout_recycler_view).apply {
                 setHasFixedSize(true)
                 layoutManager = viewManager
                 adapter = viewAdapter
@@ -100,7 +100,7 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
                     .setIcon(R.drawable.ic_refresh)
                     .setNegativeButton(R.string.cancel){ _, _ -> }
                     .setTitle(R.string.add_new_device)
-                    .setView(R.layout.recycler_layout)
+                    .setView(R.layout.scanner_layout)
                     .create()
 
                 deviceDialog.setOnShowListener {
@@ -209,9 +209,9 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
                 if(prop.macAddress == macAddress){ devProp = prop; devExist = true; break }
             }
 
-            val pref = context.getSharedPreferences(getString(R.string.shared_pref_name_login), 0)
-            userName.setText(devProp?.userName?: pref?.getString(getString(R.string.shared_pref_item_username), ""))
-            password.setText(devProp?.password?: pref?.getString(getString(R.string.shared_pref_item_password), ""))
+            val pref = context.getSharedPreferences(Strings.sharedPrefNameLogin, 0)
+            userName.setText(devProp?.userName?: pref?.getString(Strings.sharedPrefItemUsername, ""))
+            password.setText(devProp?.password?: pref?.getString(Strings.sharedPrefItemPassword, ""))
 
 
             devName.setText(devProp?.nickName?: macAddress.replace(":", "_"))
@@ -232,7 +232,7 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
                         if (!devExist) {
                             val devConfigFile = ESPUtilsApp.getPrivateFile(
                                 Strings.nameDirDeviceConfig,
-                                devName.text.toString().replace(" ", "_") + getString(R.string.extension_json)
+                                devName.text.toString().replace(" ", "_") + Strings.extensionJson
                             )
                             devConfigFile.createNewFile()
                             devProp = DeviceProperties(devConfigFile)

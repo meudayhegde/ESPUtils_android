@@ -17,10 +17,10 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.irware.remote.ButtonWidgetProvider
+import com.irware.remote.RemoteButtonWidget
 import com.irware.remote.R
 import com.irware.remote.Strings
-import com.irware.remote.WidgetConfiguratorActivity
+import com.irware.remote.RemoteBtnWidgetConfActivity
 import com.irware.remote.holders.ButtonProperties
 import com.irware.remote.net.SocketClient
 import com.irware.remote.ui.buttons.RemoteButton
@@ -100,15 +100,14 @@ class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>, pri
         }
     }
 
-    @SuppressLint("ApplySharedPref")
     private fun associateWidget(context: Context, buttonProp:ButtonProperties){
-        val pref = context.getSharedPreferences(context.getString(R.string.shared_pref_name_widget_associations), Context.MODE_PRIVATE)
+        val pref = context.getSharedPreferences(Strings.sharedPrefNameWidgetAssociations, Context.MODE_PRIVATE)
         val editor = pref.edit()
-        editor.putString(WidgetConfiguratorActivity.activity?.widgetId.toString(), buttonProp.parent?.remoteConfigFile?.name + "," + buttonProp.buttonId)
-        editor.commit()
+        editor.putString(RemoteBtnWidgetConfActivity.activity?.widgetId.toString(), buttonProp.parent?.remoteConfigFile?.name + "," + buttonProp.buttonId)
+        editor.apply()
         updateWidgets()
         Handler(Looper.getMainLooper()).postDelayed({
-            WidgetConfiguratorActivity.activity?.finish()
+            RemoteBtnWidgetConfActivity.activity?.finish()
         },20)
     }
 
@@ -194,16 +193,16 @@ class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>, pri
     }
 
     private fun updateWidgets(){
-        val intent = Intent(remoteDialog.context, ButtonWidgetProvider::class.java)
+        val intent = Intent(remoteDialog.context, RemoteButtonWidget::class.java)
         intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
-        val  ids = AppWidgetManager.getInstance(remoteDialog.context).getAppWidgetIds(ComponentName(remoteDialog.context,ButtonWidgetProvider::class.java))
+        val  ids = AppWidgetManager.getInstance(remoteDialog.context).getAppWidgetIds(ComponentName(remoteDialog.context,RemoteButtonWidget::class.java))
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
         remoteDialog.context.sendBroadcast(intent)
 
         val resultValue = Intent().apply {
-            putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, WidgetConfiguratorActivity.activity!!.widgetId)
+            putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, RemoteBtnWidgetConfActivity.activity!!.widgetId)
         }
-        WidgetConfiguratorActivity.activity!!.setResult(Activity.RESULT_OK, resultValue)
-        WidgetConfiguratorActivity.activity!!.finish()
+        RemoteBtnWidgetConfActivity.activity!!.setResult(Activity.RESULT_OK, resultValue)
+        RemoteBtnWidgetConfActivity.activity!!.finish()
     }
 }

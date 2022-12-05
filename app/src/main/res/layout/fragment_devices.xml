@@ -6,7 +6,7 @@
         android:layout_height="match_parent"
         tools:context=".ui.fragments.GPIOControllerFragment">
 
-    <include layout="@layout/controllers_refresh_layout"
+    <include layout="@layout/recycler_refresh_layout"
             android:id="@+id/refresh_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>

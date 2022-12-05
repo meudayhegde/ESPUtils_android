@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/layout_border_gpio_button">
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/switch_name"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentTop="true"
+            android:id="@+id/widget_gpio_title"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:layout_marginStart="@dimen/margin_medium"
+            android:layout_marginEnd="@dimen/margin_medium"/>
+
+    <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/widget_gpio_title"
+            android:layout_above="@id/widget_gpio_device_name"
+            android:padding="@dimen/margin_medium"
+            android:layout_centerInParent="true"
+            android:contentDescription="@string/img_desc_gpio_widget_lamp"
+            android:src="@drawable/icon_lamp"/>
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/device_name"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
+            android:id="@+id/widget_gpio_device_name"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:paddingBottom="@dimen/margin_low"
+            android:layout_marginStart="@dimen/margin_medium"
+            android:layout_marginEnd="@dimen/margin_medium"/>
+
+</RelativeLayout>

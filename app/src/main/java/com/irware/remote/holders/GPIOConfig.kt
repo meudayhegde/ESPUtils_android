@@ -3,6 +3,7 @@ package com.irware.remote.holders
 import android.text.TextUtils
 import com.irware.remote.ESPUtilsApp
 import com.irware.remote.R
+import com.irware.remote.Strings
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -18,14 +19,14 @@ class GPIOConfig(private val gpioConfigFile: File)  {
         get() = getGPIO()
         set(value){
             field = value
-            jsonObj.put(ESPUtilsApp.getString(R.string.gpio_config_obj_array), value)
+            jsonObj.put(Strings.gpioConfigObjArray, value)
             update()
         }
 
-    var description: String = jsonObj.optString(ESPUtilsApp.getString(R.string.gpio_config_description))
+    var description: String = jsonObj.optString(Strings.gpioConfigDescription)
         set(value){
             field = value
-            jsonObj.put(ESPUtilsApp.getString(R.string.gpio_config_description), value)
+            jsonObj.put(Strings.gpioConfigDescription, value)
             update()
         }
 
@@ -57,12 +58,12 @@ class GPIOConfig(private val gpioConfigFile: File)  {
         return true
     }
 
-    private fun getGPIO():JSONArray{
+    private fun getGPIO(): JSONArray{
         return try{
             update()
-            jsonObj.getJSONArray(ESPUtilsApp.getString(R.string.gpio_config_obj_array))
-        }catch(ex:JSONException){
-            jsonObj.put(ESPUtilsApp.getString(R.string.gpio_config_obj_array), JSONArray())
+            jsonObj.getJSONArray(Strings.gpioConfigObjArray)
+        }catch(ex: JSONException){
+            jsonObj.put(Strings.gpioConfigObjArray, JSONArray())
             getGPIO()
         }
     }
@@ -81,8 +82,8 @@ class GPIOConfig(private val gpioConfigFile: File)  {
     private fun JSONArray.index(obj: JSONObject): Int{
         for(position in 0 until this.length()){
             val curObj = getJSONObject(position)
-            if(curObj.optString(ESPUtilsApp.getString(R.string.gpio_obj_mac_address), "") == obj.optString(ESPUtilsApp.getString(R.string.gpio_obj_mac_address), "") &&
-                curObj.optInt(ESPUtilsApp.getString(R.string.gpio_obj_pin_number)) == obj.optInt(ESPUtilsApp.getString(R.string.gpio_obj_pin_number)))
+            if(curObj.optString(Strings.gpioObjMACAddress, "") == obj.optString(Strings.gpioObjMACAddress, "") &&
+                curObj.optInt(Strings.gpioObjPinNumber) == obj.optInt(Strings.gpioObjPinNumber))
                 return position
         }
         return -1

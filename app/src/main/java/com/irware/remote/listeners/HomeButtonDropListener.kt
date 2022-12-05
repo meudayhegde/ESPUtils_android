@@ -9,10 +9,7 @@ import android.view.DragEvent
 import android.view.View
 import android.widget.Toast
 import androidx.core.graphics.drawable.DrawableCompat
-import com.irware.remote.ButtonWidgetProvider
-import com.irware.remote.ESPUtilsApp
-import com.irware.remote.MainActivity
-import com.irware.remote.R
+import com.irware.remote.*
 import com.irware.remote.holders.ButtonProperties
 import com.irware.remote.ui.buttons.RemoteButton
 import com.irware.remote.ui.dialogs.RemoteDialog
@@ -46,14 +43,14 @@ class HomeButtonDropListener(private val remoteDialog: RemoteDialog): View.OnDra
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val appWidgetManager: AppWidgetManager = remoteDialog.context.getSystemService(
                 AppWidgetManager::class.java)
-            val myProvider = ComponentName(remoteDialog.context, ButtonWidgetProvider::class.java)
+            val myProvider = ComponentName(remoteDialog.context, RemoteButtonWidget::class.java)
 
-            val pref = remoteDialog.context.getSharedPreferences(ESPUtilsApp.getString(R.string.shared_pref_name_widget_associations), Context.MODE_PRIVATE)
+            val pref = remoteDialog.context.getSharedPreferences(Strings.sharedPrefNameWidgetAssociations, Context.MODE_PRIVATE)
             val editor = pref.edit()
-            editor.putString(ESPUtilsApp.getString(R.string.shared_pref_item_queued_button), properties.parent?.remoteConfigFile?.name + "," + properties.buttonId)
+            editor.putString(Strings.sharedPrefItemQueuedButton, properties.parent?.remoteConfigFile?.name + "," + properties.buttonId)
             editor.apply()
 
-            Toast.makeText(remoteDialog.context, pref.getString(ESPUtilsApp.getString(R.string.shared_pref_item_queued_button), ""), Toast.LENGTH_LONG).show()
+            Toast.makeText(remoteDialog.context, pref.getString(Strings.sharedPrefItemQueuedButton, ""), Toast.LENGTH_LONG).show()
 
             if(appWidgetManager.isRequestPinAppWidgetSupported){
                 appWidgetManager.requestPinAppWidget(myProvider, null, null)
@@ -62,7 +59,7 @@ class HomeButtonDropListener(private val remoteDialog: RemoteDialog): View.OnDra
                 Toast.makeText(remoteDialog.context, R.string.message_launcher_no_support, Toast.LENGTH_LONG).show()
             }
         } else {
-            Toast.makeText(remoteDialog.context,R.string.message_android_version_no_support, Toast.LENGTH_LONG).show()
+            Toast.makeText(remoteDialog.context, R.string.message_android_version_no_support, Toast.LENGTH_LONG).show()
         }
     }
 }

@@ -121,7 +121,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
             val settingsDialog = AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
                 .setPositiveButton(context.resources.getString(R.string.done)) { p0, _ -> p0.dismiss() }
                 .setTitle(context.getString(R.string.settings_dialog_subtitle, prop.nickName))
-                .setView(R.layout.controllers_refresh_layout)
+                .setView(R.layout.recycler_refresh_layout)
                 .setIcon(R.drawable.ic_settings)
                 .create()
             settingsDialog.setOnShowListener {
@@ -166,7 +166,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                         }
                     }
                 }
-                settingsDialog.findViewById<RecyclerView>(R.id.manage_remotes_recycler_view)?.apply {
+                settingsDialog.findViewById<RecyclerView>(R.id.refresh_layout_recycler_view)?.apply {
                     setHasFixedSize(true)
                     layoutManager = viewManager
                     adapter = viewAdapter
@@ -236,7 +236,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
     private fun extractUpdate(file: File, updateIntermediateListener: OnOTAIntermediateListener?): File?{
         updateIntermediateListener?.onStatusUpdate(context.getString(R.string.message_extracting_update_file), true)
         if(file.exists() and file.isFile){
-            if(!file.absolutePath.endsWith(context.getString(R.string.extension_zip))){
+            if(!file.absolutePath.endsWith(Strings.extensionZip)){
                 updateIntermediateListener?.onError(context.getString(R.string.message_err_update_file_is_not_valid))
                 return null
             }
@@ -359,7 +359,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
 
                                     val espOta = EspOta(prop)
                                     val system =
-                                        updateDir.listFiles { _, name -> name.endsWith(context.getString(R.string.extension_bin)) }
+                                        updateDir.listFiles { _, name -> name.endsWith(Strings.extensionBin) }
                                             ?.find {
                                                 it.name.lowercase(Locale.ROOT).startsWith(context.getString(R.string.update_file_system))
                                             }
@@ -369,7 +369,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                                     }
 
                                     val spiffs =
-                                        updateDir.listFiles { _, name -> name.endsWith(context.getString(R.string.extension_bin)) }
+                                        updateDir.listFiles { _, name -> name.endsWith(Strings.extensionBin) }
                                             ?.find {
                                                 it.name.lowercase(Locale.ROOT).startsWith(context.getString(R.string.update_file_spiffs))
                                             }
@@ -408,7 +408,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
 
     private fun verifyUpdate(updateDir: File, updateIntermediateListener: OnOTAIntermediateListener?): Boolean{
         updateIntermediateListener?.onStatusUpdate("Verifying update file.", true)
-        val hashFile = File(updateDir.absolutePath, context.getString(R.string.extension_hash))
+        val hashFile = File(updateDir.absolutePath, Strings.extensionHash)
         if(!hashFile.exists()){
             updateIntermediateListener?.onError("Hash does not exist, Update aborted.")
             return false
@@ -677,15 +677,15 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                                             Handler(Looper.getMainLooper()).post {
                                                 AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
                                                     .setTitle(
-                                                        if (resultObj.getString("response")
+                                                        if (resultObj.getString(Strings.espResponse)
                                                                 .contains(
-                                                                    "success",
+                                                                    Strings.espResponseSuccess,
                                                                     true
                                                                 )
                                                         ) "Success" else "Failed"
                                                     )
-                                                    .setMessage(resultObj.getString("response"))
-                                                    .setPositiveButton("Done") { dg, _ -> dg.dismiss() }
+                                                    .setMessage(resultObj.getString(Strings.espResponse))
+                                                    .setPositiveButton(R.string.done) { dg, _ -> dg.dismiss() }
                                                     .show()
                                             }
                                             connector.close()
@@ -694,7 +694,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                                                 AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
                                                     .setTitle("Failed")
                                                     .setMessage("Failed to apply wireless settings\n$ex")
-                                                    .setPositiveButton("Close") { dg, _ -> dg.dismiss() }
+                                                    .setPositiveButton(R.string.close) { dg, _ -> dg.dismiss() }
                                                     .show()
                                             }
                                         }

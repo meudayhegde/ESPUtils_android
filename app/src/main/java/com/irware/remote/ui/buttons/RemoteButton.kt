@@ -151,11 +151,11 @@ class RemoteButton : LinearLayout {
 
         fun onConfigChanged(){
             val x = min(MainActivity.layoutParams.width, MainActivity.layoutParams.height)
-            BTN_WIDTH = ((x-x/(1.3*MainActivity.NUM_COLUMNS)) / MainActivity.NUM_COLUMNS).toInt()
+            BTN_WIDTH = ((x-x/(1.3 * MainActivity.NUM_COLUMNS)) / MainActivity.NUM_COLUMNS).toInt()
             MIN_HEIGHT = BTN_WIDTH / 2
         }
 
-        /*
+        /**
          * Set Normal and Pressed gradient color from a single color int
          */
         fun setButtonDrawableColor(drawableNormal:GradientDrawable, drawablePressed:GradientDrawable, colorInt:Int){

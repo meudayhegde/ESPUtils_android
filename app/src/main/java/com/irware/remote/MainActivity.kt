@@ -94,7 +94,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         RemoteButton.onConfigChanged()
 
-        val pref= getSharedPreferences(getString(R.string.shared_pref_name_login), 0)
+        val pref= getSharedPreferences(Strings.sharedPrefNameLogin, 0)
         val editor=pref.edit()
 
         splash?.findViewById<TextView>(R.id.skip_login)?.setOnClickListener {
@@ -103,10 +103,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
 
         val passEdit:EditText? = splash?.findViewById(R.id.editTextPassword)
-        passEdit?.setText(pref.getString(getString(R.string.shared_pref_item_password),""))
+        passEdit?.setText(pref.getString(Strings.sharedPrefItemPassword,""))
 
         val userEdit: EditText? = splash?.findViewById(R.id.edit_text_uname)
-        userEdit?.setText(pref.getString(getString(R.string.shared_pref_item_username),""))
+        userEdit?.setText(pref.getString(Strings.sharedPrefItemUsername,""))
 
         val submit: Button? = splash?.findViewById(R.id.cirLoginButton)
         val validatedListener = object: OnValidationListener{
@@ -126,8 +126,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             PASSWORD = passEdit?.text.toString()
 
             authenticated=true
-            editor.putString(getString(R.string.shared_pref_item_username), USERNAME)
-            editor.putString(getString(R.string.shared_pref_item_password), PASSWORD)
+            editor.putString(Strings.sharedPrefItemUsername, USERNAME)
+            editor.putString(Strings.sharedPrefItemPassword, PASSWORD)
             editor.apply()
 
             validatedListener.onValidated(true)
@@ -148,8 +148,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
         })
 
-        if(pref.getString(getString(R.string.shared_pref_item_username), "") != "" &&
-            pref.getString(getString(R.string.shared_pref_item_password), "") != "")
+        if(pref.getString(Strings.sharedPrefItemUsername, "") != "" &&
+            pref.getString(Strings.sharedPrefItemPassword, "") != "")
             authenticated = true
 
         Handler(Looper.getMainLooper()).postDelayed({
@@ -241,8 +241,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         supportFragmentManager.beginTransaction().commitAllowingStateLoss()
 
         val homeFragment = getSharedPreferences(
-            getString(R.string.shared_pref_name_settings), Context.MODE_PRIVATE).getInt(
-            getString(R.string.shared_pref_item_home_fragment), 0)
+            Strings.sharedPrefNameSettings, Context.MODE_PRIVATE).getInt(
+            Strings.sharedPrefItemHomeFragment, 0)
         replaceFragment(when(homeFragment){1 -> irFragment 2-> gpioFragment 3 -> aboutFragment else-> devicesFragment})
         nav_view.setCheckedItem(when(homeFragment){1 -> R.id.home_drawer 2-> R.id.gpio_drawer 3 -> R.id.info_drawer else-> R.id.device_drawer_item})
 
@@ -324,7 +324,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             intent.type = getString(R.string.intent_type_all)
             val originalApk = File(filePath)
 
-            val tempFile = ESPUtilsApp.getExternalCache(getString(app.labelRes) + getString(R.string.extension_apk))
+            val tempFile = ESPUtilsApp.getExternalCache(getString(app.labelRes) + Strings.extensionApk)
             if (tempFile.exists()) {
                 tempFile.delete()
             }
@@ -341,7 +341,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             `in`.close()
             out.close()
 
-            val uri: Uri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".provider", tempFile)
+            val uri: Uri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + Strings.extensionProvider, tempFile)
             intent.putExtra(Intent.EXTRA_STREAM, uri)
 
             startActivity(Intent.createChooser(intent, getString(R.string.intent_title_share_app)))

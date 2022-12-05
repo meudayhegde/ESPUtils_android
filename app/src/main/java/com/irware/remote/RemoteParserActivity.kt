@@ -37,8 +37,8 @@ class RemoteParserActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         when(getSharedPreferences(
-            getString(R.string.shared_pref_name_settings), Context.MODE_PRIVATE).getInt(
-            getString(R.string.shared_pref_item_application_theme), if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
+            Strings.sharedPrefNameSettings, Context.MODE_PRIVATE).getInt(
+            Strings.sharedPrefItemApplicationTheme, if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
             { 0 } else { 2 })
         ){
             1-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
@@ -69,7 +69,7 @@ class RemoteParserActivity : AppCompatActivity() {
         if(ESPUtilsApp.devicePropList.isEmpty()){
             val deviceConfigDir = ESPUtilsApp.getPrivateFile(Strings.nameDirDeviceConfig)
             deviceConfigDir.exists() or deviceConfigDir.mkdirs()
-            for(file: File in deviceConfigDir.listFiles { _, name -> name?.endsWith(getString(R.string.extension_json))?: false } ?: emptyArray()){
+            for(file: File in deviceConfigDir.listFiles { _, name -> name?.endsWith(Strings.extensionJson)?: false } ?: emptyArray()){
                 ESPUtilsApp.devicePropList.add(DeviceProperties(file))
             }
         }
@@ -134,11 +134,11 @@ class RemoteParserActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
             val selectedDevice = ESPUtilsApp.devicePropList[spinner.selectedItemPosition - 1]
-            jsonObject.put(getString(R.string.remote_prop_dev_prop_file_name), selectedDevice.deviceConfigFile.name)
+            jsonObject.put(Strings.remotePropDevPropFileName, selectedDevice.deviceConfigFile.name)
 
             msg.visibility = View.GONE; progress.visibility = View.VISIBLE
             try{
-                val fileName= jsonObject.getString(getString(R.string.remote_prop_filename))
+                val fileName= jsonObject.getString(Strings.remotePropFileName)
                 var outFile = ESPUtilsApp.getPrivateFile(Strings.nameDirRemoteConfig, fileName)
                 val parent = outFile.parentFile!!
                 if(!parent.exists()) parent.mkdirs()
@@ -151,12 +151,12 @@ class RemoteParserActivity : AppCompatActivity() {
                         .setNeutralButton(R.string.btn_text_keep_both){ dialog, _ ->
                             while(outFile.exists()) {
                                 outFile = File(outFile.parent,
-                                    fileName.removeSuffix(getString(R.string.extension_json)) +
-                                            "_" + count.toString() + getString(R.string.extension_json))
+                                    fileName.removeSuffix(Strings.extensionJson) +
+                                            "_" + count.toString() + Strings.extensionJson)
                                 count++
                             }
                             outFile.createNewFile()
-                            jsonObject.put(getString(R.string.remote_prop_filename), outFile.name)
+                            jsonObject.put(Strings.remotePropName, outFile.name)
                             writeFile(outFile, jsonObject)
                             configFile = outFile
                             onSuccess(progress, imV, msg, import)
@@ -261,12 +261,12 @@ class RemoteParserActivity : AppCompatActivity() {
         insr.close()
 
         val jsonObj = JSONObject(out)
-        jsonObj.getString(getString(R.string.remote_prop_name))
-        jsonObj.getString(getString(R.string.remote_prop_vendor))
-        jsonObj.getString(getString(R.string.remote_prop_filename))
-        jsonObj.getString(getString(R.string.remote_prop_id))
+        jsonObj.getString(Strings.remotePropName)
+        jsonObj.getString(Strings.remotePropVendor)
+        jsonObj.getString(Strings.remotePropFileName)
+        jsonObj.getString(Strings.remotePropID)
 
-        val buttons = jsonObj.getJSONArray(getString(R.string.remote_prop_buttons_array))
+        val buttons = jsonObj.getJSONArray(Strings.remotePropButtonsArray)
         for(i in 0 until buttons.length()){
             val button = buttons.getJSONObject(i)
             button.getString(Strings.btnPropProtocol)

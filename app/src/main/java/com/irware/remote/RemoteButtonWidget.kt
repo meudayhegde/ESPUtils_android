@@ -18,11 +18,11 @@ import org.json.JSONObject
 import java.io.FileNotFoundException
 
 
-class ButtonWidgetProvider: AppWidgetProvider() {
+class RemoteButtonWidget: AppWidgetProvider() {
 
     override fun onUpdate(context: Context?, appWidgetManager: AppWidgetManager?, appWidgetIds: IntArray?) {
         context?.let { ESPUtilsApp.updateStaticContext(it) }
-        val thisWidget = ComponentName(context!!, ButtonWidgetProvider::class.java)
+        val thisWidget = ComponentName(context!!, RemoteButtonWidget::class.java)
         val allWidgetIds = appWidgetManager!!.getAppWidgetIds(thisWidget)
 
         val arr = context.resources.obtainTypedArray(R.array.icons)
@@ -33,7 +33,7 @@ class ButtonWidgetProvider: AppWidgetProvider() {
 
         for (widgetId in allWidgetIds) {
 
-            val remoteViews = RemoteViews(context.packageName, R.layout.widget_layout)
+            val remoteViews = RemoteViews(context.packageName, R.layout.widget_layout_remote_button)
             val objList = getJSONObject(context, widgetId, remoteViews)
             if(objList.isEmpty()) return
             val buttonProp = objList[1] as ButtonProperties
@@ -44,7 +44,7 @@ class ButtonWidgetProvider: AppWidgetProvider() {
             val intent = Intent(context, javaClass)
             intent.action = BUTTON_CLICK
             intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds)
-            intent.putExtra("WidgetID", widgetId)
+            intent.putExtra(Strings.intentExtraWidgetID, widgetId)
             val pendingIntent = PendingIntent.getBroadcast(context, widgetId, intent,
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE
                     else 0
@@ -60,10 +60,10 @@ class ButtonWidgetProvider: AppWidgetProvider() {
         context?.let { ESPUtilsApp.updateStaticContext(it) }
         if(BUTTON_CLICK == intent?.action){
             val manager = AppWidgetManager.getInstance(context)
-            val remoteViews = RemoteViews(context?.packageName,R.layout.widget_layout)
-            val watchWidget = ComponentName(context!!,ButtonWidgetProvider::class.java)
+            val remoteViews = RemoteViews(context?.packageName,R.layout.widget_layout_remote_button)
+            val watchWidget = ComponentName(context!!,RemoteButtonWidget::class.java)
 
-            val widgetID = intent.getIntExtra("WidgetID", 0)
+            val widgetID = intent.getIntExtra(Strings.intentExtraWidgetID, 0)
             val objList = getJSONObject(context, widgetID, remoteViews)
             if(objList.isEmpty()) return
             val remoteProp = objList[0] as RemoteProperties
@@ -99,7 +99,7 @@ class ButtonWidgetProvider: AppWidgetProvider() {
         super.onDeleted(context, appWidgetIds)
         context?.let { ESPUtilsApp.updateStaticContext(it) }
         appWidgetIds?.forEach {
-            val pref = context?.getSharedPreferences(context.getString(R.string.shared_pref_name_widget_associations), Context.MODE_PRIVATE)
+            val pref = context?.getSharedPreferences(Strings.sharedPrefNameWidgetAssociations, Context.MODE_PRIVATE)
             val editor = pref?.edit()
             editor?.remove(it.toString())
             editor?.apply()
@@ -107,15 +107,15 @@ class ButtonWidgetProvider: AppWidgetProvider() {
     }
 
     private fun getJSONObject(context: Context, widgetID: Int, views: RemoteViews): ArrayList<Any>{
-        val pref = context.getSharedPreferences(context.getString(R.string.shared_pref_name_widget_associations), Context.MODE_PRIVATE)
+        val pref = context.getSharedPreferences(Strings.sharedPrefNameWidgetAssociations, Context.MODE_PRIVATE)
         val editor = pref.edit()
         var buttonInfo = pref.getString(widgetID.toString(),"")
         if(buttonInfo.isNullOrEmpty()){
-            val queuedButton = pref.getString(context.getString(R.string.shared_pref_item_queued_button),"")
+            val queuedButton = pref.getString(Strings.sharedPrefItemQueuedButton,"")
             Toast.makeText(context, queuedButton, Toast.LENGTH_LONG).show()
             if(!queuedButton.isNullOrEmpty()){
                 editor.putString(widgetID.toString(), queuedButton)
-                editor.putString(context.getString(R.string.shared_pref_item_queued_button), "")
+                editor.putString(Strings.sharedPrefItemQueuedButton, "")
                 editor.apply()
                 buttonInfo = pref.getString(widgetID.toString(),"")
             }else{
@@ -146,7 +146,7 @@ class ButtonWidgetProvider: AppWidgetProvider() {
     }
 
     private fun setConfigureOnClick(context:Context,widgetID: Int,views: RemoteViews){
-        val intent = Intent(context, WidgetConfiguratorActivity::class.java)
+        val intent = Intent(context, RemoteBtnWidgetConfActivity::class.java)
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetID)
         val pendingIntent = PendingIntent.getActivity(context, widgetID, intent,
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE

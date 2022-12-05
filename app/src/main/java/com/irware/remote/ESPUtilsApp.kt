@@ -22,8 +22,8 @@ class ESPUtilsApp: Application() {
         contextRef = WeakReference(this)
         arpTable = ARPTable(-1)
         when(getSharedPreferences(
-            getString(R.string.shared_pref_name_settings), Context.MODE_PRIVATE).getInt(
-            getString(R.string.shared_pref_item_application_theme), if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
+            Strings.sharedPrefNameSettings, Context.MODE_PRIVATE).getInt(
+            Strings.sharedPrefItemApplicationTheme, if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
             { 0 }else{ 2 })
         ){
             1-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
@@ -43,7 +43,7 @@ class ESPUtilsApp: Application() {
         val deviceConfigDir = getPrivateFile(Strings.nameDirDeviceConfig)
         deviceConfigDir.exists() or deviceConfigDir.mkdirs()
         for(file: File in deviceConfigDir.listFiles { _, name ->
-            name?.endsWith(getString(R.string.extension_json))?: false }!!) {
+            name?.endsWith(Strings.extensionJson)?: false }!!) {
             devicePropList.add(DeviceProperties(file))
         }
 
@@ -57,7 +57,7 @@ class ESPUtilsApp: Application() {
 
         ThreadHandler.runOnFreeThread {
             val files = getPrivateFile(Strings.nameDirRemoteConfig).listFiles { pathname ->
-                pathname!!.isFile and (pathname.name.endsWith(getString(R.string.extension_json), true)) and pathname.canWrite()
+                pathname!!.isFile and (pathname.name.endsWith(Strings.extensionJson, true)) and pathname.canWrite()
             }
             files?.forEach { file ->
                 remotePropList.add(RemoteProperties(file, null))

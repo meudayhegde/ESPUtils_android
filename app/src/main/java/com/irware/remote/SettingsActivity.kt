@@ -31,8 +31,8 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         when(getSharedPreferences(
-            getString(R.string.shared_pref_name_settings), Context.MODE_PRIVATE).getInt(
-            getString(R.string.shared_pref_item_application_theme), if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
+            Strings.sharedPrefNameSettings, Context.MODE_PRIVATE).getInt(
+            Strings.sharedPrefItemApplicationTheme, if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
             { 0 }else{ 2 })){
             1-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
             2-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
@@ -59,18 +59,18 @@ class SettingsActivity : AppCompatActivity() {
                 getString(R.string.title_application_theme),
                 getString(R.string.title_sub_application_theme),
                 selectionDialog(getString(R.string.title_application_theme),
-                    R.drawable.icon_theme, getString(R.string.shared_pref_item_application_theme),
+                    R.drawable.icon_theme, Strings.sharedPrefItemApplicationTheme,
                     resources.getStringArray(R.array.settings_theme_list).asList()) {
                 themeChanged = true
                 AppCompatDelegate.setDefaultNightMode(
-                    when (getSharedPreferences(getString(R.string.shared_pref_name_settings), MODE_PRIVATE).getInt(getString(R.string.shared_pref_item_application_theme), 0)) {
+                    when (getSharedPreferences(Strings.sharedPrefNameSettings, MODE_PRIVATE).getInt(Strings.sharedPrefItemApplicationTheme, 0)) {
                         1 -> { AppCompatDelegate.MODE_NIGHT_NO }
                         2 -> { AppCompatDelegate.MODE_NIGHT_YES }
                         else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
                     }
                 )
             }, R.drawable.icon_theme),
-            SettingsItem(getString(R.string.title_home_fragment),getString(R.string.title_sub_home_fragment), selectionDialog(getString(R.string.title_home_fragment), R.drawable.icon_home, getString(R.string.shared_pref_item_home_fragment), fragmentList, null), R.drawable.icon_home)
+            SettingsItem(getString(R.string.title_home_fragment),getString(R.string.title_sub_home_fragment), selectionDialog(getString(R.string.title_home_fragment), R.drawable.icon_home, Strings.sharedPrefItemHomeFragment, fragmentList, null), R.drawable.icon_home)
         ))
 
         recyclerView = findViewById<RecyclerView>(R.id.settings_list).apply {
@@ -90,7 +90,7 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun selectionDialog(title: String, icon: Int, prefName: String, optList: List<String>, action: Runnable?): AlertDialog{
-        val pref = getSharedPreferences(getString(R.string.shared_pref_name_settings), Context.MODE_PRIVATE)
+        val pref = getSharedPreferences(Strings.sharedPrefNameSettings, Context.MODE_PRIVATE)
         val editor = pref.edit()
 
         val content = RadioGroup(this)

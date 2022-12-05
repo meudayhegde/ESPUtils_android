@@ -63,7 +63,7 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
             rootView = inflater.inflate(R.layout.fragment_manage_remote, container, false) as RelativeLayout
             viewManager = LinearLayoutManager(context)
             viewAdapter = RemoteListAdapter(ESPUtilsApp.remotePropList,0)
-            recyclerView = rootView!!.findViewById<RecyclerView>(R.id.manage_remotes_recycler_view).apply {
+            recyclerView = rootView!!.findViewById<RecyclerView>(R.id.refresh_layout_recycler_view).apply {
                 setHasFixedSize(true)
                 layoutManager = viewManager
                 adapter = viewAdapter
@@ -91,7 +91,7 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
                 ThreadHandler.runOnFreeThread{
                     ESPUtilsApp.remotePropList.clear()
                     val files = ESPUtilsApp.getPrivateFile(Strings.nameDirRemoteConfig).listFiles { pathname ->
-                        pathname!!.isFile and (pathname.name.endsWith(getString(R.string.extension_json), true)) and pathname.canWrite()
+                        pathname!!.isFile and (pathname.name.endsWith(Strings.extensionJson, true)) and pathname.canWrite()
                     }
                     files!!.forEach {
                         ESPUtilsApp.remotePropList.add(RemoteProperties(it, null))
@@ -170,10 +170,10 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
                 var id = ("${vendor?.text.toString()} ${name?.text.toString()}").lowercase(Locale.getDefault())
                     .replace(" ", "_").replace("\n", "").replace("/","_")
 
-                var configFile = ESPUtilsApp.getPrivateFile(Strings.nameDirRemoteConfig, id + getString(R.string.extension_json))
+                var configFile = ESPUtilsApp.getPrivateFile(Strings.nameDirRemoteConfig, id + Strings.extensionJson)
                 var incr = 1
                 while(configFile.exists()) {
-                    configFile = ESPUtilsApp.getPrivateFile(Strings.nameDirRemoteConfig, id + "_" + incr + getString(R.string.extension_json))
+                    configFile = ESPUtilsApp.getPrivateFile(Strings.nameDirRemoteConfig, id + "_" + incr + Strings.extensionJson)
                     incr++
                 }
                 if(incr > 1) id += "_" + (incr - 1)

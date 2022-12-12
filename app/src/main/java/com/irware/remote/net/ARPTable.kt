@@ -1,5 +1,6 @@
 package com.irware.remote.net
 
+import android.content.Context
 import android.text.TextUtils
 import android.util.Log
 import com.irware.ThreadHandler
@@ -15,12 +16,15 @@ import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 import java.net.InetAddress
 
-class ARPTable(private val scanCount: Int = 1, private val arpTableFile: File = ESPUtilsApp.getPrivateFile(Strings.nameFileARPTable)) {
+class ARPTable private constructor(context: Context) {
+    private val sharedPref = context.getSharedPreferences(Strings.sharedPrefNameARPCache, Context.MODE_PRIVATE)
+    private val prefEditor = sharedPref.edit()
     private var jsonObj: JSONObject = getJSONObject()
 
     init{
+        instance = this
         update()
-        startScan()
+        startScan(-1)
     }
 
     fun getARPItemList() : ArrayList<ARPItem>{
@@ -112,28 +116,15 @@ class ARPTable(private val scanCount: Int = 1, private val arpTableFile: File = 
     }
 
     private fun getJSONObject(): JSONObject{
-        if(!arpTableFile.exists()) {
-            arpTableFile.createNewFile()
-        }
-        val isr = InputStreamReader(arpTableFile.inputStream())
-        val content = TextUtils.join("\n", isr.readLines())
-        isr.close()
-        return try{
-            JSONObject(content)
-        }catch(ex: JSONException){
-            JSONObject()
-        }
+        return JSONObject(sharedPref.getString(Strings.sharedPrefNameARPCache, "{}")?: "{}")
     }
 
     private fun update(){
-        val osr = OutputStreamWriter(arpTableFile.outputStream())
-        Log.d(javaClass.simpleName, jsonObj.toString(4))
-        osr.write(jsonObj.toString(4))
-        osr.flush()
-        osr.close()
+        prefEditor.putString(Strings.sharedPrefNameARPCache, jsonObj.toString())
+        prefEditor.apply()
     }
 
-    private fun startScan(){
+    private fun startScan(scanCount: Int){
         ThreadHandler.runOnFreeThread {
             var currentScanCount = 0
             while((scanCount == -1) or (currentScanCount < scanCount)){
@@ -182,6 +173,11 @@ class ARPTable(private val scanCount: Int = 1, private val arpTableFile: File = 
 
     companion object{
         const val MAX_RETRY = 3
+        private var instance: ARPTable? = null
+
+        fun getInstance(context: Context? = null): ARPTable{
+            return instance?: ARPTable(context?: throw Exception("${(ARPTable::class.java).simpleName} instance not available"))
+        }
     }
 
     private fun JSONArray.index(obj: String?):Int{

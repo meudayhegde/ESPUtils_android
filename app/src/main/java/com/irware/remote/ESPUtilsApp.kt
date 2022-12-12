@@ -20,7 +20,7 @@ class ESPUtilsApp: Application() {
     override fun onCreate() {
         super.onCreate()
         contextRef = WeakReference(this)
-        arpTable = ARPTable(-1)
+        arpTable = ARPTable.getInstance(this)
         when(getSharedPreferences(
             Strings.sharedPrefNameSettings, Context.MODE_PRIVATE).getInt(
             Strings.sharedPrefItemApplicationTheme, if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
@@ -68,7 +68,7 @@ class ESPUtilsApp: Application() {
     companion object{
         var arpTable: ARPTable? = null
             get() {
-                if(field == null) field = ARPTable()
+                if(field == null) field = ARPTable.getInstance(contextRef?.get())
                 return field
             }
 

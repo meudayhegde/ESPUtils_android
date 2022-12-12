@@ -3,6 +3,7 @@ package com.irware.remote
 import android.app.Activity
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -32,22 +33,38 @@ class GPIOBtnWidgetConfActivity : AppCompatActivity() {
         ESPUtilsApp.gpioConfig = GPIOConfig(gpioConfigFile)
         val gpioObjectArray = ESPUtilsApp.gpioConfig!!.gpioObjectArray
         ESPUtilsApp.gpioObjectList.clear()
-        if(gpioObjectArray.length() >  0)for(i: Int in 0 until gpioObjectArray.length()){
+        if(gpioObjectArray.length() >  0) for(i: Int in 0 until gpioObjectArray.length()){
             ESPUtilsApp.gpioObjectList.add(GPIOObject(gpioObjectArray.getJSONObject(i), ESPUtilsApp.gpioConfig!!))
         }
 
         val itemList = ArrayList<ListItemCommon>()
         ESPUtilsApp.gpioObjectList.forEach {
-            itemList.add(ListItemCommon(it.title, it.subTitle, R.drawable.icon_lamp))
+            itemList.add(ListItemCommon(it.title, it.subTitle, R.drawable.icon_lamp, it))
         }
+
+        val listAdapter = ListAdapterCommon(itemList)
+            .setOnItemClickListener{ _, listItem ->
+                val sharedPref = getSharedPreferences(widgetId.toString(), Context.MODE_PRIVATE)
+                val editor = sharedPref.edit()
+
+                editor.putString(Strings.sharedPrefItemGPIOTitle, listItem.title)
+                editor.putString(Strings.sharedPrefItemGPIOSubtitle, listItem.subTitle)
+                editor.putString(Strings.sharedPrefItemGPIODevice, (listItem.linkedObj as GPIOObject).deviceProperties.nickName)
+                editor.putString(Strings.sharedPrefItemGPIODeviceMAC, (listItem.linkedObj as GPIOObject).macAddr)
+                editor.putInt(Strings.sharedPrefItemGPIOPinNumber, (listItem.linkedObj as GPIOObject).gpioNumber)
+                editor.putInt(Strings.sharedPrefItemGPIOPinValue, (listItem.linkedObj as GPIOObject).pinValue)
+                editor.putString(Strings.sharedPrefItemGPIOUsername, (listItem.linkedObj as GPIOObject).deviceProperties.userName)
+                editor.putString(Strings.sharedPrefItemGPIOPassword, (listItem.linkedObj as GPIOObject).deviceProperties.password)
+                editor.apply()
+
+                updateAppWidget()
+            }
 
         val recyclerView = findViewById<RecyclerView>(R.id.refresh_layout_recycler_view).apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(context)
-            adapter = ListAdapterCommon(itemList)
+            adapter = listAdapter
         }
-
-//        updateAppWidget()
     }
 
     private fun updateAppWidget(){

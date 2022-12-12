@@ -306,7 +306,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                                         positiveButton?.isEnabled = false
                                     } else progressBar?.visibility = View.GONE
                                     messageView?.text = status
-                                    if (status.lowercase(Locale.ROOT).contains("success")) {
+                                    if (status.lowercase(Locale.ROOT).contains(Strings.espResponseSuccess)) {
                                         positiveButton?.isEnabled = true
                                         positiveButton?.setOnClickListener {
                                             updateDialog.dismiss()
@@ -385,7 +385,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                     updateDialog.show()
                 }
                 val intent = Intent(Intent.ACTION_GET_CONTENT)
-                intent.type = "application/zip"
+                intent.type = Strings.intentTypeZip
                 intent.addCategory(Intent.CATEGORY_OPENABLE)
                 try {
 
@@ -416,7 +416,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
 
         val hashOrigin = hashFile.inputStream().readBytes().toString(Charsets.UTF_8).replace("\n","")
         var hash = ""
-        updateDir.listFiles{ _, name -> name.endsWith(".bin")}?.sortedArray()?.forEach {
+        updateDir.listFiles{ _, name -> name.endsWith(Strings.extensionBin)}?.sortedArray()?.forEach {
             hash += Utils.md5(it) + Utils.md5(it.name)
         }
         val verified = Utils.md5(hash) == hashOrigin
@@ -425,7 +425,6 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
         return verified
     }
 
-    @SuppressLint("InflateParams")
     private fun userSettingsClickAction(context: Context, prop: DeviceProperties): Runnable{
         return Runnable{
             if(prop.isConnected) {
@@ -496,14 +495,14 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                                             Handler(Looper.getMainLooper()).post {
                                                 AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
                                                     .setTitle(
-                                                        if (resultObj.getString("response")
+                                                        if (resultObj.getString(Strings.espResponse)
                                                                 .contains(
-                                                                    "success",
+                                                                    Strings.espResponseSuccess,
                                                                     true
                                                                 )
                                                         ) "Success" else "Failed"
                                                     )
-                                                    .setMessage(resultObj.getString("response"))
+                                                    .setMessage(resultObj.getString(Strings.espResponse))
                                                     .setPositiveButton(R.string.done) { dg, _ -> dg.dismiss() }
                                                     .show()
                                             }
@@ -529,7 +528,6 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
         }
     }
 
-    @SuppressLint("InflateParams")
     private fun wirelessSettingsClickAction(context: Context, prop: DeviceProperties): Runnable{
         return Runnable {
             if(prop.isConnected) {
@@ -586,20 +584,8 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                     for (item in listOf(ssid, pass)) {
                         item.addTextChangedListener(object : TextWatcher {
                             override fun afterTextChanged(s: Editable?) {}
-                            override fun beforeTextChanged(
-                                s: CharSequence?,
-                                start: Int,
-                                count: Int,
-                                after: Int
-                            ) {
-                            }
-
-                            override fun onTextChanged(
-                                s: CharSequence?,
-                                start: Int,
-                                before: Int,
-                                count: Int
-                            ) {
+                            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                                 (item.parent.parent as TextInputLayout).error = null
                                 wirelessData?.put(
                                     when (mode) {

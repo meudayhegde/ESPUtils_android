@@ -107,7 +107,7 @@ class RemoteBtnWidgetConfActivity : AppCompatActivity(), SwipeRefreshLayout.OnRe
     private fun updateAppWidget(){
         val intent = Intent(this, RemoteButtonWidget::class.java)
         intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
-        val  ids = AppWidgetManager.getInstance(this).getAppWidgetIds(ComponentName(this,RemoteButtonWidget::class.java))
+        val  ids = AppWidgetManager.getInstance(this).getAppWidgetIds(ComponentName(this, RemoteButtonWidget::class.java))
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
         sendBroadcast(intent)
 

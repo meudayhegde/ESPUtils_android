@@ -45,14 +45,13 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
     private val configChooser = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if(result.resultCode == Activity.RESULT_OK) {
             val uri = result?.data?.data
-            Log.d("CONFIG_SELECTOR", "File Uri: " + uri.toString())
             try {
                 val mIntent = Intent(Intent.ACTION_VIEW)
-                mIntent.setDataAndType(uri, "application/json")
+                mIntent.setDataAndType(uri, Strings.intentTypeJson)
                 mIntent.setPackage(context?.packageName)
                 startActivity(Intent.createChooser(mIntent, "Import Config File"))
             } catch (ex: Exception) {
-                Log.e("CONFIG_SELECTOR", "${ ex.message }")
+                Log.e(javaClass.simpleName, "${ ex.message }")
             }
         }
     }
@@ -71,7 +70,7 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
             rootView!!.findViewById<FloatingActionMenu>(R.id.fam_manage_remotes).setClosedOnTouchOutside(true)
             rootView!!.findViewById<FloatingActionButton>(R.id.fab_import_remote).setOnClickListener {
                 val intent = Intent(Intent.ACTION_GET_CONTENT)
-                intent.type = "application/json"
+                intent.type = Strings.intentTypeJson
                 intent.addCategory(Intent.CATEGORY_OPENABLE)
 
                 try {

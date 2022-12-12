@@ -17,6 +17,8 @@ class ListAdapterCommon(private val itemList: ArrayList<ListItemCommon>) : Recyc
         val iconView: ImageView = cardView.findViewById(R.id.ic_settings)
     }
 
+    private var onItemClickListener: ((viewHolder: CommonListViewHolder, item: ListItemCommon) -> Unit)? = null
+
     override fun onCreateViewHolder(parent: ViewGroup,
                                     viewType: Int): CommonListViewHolder {
         val cardView = LayoutInflater.from(parent.context)
@@ -30,9 +32,19 @@ class ListAdapterCommon(private val itemList: ArrayList<ListItemCommon>) : Recyc
         holder.titleView.text = listItem.title
         holder.subTitleView.text = listItem.subTitle
         holder.iconView.setImageResource(listItem.iconRes)
+        onItemClickListener?.let { listener ->
+            holder.cardView.setOnClickListener {
+                listener.invoke(holder, listItem)
+            }
+        }
     }
 
     override fun getItemCount(): Int {
         return itemList.size
+    }
+
+    fun setOnItemClickListener(listener: ((viewHolder: CommonListViewHolder, item: ListItemCommon) -> Unit)): ListAdapterCommon{
+        onItemClickListener = listener
+        return this
     }
 }

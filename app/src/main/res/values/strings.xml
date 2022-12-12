@@ -189,10 +189,8 @@
     <string name="timeout">TimeOut</string>
     <string name="dialog_title_btn_prop">Set Button Properties</string>
     <string name="share_file">Share File</string>
-    <string name="intent_type_json">application/json</string>
     <string name="title_share_remote_prop">Share Remote Controller</string>
     <string name="confirm_deletion">Confirm Deletion</string>
-    <string name="intent_type_all">*/*</string>
     <string name="intent_title_share_app">Share app via</string>
     <string name="btn_text_keep_both">Keep both</string>
     <string name="message_remote_conf_exists">This remote controller configuration already exists!!</string>

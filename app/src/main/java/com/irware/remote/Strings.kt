@@ -101,6 +101,23 @@ object Strings {
     const val sharedPrefNameLogin = "login"
     const val sharedPrefNameSettings = "settings"
     const val sharedPrefNameWidgetAssociations = "widget_associations"
+    const val sharedPrefNameARPCache = "arp_cache"
+
+    const val sharedPrefItemGPIOTitle = "title"
+    const val sharedPrefItemGPIOSubtitle = "title"
+    const val sharedPrefItemGPIODevice = "device"
+    const val sharedPrefItemGPIODeviceMAC = "device_mac"
+    const val sharedPrefItemGPIOPinNumber = "pinNumber"
+    const val sharedPrefItemGPIOPinValue = "pinValue"
+    const val sharedPrefItemGPIOUsername = "username"
+    const val sharedPrefItemGPIOPassword = "password"
 
     const val intentExtraWidgetID = "WidgetID"
-}                                  
+
+    const val intentTypeJson = "application/json"
+    const val intentTypeZip = "application/zip"
+    const val intentTypeAll = "*/*"
+
+    const val widgetIntentActionClick = "automaticWidgetSyncButtonClick"
+    const val widgetIntentActionOnResponse = "automaticWidgetSyncButtonClick"
+}

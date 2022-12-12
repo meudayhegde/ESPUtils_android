@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:id="@+id/layout_id_gpio_widget"
         android:background="@drawable/layout_border_gpio_button">
 
     <TextView
@@ -24,6 +25,7 @@
             android:layout_above="@id/widget_gpio_device_name"
             android:padding="@dimen/margin_medium"
             android:layout_centerInParent="true"
+            android:id="@+id/widget_lamp_icon"
             android:contentDescription="@string/img_desc_gpio_widget_lamp"
             android:src="@drawable/icon_lamp"/>
 

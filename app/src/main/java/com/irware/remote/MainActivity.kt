@@ -94,8 +94,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         RemoteButton.onConfigChanged()
 
-        val pref= getSharedPreferences(Strings.sharedPrefNameLogin, 0)
-        val editor=pref.edit()
+        val pref = getSharedPreferences(Strings.sharedPrefNameLogin, 0)
+        val editor = pref.edit()
 
         splash?.findViewById<TextView>(R.id.skip_login)?.setOnClickListener {
             splash?.dismiss()
@@ -321,7 +321,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             val filePath: String = app.sourceDir
 
             val intent = Intent(Intent.ACTION_SEND)
-            intent.type = getString(R.string.intent_type_all)
+            intent.type = Strings.intentTypeAll
             val originalApk = File(filePath)
 
             val tempFile = ESPUtilsApp.getExternalCache(getString(app.labelRes) + Strings.extensionApk)

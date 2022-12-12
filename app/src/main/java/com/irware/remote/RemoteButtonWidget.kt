@@ -42,7 +42,7 @@ class RemoteButtonWidget: AppWidgetProvider() {
             if(buttonProp.icon!=0) remoteViews.setTextViewCompoundDrawables(R.id.widget_button,iconDrawableList[buttonProp.icon],0,0,0)
 
             val intent = Intent(context, javaClass)
-            intent.action = BUTTON_CLICK
+            intent.action = Strings.widgetIntentActionClick
             intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds)
             intent.putExtra(Strings.intentExtraWidgetID, widgetId)
             val pendingIntent = PendingIntent.getBroadcast(context, widgetId, intent,
@@ -58,10 +58,10 @@ class RemoteButtonWidget: AppWidgetProvider() {
     override fun onReceive(context: Context?, intent: Intent?) {
         super.onReceive(context, intent)
         context?.let { ESPUtilsApp.updateStaticContext(it) }
-        if(BUTTON_CLICK == intent?.action){
+        if(intent?.action == Strings.widgetIntentActionClick){
             val manager = AppWidgetManager.getInstance(context)
-            val remoteViews = RemoteViews(context?.packageName,R.layout.widget_layout_remote_button)
-            val watchWidget = ComponentName(context!!,RemoteButtonWidget::class.java)
+            val remoteViews = RemoteViews(context?.packageName, R.layout.widget_layout_remote_button)
+            val watchWidget = ComponentName(context!!, RemoteButtonWidget::class.java)
 
             val widgetID = intent.getIntExtra(Strings.intentExtraWidgetID, 0)
             val objList = getJSONObject(context, widgetID, remoteViews)
@@ -153,9 +153,5 @@ class RemoteButtonWidget: AppWidgetProvider() {
             else 0
         )
         views.setOnClickPendingIntent(R.id.widget_button,pendingIntent)
-    }
-
-    companion object {
-        const val BUTTON_CLICK = "automaticWidgetSyncButtonClick"
     }
 }

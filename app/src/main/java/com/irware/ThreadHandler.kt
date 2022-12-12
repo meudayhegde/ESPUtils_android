@@ -186,6 +186,7 @@ class ThreadHandler {
         const val ESP_MESSAGE = "ESP_MESSAGE"
 
         private val instance = ThreadHandler()
+
         fun getThreadByPosition(position: Int): InfiniteThread { return instance.getThreadByPosition(position) }
         fun getThreadByName(name: String): InfiniteThread? { return instance.getThreadByName(name) }
         fun runOnThread(pos: Int, task: Runnable) { return instance.runOnThread(pos, task) }

@@ -23,6 +23,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.irware.remote.ESPUtilsApp
 import com.irware.remote.MainActivity
 import com.irware.remote.R
+import com.irware.remote.Strings
 import com.irware.remote.holders.RemoteProperties
 import com.irware.remote.ui.dialogs.RemoteDialog
 import java.io.OutputStreamWriter
@@ -103,12 +104,12 @@ class RemoteListAdapter(private val propList: ArrayList<RemoteProperties>, priva
         writer.close()
 
         val uri = FileProvider.getUriForFile(context,
-            context.applicationContext.packageName + ".provider",
+            context.applicationContext.packageName + Strings.extensionProvider,
             fileToShare
         )
 
         val intent = ShareCompat.IntentBuilder.from(MainActivity.activity as Activity)
-            .setType(context.getString(R.string.intent_type_json))
+            .setType(Strings.intentTypeJson)
             .setSubject(context.getString(R.string.share_file))
             .setStream(uri)
             .setChooserTitle(context.getString(R.string.title_share_remote_prop))

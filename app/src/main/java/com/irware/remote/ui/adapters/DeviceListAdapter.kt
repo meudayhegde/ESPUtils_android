@@ -139,11 +139,11 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                     SettingsItem(context.getString(R.string.title_install_update), context.getString(R.string.title_sub_install_update),
                         null, R.drawable.ic_system_update, updateClickAction(context, prop), prop
                     ),
-                    SettingsItem(context.getString(R.string.title_remove_device), context.getString(R.string.title_sub_remove_device),
-                        null, R.drawable.icon_delete, deleteClickAction(context, holder.adapterPosition, settingsDialog)
-                    ),
                     SettingsItem(context.getString(R.string.title_edit_properties), context.getString(R.string.title_sub_edit_properties),
                         null, R.drawable.icon_edit, editClickAction(context, prop)
+                    ),
+                    SettingsItem(context.getString(R.string.title_remove_device), context.getString(R.string.title_sub_remove_device),
+                        null, R.drawable.icon_delete, deleteClickAction(context, holder.adapterPosition, settingsDialog)
                     )
                 )
                 val viewManager = LinearLayoutManager(context)

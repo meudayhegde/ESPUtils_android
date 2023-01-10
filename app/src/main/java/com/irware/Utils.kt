@@ -1,37 +1,35 @@
 package com.irware
 
 import android.util.Log
-import org.json.JSONArray
-import org.json.JSONObject
 import java.io.*
 import java.math.BigInteger
+import java.net.InetAddress
 import java.net.NetworkInterface
+import java.net.SocketException
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
-import java.util.*
 import kotlin.collections.ArrayList
 
 class Utils{
     companion object{
-        fun getIPAddress(): ArrayList<String> {
-
-            val result = ArrayList<String>()
+        fun getBroadcastAddresses(): ArrayList<InetAddress> {
+            val broadcastAddresses = ArrayList<InetAddress>()
+            System.setProperty("java.net.preferIPv4Stack", "true")
             try {
-                val interfaces = Collections.list(NetworkInterface.getNetworkInterfaces())
-                for (`interface` in interfaces) {
-                    if(`interface`.name.contains("wlan")){
-                        val addrs = Collections.list(`interface`.inetAddresses)
-                        for (addr in addrs) {
-                            if (!addr.isLoopbackAddress) {
-                                val sAddr = addr.hostAddress
-                                if (sAddr.indexOf(':') < 0)
-                                    result.add(sAddr)
-                            }
+                val niEnum = NetworkInterface.getNetworkInterfaces()
+                while (niEnum.hasMoreElements()) {
+                    val ni = niEnum.nextElement()
+                    if (!ni.isLoopback) {
+                        for (interfaceAddress in ni.interfaceAddresses) {
+                            val broadcastAddress = interfaceAddress?.broadcast?.toString()
+                            broadcastAddress?.let { broadcastAddresses.add(InetAddress.getByName(it.substring(1))) }
                         }
                     }
                 }
-            } catch (ignored: Exception) { }
-            return result
+            } catch (e: SocketException) {
+                e.printStackTrace()
+            }
+            return broadcastAddresses
         }
 
         fun md5(file: File): String?{

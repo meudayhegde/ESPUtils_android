@@ -1,20 +1,22 @@
 package com.irware.remote.net
 
 import android.content.Context
-import android.text.TextUtils
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import com.irware.ThreadHandler
 import com.irware.Utils
 import com.irware.remote.ESPUtilsApp
 import com.irware.remote.Strings
 import com.irware.remote.holders.ARPItem
+import com.irware.remote.holders.DeviceProperties
 import org.json.JSONArray
-import org.json.JSONException
 import org.json.JSONObject
-import java.io.File
-import java.io.InputStreamReader
-import java.io.OutputStreamWriter
+import java.net.DatagramPacket
+import java.net.DatagramSocket
 import java.net.InetAddress
+import java.net.SocketTimeoutException
+
 
 class ARPTable private constructor(context: Context) {
     private val sharedPref = context.getSharedPreferences(Strings.sharedPrefNameARPCache, Context.MODE_PRIVATE)
@@ -24,61 +26,14 @@ class ARPTable private constructor(context: Context) {
     init{
         instance = this
         update()
-        startScan(-1)
     }
 
-    fun getARPItemList() : ArrayList<ARPItem>{
-        val arpItemList = ArrayList<ARPItem>()
-        jsonObj.keys().forEach { arpItemList.add(ARPItem(it, jsonObj.getJSONArray(it).getString(0))) }
-        return arpItemList
+    fun scanForARPItems(onArpItemListener: ((arpItem: ARPItem) -> Unit)){
+        startScan(onArpItemListener = onArpItemListener, timeout = SCAN_TIMEOUT * 5)
     }
 
-    fun getARPItemList(onArpItemListener: ((arpItem: ARPItem) -> Unit)): ThreadHandler.InfiniteThread{
-        return ThreadHandler.getThreadByPosition(
-            ThreadHandler.runOnFreeThread{
-                val ipList = ArrayList<String>()
-                val reachableIPList = ArrayList<String>()
-                jsonObj.keys().forEach {
-                    val ipArray = jsonObj.getJSONArray(it)
-                    for(index in 0 until ipArray.length()){
-                        ipList.add(ipArray.getString(index))
-                    }
-                }
-                ipList.forEach { address ->
-                    for(i in 0 until 3){
-                        val inetAddress = InetAddress.getByName(address)
-                        if((address !in reachableIPList) and inetAddress.isReachable(10)){
-                            try{
-                                reachableIPList.add(address)
-                                val macAddress = getMacForIP(address)
-                                onArpItemListener.invoke(ARPItem(macAddress, address))
-                                break
-                            }catch(_: Exception){}
-                        }
-                    }
-                }
-                for(myIp in Utils.getIPAddress()){
-                    val myIpArr = myIp.split(".")
-                    val myIpInt = myIpArr[3].toInt()
-                    for(i in 1 until 255){
-                        arrayOf(i, -i).forEach { ind ->
-                            val addressInt = myIpInt + ind
-                            if(addressInt in 0 until 255){
-                                val address = "${myIpArr[0]}.${myIpArr[1]}.${myIpArr[2]}.$addressInt"
-                                val inetAddress = InetAddress.getByName(address)
-                                if((address !in reachableIPList) and inetAddress.isReachable(10)){
-                                    try{
-                                        reachableIPList.add(address)
-                                        val macAddress = getMacForIP(address)
-                                        onArpItemListener.invoke(ARPItem(macAddress, address))
-                                    }catch(_: Exception){}
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        )
+    fun refreshDevicesStatus(macToPropMap: MutableMap<String, DeviceProperties>){
+        startScan(macToPropMap, timeout = SCAN_TIMEOUT)
     }
 
     fun getIpFromMac(mac: String, listener: ((address: String?) -> Unit)? = null): String?{
@@ -101,7 +56,7 @@ class ARPTable private constructor(context: Context) {
                                 return@runOnThread
                             }
                         }catch(ex: Exception){
-                            Log.d(javaClass.name, ex.toString() + ex.message)
+                            ex.printStackTrace()
                         }
                     }
                 }
@@ -124,55 +79,77 @@ class ARPTable private constructor(context: Context) {
         prefEditor.apply()
     }
 
-    private fun startScan(scanCount: Int){
-        ThreadHandler.runOnFreeThread {
-            var currentScanCount = 0
-            while((scanCount == -1) or (currentScanCount < scanCount)){
-                for(myIp in Utils.getIPAddress()){
-                    val intArr = myIp.split(".")
-                    val myIpInt = intArr[3].toInt()
-                    for(i in 1 until 255){
-                        val ipIntAbove = myIpInt + i
-                        val ipIntBelow = myIpInt - i
-                        if(ipIntAbove < 255){verifyAddress("${intArr[0]}.${intArr[1]}.${intArr[2]}.$ipIntAbove")}
-                        if(ipIntBelow >= 0){verifyAddress("${intArr[0]}.${intArr[1]}.${intArr[2]}.$ipIntBelow")}
-                        if((ipIntAbove > 254) and (ipIntBelow < 0)) break
+    private fun startScan(macToPropMap: MutableMap<String, DeviceProperties>? = null,
+                  onArpItemListener: ((arpItem: ARPItem) -> Unit)? = null,
+                  timeout: Int = SCAN_TIMEOUT){
+        ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE) {
+            Handler(Looper.getMainLooper()).post {
+                macToPropMap?.values?.forEach { it.onDeviceStatusListener?.onBeginRefresh() }
+            }
+
+            Utils.getBroadcastAddresses().forEach { broadcastAddress ->
+                Log.d(javaClass.simpleName, "Broadcast address: ${broadcastAddress.hostName}")
+                val socket = DatagramSocket()
+                socket.broadcast = true
+                val sendData: ByteArray = Strings.espCommandPing.encodeToByteArray()
+                val sendPacket = DatagramPacket(sendData, sendData.size, broadcastAddress, ESPUtilsApp.UDP_PORT_ESP)
+                socket.send(sendPacket)
+            }
+
+            val socket = DatagramSocket(ESPUtilsApp.UDP_PORT_APP)
+            socket.soTimeout = timeout
+
+            val recvBuf = ByteArray(1024)
+            val packet = DatagramPacket(recvBuf, recvBuf.size)
+
+            while (true) {
+                Log.d(javaClass.simpleName, "Ready to receive broadcast packets!")
+                try{
+                    socket.receive(packet)
+                }catch (_: SocketTimeoutException){
+                    Log.d(javaClass.simpleName, "Socket timeout, stopping UDP listener")
+                    socket.close()
+                    break
+                }
+
+                val ipAddress = packet.address.hostAddress
+                Log.d(javaClass.simpleName, "Packet received from: $ipAddress")
+                val macAddress = JSONObject(String(packet.data).trim { it <= ' ' }).optString(Strings.espResponseMac)
+
+                ipAddress?.let{ onArpItemListener?.invoke(ARPItem(macAddress, it)) }
+
+                val devProp = macToPropMap?.remove(macAddress)
+                devProp?.let {
+                    Handler(Looper.getMainLooper()).post {
+                        it.isConnected = ipAddress != null
                     }
                 }
-                currentScanCount ++
-                Thread.sleep(200)
+
+                val ipList = jsonObj.optJSONArray(macAddress) ?: JSONArray()
+                val index = ipList.index(ipAddress)
+                if(index != 0) {
+                    if (index != -1) ipList.remove(index)
+                    ipAddress?.let { ipList.insert(0, it) }
+                    jsonObj.put(macAddress, ipList)
+                    update()
+                }
+
+                if(macToPropMap?.isEmpty() == true) {
+                    socket.close()
+                    break
+                }
+            }
+
+            Handler(Looper.getMainLooper()).post {
+                macToPropMap?.values?.forEach { it.getIpAddress {  } }
+                macToPropMap?.clear()
             }
         }
     }
 
-    private fun verifyAddress(address: String): Boolean{
-        val inetAddress = InetAddress.getByName(address)
-        if(inetAddress.isReachable(10)){
-            try{
-                val macAddress = getMacForIP(address)
-                val ipList = jsonObj.optJSONArray(macAddress) ?: JSONArray()
-                val index = ipList.index(address)
-                if(index == 0) return true
-                if(index != -1) ipList.remove(index)
-                ipList.insert(0, address)
-                jsonObj.put(macAddress, ipList)
-                update()
-                return true
-            }catch(_: Exception){}
-        }
-        return false
-    }
-
-    private fun getMacForIP(address: String): String{
-        val connector = SocketClient.Connector(address)
-        connector.sendLine(Strings.espCommandPing)
-        val response = connector.readLine()
-        connector.close()
-        return JSONObject(response).optString(Strings.espResponseMac)
-    }
-
     companion object{
         const val MAX_RETRY = 3
+        const val SCAN_TIMEOUT = 2000
         private var instance: ARPTable? = null
 
         fun getInstance(context: Context? = null): ARPTable{

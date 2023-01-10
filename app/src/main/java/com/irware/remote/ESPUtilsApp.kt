@@ -20,7 +20,9 @@ class ESPUtilsApp: Application() {
     override fun onCreate() {
         super.onCreate()
         contextRef = WeakReference(this)
-        arpTable = ARPTable.getInstance(this)
+
+        ARPTable.getInstance(this)
+
         when(getSharedPreferences(
             Strings.sharedPrefNameSettings, Context.MODE_PRIVATE).getInt(
             Strings.sharedPrefItemApplicationTheme, if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
@@ -66,12 +68,6 @@ class ESPUtilsApp: Application() {
     }
 
     companion object{
-        var arpTable: ARPTable? = null
-            get() {
-                if(field == null) field = ARPTable.getInstance(contextRef?.get())
-                return field
-            }
-
         private var contextRef: WeakReference<Context>? = null
 
         val remotePropList = ArrayList<RemoteProperties>()
@@ -82,6 +78,8 @@ class ESPUtilsApp: Application() {
         var gpioConfig: GPIOConfig? = null
 
         const val ESP_COM_PORT = 48321
+        const val UDP_PORT_ESP = 48327
+        const val UDP_PORT_APP = 48326
 
         /**
          * Static function to get string resource without access to context from any class

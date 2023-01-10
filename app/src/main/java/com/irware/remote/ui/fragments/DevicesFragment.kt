@@ -27,6 +27,7 @@ import com.irware.remote.Strings
 import com.irware.remote.holders.ARPItem
 import com.irware.remote.holders.DeviceProperties
 import com.irware.remote.listeners.OnFragmentInteractionListener
+import com.irware.remote.net.ARPTable
 import com.irware.remote.net.SocketClient
 import com.irware.remote.ui.adapters.DeviceListAdapter
 import com.irware.remote.ui.adapters.ScanDeviceListAdapter
@@ -81,9 +82,11 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
             val refreshLayout = rootView!!.findViewById<SwipeRefreshLayout>(R.id.refresh_layout)
             refreshLayout.setOnRefreshListener {
                 refreshLayout.isRefreshing = true
-                ESPUtilsApp.devicePropList.forEach {
-                    it.getIpAddress {  }
-                }
+
+                ARPTable.getInstance(context).refreshDevicesStatus(mutableMapOf<String, DeviceProperties>().apply {
+                    for(prop in ESPUtilsApp.devicePropList) this[prop.macAddress] = prop
+                })
+
                 ThreadHandler.runOnFreeThread{
                     Thread.sleep(100)
                     ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE) {
@@ -117,7 +120,7 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
                         onAddressVerified(requireContext(), arpItem.ipAddress, arpItem.macAddress)
                     }
 
-                    ESPUtilsApp.arpTable!!.getARPItemList { arpItem ->
+                    ARPTable.getInstance().scanForARPItems { arpItem ->
                         Handler(Looper.getMainLooper()).post{
                             arpItemList.add(arpItem)
                             ESPUtilsApp.devicePropList.forEach {
@@ -128,7 +131,8 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
                             }
                             viewAdapterScanner.notifyDataSetChanged()
                         }
-                    }.enqueueTask {
+                    }
+                    ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE) {
                         Handler(Looper.getMainLooper()).post {
                             deviceDialog.findViewById<ProgressBar>(R.id.device_scanner_progress_bar)?.visibility = View.GONE
                         }

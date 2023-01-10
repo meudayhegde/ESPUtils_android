@@ -17,8 +17,12 @@ import java.net.DatagramSocket
 import java.net.InetAddress
 import java.net.SocketTimeoutException
 
-
-class ARPTable private constructor(context: Context) {
+/**
+ * Used for scanning ESP Devices and operations involving MAC address and IP address
+ * use [ESPTable.getInstance] method to obtain the [ESPTable] object.
+ * necessary to pass [Context] object to [ESPTable.getInstance] method for the first time
+ */
+class ESPTable private constructor(context: Context) {
     private val sharedPref = context.getSharedPreferences(Strings.sharedPrefNameARPCache, Context.MODE_PRIVATE)
     private val prefEditor = sharedPref.edit()
     private var jsonObj: JSONObject = getJSONObject()
@@ -28,10 +32,20 @@ class ARPTable private constructor(context: Context) {
         update()
     }
 
+    /**
+     * invokes the listener when an esp device is detected
+     * @param onArpItemListener
+     * listener that takes [ARPItem] object as argument
+     */
     fun scanForARPItems(onArpItemListener: ((arpItem: ARPItem) -> Unit)){
         startScan(onArpItemListener = onArpItemListener, timeout = SCAN_TIMEOUT * 5)
     }
 
+    /**
+     *
+     * @param macToPropMap: { macAddress: deviceProperties} map from macAddress to corresponding
+     * deviceProperties object.
+     */
     fun refreshDevicesStatus(macToPropMap: MutableMap<String, DeviceProperties>){
         startScan(macToPropMap, timeout = SCAN_TIMEOUT)
     }
@@ -74,7 +88,17 @@ class ARPTable private constructor(context: Context) {
         return JSONObject(sharedPref.getString(Strings.sharedPrefNameARPCache, "{}")?: "{}")
     }
 
-    private fun update(){
+    private fun update(arpItem: ARPItem? = null){
+        arpItem?.let {
+            val ipList = jsonObj.optJSONArray(it.macAddress) ?: JSONArray()
+            val index = ipList.index(it.ipAddress)
+            if(index != 0) {
+                if (index != -1) ipList.remove(index)
+                ipList.insert(0, it.ipAddress)
+                jsonObj.put(it.macAddress, ipList)
+                update()
+            }
+        }
         prefEditor.putString(Strings.sharedPrefNameARPCache, jsonObj.toString())
         prefEditor.apply()
     }
@@ -88,12 +112,7 @@ class ARPTable private constructor(context: Context) {
             }
 
             Utils.getBroadcastAddresses().forEach { broadcastAddress ->
-                Log.d(javaClass.simpleName, "Broadcast address: ${broadcastAddress.hostName}")
-                val socket = DatagramSocket()
-                socket.broadcast = true
-                val sendData: ByteArray = Strings.espCommandPing.encodeToByteArray()
-                val sendPacket = DatagramPacket(sendData, sendData.size, broadcastAddress, ESPUtilsApp.UDP_PORT_ESP)
-                socket.send(sendPacket)
+                sendBroadcastMessage(broadcastAddress, Strings.espCommandPing)
             }
 
             val socket = DatagramSocket(ESPUtilsApp.UDP_PORT_APP)
@@ -116,23 +135,11 @@ class ARPTable private constructor(context: Context) {
                 Log.d(javaClass.simpleName, "Packet received from: $ipAddress")
                 val macAddress = JSONObject(String(packet.data).trim { it <= ' ' }).optString(Strings.espResponseMac)
 
-                ipAddress?.let{ onArpItemListener?.invoke(ARPItem(macAddress, it)) }
-
-                val devProp = macToPropMap?.remove(macAddress)
-                devProp?.let {
-                    Handler(Looper.getMainLooper()).post {
-                        it.isConnected = ipAddress != null
-                    }
+                ipAddress?.let{
+                    onArpItemListener?.invoke(ARPItem(macAddress, it))
+                    update(ARPItem(macAddress, it))
                 }
-
-                val ipList = jsonObj.optJSONArray(macAddress) ?: JSONArray()
-                val index = ipList.index(ipAddress)
-                if(index != 0) {
-                    if (index != -1) ipList.remove(index)
-                    ipAddress?.let { ipList.insert(0, it) }
-                    jsonObj.put(macAddress, ipList)
-                    update()
-                }
+                macToPropMap?.remove(macAddress)?.isConnected = ipAddress != null
 
                 if(macToPropMap?.isEmpty() == true) {
                     socket.close()
@@ -147,13 +154,26 @@ class ARPTable private constructor(context: Context) {
         }
     }
 
+    private fun sendBroadcastMessage(broadcastAddress: InetAddress, message: String){
+        Log.d(javaClass.simpleName, "Broadcast address: ${broadcastAddress.hostName}")
+        val socket = DatagramSocket()
+        socket.broadcast = true
+        val sendData: ByteArray = message.encodeToByteArray()
+        val sendPacket = DatagramPacket(sendData, sendData.size, broadcastAddress, ESPUtilsApp.UDP_PORT_ESP)
+        socket.send(sendPacket)
+    }
+
     companion object{
         const val MAX_RETRY = 3
         const val SCAN_TIMEOUT = 2000
-        private var instance: ARPTable? = null
+        private var instance: ESPTable? = null
 
-        fun getInstance(context: Context? = null): ARPTable{
-            return instance?: ARPTable(context?: throw Exception("${(ARPTable::class.java).simpleName} instance not available"))
+        /**
+         * @param context cannot be null for the first function call.
+         * @return instance of [ESPTable]
+         */
+        fun getInstance(context: Context? = null): ESPTable{
+            return instance?: ESPTable(context?: throw NullPointerException("${(ESPTable::class.java).simpleName} instance not available"))
         }
     }
 

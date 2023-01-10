@@ -6,7 +6,7 @@ import android.text.TextUtils
 import com.irware.remote.ESPUtilsApp
 import com.irware.remote.Strings
 import com.irware.remote.listeners.OnDeviceStatusListener
-import com.irware.remote.net.ARPTable
+import com.irware.remote.net.ESPTable
 import com.irware.remote.net.SocketClient
 import org.json.JSONArray
 import org.json.JSONException
@@ -68,7 +68,7 @@ class DeviceProperties(val deviceConfigFile: File = ESPUtilsApp.getPrivateFile(S
 
     val ipAddress: String
         get(){
-            return ARPTable.getInstance().getIpFromMac(macAddress)?: ""
+            return ESPTable.getInstance().getIpFromMac(macAddress)?: ""
         }
 
     var description: String = jsonObj.optString(Strings.devPropDescription, "")
@@ -87,7 +87,7 @@ class DeviceProperties(val deviceConfigFile: File = ESPUtilsApp.getPrivateFile(S
         Handler(Looper.getMainLooper()).post{
             onDeviceStatusListener?.onBeginRefresh()
         }
-        ARPTable.getInstance().getIpFromMac(macAddress){
+        ESPTable.getInstance().getIpFromMac(macAddress){
             isConnected = !(it == null || it.isEmpty())
             listener.invoke(it)
         }

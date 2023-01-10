@@ -43,6 +43,11 @@ class ListAdapterCommon(private val itemList: ArrayList<ListItemCommon>) : Recyc
         return itemList.size
     }
 
+    /**
+     * to carry onClick action for [RecyclerView] list item.
+     * @param listener invokes this object with arguments [CommonListViewHolder] and [ListItemCommon]
+     * with this view of the recycler view item can be completely handled
+     */
     fun setOnItemClickListener(listener: ((viewHolder: CommonListViewHolder, item: ListItemCommon) -> Unit)): ListAdapterCommon{
         onItemClickListener = listener
         return this

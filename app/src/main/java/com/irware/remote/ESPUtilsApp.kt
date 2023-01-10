@@ -12,7 +12,7 @@ import com.irware.remote.holders.DeviceProperties
 import com.irware.remote.holders.GPIOConfig
 import com.irware.remote.holders.GPIOObject
 import com.irware.remote.holders.RemoteProperties
-import com.irware.remote.net.ARPTable
+import com.irware.remote.net.ESPTable
 import java.io.File
 import java.lang.ref.WeakReference
 
@@ -21,7 +21,7 @@ class ESPUtilsApp: Application() {
         super.onCreate()
         contextRef = WeakReference(this)
 
-        ARPTable.getInstance(this)
+        ESPTable.getInstance(this)
 
         when(getSharedPreferences(
             Strings.sharedPrefNameSettings, Context.MODE_PRIVATE).getInt(

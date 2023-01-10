@@ -2,7 +2,12 @@
 ##### <center>Android interface for various utilities using ESP8266/ESP32</center>
 <center>(ESP32 not tested yet)</center>
 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/9429c20b687e4d60853dddc89280d51c)](https://www.codacy.com/manual/meudayhegde/iRWaRE_android?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=meudayhegde/iRWaRE_android&amp;utm_campaign=Badge_Grade)
+### Current status
+[![current version](https://img.shields.io/badge/version-1.0.24-blue.svg)](https://github.com/meudayhegde/ESPUtils_android) [![gradle](https://img.shields.io/badge/gradle-7.3.1-green.svg)](https://mvnrepository.com/artifact/com.android.tools.build/gradle/7.3.1) [![status](https://img.shields.io/badge/status-beta-orange.svg)](https://github.com/meudayhegde/ESPUtils_android) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/9429c20b687e4d60853dddc89280d51c)](https://www.codacy.com/manual/meudayhegde/iRWaRE_android?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=meudayhegde/iRWaRE_android&amp;utm_campaign=Badge_Grade)
+[![required](https://img.shields.io/badge/required-ESP_Device-darkgreen.svg)](https://github.com/meudayhegde/ESPUtils_ESP8266) [![downloads](https://img.shields.io/badge/downloads-not_yet-orange.svg)](https://github.com/meudayhegde/ESPUtils_android)
+
+#### Libraries used
+[![Floating Action Button](https://img.shields.io/badge/library-FloatingActionButton-blue.svg)](https://github.com/Clans/FloatingActionButton) [![Color Picker](https://img.shields.io/badge/library-ColorPicker-blue.svg)](https://github.com/Madrapps/Pikolo)
 
 ## Features of the ESP Utils Application
 

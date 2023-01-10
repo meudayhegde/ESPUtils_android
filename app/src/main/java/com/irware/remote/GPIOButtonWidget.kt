@@ -12,7 +12,7 @@ import android.os.Looper
 import android.widget.RemoteViews
 import android.widget.Toast
 import com.irware.ThreadHandler
-import com.irware.remote.net.ARPTable
+import com.irware.remote.net.ESPTable
 import com.irware.remote.net.SocketClient
 import org.json.JSONArray
 import org.json.JSONObject
@@ -24,7 +24,7 @@ class GPIOButtonWidget: AppWidgetProvider() {
         val allWidgetIds = appWidgetManager!!.getAppWidgetIds(thisWidget)
 
         val remoteViews = RemoteViews(context.packageName, R.layout.widget_layout_gpio_button)
-        val arpTable = ARPTable.getInstance(context)
+        val espTable = ESPTable.getInstance(context)
 
         for (widgetId in allWidgetIds) {
 
@@ -41,7 +41,7 @@ class GPIOButtonWidget: AppWidgetProvider() {
             remoteViews.setTextViewText(R.id.widget_gpio_device_name, devName)
             remoteViews.setImageViewResource(R.id.widget_lamp_icon, R.drawable.icon_lamp)
 
-            arpTable.getIpFromMac(devMAC){ address ->
+            espTable.getIpFromMac(devMAC){ address ->
                 if(address?.isNotEmpty() == true){
                     val connector = SocketClient.Connector(address)
                     connector.sendLine(Strings.espCommandGetGpio(username, password))
@@ -86,15 +86,14 @@ class GPIOButtonWidget: AppWidgetProvider() {
         context?.let { ESPUtilsApp.updateStaticContext(it) }
         val manager = AppWidgetManager.getInstance(context)
         val remoteViews = RemoteViews(context?.packageName, R.layout.widget_layout_gpio_button)
-        val watchWidget = ComponentName(context!!, javaClass)
         val widgetID = intent?.getIntExtra(Strings.intentExtraWidgetID, 0)
 
         when(intent?.action) {
             Strings.widgetIntentActionClick -> {
-                val arpTable = ARPTable.getInstance(context)
+                val espTable = ESPTable.getInstance(context)
 
                 val sharedPref =
-                    context.getSharedPreferences(widgetID.toString(), Context.MODE_PRIVATE)
+                    context!!.getSharedPreferences(widgetID.toString(), Context.MODE_PRIVATE)
                 val editor = sharedPref.edit()
 
                 val devMac = sharedPref.getString(Strings.sharedPrefItemGPIODeviceMAC, "") ?: ""
@@ -106,7 +105,7 @@ class GPIOButtonWidget: AppWidgetProvider() {
 
                 ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE) {
                     try{
-                        val connector = SocketClient.Connector(arpTable.getIpFromMac(devMac) ?: "")
+                        val connector = SocketClient.Connector(espTable.getIpFromMac(devMac) ?: "")
                         connector.sendLine(Strings.espCommandSetGpio(username, password, pinNumber, -1))
                         val response = JSONObject(connector.readLine())
                         connector.close()

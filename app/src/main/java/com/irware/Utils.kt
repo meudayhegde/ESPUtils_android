@@ -12,20 +12,22 @@ import kotlin.collections.ArrayList
 
 class Utils{
     companion object{
+
+        /**
+         * @return [ArrayList]<[InetAddress]> broadcast addresses
+         * of all the local network that the android device is connected to.
+         */
         fun getBroadcastAddresses(): ArrayList<InetAddress> {
             val broadcastAddresses = ArrayList<InetAddress>()
             System.setProperty("java.net.preferIPv4Stack", "true")
             try {
-                val niEnum = NetworkInterface.getNetworkInterfaces()
-                while (niEnum.hasMoreElements()) {
-                    val ni = niEnum.nextElement()
-                    if (!ni.isLoopback) {
-                        for (interfaceAddress in ni.interfaceAddresses) {
-                            val broadcastAddress = interfaceAddress?.broadcast?.toString()
-                            broadcastAddress?.let { broadcastAddresses.add(InetAddress.getByName(it.substring(1))) }
+                NetworkInterface.getNetworkInterfaces().toList()
+                    .filter { !it.isLoopback }
+                    .forEach { ni ->
+                        ni.interfaceAddresses.forEach { ia ->
+                            ia?.broadcast?.toString()?.let { broadcastAddresses.add(InetAddress.getByName(it.substring(1))) }
                         }
                     }
-                }
             } catch (e: SocketException) {
                 e.printStackTrace()
             }

@@ -1,5 +1,9 @@
 package com.irware
 
+import java.util.Queue
+import java.util.LinkedList
+import kotlin.collections.ArrayList
+
 class ThreadHandler {
     private val threadList = ArrayList<InfiniteThread>()
     private var maxThreadCount = MAX_THREAD_COUNT
@@ -111,7 +115,7 @@ class ThreadHandler {
         private var flag = true
         private var isPaused = false
         var isFree = true
-        private val taskQueue = ArrayList<(() -> Unit)>()
+        private val taskQueue: Queue<(() -> Unit)> = LinkedList()
 
         constructor() : super() {
             start()
@@ -139,8 +143,7 @@ class ThreadHandler {
                 if (taskQueue.size > 0) {
                     if(!isPaused){
                         isFree = false
-                        taskQueue[0].invoke()
-                        taskQueue.removeAt(0)
+                        taskQueue.poll()?.invoke()
                     }
                 } else {
                     isFree = true

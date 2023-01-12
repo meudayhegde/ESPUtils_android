@@ -139,8 +139,12 @@ class ESPTable private constructor(context: Context) {
                     onArpItemListener?.invoke(ARPItem(macAddress, it))
                     update(ARPItem(macAddress, it))
                 }
-                macToPropMap?.remove(macAddress)?.isConnected = ipAddress != null
 
+                val devProp = macToPropMap?.remove(macAddress)
+                Handler(Looper.getMainLooper()).post{
+                    devProp?.isConnected = (ipAddress != null)
+                }
+                Thread.sleep(10)
                 if(macToPropMap?.isEmpty() == true) {
                     socket.close()
                     break

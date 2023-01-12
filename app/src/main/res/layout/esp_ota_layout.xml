@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -13,36 +14,61 @@
             android:layout_margin="@dimen/margin_max"
             android:text="@string/message_confirm_update_device" />
 
-    <ProgressBar
-            android:id="@+id/update_progress_bar"
-            style="?android:attr/progressBarStyleHorizontal"
+    <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_max"
             android:layout_marginEnd="@dimen/margin_max"
-            android:visibility="gone"
-            android:indeterminate="false" />
+            android:orientation="vertical"
+            android:id="@+id/ota_progress_layout"
+            android:visibility="gone">
 
-    <LinearLayout
-            android:id="@+id/error_layout"
+        <ProgressBar
+                android:id="@+id/update_progress_bar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:indeterminate="false" />
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_low"
+                android:orientation="horizontal">
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/_0"
+                    android:id="@+id/ota_percentage"
+                    android:textColor="?attr/colorOnBackground"
+                    android:textSize="@dimen/text_size_subtitle"
+                    android:paddingStart="@dimen/margin_low"
+                    android:paddingEnd="@dimen/margin_min"/>
+
+            <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/ota_content_progress"
+                    android:text="@string/_0b_0b"
+                    android:textColor="?attr/colorOnBackground"
+                    android:textSize="@dimen/text_size_subtitle"
+                    android:gravity="end"
+                    android:paddingEnd="@dimen/margin_low"
+                    android:paddingStart="@dimen/margin_min"/>
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+            android:id="@+id/error_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/margin_max"
-            android:layout_gravity="center_vertical"
             android:visibility="gone"
-            android:orientation="horizontal">
-        <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_error_red"
-                android:layout_marginEnd="@dimen/margin_high"/>
-        <TextView
-                android:id="@+id/error_content"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/text_size_subtitle_large"
-                android:textColor="?attr/colorOnBackground"
-                android:text="" />
-    </LinearLayout>
+            app:drawableStartCompat="@drawable/ic_error_red"
+            android:textSize="@dimen/text_size_subtitle_large"
+            android:textColor="?attr/colorOnBackground"
+            android:text="" />
 
 </LinearLayout>

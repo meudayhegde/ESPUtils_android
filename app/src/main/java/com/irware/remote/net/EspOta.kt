@@ -12,26 +12,33 @@ import java.net.InetAddress
 import java.net.ServerSocket
 
 class EspOta(private val devProp: DeviceProperties, private val localPort: Int = OTA_PORT, private val remotePort: Int = OTA_PORT) {
-    private fun sendInvitation(updateFile: File, command: Int = SYSTEM, updateIntermediateListener: OnOTAIntermediateListener? = null): Boolean{
 
+    private fun sendInvitation(updateFile: File, command: Int = SYSTEM, updateIntermediateListener: OnOTAIntermediateListener? = null): Boolean{
         updateIntermediateListener?.onStatusUpdate("Authenticating...", true)
 
         val fileMD5 = Utils.md5(updateFile)
         val fileLength = updateFile.length()
         var message = "$command $localPort $fileLength ${fileMD5}\n"
-        val sock = DatagramSocket()
         var pack = DatagramPacket(message.toByteArray(Charsets.UTF_8), message.length, InetAddress.getByName(devProp.ipAddress), remotePort)
-        sock.send(pack)
-
-        sock.soTimeout = 10
 
         var dgram = DatagramPacket(ByteArray(128), 128)
-        try {
-            sock.receive(dgram)
-        }catch (ex: IOException){
-            updateIntermediateListener?.onError("No Answer from Device.\n${ex.message}")
-            sock.close()
-            return false
+
+        val sock = DatagramSocket()
+        for(i in 0..2){
+            sock.send(pack)
+            sock.soTimeout = 1000
+            try {
+                sock.receive(dgram)
+                break
+            } catch (ex: IOException) {
+                if(i != 2){
+                    updateIntermediateListener?.onStatusUpdate("No answer from Device, Trying again", true)
+                    continue
+                }
+                updateIntermediateListener?.onError("No Answer from Device. Abort Installation.\n${ex.message}")
+                sock.close()
+                return false
+            }
         }
 
         var content = dgram.data.toString(Charsets.UTF_8).filter { it.isLetterOrDigit() or it.isWhitespace()}
@@ -82,13 +89,8 @@ class EspOta(private val devProp: DeviceProperties, private val localPort: Int =
     fun installUpdate(updateFile: File, command: Int = SYSTEM, updateIntermediateListener: OnOTAIntermediateListener? = null){
 
         val serverSocket = ServerSocket(localPort)
-        var authenticated = false
-        val authenticate = { authenticated = sendInvitation(updateFile, command, updateIntermediateListener) }
-        for(i in 0..10){
-            if(authenticated) break
-            authenticate.invoke()
-        }
-        if(!authenticated) {
+
+        if(!sendInvitation(updateFile, command, updateIntermediateListener)) {
             serverSocket.close()
             return
         }
@@ -105,10 +107,11 @@ class EspOta(private val devProp: DeviceProperties, private val localPort: Int =
                 val sos = socket.getOutputStream()
                 val sis = socket.getInputStream()
 
-                updateIntermediateListener?.onProgressUpdate(0F)
-
-                var offset = 0F
+                var offset = 0L
                 val fileLength = updateFile.length()
+
+                updateIntermediateListener?.onProgressUpdate(fileLength, 0L)
+
                 val bytes = ByteArray(1460)
                 var receivedOK = false
                 var receivedError = false
@@ -118,7 +121,7 @@ class EspOta(private val devProp: DeviceProperties, private val localPort: Int =
                             val len = it.read(bytes)
                             if(len <= 0) break
                             offset += len
-                            updateIntermediateListener?.onProgressUpdate(offset / fileLength.toFloat())
+                            updateIntermediateListener?.onProgressUpdate(fileLength, offset)
                             sos.write(bytes, 0, len)
 
                             val recvd = ByteArray(32)
@@ -145,7 +148,7 @@ class EspOta(private val devProp: DeviceProperties, private val localPort: Int =
                 }
                 if(receivedError) updateIntermediateListener?.onError("Update Failed")
                 if(receivedOK) {
-                    updateIntermediateListener?.onProgressUpdate(1F)
+                    updateIntermediateListener?.onProgressUpdate(fileLength, fileLength)
                     updateIntermediateListener?.onStatusUpdate("Update Successfully Installed.\n" +
                             "Please Wait for a while for the device to restart", false)
                 }

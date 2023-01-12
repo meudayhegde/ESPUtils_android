@@ -9,6 +9,7 @@ import java.net.SocketException
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import kotlin.collections.ArrayList
+import kotlin.math.roundToInt
 
 class Utils{
     companion object{
@@ -34,8 +35,11 @@ class Utils{
             return broadcastAddresses
         }
 
+        /**
+         * @param file instance of [File] to which MD5 need to be calculated
+         * @return [String] containing the MD% hash of the requested file
+         */
         fun md5(file: File): String?{
-
             val tag = "MD5"
             val digest: MessageDigest = try {
                 MessageDigest.getInstance("MD5")
@@ -83,5 +87,20 @@ class Utils{
             return joinToString("") { "%02x".format(it) }
         }
 
+        /**
+         * @param length Long value as in Bytes count
+         * @return human readable length in [String]
+         * @sample getConventionalSize(1024) returns "1 KB"
+         */
+        fun getConventionalSize(length: Long): String {
+            var size = length
+            var count = 0
+            while (size >= 1000) {
+                size /= 1024
+                count++
+            }
+            val unit = when (count) { 0 -> "B" 1 -> "KB" 2 -> "MB"  else -> "B" }
+            return ((size * 100.0).roundToInt() / 100.0).toString() + " " + unit
+        }
     }
 }

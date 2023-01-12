@@ -37,6 +37,7 @@ import com.irware.remote.ui.fragments.DevicesFragment
 import org.json.JSONObject
 import java.io.File
 import java.util.*
+import java.util.zip.ZipException
 import java.util.zip.ZipFile
 
 
@@ -248,7 +249,14 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
             extractDir.mkdirs()
             val path = extractDir.absolutePath
 
-            val zip = ZipFile(file)
+            val zip: ZipFile
+            try{
+                zip = ZipFile(file)
+            }catch(_: ZipException){
+                updateIntermediateListener?.onError(context.getString(R.string.message_err_update_file_corrupt))
+                return null
+            }
+
             val entries = zip.entries()
             while(entries.hasMoreElements()){
                 val entry = entries.nextElement()
@@ -292,19 +300,23 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                         val messageView = updateDialog.findViewById<TextView>(R.id.progress_title)
                         val progressBar =
                             updateDialog.findViewById<ProgressBar>(R.id.update_progress_bar)
+                        val progressLayout =
+                            updateDialog.findViewById<LinearLayout>(R.id.ota_progress_layout)
 
-                        val errorLayout = updateDialog.findViewById<LinearLayout>(R.id.error_layout)
+                        val percentText = updateDialog.findViewById<TextView>(R.id.ota_percentage)
+                        val progressText = updateDialog.findViewById<TextView>(R.id.ota_content_progress)
+
                         val errorView = updateDialog.findViewById<TextView>(R.id.error_content)
 
                         val updateIntermediateListener = object : OnOTAIntermediateListener {
                             override fun onStatusUpdate(status: String, progress: Boolean) {
                                 Handler(Looper.getMainLooper()).post {
                                     if (progress) {
-                                        progressBar?.visibility = View.VISIBLE
+                                        progressLayout?.visibility = View.VISIBLE
                                         progressBar?.isIndeterminate = true
                                         negativeButton?.isEnabled = false
                                         positiveButton?.isEnabled = false
-                                    } else progressBar?.visibility = View.GONE
+                                    } else progressLayout?.visibility = View.GONE
                                     messageView?.text = status
                                     if (status.lowercase(Locale.ROOT).contains(Strings.espResponseSuccess)) {
                                         positiveButton?.isEnabled = true
@@ -315,19 +327,31 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                                 }
                             }
 
-                            override fun onProgressUpdate(progress: Float) {
+                            override fun onProgressUpdate(fileLength: Long, offset: Long) {
                                 Handler(Looper.getMainLooper()).post  {
                                     negativeButton?.isEnabled = false
                                     positiveButton?.isEnabled = false
-                                    errorLayout?.visibility = View.GONE
+                                    errorView?.visibility = View.GONE
 
-                                    if (progressBar?.visibility != View.VISIBLE) progressBar?.visibility =
-                                        View.VISIBLE
+                                    progressLayout?.visibility = View.VISIBLE
                                     progressBar?.isIndeterminate = false
+
+                                    percentText?.text = context.getString(
+                                        R.string.ota_percent_progress, (offset * 100 / fileLength).toInt()
+                                    )
+
+                                    if(offset < fileLength)
+                                        progressText?.text = context.getString(
+                                            R.string.ota_content_progress,
+                                            Utils.getConventionalSize(offset),
+                                            Utils.getConventionalSize(fileLength)
+                                        )
+                                    else progressText?.text = Utils.getConventionalSize(fileLength)
+
                                     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                                        progressBar?.setProgress((progress * 100).toInt(), true)
+                                        progressBar?.setProgress((offset * 100 / fileLength).toInt(), true)
                                     } else {
-                                        progressBar?.progress = (progress * 100).toInt()
+                                        progressBar?.progress = (offset * 100 / fileLength).toInt()
 
                                     }
                                 }
@@ -338,9 +362,10 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                                     negativeButton?.isEnabled = true
                                     negativeButton?.text = context.getString(R.string.close)
                                     positiveButton?.isEnabled = false
-                                    errorLayout?.visibility = View.VISIBLE
+                                    errorView?.visibility = View.VISIBLE
 
-                                    progressBar?.visibility = View.GONE
+                                    messageView?.visibility = View.GONE
+                                    progressLayout?.visibility = View.GONE
                                     errorView?.text = message
                                 }
                             }

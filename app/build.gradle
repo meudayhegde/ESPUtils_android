@@ -5,35 +5,20 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
-    signingConfigs {
-        iRWaRE_Release {
-            storeFile file('/home/hegdeuday/AndroidStudioProjects/iRWaRE_android.jks')
-            storePassword 'infrared.redefined'
-            keyAlias = 'key0'
-            keyPassword 'infrared.redefined'
-        }
-    }
+
     compileSdkVersion 33
     defaultConfig {
-        applicationId "com.irware.remote"
+        applicationId "com.github.meudayhegde.esputils"
         minSdkVersion 21
         targetSdkVersion 33
         versionCode 1024
         versionName "1.0.24"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
-        testApplicationId = 'com.irware.remote.test'
+        testApplicationId = 'com.github.meudayhegde.esputils.test'
     }
-    buildTypes {
-        release {
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            applicationIdSuffix = ''
-            versionNameSuffix = ''
-            signingConfig signingConfigs.iRWaRE_Release
-        }
-    }
-    namespace 'com.irware.remote'
+
+    namespace 'com.github.meudayhegde.esputils'
 }
 
 dependencies {

@@ -1,0 +1,4 @@
+
+./.git/index
+./.gradle/7.4/executionHistory/executionHistory.bin
+./.idea/workspace.xml

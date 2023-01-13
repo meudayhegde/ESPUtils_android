@@ -68,7 +68,7 @@
                     android:layout_marginBottom="@dimen/margin_max">
 
 
-                <com.irware.remote.ui.buttons.RemoteButton
+                <com.github.meudayhegde.esputils.ui.buttons.RemoteButton
                         android:id="@+id/remote_model_button" android:layout_width="wrap_content"
                         android:layout_height="wrap_content" android:gravity="center" android:text="" />
 

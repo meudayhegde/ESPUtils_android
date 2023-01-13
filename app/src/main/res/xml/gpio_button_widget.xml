@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
-        android:configure="com.irware.remote.GPIOBtnWidgetConfActivity"
+        android:configure="com.github.meudayhegde.esputils.GPIOBtnWidgetConfActivity"
         android:initialLayout="@layout/widget_layout_gpio_button"
         android:minHeight="@dimen/list_item_icon_size"
         android:minWidth="@dimen/list_item_icon_size"

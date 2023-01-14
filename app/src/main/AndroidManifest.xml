@@ -20,6 +20,10 @@
             android:theme="@style/AppTheme"
             tools:ignore="UnusedAttribute">
 
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-2858595319126158~1418481738"/>
+
         <activity
                 android:name=".GPIOBtnWidgetConfActivity"
                 android:configChanges="keyboardHidden|orientation|screenSize"

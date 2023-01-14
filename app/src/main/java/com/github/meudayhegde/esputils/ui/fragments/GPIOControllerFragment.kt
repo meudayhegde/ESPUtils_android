@@ -24,6 +24,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.github.meudayhegde.ThreadHandler
 import com.github.meudayhegde.esputils.ESPUtilsApp
+import com.github.meudayhegde.esputils.MainActivity
 import com.github.meudayhegde.esputils.R
 import com.github.meudayhegde.esputils.holders.GPIOItem
 import com.github.meudayhegde.esputils.holders.GPIOObject
@@ -88,6 +89,9 @@ class GPIOControllerFragment : androidx.fragment.app.Fragment()  {
             .setPositiveButton(R.string.confirm) {_, _ -> }
             .setView(R.layout.layout_new_gpio_switch)
             .create()
+        gpioDialog.setOnDismissListener {
+            ESPUtilsApp.showAd(context as MainActivity)
+        }
         gpioDialog.setOnShowListener {
             val devicesSpinner = gpioDialog.findViewById<Spinner>(R.id.select_device)!!
             val gpioSpinner = gpioDialog.findViewById<Spinner>(R.id.pin_number)!!

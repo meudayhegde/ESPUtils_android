@@ -25,7 +25,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
-import com.google.android.material.navigation.NavigationView
 import com.github.meudayhegde.esputils.listeners.OnConfigurationChangeListener
 import com.github.meudayhegde.esputils.listeners.OnFragmentInteractionListener
 import com.github.meudayhegde.esputils.listeners.OnValidationListener
@@ -34,6 +33,7 @@ import com.github.meudayhegde.esputils.ui.fragments.AboutFragment
 import com.github.meudayhegde.esputils.ui.fragments.DevicesFragment
 import com.github.meudayhegde.esputils.ui.fragments.GPIOControllerFragment
 import com.github.meudayhegde.esputils.ui.fragments.IRFragment
+import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import java.io.*

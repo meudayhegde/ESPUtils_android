@@ -132,7 +132,9 @@ class RemoteListAdapter(private val propList: ArrayList<RemoteProperties>, priva
             .setNegativeButton(R.string.cancel){ _, _ -> }
             .setNeutralButton(R.string.delete_remote){ _, _ -> }
             .create()
-
+        remoteEditDialog.setOnDismissListener {
+            ESPUtilsApp.showAd(card.context as MainActivity)
+        }
         remoteEditDialog.setOnShowListener {
             val vendor = remoteEditDialog.findViewById<TextInputEditText>(R.id.vendor_name)
             vendor?.setText(prop.remoteVendor)

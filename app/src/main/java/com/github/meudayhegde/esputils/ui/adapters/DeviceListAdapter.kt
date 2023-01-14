@@ -24,6 +24,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.github.meudayhegde.ThreadHandler
 import com.github.meudayhegde.Utils
+import com.github.meudayhegde.esputils.ESPUtilsApp
 import com.github.meudayhegde.esputils.Strings
 import com.github.meudayhegde.esputils.MainActivity
 import com.github.meudayhegde.esputils.R
@@ -195,6 +196,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                                 connector.sendLine(Strings.espCommandRestart(prop.userName, prop.password))
                                 Handler(Looper.getMainLooper()).post {
                                     Toast.makeText(context, context.getString(R.string.message_esp_restart_success), Toast.LENGTH_SHORT).show()
+                                    ESPUtilsApp.showAd(context as MainActivity)
                                 }
                             } catch (ex: Exception) {
                                 Handler(Looper.getMainLooper()).post {
@@ -292,6 +294,9 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                         .setPositiveButton(R.string.update) { _, _ -> }
                         .create()
                     updateDialog.setCancelable(false)
+                    updateDialog.setOnDismissListener {
+                        ESPUtilsApp.showAd(context as MainActivity)
+                    }
                     updateDialog.setOnShowListener {
 
                         val positiveButton = updateDialog.getButton(DialogInterface.BUTTON_POSITIVE)
@@ -518,7 +523,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                                             val result = connector.readLine()
                                             val resultObj = JSONObject(result)
                                             Handler(Looper.getMainLooper()).post {
-                                                AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
+                                                val nDialog = AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
                                                     .setTitle(
                                                         if (resultObj.getString(Strings.espResponse)
                                                                 .contains(
@@ -530,6 +535,9 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                                                     .setMessage(resultObj.getString(Strings.espResponse))
                                                     .setPositiveButton(R.string.done) { dg, _ -> dg.dismiss() }
                                                     .show()
+                                                nDialog.setOnDismissListener {
+                                                    ESPUtilsApp.showAd(context as MainActivity)
+                                                }
                                             }
                                             connector.close()
                                         } catch (ex: Exception) {
@@ -686,7 +694,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                                             val result = connector.readLine()
                                             val resultObj = JSONObject(result)
                                             Handler(Looper.getMainLooper()).post {
-                                                AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
+                                                val nDialog = AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
                                                     .setTitle(
                                                         if (resultObj.getString(Strings.espResponse)
                                                                 .contains(
@@ -698,6 +706,9 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                                                     .setMessage(resultObj.getString(Strings.espResponse))
                                                     .setPositiveButton(R.string.done) { dg, _ -> dg.dismiss() }
                                                     .show()
+                                                nDialog.setOnDismissListener {
+                                                    ESPUtilsApp.showAd(context as MainActivity)
+                                                }
                                             }
                                             connector.close()
                                         } catch (ex: Exception) {

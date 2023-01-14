@@ -192,6 +192,7 @@ class RemoteParserActivity : AppCompatActivity() {
     }
 
     private fun onSuccess(progress:ProgressBar, imV:ImageView, msg:TextView, btn:Button){
+        ESPUtilsApp.showAd(this)
         progress.visibility = View.GONE
         imV.visibility = View.VISIBLE
         val drawable =ContextCompat.getDrawable(this, R.drawable.icon_check_circle)

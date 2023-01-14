@@ -22,6 +22,7 @@ import com.github.clans.fab.FloatingActionMenu
 import com.google.android.material.textfield.TextInputEditText
 import com.github.meudayhegde.ThreadHandler
 import com.github.meudayhegde.esputils.ESPUtilsApp
+import com.github.meudayhegde.esputils.MainActivity
 import com.github.meudayhegde.esputils.R
 import com.github.meudayhegde.esputils.Strings
 import com.github.meudayhegde.esputils.holders.ARPItem
@@ -258,6 +259,7 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
                                 Toast.makeText(context, "Device successfully Added", Toast.LENGTH_LONG).show()
                             }
                             dialog.dismiss()
+                            ESPUtilsApp.showAd(context as MainActivity)
                         }
                     }catch(ex: Exception){
                         Handler(Looper.getMainLooper()).post{

@@ -58,18 +58,19 @@ class SettingsActivity : AppCompatActivity() {
             SettingsItem(
                 getString(R.string.title_application_theme),
                 getString(R.string.title_sub_application_theme),
-                selectionDialog(getString(R.string.title_application_theme),
-                    R.drawable.icon_theme, Strings.sharedPrefItemApplicationTheme,
+                selectionDialog(getString(R.string.title_application_theme), R.drawable.icon_theme, Strings.sharedPrefItemApplicationTheme,
                     resources.getStringArray(R.array.settings_theme_list).asList()) {
-                themeChanged = true
-                AppCompatDelegate.setDefaultNightMode(
-                    when (getSharedPreferences(Strings.sharedPrefNameSettings, MODE_PRIVATE).getInt(Strings.sharedPrefItemApplicationTheme, 0)) {
-                        1 -> { AppCompatDelegate.MODE_NIGHT_NO }
-                        2 -> { AppCompatDelegate.MODE_NIGHT_YES }
-                        else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-                    }
-                )
-            }, R.drawable.icon_theme),
+                        themeChanged = true
+                        AppCompatDelegate.setDefaultNightMode(
+                            when (getSharedPreferences(Strings.sharedPrefNameSettings, MODE_PRIVATE).getInt(Strings.sharedPrefItemApplicationTheme, 0)) {
+                                1 -> { AppCompatDelegate.MODE_NIGHT_NO }
+                                2 -> { AppCompatDelegate.MODE_NIGHT_YES }
+                                else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                            }
+                        )
+                    },
+                R.drawable.icon_theme
+            ),
             SettingsItem(getString(R.string.title_home_fragment),getString(R.string.title_sub_home_fragment), selectionDialog(getString(R.string.title_home_fragment), R.drawable.icon_home, Strings.sharedPrefItemHomeFragment, fragmentList, null), R.drawable.icon_home)
         ))
 
@@ -115,6 +116,10 @@ class SettingsActivity : AppCompatActivity() {
                 action?.run()
             }
             .create()
+
+        dialog.setOnDismissListener {
+            ESPUtilsApp.showAd(this)
+        }
 
         dialog.setOnShowListener {
             content.check(pref.getInt(prefName,0))

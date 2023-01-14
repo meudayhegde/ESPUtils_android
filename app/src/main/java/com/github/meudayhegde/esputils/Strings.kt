@@ -118,5 +118,6 @@ object Strings {
     const val intentTypeAll = "*/*"
 
     const val widgetIntentActionClick = "automaticWidgetSyncButtonClick"
-    const val widgetIntentActionOnResponse = "automaticWidgetSyncButtonClick"
+
+    const val espInterstitialAdID = "ca-app-pub-2858595319126158/1060562545"
 }

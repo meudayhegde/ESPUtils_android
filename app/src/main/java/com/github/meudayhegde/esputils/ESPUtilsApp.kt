@@ -1,20 +1,25 @@
 package com.github.meudayhegde.esputils
 
+import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.os.Build
 import android.os.Environment
 import android.text.TextUtils
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import com.github.meudayhegde.ThreadHandler
+import com.github.meudayhegde.esputils.Strings.espInterstitialAdID
 import com.github.meudayhegde.esputils.holders.DeviceProperties
 import com.github.meudayhegde.esputils.holders.GPIOConfig
 import com.github.meudayhegde.esputils.holders.GPIOObject
 import com.github.meudayhegde.esputils.holders.RemoteProperties
 import com.github.meudayhegde.esputils.net.ESPTable
+import com.google.android.gms.ads.*
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import java.io.File
-
 import java.lang.ref.WeakReference
 
 class ESPUtilsApp: Application() {
@@ -31,6 +36,11 @@ class ESPUtilsApp: Application() {
         ){
             1-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
             2-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        }
+
+        MobileAds.initialize(this) { status ->
+            Log.d(status.javaClass.simpleName, status.toString())
+            loadInterstitialAd(this)
         }
 
         remotePropList.clear()
@@ -143,6 +153,57 @@ class ESPUtilsApp: Application() {
 
         fun updateStaticContext(context: Context){
             contextRef = WeakReference(context)
+        }
+
+        private var mInterstitialAd: InterstitialAd? = null
+        private fun loadInterstitialAd(context: Context){
+            val adRequest = AdRequest.Builder().build()
+
+            InterstitialAd.load(context, espInterstitialAdID, adRequest, object : InterstitialAdLoadCallback() {
+                override fun onAdFailedToLoad(adError: LoadAdError) {
+                    Log.d(InterstitialAd::class.simpleName, adError.toString())
+                    mInterstitialAd = null
+                }
+
+                override fun onAdLoaded(interstitialAd: InterstitialAd) {
+                    Log.d(InterstitialAd::class.simpleName, "Ad was loaded.")
+                    mInterstitialAd = interstitialAd
+                }
+            })
+
+            mInterstitialAd?.fullScreenContentCallback = object: FullScreenContentCallback() {
+                override fun onAdClicked() {
+                    Log.d(InterstitialAd::class.simpleName, "Ad was clicked.")
+                }
+
+                override fun onAdDismissedFullScreenContent() {
+                    Log.d(InterstitialAd::class.simpleName, "Ad dismissed fullscreen content.")
+                }
+
+                override fun onAdFailedToShowFullScreenContent(p0: AdError) {
+                    Log.e(InterstitialAd::class.simpleName, "Ad failed to show fullscreen content.")
+                }
+
+                override fun onAdImpression() {
+                    Log.d(InterstitialAd::class.simpleName, "Ad recorded an impression.")
+                }
+
+                override fun onAdShowedFullScreenContent() {
+                    Log.d(InterstitialAd::class.simpleName, "Ad showed fullscreen content.")
+                }
+            }
+        }
+
+        /**
+         * Show full screen InterstitialAd
+         */
+        fun showAd(activity: Activity){
+            if (mInterstitialAd != null) {
+                mInterstitialAd?.show(activity)
+            } else {
+                Log.d(InterstitialAd::class.simpleName, "The interstitial ad wasn't ready yet.")
+            }
+            loadInterstitialAd(activity)
         }
     }
 }

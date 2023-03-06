@@ -146,6 +146,9 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                     ),
                     SettingsItem(context.getString(R.string.title_remove_device), context.getString(R.string.title_sub_remove_device),
                         null, R.drawable.icon_delete, deleteClickAction(context, holder.adapterPosition, settingsDialog)
+                    ),
+                    SettingsItem(context.getString(R.string.title_reset_device), context.getString(R.string.title_sub_reset_device),
+                        null, R.drawable.ic_reset, resetClickAction(context, prop), prop
                     )
                 )
                 val viewManager = LinearLayoutManager(context)
@@ -227,6 +230,37 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                     Toast.makeText(context, context.getString(R.string.message_device_delete), Toast.LENGTH_SHORT).show()
                 }
                 .show()
+        }
+    }
+
+    private fun resetClickAction(context: Context, prop: DeviceProperties): Runnable{
+        return Runnable{
+            if(prop.isConnected) {
+                AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
+                    .setTitle(context.resources.getString(R.string.confirm_reset))
+                    .setIcon(R.drawable.ic_reset)
+                    .setMessage(context.resources.getString(R.string.message_confirm_reset_note))
+                    .setNegativeButton(context.resources.getString(R.string.cancel)) { dialog, _ -> dialog.dismiss() }
+                    .setPositiveButton(context.resources.getString(R.string.reset)) { dialog, _ ->
+                        dialog.dismiss()
+                        ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE) {
+                            try {
+                                val connector = SocketClient.Connector(prop.ipAddress)
+                                connector.sendLine(Strings.espCommandReset(prop.userName, prop.password))
+                                Handler(Looper.getMainLooper()).post {
+                                    Toast.makeText(context, context.getString(R.string.message_esp_reset_success), Toast.LENGTH_SHORT).show()
+                                    ESPUtilsApp.showAd(context as MainActivity)
+                                }
+                            } catch (ex: Exception) {
+                                Handler(Looper.getMainLooper()).post {
+                                    Toast.makeText(context, context.getString(R.string.message_esp_restart_failure), Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        }
+                    }
+                    .show()
+            }
+            else Toast.makeText(context, context.resources.getString(R.string.message_device_offline), Toast.LENGTH_SHORT).show()
         }
     }
 

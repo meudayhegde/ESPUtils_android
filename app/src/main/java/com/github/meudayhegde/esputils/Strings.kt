@@ -48,6 +48,13 @@ object Strings {
         return "{\"request\": \"restart\", \"username\": \"$username\", \"password\": \"$password\"}"
     }
 
+    /**
+        api for esp reset
+     */
+    fun espCommandReset(username: String, password: String): String{
+        return "{\"request\": \"reset\", \"username\": \"$username\", \"password\": \"$password\"}"
+    }
+
     fun espCommandSendIrcode(username: String, password: String, length: String, protocol: String, irCode: String): String{
         return "{\"request\": \"ir_send\", \"username\": \"$username\", \"password\": \"$password\", \"length\": \"$length\", \"protocol\": \"$protocol\", \"irCode\": \"$irCode\"}"
     }

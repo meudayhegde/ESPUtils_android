@@ -21,6 +21,7 @@
     <string name="confirm_delete">Confirm Delete</string>
     <string name="confirm_password">Confirm Password</string>
     <string name="confirm_restart">Confirm Restart</string>
+    <string name="confirm_reset">Confirm Reset</string>
     <string name="connecting">Connecting…</string>
     <string name="current_password">Current Password</string>
     <string name="current_username">Current UserName</string>
@@ -77,6 +78,7 @@
     <string name="message_color_picker_help">Inner circle changes the color of content and outer two circle change button color</string>
     <string name="message_confirm_delete_note">Are you sure you want to remove the device?\nNote: All related GPIO settings will be deleted.</string>
     <string name="message_confirm_restart_note">Are you sure you want to restart the device?</string>
+    <string name="message_confirm_reset_note">!Warning: This will erase all wireless, gpio and user settings and reset to default values!</string>
     <string name="message_confirm_update_device">Are you sure you want to update this device?</string>
     <string name="message_create_remote_guide">Long press buttons to drag and drop, single click to edit properties</string>
     <string name="message_delete_gpio_switch">Delete GPIO Switch %1$s ?</string>
@@ -91,7 +93,9 @@
     <string name="message_err_update_file_corrupt">Err: Corrupted package or unsupported compression method.</string>
     <string name="message_err_update_file_is_not_valid">Err: Update file is not valid</string>
     <string name="message_esp_restart_failure">Failed to send Restart command!</string>
+    <string name="message_esp_reset_failure">Failed to send Reset command!</string>
     <string name="message_esp_restart_success">Restart command successfully sent</string>
+    <string name="message_esp_reset_success">Reset command successfully sent</string>
     <string name="message_extracting_update_file">Extracting update file…</string>
     <string name="message_gpio_device_no_selection">Please select Device</string>
     <string name="message_gpio_pin_no_selection">Please select GPIO Pin number</string>
@@ -138,6 +142,7 @@
 
     <string name="remove">Remove</string>
     <string name="restart">Restart</string>
+    <string name="reset">Reset</string>
     <string name="restart_app_from_splash_screen">restart app from splash screen</string>
     <string name="result_icon">Result Icon</string>
     <string name="retry">Retry</string>
@@ -164,6 +169,7 @@
     <string name="title_home_fragment">Home Fragment</string>
     <string name="title_install_update">Install Update</string>
     <string name="title_remove_device">Remove Device</string>
+    <string name="title_reset_device">Reset Device</string>
     <string name="title_select_remote_button">Select Remote Controller Button</string>
     <string name="title_sub_application_theme">UI theme for iRWaRE Application</string>
     <string name="title_sub_edit_properties">Edit device properties</string>
@@ -171,6 +177,7 @@
     <string name="title_sub_install_update">install update on esp device</string>
     <string name="title_sub_reboot">Restart the micro controller</string>
     <string name="title_sub_remove_device">Remove ESP device from device list</string>
+    <string name="title_sub_reset_device">Reset ESP device to default configuration</string>
     <string name="title_sub_user_settings">User credentials (username and password)</string>
     <string name="title_sub_wireless_settings">Wi-Fi/Hotspot SSID and passwords</string>
     <string name="title_user_settings">User Settings</string>

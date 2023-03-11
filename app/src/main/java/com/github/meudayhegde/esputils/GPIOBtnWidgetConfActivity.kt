@@ -26,7 +26,9 @@ class GPIOBtnWidgetConfActivity : AppCompatActivity() {
         val mainBinding = RecyclerRefreshLayoutBinding.inflate(layoutInflater)
         setContentView(mainBinding.root)
 
-        widgetId = intent?.extras?.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)?: AppWidgetManager.INVALID_APPWIDGET_ID
+        widgetId = intent?.extras?.getInt(
+            AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID
+        ) ?: AppWidgetManager.INVALID_APPWIDGET_ID
 
         setLayoutParams()
 
@@ -35,8 +37,12 @@ class GPIOBtnWidgetConfActivity : AppCompatActivity() {
         ESPUtilsApp.gpioConfig = GPIOConfig(gpioConfigFile)
         val gpioObjectArray = ESPUtilsApp.gpioConfig!!.gpioObjectArray
         ESPUtilsApp.gpioObjectList.clear()
-        if(gpioObjectArray.length() >  0) for(i: Int in 0 until gpioObjectArray.length()){
-            ESPUtilsApp.gpioObjectList.add(GPIOObject(gpioObjectArray.getJSONObject(i), ESPUtilsApp.gpioConfig!!))
+        if (gpioObjectArray.length() > 0) for (i: Int in 0 until gpioObjectArray.length()) {
+            ESPUtilsApp.gpioObjectList.add(
+                GPIOObject(
+                    gpioObjectArray.getJSONObject(i), ESPUtilsApp.gpioConfig!!
+                )
+            )
         }
 
         val itemList = ArrayList<ListItemCommon>()
@@ -44,19 +50,34 @@ class GPIOBtnWidgetConfActivity : AppCompatActivity() {
             itemList.add(ListItemCommon(it.title, it.subTitle, R.drawable.icon_lamp, it))
         }
 
-        val listAdapter = ListAdapterCommon(itemList)
-            .setOnItemClickListener{ _, listItem ->
+        val listAdapter = ListAdapterCommon(itemList).setOnItemClickListener { _, listItem ->
                 val sharedPref = getSharedPreferences(widgetId.toString(), Context.MODE_PRIVATE)
                 val editor = sharedPref.edit()
 
                 editor.putString(Strings.sharedPrefItemGPIOTitle, listItem.title)
                 editor.putString(Strings.sharedPrefItemGPIOSubtitle, listItem.subTitle)
-                editor.putString(Strings.sharedPrefItemGPIODevice, (listItem.linkedObj as GPIOObject).deviceProperties.nickName)
-                editor.putString(Strings.sharedPrefItemGPIODeviceMAC, (listItem.linkedObj as GPIOObject).macAddr)
-                editor.putInt(Strings.sharedPrefItemGPIOPinNumber, (listItem.linkedObj as GPIOObject).gpioNumber)
-                editor.putInt(Strings.sharedPrefItemGPIOPinValue, (listItem.linkedObj as GPIOObject).pinValue)
-                editor.putString(Strings.sharedPrefItemGPIOUsername, (listItem.linkedObj as GPIOObject).deviceProperties.userName)
-                editor.putString(Strings.sharedPrefItemGPIOPassword, (listItem.linkedObj as GPIOObject).deviceProperties.password)
+                editor.putString(
+                    Strings.sharedPrefItemGPIODevice,
+                    (listItem.linkedObj as GPIOObject).deviceProperties.nickName
+                )
+                editor.putString(
+                    Strings.sharedPrefItemGPIODeviceMAC, (listItem.linkedObj as GPIOObject).macAddress
+                )
+                editor.putInt(
+                    Strings.sharedPrefItemGPIOPinNumber,
+                    (listItem.linkedObj as GPIOObject).gpioNumber
+                )
+                editor.putInt(
+                    Strings.sharedPrefItemGPIOPinValue, (listItem.linkedObj as GPIOObject).pinValue
+                )
+                editor.putString(
+                    Strings.sharedPrefItemGPIOUsername,
+                    (listItem.linkedObj as GPIOObject).deviceProperties.userName
+                )
+                editor.putString(
+                    Strings.sharedPrefItemGPIOPassword,
+                    (listItem.linkedObj as GPIOObject).deviceProperties.password
+                )
                 editor.apply()
 
                 updateAppWidget()
@@ -69,10 +90,11 @@ class GPIOBtnWidgetConfActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateAppWidget(){
+    private fun updateAppWidget() {
         val intent = Intent(this, GPIOButtonWidget::class.java)
         intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
-        val  ids = AppWidgetManager.getInstance(this).getAppWidgetIds(ComponentName(this, GPIOButtonWidget::class.java))
+        val ids = AppWidgetManager.getInstance(this)
+            .getAppWidgetIds(ComponentName(this, GPIOButtonWidget::class.java))
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
         sendBroadcast(intent)
 
@@ -83,7 +105,7 @@ class GPIOBtnWidgetConfActivity : AppCompatActivity() {
         finish()
     }
 
-    private fun setLayoutParams(){
+    private fun setLayoutParams() {
         val lWindowParams = WindowManager.LayoutParams()
         lWindowParams.copyFrom(window?.attributes)
         lWindowParams.width = WindowManager.LayoutParams.MATCH_PARENT
@@ -94,7 +116,9 @@ class GPIOBtnWidgetConfActivity : AppCompatActivity() {
         MainActivity.layoutParams.height = resources.displayMetrics.heightPixels
 
         val width = min(MainActivity.layoutParams.width, MainActivity.layoutParams.height)
-        MainActivity.NUM_COLUMNS = when{ width > 920 -> 5; width < 720 -> 3; else -> 4}
+        MainActivity.NUM_COLUMNS = when {
+            width > 920 -> 5; width < 720 -> 3; else -> 4
+        }
         lWindowParams.width = MainActivity.layoutParams.width * 7 / 8
         lWindowParams.height = MainActivity.layoutParams.height * 6 / 8
         window?.attributes = lWindowParams

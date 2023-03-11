@@ -11,8 +11,8 @@ import java.security.NoSuchAlgorithmException
 import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
 
-class Utils{
-    companion object{
+class Utils {
+    companion object {
 
         /**
          * @return [ArrayList]<[InetAddress]> broadcast addresses
@@ -22,11 +22,11 @@ class Utils{
             val broadcastAddresses = ArrayList<InetAddress>()
             System.setProperty("java.net.preferIPv4Stack", "true")
             try {
-                NetworkInterface.getNetworkInterfaces().toList()
-                    .filter { !it.isLoopback }
+                NetworkInterface.getNetworkInterfaces().toList().filter { !it.isLoopback }
                     .forEach { ni ->
                         ni.interfaceAddresses.forEach { ia ->
-                            ia?.broadcast?.toString()?.let { broadcastAddresses.add(InetAddress.getByName(it.substring(1))) }
+                            ia?.broadcast?.toString()
+                                ?.let { broadcastAddresses.add(InetAddress.getByName(it.substring(1))) }
                         }
                     }
             } catch (e: SocketException) {
@@ -39,7 +39,7 @@ class Utils{
          * @param file instance of [File] to which MD5 need to be calculated
          * @return [String] containing the MD% hash of the requested file
          */
-        fun md5(file: File): String?{
+        fun md5(file: File): String? {
             val tag = "MD5"
             val digest: MessageDigest = try {
                 MessageDigest.getInstance("MD5")
@@ -79,7 +79,7 @@ class Utils{
             }
         }
 
-        fun md5(input: String): String{
+        fun md5(input: String): String {
             return MessageDigest.getInstance("MD5").digest(input.toByteArray()).toHex()
         }
 
@@ -99,7 +99,12 @@ class Utils{
                 size /= 1024
                 count++
             }
-            val unit = when (count) { 0 -> "B" 1 -> "KB" 2 -> "MB"  else -> "B" }
+            val unit = when (count) {
+                0 -> "B"
+                1 -> "KB"
+                2 -> "MB"
+                else -> "B"
+            }
             return ((size * 100.0).roundToInt() / 100.0).toString() + " " + unit
         }
     }

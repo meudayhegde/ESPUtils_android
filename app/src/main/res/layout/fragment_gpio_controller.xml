@@ -1,57 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        xmlns:fab="http://schemas.android.com/apk/res-auto"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.fragments.GPIOControllerFragment">
+
+
+    <TextView
+        android:id="@+id/info_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="@dimen/margin_high"
+        android:layout_marginTop="@dimen/margin_high"
+        android:layout_marginEnd="@dimen/margin_high"
+        android:gravity="center"
+        android:paddingStart="@dimen/margin_medium"
+        android:text="@string/message_long_press_item_edit"
+        android:textColor="?attr/colorOnBackground"
+        android:textSize="@dimen/text_size_title"
+        android:textStyle="bold"
+        fab:drawableStartCompat="@drawable/icon_info"
+        fab:drawableTint="?attr/colorOnBackground"
+        tools:ignore="RtlSymmetry"
+        tools:targetApi="m" />
+
+    <include
+        android:id="@+id/refresh_layout"
+        layout="@layout/recycler_refresh_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.fragments.GPIOControllerFragment">
-
-
-    <TextView android:id="@+id/info_layout"
-            android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_gravity="center"
-            android:layout_marginTop="@dimen/margin_high" android:layout_marginStart="@dimen/margin_high" android:layout_marginEnd="@dimen/margin_high"
-            android:paddingStart="@dimen/margin_medium" android:gravity="center" android:textColor="?attr/colorOnBackground"
-            android:text="@string/message_long_press_item_edit" android:textSize="@dimen/text_size_title"
-            tools:targetApi="m" tools:ignore="RtlSymmetry" android:textStyle="bold"
-            fab:drawableStartCompat="@drawable/icon_info"
-            fab:drawableTint="?attr/colorOnBackground" />
-
-    <include layout="@layout/recycler_refresh_layout"
-            android:id="@+id/refresh_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@id/info_layout"/>
+        android:layout_below="@id/info_layout" />
 
     <com.github.clans.fab.FloatingActionMenu
-            android:id="@+id/fam_manage_gpio"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:paddingEnd="30sp"
-            android:paddingStart="30sp"
-            android:paddingBottom="30dp"
-            fab:menu_labels_showAnimation="@anim/fab_slide_in_from_right"
-            fab:menu_labels_hideAnimation="@anim/fab_slide_out_to_right"
-            fab:menu_shadowColor="#444"
-            fab:menu_backgroundColor="#44000000"
-            fab:menu_buttonSpacing="5dp"
-            fab:menu_fab_label="Actions "
-            fab:menu_colorNormal="?attr/colorPrimary"
-            fab:menu_colorPressed="?attr/colorAccent"
-            fab:menu_colorRipple="?attr/colorAccent">
+        android:id="@+id/fam_manage_gpio"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:paddingStart="30sp"
+        android:paddingEnd="30sp"
+        android:paddingBottom="30dp"
+        fab:menu_backgroundColor="#44000000"
+        fab:menu_buttonSpacing="5dp"
+        fab:menu_colorNormal="?attr/colorPrimary"
+        fab:menu_colorPressed="?attr/colorAccent"
+        fab:menu_colorRipple="?attr/colorAccent"
+        fab:menu_fab_label="Actions "
+        fab:menu_labels_hideAnimation="@anim/fab_slide_out_to_right"
+        fab:menu_labels_showAnimation="@anim/fab_slide_in_from_right"
+        fab:menu_shadowColor="#444">
 
         <com.github.clans.fab.FloatingActionButton
-                android:id="@+id/fab_new_switch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                fab:fab_label="New Switch"
-                fab:fab_size="mini"
-                fab:fab_colorNormal="?attr/colorPrimary"
-                fab:fab_colorPressed="?attr/colorPrimaryDark"
-                fab:fab_colorRipple="?attr/colorPrimaryDark"
-                android:src="@drawable/ic_switch"
-                tools:ignore="VectorDrawableCompat" />
+            android:id="@+id/fab_new_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_switch"
+            fab:fab_colorNormal="?attr/colorPrimary"
+            fab:fab_colorPressed="?attr/colorPrimaryDark"
+            fab:fab_colorRipple="?attr/colorPrimaryDark"
+            fab:fab_label="New Switch"
+            fab:fab_size="mini"
+            tools:ignore="VectorDrawableCompat" />
 
     </com.github.clans.fab.FloatingActionMenu>
 

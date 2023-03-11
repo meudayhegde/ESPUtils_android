@@ -34,7 +34,7 @@ import com.google.android.material.textfield.TextInputEditText
 import org.json.JSONObject
 import java.io.File
 
-class DevicesFragment : androidx.fragment.app.Fragment()  {
+class DevicesFragment : androidx.fragment.app.Fragment() {
     private var listener: OnFragmentInteractionListener? = null
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
@@ -43,30 +43,38 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
     private var _binding: FragmentDevicesBinding? = null
 
     var updateSelectedListener: ((File) -> Unit)? = null
-    val espOtaChooser = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if(result.resultCode == Activity.RESULT_OK) {
-            val isr = requireContext().contentResolver.openInputStream(result?.data?.data?: return@registerForActivityResult)?: return@registerForActivityResult
-            val update = File((requireContext().externalCacheDir?:requireContext().filesDir).absolutePath + File.separator + "Update.zip")
-            if(update.exists()) update.delete()
-            ThreadHandler.runOnFreeThread{
-                update.createNewFile()
+    val espOtaChooser =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val isr = requireContext().contentResolver.openInputStream(
+                    result?.data?.data ?: return@registerForActivityResult
+                ) ?: return@registerForActivityResult
+                val update = File(
+                    (requireContext().externalCacheDir
+                        ?: requireContext().filesDir).absolutePath + File.separator + "Update.zip"
+                )
+                if (update.exists()) update.delete()
+                ThreadHandler.runOnFreeThread {
+                    update.createNewFile()
 
-                update.outputStream().use {
-                    it.write(isr.readBytes())
-                    it.flush()
-                }
-                isr.close()
+                    update.outputStream().use {
+                        it.write(isr.readBytes())
+                        it.flush()
+                    }
+                    isr.close()
 
-                Handler(Looper.getMainLooper()).post{
-                    updateSelectedListener?.invoke(update)
-                    updateSelectedListener = null
+                    Handler(Looper.getMainLooper()).post {
+                        updateSelectedListener?.invoke(update)
+                        updateSelectedListener = null
+                    }
                 }
             }
         }
-    }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        if(_binding == null ){
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View {
+        if (_binding == null) {
             fragmentBinding = FragmentDevicesBinding.inflate(inflater, container, false)
             _binding = fragmentBinding
             viewManager = LinearLayoutManager(context)
@@ -82,11 +90,12 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
             fragmentBinding.refreshLayout.refreshLayout.setOnRefreshListener {
                 fragmentBinding.refreshLayout.refreshLayout.isRefreshing = true
 
-                ESPTable.getInstance(context).refreshDevicesStatus(mutableMapOf<String, DeviceProperties>().apply {
-                    for(prop in ESPUtilsApp.devicePropList) this[prop.macAddress] = prop
-                })
+                ESPTable.getInstance(context)
+                    .refreshDevicesStatus(mutableMapOf<String, DeviceProperties>().apply {
+                        for (prop in ESPUtilsApp.devicePropList) this[prop.macAddress] = prop
+                    })
 
-                ThreadHandler.runOnFreeThread{
+                ThreadHandler.runOnFreeThread {
                     Thread.sleep(100)
                     ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE) {
                         fragmentBinding.refreshLayout.refreshLayout.isRefreshing = false
@@ -95,15 +104,15 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
             }
 
             fragmentBinding.fabScanDevice.setOnClickListener {
-                val deviceDialog = AlertDialog.Builder(requireContext(), R.style.AppTheme_AlertDialog)
-                    .setIcon(R.drawable.ic_refresh)
-                    .setNegativeButton(R.string.cancel){ _, _ -> }
-                    .setTitle(R.string.add_new_device)
-                    .setView(R.layout.scanner_layout)
-                    .create()
+                val deviceDialog =
+                    AlertDialog.Builder(requireContext(), R.style.AppTheme_AlertDialog)
+                        .setIcon(R.drawable.ic_refresh)
+                        .setNegativeButton(R.string.cancel) { _, _ -> }
+                        .setTitle(R.string.add_new_device).setView(R.layout.scanner_layout).create()
 
                 deviceDialog.setOnShowListener {
-                    val recyclerViewScanner = deviceDialog.findViewById<RecyclerView>(R.id.scan_device_recycler_view)
+                    val recyclerViewScanner =
+                        deviceDialog.findViewById<RecyclerView>(R.id.scan_device_recycler_view)
                     val arpItemList = ArrayList<ARPItem>()
                     val viewAdapterScanner = ScanDeviceListAdapter(arpItemList)
                     recyclerViewScanner?.apply {
@@ -117,10 +126,10 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
                     }
 
                     ESPTable.getInstance().scanForARPItems { arpItem ->
-                        Handler(Looper.getMainLooper()).post{
+                        Handler(Looper.getMainLooper()).post {
                             arpItemList.add(arpItem)
                             ESPUtilsApp.devicePropList.forEach {
-                                if(it.macAddress == arpItem.macAddress){
+                                if (it.macAddress == arpItem.macAddress) {
                                     arpItem.devNickName = it.nickName
                                     return@forEach
                                 }
@@ -130,7 +139,8 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
                     }
                     ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE) {
                         Handler(Looper.getMainLooper()).post {
-                            deviceDialog.findViewById<ProgressBar>(R.id.device_scanner_progress_bar)?.visibility = View.GONE
+                            deviceDialog.findViewById<ProgressBar>(R.id.device_scanner_progress_bar)?.visibility =
+                                View.GONE
                         }
                     }
                 }
@@ -141,43 +151,49 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
             }
             fragmentBinding.fabEnterAddress.setOnClickListener { newDeviceEnterAddress() }
         }
-        if(!fragmentBinding.famManageGpio.isOpened)
-            fragmentBinding.famManageGpio.hideMenuButton(false)
+        if (!fragmentBinding.famManageGpio.isOpened) fragmentBinding.famManageGpio.hideMenuButton(
+            false
+        )
         Handler(Looper.getMainLooper()).postDelayed({
-            if(fragmentBinding.famManageGpio.isMenuButtonHidden)
-                fragmentBinding.famManageGpio.showMenuButton(true)
-            if(ESPUtilsApp.remotePropList.isEmpty())
-                Handler(Looper.getMainLooper()).postDelayed({fragmentBinding.famManageGpio.showMenu(true)},400)
-        },400)
+            if (fragmentBinding.famManageGpio.isMenuButtonHidden) fragmentBinding.famManageGpio.showMenuButton(
+                true
+            )
+            if (ESPUtilsApp.remotePropList.isEmpty()) Handler(Looper.getMainLooper()).postDelayed({
+                fragmentBinding.famManageGpio.showMenu(
+                    true
+                )
+            }, 400)
+        }, 400)
         return fragmentBinding.root
     }
 
-    private fun newDeviceEnterAddress(){
+    private fun newDeviceEnterAddress() {
         val contentBinding = AddNewDeviceBinding.inflate(layoutInflater)
         val newDevDialog = AlertDialog.Builder(requireContext(), R.style.AppTheme_AlertDialog)
-            .setView(contentBinding.root)
-            .setTitle(R.string.add_new_device)
-            .setIcon(R.drawable.ic_refresh)
-            .setNegativeButton(R.string.cancel){_, _ ->}
-            .setPositiveButton(R.string.next){_, _ ->}
-            .create()
+            .setView(contentBinding.root).setTitle(R.string.add_new_device)
+            .setIcon(R.drawable.ic_refresh).setNegativeButton(R.string.cancel) { _, _ -> }
+            .setPositiveButton(R.string.next) { _, _ -> }.create()
         newDevDialog.setOnShowListener {
             val btnNext = newDevDialog.getButton(DialogInterface.BUTTON_POSITIVE)
             btnNext.setOnClickListener {
                 val address = contentBinding.deviceAddress.text.toString()
-                ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE){
+                ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE) {
                     try {
                         val connector = SocketClient.Connector(address)
                         connector.sendLine(Strings.espCommandPing)
                         val response = connector.readLine()
                         val macAddress = JSONObject(response).getString(Strings.espResponseMac)
-                        Handler(Looper.getMainLooper()).post{
+                        Handler(Looper.getMainLooper()).post {
                             newDevDialog.dismiss()
                             onAddressVerified(requireContext(), address, macAddress)
                         }
-                    }catch(ex: Exception){
-                        Handler(Looper.getMainLooper()).post{
-                            Toast.makeText(context, context?.getString(R.string.message_err_failed_to_contact_device, address), Toast.LENGTH_LONG).show()
+                    } catch (ex: Exception) {
+                        Handler(Looper.getMainLooper()).post {
+                            Toast.makeText(
+                                context, context?.getString(
+                                    R.string.message_err_failed_to_contact_device, address
+                                ), Toast.LENGTH_LONG
+                            ).show()
                         }
                     }
                 }
@@ -187,15 +203,15 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
         fragmentBinding.famManageGpio.close(true)
     }
 
-    fun onAddressVerified(context: Context, address: String, macAddress: String){
+    fun onAddressVerified(context: Context, address: String, macAddress: String) {
         val contentBinding = DevicePropertiesBinding.inflate(layoutInflater)
-        val dialog = AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
-            .setView(contentBinding.root)
-            .setIcon(R.drawable.icon_edit)
-            .setTitle(context.resources.getString(R.string.set_dev_props))
-            .setNegativeButton(context.resources.getString(R.string.cancel)){ dialog, _ -> dialog.dismiss()}
-            .setPositiveButton(context.resources.getString(R.string.apply)){ dialog, _ -> dialog.dismiss() }
-            .create()
+        val dialog =
+            AlertDialog.Builder(context, R.style.AppTheme_AlertDialog).setView(contentBinding.root)
+                .setIcon(R.drawable.icon_edit)
+                .setTitle(context.resources.getString(R.string.set_dev_props))
+                .setNegativeButton(context.resources.getString(R.string.cancel)) { dialog, _ -> dialog.dismiss() }
+                .setPositiveButton(context.resources.getString(R.string.apply)) { dialog, _ -> dialog.dismiss() }
+                .create()
         dialog.setOnShowListener {
             val btnAdd = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
 
@@ -204,28 +220,36 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
 
             var devProp: DeviceProperties? = null
             var devExist = false
-            for(prop: DeviceProperties in ESPUtilsApp.devicePropList){
-                if(prop.macAddress == macAddress){ devProp = prop; devExist = true; break }
+            for (prop: DeviceProperties in ESPUtilsApp.devicePropList) {
+                if (prop.macAddress == macAddress) {
+                    devProp = prop; devExist = true; break
+                }
             }
 
             val pref = context.getSharedPreferences(Strings.sharedPrefNameLogin, 0)
-            contentBinding.deviceUserName.setText(devProp?.userName?: pref?.getString(Strings.sharedPrefItemUsername, ""))
-            contentBinding.devicePassword.setText(devProp?.password?: pref?.getString(Strings.sharedPrefItemPassword, ""))
+            contentBinding.deviceUserName.setText(
+                devProp?.userName ?: pref?.getString(Strings.sharedPrefItemUsername, "")
+            )
+            contentBinding.devicePassword.setText(
+                devProp?.password ?: pref?.getString(Strings.sharedPrefItemPassword, "")
+            )
 
-            devName.setText(devProp?.nickName?: macAddress.replace(":", "_"))
-            devDescription.setText(devProp?.description?: "")
+            devName.setText(devProp?.nickName ?: macAddress.replace(":", "_"))
+            devDescription.setText(devProp?.description ?: "")
 
-            btnAdd.setOnClickListener{
-                ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE){
-                    try{
+            btnAdd.setOnClickListener {
+                ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE) {
+                    try {
                         val connector = SocketClient.Connector(address)
-                        connector.sendLine(Strings.espCommandAuth(
-                            contentBinding.deviceUserName.text.toString(),
-                            contentBinding.devicePassword.text.toString()
-                        ))
+                        connector.sendLine(
+                            Strings.espCommandAuth(
+                                contentBinding.deviceUserName.text.toString(),
+                                contentBinding.devicePassword.text.toString()
+                            )
+                        )
                         val response = connector.readLine()
 
-                        if(JSONObject(response)[Strings.espResponse] != Strings.espResponseAuthSuccess) throw Exception()
+                        if (JSONObject(response)[Strings.espResponse] != Strings.espResponseAuthSuccess) throw Exception()
 
                         if (!devExist) {
                             val devConfigFile = ESPUtilsApp.getPrivateFile(
@@ -242,21 +266,34 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
                         devProp!!.userName = contentBinding.deviceUserName.text.toString()
                         devProp!!.password = contentBinding.devicePassword.text.toString()
 
-                        Handler(Looper.getMainLooper()).post{
-                            if(devExist){
-                                viewAdapter.notifyItemChanged(ESPUtilsApp.devicePropList.indexOf(devProp!!))
-                                Toast.makeText(context, R.string.message_dev_prop_updated, Toast.LENGTH_LONG).show()
-                            }else{
+                        Handler(Looper.getMainLooper()).post {
+                            if (devExist) {
+                                viewAdapter.notifyItemChanged(
+                                    ESPUtilsApp.devicePropList.indexOf(
+                                        devProp!!
+                                    )
+                                )
+                                Toast.makeText(
+                                    context, R.string.message_dev_prop_updated, Toast.LENGTH_LONG
+                                ).show()
+                            } else {
                                 ESPUtilsApp.devicePropList.add(devProp!!)
-                                viewAdapter.notifyItemInserted(ESPUtilsApp.devicePropList.indexOf(devProp!!))
-                                Toast.makeText(context, R.string.message_dev_prop_added, Toast.LENGTH_LONG).show()
+                                viewAdapter.notifyItemInserted(
+                                    ESPUtilsApp.devicePropList.indexOf(
+                                        devProp!!
+                                    )
+                                )
+                                Toast.makeText(
+                                    context, R.string.message_dev_prop_added, Toast.LENGTH_LONG
+                                ).show()
                             }
                             dialog.dismiss()
                             ESPUtilsApp.showAd(context as MainActivity)
                         }
-                    }catch(ex: Exception){
-                        Handler(Looper.getMainLooper()).post{
-                            Toast.makeText(context, R.string.message_auth_failed, Toast.LENGTH_LONG).show()
+                    } catch (ex: Exception) {
+                        Handler(Looper.getMainLooper()).post {
+                            Toast.makeText(context, R.string.message_auth_failed, Toast.LENGTH_LONG)
+                                .show()
                         }
                     }
                 }

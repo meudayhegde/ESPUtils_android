@@ -1,6 +1,6 @@
 package com.github.meudayhegde.esputils.listeners
 
-interface OnRemoteButtonModificationListener{
+interface OnRemoteButtonModificationListener {
     fun onIconModified()
     fun onTypeModified()
     fun onTextModified()

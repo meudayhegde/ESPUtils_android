@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layer-list xmlns:tools="http://schemas.android.com/tools"
-        xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:height="@dimen/list_item_icon_size"
-            android:width="@dimen/list_item_icon_size"
-            android:drawable="@drawable/layout_border_gpio_button"
-            tools:ignore="UnusedAttribute" />
-    <item android:left="4dp" android:right="4dp"
-            android:top="4dp" android:bottom="4dp"
-            android:drawable="@drawable/icon_lamp"
-            android:gravity="center"/>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <item
+        android:width="@dimen/list_item_icon_size"
+        android:height="@dimen/list_item_icon_size"
+        android:drawable="@drawable/layout_border_gpio_button"
+        tools:ignore="UnusedAttribute" />
+    <item
+        android:bottom="4dp"
+        android:drawable="@drawable/icon_lamp"
+        android:gravity="center"
+        android:left="4dp"
+        android:right="4dp"
+        android:top="4dp" />
 </layer-list>

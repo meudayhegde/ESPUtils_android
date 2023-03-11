@@ -1,76 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
     <RelativeLayout
-            android:layout_width="match_parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_high"
+        android:layout_marginTop="@dimen/margin_max"
+        android:layout_marginEnd="@dimen/margin_high">
+
+        <Spinner
+            android:id="@+id/gpio_spinner"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_max"
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/spinner_background"
+            android:paddingStart="@dimen/margin_medium"
+            android:paddingEnd="@dimen/margin_max"
+            android:prompt="@string/pin" />
+
+        <Spinner
+            android:id="@+id/device_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
             android:layout_marginEnd="@dimen/margin_high"
-            android:layout_marginStart="@dimen/margin_high">
-
-        <Spinner
-                android:id="@+id/gpio_spinner"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:paddingStart="@dimen/margin_medium"
-                android:paddingEnd="@dimen/margin_max"
-                android:prompt="@string/pin"
-                android:background="@drawable/spinner_background"/>
-
-        <Spinner
-                android:id="@+id/device_spinner"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/margin_high"
-                android:layout_toStartOf="@id/gpio_spinner"
-                android:layout_alignParentStart="true"
-                android:prompt="@string/select_device"
-                android:background="@drawable/spinner_background"/>
+            android:layout_toStartOf="@id/gpio_spinner"
+            android:background="@drawable/spinner_background"
+            android:prompt="@string/select_device" />
 
     </RelativeLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_low"
-            android:layout_marginEnd="@dimen/margin_high"
-            android:layout_marginStart="@dimen/margin_high"
-            android:id="@+id/title"
-            app:hintTextColor="?attr/colorOnBackground"
-            style="@style/TextInputLayoutStyle"
-            android:hint="@string/switch_name">
+        android:id="@+id/title"
+        style="@style/TextInputLayoutStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_high"
+        android:layout_marginTop="@dimen/margin_low"
+        android:layout_marginEnd="@dimen/margin_high"
+        android:hint="@string/switch_name"
+        app:hintTextColor="?attr/colorOnBackground">
 
         <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/name_text"
-                android:inputType="text"
-                android:singleLine="true" />
+            android:id="@+id/name_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:singleLine="true" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_min"
-            android:layout_marginEnd="@dimen/margin_high"
-            android:layout_marginStart="@dimen/margin_high"
-            android:id="@+id/description"
-            app:hintTextColor="?attr/colorOnBackground"
-            style="@style/TextInputLayoutStyle"
-            android:hint="@string/description">
+        android:id="@+id/description"
+        style="@style/TextInputLayoutStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_high"
+        android:layout_marginTop="@dimen/margin_min"
+        android:layout_marginEnd="@dimen/margin_high"
+        android:hint="@string/description"
+        app:hintTextColor="?attr/colorOnBackground">
 
         <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/switch_desc"
-                android:inputType="text"
-                android:singleLine="true" />
+            android:id="@+id/switch_desc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:singleLine="true" />
 
     </com.google.android.material.textfield.TextInputLayout>
 

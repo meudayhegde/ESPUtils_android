@@ -15,67 +15,67 @@ import java.io.File
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 
-class DeviceProperties(val deviceConfigFile: File = ESPUtilsApp.getPrivateFile(Strings.nameFileDummyJson))  {
+class DeviceProperties(val deviceConfigFile: File = ESPUtilsApp.getPrivateFile(Strings.nameFileDummyJson)) {
     var onDeviceStatusListener: OnDeviceStatusListener? = null
-    private var jsonObj : JSONObject = getJSONObject()
+    private var jsonObj: JSONObject = getJSONObject()
     var isConnected = false
-        set(value){
+        set(value) {
             field = value
-            Handler(Looper.getMainLooper()).post{
+            Handler(Looper.getMainLooper()).post {
                 onDeviceStatusListener?.onStatusUpdate(value)
             }
         }
 
     var nickName: String = jsonObj.optString(Strings.devPropNickname, "")
-        get(){
+        get() {
             return jsonObj.optString(Strings.devPropNickname, "")
         }
-        set(value){
+        set(value) {
             field = value
             jsonObj.put(Strings.devPropNickname, value)
             update()
         }
 
     var userName: String = jsonObj.optString(Strings.devPropUsername, "")
-        get(){
+        get() {
             return jsonObj.optString(Strings.devPropUsername, "")
         }
-        set(value){
+        set(value) {
             field = value
             jsonObj.put(Strings.devPropUsername, value)
             update()
         }
 
     var password: String = jsonObj.optString(Strings.devPropPassword, "")
-        get(){
+        get() {
             return jsonObj.optString(Strings.devPropPassword, "")
         }
-        set(value){
+        set(value) {
             field = value
             jsonObj.put(Strings.devPropPassword, value)
             update()
         }
 
     var macAddress: String = jsonObj.optString(Strings.devPropMacAddress)
-        get(){
+        get() {
             return jsonObj.optString(Strings.devPropMacAddress, "")
         }
-        set(value){
+        set(value) {
             field = value
             jsonObj.put(Strings.devPropMacAddress, value)
             update()
         }
 
     val ipAddress: String
-        get(){
-            return ESPTable.getInstance().getIpFromMac(macAddress)?: ""
+        get() {
+            return ESPTable.getInstance().getIpFromMac(macAddress) ?: ""
         }
 
     var description: String = jsonObj.optString(Strings.devPropDescription, "")
-        get(){
+        get() {
             return jsonObj.optString(Strings.devPropDescription, "")
         }
-        set(value){
+        set(value) {
             field = value
             jsonObj.put(Strings.devPropDescription, value)
             update()
@@ -83,29 +83,29 @@ class DeviceProperties(val deviceConfigFile: File = ESPUtilsApp.getPrivateFile(S
 
     var pinConfig = ArrayList<GPIOObject>()
 
-    fun getIpAddress(listener: ((address: String?) -> Unit)){
-        Handler(Looper.getMainLooper()).post{
+    fun getIpAddress(listener: ((address: String?) -> Unit)) {
+        Handler(Looper.getMainLooper()).post {
             onDeviceStatusListener?.onBeginRefresh()
         }
-        ESPTable.getInstance().getIpFromMac(macAddress){
+        ESPTable.getInstance().getIpFromMac(macAddress) {
             isConnected = !(it == null || it.isEmpty())
             listener.invoke(it)
         }
     }
 
-    private fun getJSONObject():JSONObject{
-        if(!deviceConfigFile.exists()) return JSONObject()
+    private fun getJSONObject(): JSONObject {
+        if (!deviceConfigFile.exists()) return JSONObject()
         val isr = InputStreamReader(deviceConfigFile.inputStream())
         val content = TextUtils.join("\n", isr.readLines())
         isr.close()
-        return try{
+        return try {
             JSONObject(content)
-        }catch(ex:JSONException){
+        } catch (ex: JSONException) {
             JSONObject()
         }
     }
 
-    fun update(){
+    fun update() {
         val osr = OutputStreamWriter(deviceConfigFile.outputStream())
         osr.write(jsonObj.toString(4))
         osr.flush()
@@ -117,40 +117,40 @@ class DeviceProperties(val deviceConfigFile: File = ESPUtilsApp.getPrivateFile(S
     }
 
 
-    fun refreshGPIOStatus(){
-        Handler(Looper.getMainLooper()).post{
+    fun refreshGPIOStatus() {
+        Handler(Looper.getMainLooper()).post {
             pinConfig.forEach {
                 it.onGPIORefreshListener?.onRefreshBegin()
             }
         }
-        getIpAddress{ address ->
-            if (isConnected){
+        getIpAddress { address ->
+            if (isConnected) {
                 val connector = SocketClient.Connector(address!!)
                 connector.sendLine(Strings.espCommandGetGpio(userName, password))
                 val response = connector.readLine()
                 connector.close()
                 val pinJson = JSONArray(response)
 
-                for(j in 0 until pinJson.length()){
+                for (j in 0 until pinJson.length()) {
                     val gpioObj = pinJson.getJSONObject(j)
-                    for(gpio in pinConfig){
-                        if(gpio.gpioNumber == gpioObj.getInt(Strings.espResponsePinNumber)){
+                    for (gpio in pinConfig) {
+                        if (gpio.gpioNumber == gpioObj.getInt(Strings.espResponsePinNumber)) {
                             gpio.pinValue = gpioObj.getInt(Strings.espResponsePinValue)
-                            Handler(Looper.getMainLooper()).post{
+                            Handler(Looper.getMainLooper()).post {
                                 gpio.onGPIORefreshListener?.onRefresh(gpio.pinValue)
                             }
                         }
                     }
                 }
-            }else{
-                Handler(Looper.getMainLooper()).post{
+            } else {
+                Handler(Looper.getMainLooper()).post {
                     pinConfig.forEach { it.onGPIORefreshListener?.onRefresh(-1) }
                 }
             }
         }
     }
 
-    fun delete(){
+    fun delete() {
         deviceConfigFile.delete()
         pinConfig.forEach {
             it.delete()

@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="vertical" android:layout_width="match_parent"
-        android:gravity="center"
-        android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical">
+
     <Button
-            android:id="@+id/widget_button"
-            android:paddingStart="@dimen/margin_low"
-            android:paddingEnd="@dimen/margin_low"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:background="@drawable/widget_button_bg_normal"
-            android:contentDescription="@string/img_desc_remote_controller_button" />
+        android:id="@+id/widget_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/widget_button_bg_normal"
+        android:contentDescription="@string/img_desc_remote_controller_button"
+        android:paddingStart="@dimen/margin_low"
+        android:paddingEnd="@dimen/margin_low"
+        android:textColor="@color/white" />
 </LinearLayout>

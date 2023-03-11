@@ -1,76 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/TextInputLayoutStyle"
         android:layout_width="match_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_high"
+        android:layout_marginTop="@dimen/margin_medium"
+        android:layout_marginEnd="@dimen/margin_high"
+        android:layout_marginBottom="@dimen/margin_high">
 
-        <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_marginTop="@dimen/margin_medium"
-                android:layout_marginStart="@dimen/margin_high"
-                android:layout_marginEnd="@dimen/margin_high"
-                android:layout_marginBottom="@dimen/margin_high"
-                style="@style/TextInputLayoutStyle"
-                android:layout_height="wrap_content">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/device_user_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/user_name"
+            android:singleLine="true" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/device_user_name"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/user_name"
-                    android:singleLine="true" />
-        </com.google.android.material.textfield.TextInputLayout>
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/TextInputLayoutStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_high"
+        android:layout_marginEnd="@dimen/margin_high"
+        android:layout_marginBottom="@dimen/margin_min"
+        android:hint="@string/password"
+        app:passwordToggleEnabled="true">
 
-        <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin_high"
-                android:layout_marginEnd="@dimen/margin_high"
-                style="@style/TextInputLayoutStyle"
-                android:layout_marginBottom="@dimen/margin_min"
-                app:passwordToggleEnabled="true"
-                android:hint="@string/password">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/device_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:singleLine="true" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/device_password"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textPassword"
-                    android:singleLine="true" />
-        </com.google.android.material.textfield.TextInputLayout>
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/TextInputLayoutStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_high"
+        android:layout_marginTop="@dimen/margin_medium"
+        android:layout_marginEnd="@dimen/margin_high"
+        android:layout_marginBottom="@dimen/margin_min"
+        android:hint="@string/device_name">
 
-        <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_marginStart="@dimen/margin_high"
-                android:layout_marginEnd="@dimen/margin_high"
-                android:layout_marginTop="@dimen/margin_medium"
-                android:layout_marginBottom="@dimen/margin_min"
-                android:hint="@string/device_name"
-                style="@style/TextInputLayoutStyle"
-                android:layout_height="wrap_content">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/device_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/device_name"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:singleLine="true" />
-        </com.google.android.material.textfield.TextInputLayout>
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/TextInputLayoutStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_high"
+        android:layout_marginEnd="@dimen/margin_high"
+        android:layout_marginBottom="@dimen/margin_min"
+        android:hint="@string/description">
 
-        <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_marginStart="@dimen/margin_high"
-                android:layout_marginEnd="@dimen/margin_high"
-                android:layout_marginBottom="@dimen/margin_min"
-                android:hint="@string/description"
-                style="@style/TextInputLayoutStyle"
-                android:layout_height="wrap_content">
-
-            <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/device_desc"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:singleLine="true" />
-        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/device_desc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true" />
+    </com.google.android.material.textfield.TextInputLayout>
 
 </LinearLayout>

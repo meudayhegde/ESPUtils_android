@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
-        android:configure="com.github.meudayhegde.esputils.RemoteBtnWidgetConfActivity"
-        android:initialLayout="@layout/widget_layout_remote_button"
-        android:minHeight="48sp"
-        android:minWidth="64sp"
-        android:previewImage="@drawable/widget_preview"
-        android:updatePeriodMillis="1800000"
-        android:widgetCategory="home_screen">
+    android:configure="com.github.meudayhegde.esputils.RemoteBtnWidgetConfActivity"
+    android:initialLayout="@layout/widget_layout_remote_button"
+    android:minWidth="64sp"
+    android:minHeight="48sp"
+    android:previewImage="@drawable/widget_preview"
+    android:updatePeriodMillis="1800000"
+    android:widgetCategory="home_screen">
 
 </appwidget-provider>

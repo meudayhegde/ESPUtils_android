@@ -8,19 +8,21 @@ class ThreadHandler {
     private val threadList = ArrayList<InfiniteThread>()
     private var maxThreadCount = MAX_THREAD_COUNT
 
-    private constructor(vararg threadNames: String, threadCunt: Int = CPU_CORE_COUNT - 1){
+    private constructor(vararg threadNames: String, threadCunt: Int = CPU_CORE_COUNT - 1) {
         threadNames.forEach {
             val thread = InfiniteThread(true)
             thread.name = it
             threadList.add(thread)
         }
-        if(threadCunt > threadNames.size) for(i in threadNames.size until threadCunt) add(InfiniteThread())
+        if (threadCunt > threadNames.size) for (i in threadNames.size until threadCunt) add(
+            InfiniteThread()
+        )
     }
 
-    private constructor(): this(PRIMARY, ESP_MESSAGE)
+    private constructor() : this(PRIMARY, ESP_MESSAGE)
 
     private fun add(thread: InfiniteThread, position: Int, name: String?) {
-        thread.name = name?:thread.name
+        thread.name = name ?: thread.name
         threadList.add(position, thread)
     }
 
@@ -34,7 +36,7 @@ class ThreadHandler {
 
     private fun getThreadByName(name: String): InfiniteThread? {
         threadList.forEach {
-            if(it.name == name) return it
+            if (it.name == name) return it
         }
         return null
     }
@@ -58,15 +60,15 @@ class ThreadHandler {
 
     private fun runOnFreeThread(task: Runnable, vararg except: String): Int {
         threadList.forEach {
-            if(it.isFree and !(except.contains(it.name))){
+            if (it.isFree and !(except.contains(it.name))) {
                 it.enqueueTask(task)
                 return threadList.indexOf(it)
             }
         }
-        return if(threadList.size < maxThreadCount) {
+        return if (threadList.size < maxThreadCount) {
             add(InfiniteThread(task))
             -1 % threadList.size
-        }else {
+        } else {
             val thread = threadList.sortedBy { it.getTaskCount() }[0]
             thread.enqueueTask(task)
             threadList.indexOf(thread)
@@ -75,15 +77,15 @@ class ThreadHandler {
 
     private fun runOnFreeThread(task: (() -> Unit), vararg except: String): Int {
         threadList.forEach {
-            if(it.isFree and !(except.contains(it.name))){
+            if (it.isFree and !(except.contains(it.name))) {
                 it.enqueueTask(task)
                 return threadList.indexOf(it)
             }
         }
-        return if(threadList.size < maxThreadCount) {
+        return if (threadList.size < maxThreadCount) {
             threadList.add(InfiniteThread(task))
             -1 % threadList.size
-        }else {
+        } else {
             val thread = threadList.sortedBy { it.getTaskCount() }[0]
             thread.enqueueTask(task)
             threadList.indexOf(thread)
@@ -94,13 +96,13 @@ class ThreadHandler {
         runOnThread(0, run)
     }
 
-    private fun getThreadCount() : Int{
+    private fun getThreadCount(): Int {
         return threadList.size
     }
 
-    private fun setMaxThreadCount(count: Int){
-        if(count < maxThreadCount)
-            for(i in threadList.size -1 until count) {
+    private fun setMaxThreadCount(count: Int) {
+        if (count < maxThreadCount)
+            for (i in threadList.size - 1 until count) {
                 threadList[i].finish()
                 threadList.removeAt(i)
             }
@@ -123,7 +125,7 @@ class ThreadHandler {
 
         constructor(task: Runnable) : super() {
             start()
-            enqueueTask{
+            enqueueTask {
                 task.run()
             }
         }
@@ -133,7 +135,7 @@ class ThreadHandler {
             enqueueTask(task)
         }
 
-        constructor(daemon: Boolean): super(){
+        constructor(daemon: Boolean) : super() {
             isDaemon = daemon
             start()
         }
@@ -141,7 +143,7 @@ class ThreadHandler {
         override fun run() {
             while (flag) {
                 if (taskQueue.size > 0) {
-                    if(!isPaused){
+                    if (!isPaused) {
                         isFree = false
                         taskQueue.poll()?.invoke()
                     }
@@ -159,12 +161,12 @@ class ThreadHandler {
 
         @Synchronized
         fun enqueueTask(task: Runnable) {
-            taskQueue.add{
+            taskQueue.add {
                 task.run()
             }
         }
 
-        fun getTaskCount(): Int{
+        fun getTaskCount(): Int {
             return taskQueue.size
         }
 
@@ -183,25 +185,60 @@ class ThreadHandler {
 
     companion object {
         private val CPU_CORE_COUNT = Runtime.getRuntime().availableProcessors()
-        val MAX_THREAD_COUNT = ( CPU_CORE_COUNT- 1) * 2
+        val MAX_THREAD_COUNT = (CPU_CORE_COUNT - 1) * 2
 
         const val PRIMARY = "PRIMARY"
         const val ESP_MESSAGE = "ESP_MESSAGE"
 
         private val instance = ThreadHandler()
 
-        fun getThreadByPosition(position: Int): InfiniteThread { return instance.getThreadByPosition(position) }
-        fun getThreadByName(name: String): InfiniteThread? { return instance.getThreadByName(name) }
-        fun runOnThread(pos: Int, task: Runnable) { return instance.runOnThread(pos, task) }
-        fun runOnThread(pos: Int, task: (() -> Unit)) { return instance.runOnThread(pos, task) }
-        fun runOnThread(name: String, task: Runnable) { return instance.runOnThread(name, task) }
-        fun runOnThread(name: String, task: (() -> Unit)) { return instance.runOnThread(name, task) }
-        fun runOnFreeThread(vararg except: String = arrayOf(ESP_MESSAGE), task: Runnable): Int { return instance.runOnFreeThread(task, *except) }
-        fun runOnFreeThread(vararg except: String = arrayOf(ESP_MESSAGE), task: (() -> Unit)): Int { return instance.runOnFreeThread(task, *except) }
-        fun runOnPrimaryThread(run: Runnable) { return instance.runOnPrimaryThread(run) }
-        fun getThreadCount() : Int{ return instance.getThreadCount() }
-        fun setMaxThreadCount(count: Int){ return instance.setMaxThreadCount(count) }
-        fun finishAll() { return instance.finishAll() }
+        fun getThreadByPosition(position: Int): InfiniteThread {
+            return instance.getThreadByPosition(position)
+        }
+
+        fun getThreadByName(name: String): InfiniteThread? {
+            return instance.getThreadByName(name)
+        }
+
+        fun runOnThread(pos: Int, task: Runnable) {
+            return instance.runOnThread(pos, task)
+        }
+
+        fun runOnThread(pos: Int, task: (() -> Unit)) {
+            return instance.runOnThread(pos, task)
+        }
+
+        fun runOnThread(name: String, task: Runnable) {
+            return instance.runOnThread(name, task)
+        }
+
+        fun runOnThread(name: String, task: (() -> Unit)) {
+            return instance.runOnThread(name, task)
+        }
+
+        fun runOnFreeThread(vararg except: String = arrayOf(ESP_MESSAGE), task: Runnable): Int {
+            return instance.runOnFreeThread(task, *except)
+        }
+
+        fun runOnFreeThread(vararg except: String = arrayOf(ESP_MESSAGE), task: (() -> Unit)): Int {
+            return instance.runOnFreeThread(task, *except)
+        }
+
+        fun runOnPrimaryThread(run: Runnable) {
+            return instance.runOnPrimaryThread(run)
+        }
+
+        fun getThreadCount(): Int {
+            return instance.getThreadCount()
+        }
+
+        fun setMaxThreadCount(count: Int) {
+            return instance.setMaxThreadCount(count)
+        }
+
+        fun finishAll() {
+            return instance.finishAll()
+        }
     }
 }
 

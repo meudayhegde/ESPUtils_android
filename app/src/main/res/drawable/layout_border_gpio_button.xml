@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
-        android:shape="rectangle">
-    <corners android:radius="@dimen/gpio_widget_corner"/>
-    <stroke android:color="@color/color_gpio_button_border"
-            android:width="@dimen/gpio_widget_border_thickness"/>
-    <gradient android:angle="0" android:endColor="#A0616161"
-            android:startColor="#A0000000" android:startX="0"
-            android:endX="0" android:startY="0"
-            android:endY="100" android:type="linear" />
+    android:shape="rectangle">
+    <corners android:radius="@dimen/gpio_widget_corner" />
+    <stroke
+        android:color="@color/color_gpio_button_border"
+        android:width="@dimen/gpio_widget_border_thickness" />
+    <gradient
+        android:angle="0"
+        android:endColor="#A0616161"
+        android:startColor="#A0000000"
+        android:startX="0"
+        android:endX="0"
+        android:startY="0"
+        android:endY="100"
+        android:type="linear" />
 </shape>

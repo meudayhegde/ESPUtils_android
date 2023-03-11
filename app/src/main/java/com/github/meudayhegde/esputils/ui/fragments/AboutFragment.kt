@@ -18,15 +18,18 @@ class AboutFragment : androidx.fragment.app.Fragment() {
     private var _binding: FragmentAboutBinding? = null
     private lateinit var fragmentBinding: FragmentAboutBinding
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        if(_binding == null ){
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View {
+        if (_binding == null) {
             fragmentBinding = FragmentAboutBinding.inflate(inflater, container, false)
             _binding = fragmentBinding
-            fragmentBinding.aboutApp.text = TextUtils.join(" ",context?.resources?.getStringArray(R.array.about)?: arrayOf(" "))
+            fragmentBinding.aboutApp.text = TextUtils.join(
+                " ", context?.resources?.getStringArray(R.array.about) ?: arrayOf(" ")
+            )
             val onClickListener = View.OnClickListener {
                 val browserIntent = Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse(Strings.urlLicenseApache)
+                    Intent.ACTION_VIEW, Uri.parse(Strings.urlLicenseApache)
                 )
                 startActivity(browserIntent)
             }

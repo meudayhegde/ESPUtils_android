@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private lateinit var mainBinding: ActivityMainBinding
     private val devicesFragment: DevicesFragment = DevicesFragment()
-    val irFragment:IRFragment = IRFragment()
+    val irFragment: IRFragment = IRFragment()
     private val gpioFragment: GPIOControllerFragment = GPIOControllerFragment()
     private var aboutFragment: AboutFragment = AboutFragment()
     private var splashDialog: Dialog? = null
@@ -59,18 +59,22 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         layoutParams.width = resources.displayMetrics.widthPixels
         layoutParams.height = resources.displayMetrics.heightPixels
 
-        splashDialog = object: Dialog(this, R.style.Theme_MaterialComponents_DayNight_NoActionBar){
-            var exit = false
-            @Deprecated("Deprecated in Java")
-            override fun onBackPressed() {
-                if(exit) finish()
-                else Toast.makeText(this@MainActivity,"Press back again to exit", Toast.LENGTH_LONG).show()
-                exit = true
-                Handler(Looper.getMainLooper()).postDelayed({
-                    exit = false
-                }, 2000)
+        splashDialog =
+            object : Dialog(this, R.style.Theme_MaterialComponents_DayNight_NoActionBar) {
+                var exit = false
+
+                @Deprecated("Deprecated in Java")
+                override fun onBackPressed() {
+                    if (exit) finish()
+                    else Toast.makeText(
+                        this@MainActivity, "Press back again to exit", Toast.LENGTH_LONG
+                    ).show()
+                    exit = true
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        exit = false
+                    }, 2000)
+                }
             }
-        }
 
         val value = TypedValue()
         theme.resolveAttribute(R.attr.colorOnBackground, value, true)
@@ -82,10 +86,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         splashDialog?.show()
         hideSystemUI(splashBinding.root)
         val width = min(layoutParams.width, layoutParams.width)
-        NUM_COLUMNS = when{(width > 920) -> 5; width < 720 -> 3; else -> 4}
+        NUM_COLUMNS = when {
+            (width > 920) -> 5; width < 720 -> 3; else -> 4
+        }
 
         val file = ESPUtilsApp.getPrivateFile(Strings.nameDirRemoteConfig)
-        if(!file.exists()) file.mkdir()
+        if (!file.exists()) file.mkdir()
 
         val lParams = RelativeLayout.LayoutParams(width, width)
         lParams.addRule(RelativeLayout.CENTER_IN_PARENT)
@@ -104,57 +110,89 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         splashBinding.editTextPassword.setText(pref.getString(Strings.sharedPrefItemPassword, ""))
         splashBinding.editTextUname.setText(pref.getString(Strings.sharedPrefItemUsername, ""))
 
-        val validatedListener = object: OnValidationListener{
+        val validatedListener = object : OnValidationListener {
             override fun onValidated(verified: Boolean) {
-                if(verified){
+                if (verified) {
                     splashDialog?.dismiss()
                     setNavView()
-                }
-                else Toast.makeText(this@MainActivity, R.string.message_auth_failed, Toast.LENGTH_LONG).show()
+                } else Toast.makeText(
+                    this@MainActivity, R.string.message_auth_failed, Toast.LENGTH_LONG
+                ).show()
             }
         }
 
         splashBinding.cirLoginButton.setOnClickListener {
             authenticated = true
-            editor.putString(Strings.sharedPrefItemUsername, splashBinding.editTextUname.text.toString())
-            editor.putString(Strings.sharedPrefItemPassword, splashBinding.editTextPassword.text.toString())
+            editor.putString(
+                Strings.sharedPrefItemUsername, splashBinding.editTextUname.text.toString()
+            )
+            editor.putString(
+                Strings.sharedPrefItemPassword, splashBinding.editTextPassword.text.toString()
+            )
             editor.apply()
             validatedListener.onValidated(true)
         }
 
-        addOnConfigurationChangeListener(object: OnConfigurationChangeListener{
+        addOnConfigurationChangeListener(object : OnConfigurationChangeListener {
             override var keepAlive = true
             override fun onConfigurationChanged(config: Configuration) {
-                if(splashDialog?.isShowing == true){
-                    if(splashBinding.loginView.visibility == View.VISIBLE) {
+                if (splashDialog?.isShowing == true) {
+                    if (splashBinding.loginView.visibility == View.VISIBLE) {
                         hideSystemUI(splashBinding.loginView)
-                        if (config.orientation == Configuration.ORIENTATION_LANDSCAPE) splashLandscape(splashBinding)
+                        if (config.orientation == Configuration.ORIENTATION_LANDSCAPE) splashLandscape(
+                            splashBinding
+                        )
                         else splashPortrait(splashBinding)
                     }
-                } else{
+                } else {
                     keepAlive = false
                 }
             }
         })
 
-        if(pref.getString(Strings.sharedPrefItemUsername, "") != "" &&
-            pref.getString(Strings.sharedPrefItemPassword, "") != "")
-            authenticated = true
+        if (pref.getString(
+                Strings.sharedPrefItemUsername,
+                ""
+            ) != "" && pref.getString(Strings.sharedPrefItemPassword, "") != ""
+        ) authenticated = true
 
         Handler(Looper.getMainLooper()).postDelayed({
-            if(splashDialog?.isShowing == true) {
+            if (splashDialog?.isShowing == true) {
                 splashBinding.loginView.visibility = View.VISIBLE
-                if(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                    val lParams = RelativeLayout.LayoutParams(layoutParams.width * 11 / 20, RelativeLayout.LayoutParams.WRAP_CONTENT)
+                if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    val lParams = RelativeLayout.LayoutParams(
+                        layoutParams.width * 11 / 20, RelativeLayout.LayoutParams.WRAP_CONTENT
+                    )
                     lParams.addRule(RelativeLayout.ALIGN_PARENT_END)
                     lParams.addRule(RelativeLayout.CENTER_VERTICAL)
                     splashBinding.loginView.layoutParams = lParams
-                    splashBinding.loginView.setPadding(layoutParams.height / 14, layoutParams.height / 10, layoutParams.height / 14, 0)
-                    splashBinding.loginView.startAnimation(AnimationUtils.loadAnimation(this, R.anim.expand_landscape))
-                    splashBinding.splashLogo.startAnimation(AnimationUtils.loadAnimation(this, R.anim.move_landscape))
-                }else{
-                    splashBinding.loginView.startAnimation(AnimationUtils.loadAnimation(this, R.anim.expand))
-                    splashBinding.splashLogo.startAnimation(AnimationUtils.loadAnimation(this, R.anim.move))
+                    splashBinding.loginView.setPadding(
+                        layoutParams.height / 14,
+                        layoutParams.height / 10,
+                        layoutParams.height / 14,
+                        0
+                    )
+                    splashBinding.loginView.startAnimation(
+                        AnimationUtils.loadAnimation(
+                            this, R.anim.expand_landscape
+                        )
+                    )
+                    splashBinding.splashLogo.startAnimation(
+                        AnimationUtils.loadAnimation(
+                            this, R.anim.move_landscape
+                        )
+                    )
+                } else {
+                    splashBinding.loginView.startAnimation(
+                        AnimationUtils.loadAnimation(
+                            this, R.anim.expand
+                        )
+                    )
+                    splashBinding.splashLogo.startAnimation(
+                        AnimationUtils.loadAnimation(
+                            this, R.anim.move
+                        )
+                    )
                 }
 
                 if (authenticated) {
@@ -165,17 +203,22 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }, 1100)
     }
 
-    private fun splashPortrait(splashBinding: SplashScreenBinding){
+    private fun splashPortrait(splashBinding: SplashScreenBinding) {
         splashBinding.root.setBackgroundResource(R.mipmap.background_circuit_portrait)
         splashBinding.loginView.clearAnimation()
-        splashBinding.loginView.setPadding(layoutParams.width / 14, 0, layoutParams.width / 12, layoutParams.width / 22)
-        val lParams = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT)
+        splashBinding.loginView.setPadding(
+            layoutParams.width / 14, 0, layoutParams.width / 12, layoutParams.width / 22
+        )
+        val lParams = RelativeLayout.LayoutParams(
+            RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT
+        )
         lParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
         splashBinding.loginView.layoutParams = lParams
         splashBinding.splashLogo.clearAnimation()
 
-        if(splashBinding.loginView.viewTreeObserver.isAlive){
-            splashBinding.loginView.viewTreeObserver.addOnGlobalLayoutListener(object:ViewTreeObserver.OnGlobalLayoutListener{
+        if (splashBinding.loginView.viewTreeObserver.isAlive) {
+            splashBinding.loginView.viewTreeObserver.addOnGlobalLayoutListener(object :
+                ViewTreeObserver.OnGlobalLayoutListener {
                 override fun onGlobalLayout() {
                     splashBinding.loginView.viewTreeObserver.removeOnGlobalLayoutListener(this)
                     val height = layoutParams.height - splashBinding.loginView.height
@@ -189,14 +232,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    private fun splashLandscape(splashBinding: SplashScreenBinding){
+    private fun splashLandscape(splashBinding: SplashScreenBinding) {
         splashBinding.root.setBackgroundResource(R.mipmap.background_circuit_landscape)
-        val lParams = RelativeLayout.LayoutParams(layoutParams.width * 11 / 20, RelativeLayout.LayoutParams.WRAP_CONTENT)
+        val lParams = RelativeLayout.LayoutParams(
+            layoutParams.width * 11 / 20, RelativeLayout.LayoutParams.WRAP_CONTENT
+        )
         lParams.addRule(RelativeLayout.ALIGN_PARENT_END)
         lParams.addRule(RelativeLayout.CENTER_VERTICAL)
         splashBinding.loginView.layoutParams = lParams
         splashBinding.loginView.clearAnimation()
-        splashBinding.loginView.setPadding(layoutParams.height / 14, layoutParams.height / 10, layoutParams.height / 14, 0)
+        splashBinding.loginView.setPadding(
+            layoutParams.height / 14, layoutParams.height / 10, layoutParams.height / 14, 0
+        )
 
         val logoParams = RelativeLayout.LayoutParams(layoutParams.width / 4, layoutParams.width / 4)
         logoParams.addRule(RelativeLayout.ALIGN_PARENT_START)
@@ -206,51 +253,82 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         splashBinding.splashLogo.layoutParams = logoParams
     }
 
-    fun setNavView(){
+    fun setNavView() {
         mainBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(mainBinding.root)
         setSupportActionBar(mainBinding.toolbar)
-        val toggle = ActionBarDrawerToggle(this, mainBinding.drawerLayout, mainBinding.toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
+        val toggle = ActionBarDrawerToggle(
+            this,
+            mainBinding.drawerLayout,
+            mainBinding.toolbar,
+            R.string.navigation_drawer_open,
+            R.string.navigation_drawer_close
+        )
         mainBinding.drawerLayout.addDrawerListener(toggle)
 
         val navHeader: LinearLayout = mainBinding.navView.getHeaderView(0) as LinearLayout
-        navHeader.post{
+        navHeader.post {
             navHeader.layoutParams = LinearLayout.LayoutParams(navHeader.width, navHeader.width)
             navHeader.findViewById<ImageView>(R.id.app_icon).layoutParams =
-                LinearLayout.LayoutParams((navHeader.width * 0.7).toInt(), (navHeader.width * 0.7).toInt())
-            navHeader.findViewById<TextView>(R.id.app_name).textSize = (navHeader.width / 18).toFloat()
-            navHeader.findViewById<TextView>(R.id.app_description).textSize = (navHeader.width / 26).toFloat()
+                LinearLayout.LayoutParams(
+                    (navHeader.width * 0.7).toInt(), (navHeader.width * 0.7).toInt()
+                )
+            navHeader.findViewById<TextView>(R.id.app_name).textSize =
+                (navHeader.width / 18).toFloat()
+            navHeader.findViewById<TextView>(R.id.app_description).textSize =
+                (navHeader.width / 26).toFloat()
         }
         toggle.syncState()
         mainBinding.navView.setNavigationItemSelectedListener(this)
         supportFragmentManager.beginTransaction().commitAllowingStateLoss()
 
         val homeFragment = getSharedPreferences(
-            Strings.sharedPrefNameSettings, Context.MODE_PRIVATE).getInt(
-            Strings.sharedPrefItemHomeFragment, 0)
-        replaceFragment(when(homeFragment){1 -> irFragment 2-> gpioFragment 3 -> aboutFragment else-> devicesFragment})
-        mainBinding.navView.setCheckedItem(when(homeFragment){1 -> R.id.home_drawer 2-> R.id.gpio_drawer 3 -> R.id.info_drawer else-> R.id.device_drawer_item})
+            Strings.sharedPrefNameSettings, Context.MODE_PRIVATE
+        ).getInt(
+            Strings.sharedPrefItemHomeFragment, 0
+        )
+        replaceFragment(
+            when (homeFragment) {
+                1 -> irFragment
+                2 -> gpioFragment
+                3 -> aboutFragment
+                else -> devicesFragment
+            }
+        )
+        mainBinding.navView.setCheckedItem(
+            when (homeFragment) {
+                1 -> R.id.home_drawer
+                2 -> R.id.gpio_drawer
+                3 -> R.id.info_drawer
+                else -> R.id.device_drawer_item
+            }
+        )
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             private var backPressed = false
             override fun handleOnBackPressed() {
                 when {
-                    mainBinding.drawerLayout.isDrawerOpen(GravityCompat.START) -> mainBinding.drawerLayout.closeDrawer(GravityCompat.START)
+                    mainBinding.drawerLayout.isDrawerOpen(GravityCompat.START) -> mainBinding.drawerLayout.closeDrawer(
+                        GravityCompat.START
+                    )
                     backPressed -> finish()
                     else -> {
                         backPressed = true
-                        Toast.makeText(this@MainActivity, R.string.message_back_to_exit, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this@MainActivity, R.string.message_back_to_exit, Toast.LENGTH_SHORT
+                        ).show()
                         Handler(Looper.getMainLooper()).postDelayed({
                             backPressed = false
-                        },2000)
+                        }, 2000)
                     }
                 }
             }
         })
     }
 
-    private fun replaceFragment(fragment: Fragment){
-        supportFragmentManager.beginTransaction().replace(R.id.content_main, fragment).commitAllowingStateLoss()
+    private fun replaceFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction().replace(R.id.content_main, fragment)
+            .commitAllowingStateLoss()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -260,8 +338,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.action_settings ->{
-                val intent = Intent(this, SettingsActivity :: class.java )
+            R.id.action_settings -> {
+                val intent = Intent(this, SettingsActivity::class.java)
                 startActivity(intent)
                 true
             }
@@ -287,7 +365,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 shareApplication()
             }
             R.id.nav_action_settings -> {
-                val intent = Intent(this, SettingsActivity :: class.java )
+                val intent = Intent(this, SettingsActivity::class.java)
                 startActivity(intent)
             }
             R.id.nav_rate -> {
@@ -299,8 +377,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-    private fun shareApplication(){
-        try{
+    private fun shareApplication() {
+        try {
             val app: ApplicationInfo = applicationContext.applicationInfo
             val filePath: String = app.sourceDir
 
@@ -308,7 +386,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             intent.type = Strings.intentTypeAll
             val originalApk = File(filePath)
 
-            val tempFile = ESPUtilsApp.getExternalCache(getString(app.labelRes) + Strings.extensionApk)
+            val tempFile =
+                ESPUtilsApp.getExternalCache(getString(app.labelRes) + Strings.extensionApk)
             if (tempFile.exists()) {
                 tempFile.delete()
             }
@@ -325,26 +404,23 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             ins.close()
             out.close()
 
-            val uri: Uri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + Strings.extensionProvider, tempFile)
+            val uri: Uri = FileProvider.getUriForFile(
+                this, BuildConfig.APPLICATION_ID + Strings.extensionProvider, tempFile
+            )
             intent.putExtra(Intent.EXTRA_STREAM, uri)
 
             startActivity(Intent.createChooser(intent, getString(R.string.intent_title_share_app)))
-        }catch(ex: java.lang.Exception){
+        } catch (ex: java.lang.Exception) {
             Toast.makeText(this, R.string.message_err_app_share, Toast.LENGTH_LONG).show()
         }
     }
 
     private fun hideSystemUI(view: View) {
-        @Suppress("DEPRECATION")
-        view.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_FULLSCREEN
-                or View.SYSTEM_UI_FLAG_IMMERSIVE)
+        @Suppress("DEPRECATION") view.systemUiVisibility =
+            (View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_IMMERSIVE)
     }
 
-    private fun addOnConfigurationChangeListener(listener: OnConfigurationChangeListener){
+    private fun addOnConfigurationChangeListener(listener: OnConfigurationChangeListener) {
         onConfigChangeListeners.add(listener)
     }
 
@@ -356,8 +432,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         onConfigChangeListeners.iterator().forEach {
             try {
                 it.onConfigurationChanged(newConfig)
-                if(!it.keepAlive) onConfigChangeListeners.remove(it)
-            }catch(ex:Exception){
+                if (!it.keepAlive) onConfigChangeListeners.remove(it)
+            } catch (ex: Exception) {
                 onConfigChangeListeners.remove(it)
                 Toast.makeText(this, R.string.message_err_config_change, Toast.LENGTH_LONG).show()
             }
@@ -365,7 +441,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onDestroy() {
-        if(splashDialog?.isShowing == true) splashDialog?.dismiss()
+        if (splashDialog?.isShowing == true) splashDialog?.dismiss()
         super.onDestroy()
     }
 

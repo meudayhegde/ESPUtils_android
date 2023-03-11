@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="transparent" >@android:color/transparent</color>
+    <color name="transparent">@android:color/transparent</color>
     <color name="white">@android:color/white</color>
     <color name="black">@android:color/black</color>
     <color name="gray_light">#AAAAAA</color>
@@ -12,12 +12,12 @@
     <color name="blue_light">#7D7DFF</color>
     <color name="blue">#0000FF</color>
     <color name="blue_dark">#000077</color>
-    <color name="green_light" >#59D659</color>
-    <color name="green" >#00D600</color>
-    <color name="green_dark" >#008E00</color>
-    <color name="yellow_light" >#FFFF46</color>
-    <color name="yellow" >#F4F400</color>
-    <color name="yellow_dark" >#D5AE00</color>
+    <color name="green_light">#59D659</color>
+    <color name="green">#00D600</color>
+    <color name="green_dark">#008E00</color>
+    <color name="yellow_light">#FFFF46</color>
+    <color name="yellow">#F4F400</color>
+    <color name="yellow_dark">#D5AE00</color>
     <color name="red_light">#FF4747</color>
     <color name="red">#FF0000</color>
     <color name="red_dark">#BF0000</color>

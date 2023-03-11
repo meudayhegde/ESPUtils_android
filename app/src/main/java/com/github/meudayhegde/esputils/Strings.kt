@@ -20,46 +20,58 @@ object Strings {
 
     const val espCommandPing = "{\"request\": \"ping\"}"
 
-    fun espCommandAuth(username: String, password: String): String{
+    fun espCommandAuth(username: String, password: String): String {
         return "{\"request\": \"authenticate\", \"username\": \"$username\", \"password\": \"$password\"}"
     }
 
-    fun espCommandChangeUser(username: String, password: String, usernameNew: String, passwordNew: String): String{
+    fun espCommandChangeUser(
+        username: String, password: String, usernameNew: String, passwordNew: String
+    ): String {
         return "{\"request\": \"set_user\", \"username\": \"$username\", \"password\": \"$password\", \"new_username\": \"$usernameNew\", \"new_password\": \"$passwordNew\"}"
     }
 
-    fun espCommandChangeWireless(username: String, password: String, wirelessMode: String, wirelessSSIDNew: String, wirelessPSKNew: String): String{
+    fun espCommandChangeWireless(
+        username: String,
+        password: String,
+        wirelessMode: String,
+        wirelessSSIDNew: String,
+        wirelessPSKNew: String
+    ): String {
         return "{\"request\": \"set_wireless\", \"username\": \"$username\", \"password\": \"$password\", \"wireless_mode\": \"$wirelessMode\", \"new_ssid\": \"$wirelessSSIDNew\", \"new_pass\": \"$wirelessPSKNew\"}"
     }
 
-    fun espCommandGetGpio(username: String, password: String): String{
+    fun espCommandGetGpio(username: String, password: String): String {
         return "{\"request\": \"gpio_get\", \"username\": \"$username\", \"password\": \"$password\", \"pinNumber\": -1}"
     }
 
-    fun espCommandGetWireless(username: String, password: String): String{
+    fun espCommandGetWireless(username: String, password: String): String {
         return "{\"request\": \"get_wireless\", \"username\": \"$username\", \"password\": \"$password\"}"
     }
 
-    fun espCommandReadIrcode(username: String, password: String, captureMode: Int): String{
+    fun espCommandReadIrcode(username: String, password: String, captureMode: Int): String {
         return "{\"request\": \"ir_capture\", \"username\": \"$username\", \"password\": \"$password\", \"capture_mode\": $captureMode}"
     }
 
-    fun espCommandRestart(username: String, password: String): String{
+    fun espCommandRestart(username: String, password: String): String {
         return "{\"request\": \"restart\", \"username\": \"$username\", \"password\": \"$password\"}"
     }
 
     /**
-        api for esp reset
+    api for esp reset
      */
-    fun espCommandReset(username: String, password: String): String{
+    fun espCommandReset(username: String, password: String): String {
         return "{\"request\": \"reset\", \"username\": \"$username\", \"password\": \"$password\"}"
     }
 
-    fun espCommandSendIrcode(username: String, password: String, length: String, protocol: String, irCode: String): String{
+    fun espCommandSendIrcode(
+        username: String, password: String, length: String, protocol: String, irCode: String
+    ): String {
         return "{\"request\": \"ir_send\", \"username\": \"$username\", \"password\": \"$password\", \"length\": \"$length\", \"protocol\": \"$protocol\", \"irCode\": \"$irCode\"}"
     }
 
-    fun espCommandSetGpio(username: String, password: String, pinNumber: Int, pinValue: Int): String{
+    fun espCommandSetGpio(
+        username: String, password: String, pinNumber: Int, pinValue: Int
+    ): String {
         return "{\"request\": \"gpio_set\", \"username\": \"$username\", \"password\": \"$password\", \"pinMode\": \"OUTPUT\", \"pinNumber\": $pinNumber, \"pinValue\": $pinValue}"
     }
 

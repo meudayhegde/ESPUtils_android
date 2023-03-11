@@ -1,6 +1,5 @@
 package com.github.meudayhegde.esputils.ui.adapters
 
-import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -27,15 +26,17 @@ import com.github.meudayhegde.esputils.holders.RemoteProperties
 import com.github.meudayhegde.esputils.ui.dialogs.RemoteDialog
 import java.io.OutputStreamWriter
 
-class RemoteListAdapter(private val propList: ArrayList<RemoteProperties>, private val mode: Int) : RecyclerView.Adapter<RemoteListAdapter.RemoteListViewHolder>(){
+class RemoteListAdapter(private val propList: ArrayList<RemoteProperties>, private val mode: Int) :
+    RecyclerView.Adapter<RemoteListAdapter.RemoteListViewHolder>() {
 
-    class RemoteListViewHolder(val viewBinding: ManageRemoteListItemBinding, mode: Int) : RecyclerView.ViewHolder(viewBinding.root){
+    class RemoteListViewHolder(val viewBinding: ManageRemoteListItemBinding, mode: Int) :
+        RecyclerView.ViewHolder(viewBinding.root) {
         val context: Context = viewBinding.root.context
         val btnCount = viewBinding.btnCount
         val iconShare = viewBinding.iconShare
 
-        init{
-            if(mode == RemoteDialog.MODE_SELECT_BUTTON){
+        init {
+            if (mode == RemoteDialog.MODE_SELECT_BUTTON) {
                 iconShare.visibility = View.GONE
             }
         }
@@ -58,8 +59,7 @@ class RemoteListAdapter(private val propList: ArrayList<RemoteProperties>, priva
             holder.viewBinding.root.visibility = View.VISIBLE
             holder.viewBinding.root.startAnimation(
                 AnimationUtils.loadAnimation(
-                    holder.context,
-                    R.anim.anim_button_show
+                    holder.context, R.anim.anim_button_show
                 )
             )
         }, position * 20L)
@@ -76,19 +76,20 @@ class RemoteListAdapter(private val propList: ArrayList<RemoteProperties>, priva
             holder.viewBinding.root.setOnClickListener {
                 RemoteDialog(holder.context, prop, RemoteDialog.MODE_VIEW_EDIT).show()
             }
-        }else{
+        } else {
             holder.viewBinding.root.setOnClickListener {
                 RemoteDialog(holder.context, prop, RemoteDialog.MODE_SELECT_BUTTON).show()
             }
         }
     }
 
-    private fun setViewProps(binding: ManageRemoteListItemBinding, prop: RemoteProperties){
+    private fun setViewProps(binding: ManageRemoteListItemBinding, prop: RemoteProperties) {
         binding.macAddr.text = prop.remoteVendor
         binding.modelNameText.text = prop.remoteName
         binding.remoteDesc.text = prop.description
-        binding.container.background = ContextCompat.getDrawable(binding.root.context,
-            if(prop.deviceProperties.isConnected) R.drawable.round_corner_success
+        binding.container.background = ContextCompat.getDrawable(
+            binding.root.context,
+            if (prop.deviceProperties.isConnected) R.drawable.round_corner_success
             else R.drawable.round_corner_error
         )
     }
@@ -97,45 +98,37 @@ class RemoteListAdapter(private val propList: ArrayList<RemoteProperties>, priva
 
     private fun onShareClick(context: Context, prop: RemoteProperties) {
         val fileToShare = ESPUtilsApp.getExternalCache(prop.fileName)
-        if (fileToShare.exists())
-            fileToShare.delete()
+        if (fileToShare.exists()) fileToShare.delete()
         fileToShare.createNewFile()
         val writer = OutputStreamWriter(fileToShare.outputStream())
         writer.write(prop.toString())
         writer.flush()
         writer.close()
 
-        val uri = FileProvider.getUriForFile(context,
-            context.applicationContext.packageName + Strings.extensionProvider,
-            fileToShare
+        val uri = FileProvider.getUriForFile(
+            context, context.applicationContext.packageName + Strings.extensionProvider, fileToShare
         )
 
-        val intent = ShareCompat.IntentBuilder(context)
-            .setType(Strings.intentTypeJson)
-            .setSubject(context.getString(R.string.share_file))
-            .setStream(uri)
+        val intent = ShareCompat.IntentBuilder(context).setType(Strings.intentTypeJson)
+            .setSubject(context.getString(R.string.share_file)).setStream(uri)
             .setChooserTitle(context.getString(R.string.title_share_remote_prop))
-            .createChooserIntent()
-            .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            .createChooserIntent().addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 
         ContextCompat.startActivity(
-            context,
-            Intent.createChooser(intent, context.getString(R.string.share_file)),
-            null
+            context, Intent.createChooser(intent, context.getString(R.string.share_file)), null
         )
     }
 
-    private fun onCardLongClick(itemBinding: ManageRemoteListItemBinding, prop: RemoteProperties): Boolean{
+    private fun onCardLongClick(
+        itemBinding: ManageRemoteListItemBinding, prop: RemoteProperties
+    ): Boolean {
         val context = itemBinding.root.context
         val dialogBinding = NewRemoteConfirmBinding.inflate(LayoutInflater.from(context))
         val remoteEditDialog = AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
-            .setTitle(R.string.edit_remote_information)
-            .setView(dialogBinding.root)
-            .setIcon(R.drawable.icon_ir_remote)
-            .setPositiveButton(R.string.done){ _, _ -> }
-            .setNegativeButton(R.string.cancel){ _, _ -> }
-            .setNeutralButton(R.string.delete_remote){ _, _ -> }
-            .create()
+            .setTitle(R.string.edit_remote_information).setView(dialogBinding.root)
+            .setIcon(R.drawable.icon_ir_remote).setPositiveButton(R.string.done) { _, _ -> }
+            .setNegativeButton(R.string.cancel) { _, _ -> }
+            .setNeutralButton(R.string.delete_remote) { _, _ -> }.create()
         remoteEditDialog.setOnDismissListener {
             ESPUtilsApp.showAd(context as MainActivity)
         }
@@ -146,7 +139,8 @@ class RemoteListAdapter(private val propList: ArrayList<RemoteProperties>, priva
 
             val devicePropList = arrayListOf<Any>(context.getString(R.string.select_device))
             devicePropList.addAll(ESPUtilsApp.devicePropList)
-            dialogBinding.deviceSelector.adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, devicePropList)
+            dialogBinding.deviceSelector.adapter =
+                ArrayAdapter(context, android.R.layout.simple_list_item_1, devicePropList)
 
             dialogBinding.deviceSelector.setSelection(ESPUtilsApp.devicePropList.indexOf(prop.deviceProperties) + 1)
 
@@ -154,11 +148,14 @@ class RemoteListAdapter(private val propList: ArrayList<RemoteProperties>, priva
             val btnDelete = remoteEditDialog.getButton(DialogInterface.BUTTON_NEUTRAL)
 
             btnDone.setOnClickListener {
-                if(dialogBinding.deviceSelector.selectedItemPosition == 0){
-                    Toast.makeText(context, R.string.message_device_not_selected_note, Toast.LENGTH_LONG).show()
+                if (dialogBinding.deviceSelector.selectedItemPosition == 0) {
+                    Toast.makeText(
+                        context, R.string.message_device_not_selected_note, Toast.LENGTH_LONG
+                    ).show()
                     return@setOnClickListener
                 }
-                val selectedDevice = ESPUtilsApp.devicePropList[dialogBinding.deviceSelector.selectedItemPosition - 1]
+                val selectedDevice =
+                    ESPUtilsApp.devicePropList[dialogBinding.deviceSelector.selectedItemPosition - 1]
 
                 prop.remoteVendor = dialogBinding.vendorName.text.toString()
                 prop.remoteName = dialogBinding.modelName.text.toString()
@@ -177,11 +174,13 @@ class RemoteListAdapter(private val propList: ArrayList<RemoteProperties>, priva
                         propList.remove(prop)
                         notifyItemRemoved(index)
                         remoteEditDialog.dismiss()
-                    }
-                    .setMessage(ESPUtilsApp.getString(R.string.message_dialog_delete_remote, prop.remoteVendor, prop.remoteName))
-                    .setTitle(R.string.confirm_deletion)
-                    .setIcon(R.drawable.icon_delete)
-                    .show()
+                    }.setMessage(
+                        ESPUtilsApp.getString(
+                            R.string.message_dialog_delete_remote,
+                            prop.remoteVendor,
+                            prop.remoteName
+                        )
+                    ).setTitle(R.string.confirm_deletion).setIcon(R.drawable.icon_delete).show()
             }
         }
         remoteEditDialog.show()

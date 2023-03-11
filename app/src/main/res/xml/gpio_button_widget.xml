@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
-        android:configure="com.github.meudayhegde.esputils.GPIOBtnWidgetConfActivity"
-        android:initialLayout="@layout/widget_layout_gpio_button"
-        android:minHeight="@dimen/list_item_icon_size"
-        android:minWidth="@dimen/list_item_icon_size"
-        android:previewImage="@drawable/gpio_widget_preview"
-        android:updatePeriodMillis="1800000"
-        android:widgetCategory="home_screen">
+    android:configure="com.github.meudayhegde.esputils.GPIOBtnWidgetConfActivity"
+    android:initialLayout="@layout/widget_layout_gpio_button"
+    android:minWidth="@dimen/list_item_icon_size"
+    android:minHeight="@dimen/list_item_icon_size"
+    android:previewImage="@drawable/gpio_widget_preview"
+    android:updatePeriodMillis="1800000"
+    android:widgetCategory="home_screen">
 
 </appwidget-provider>

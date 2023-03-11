@@ -9,10 +9,8 @@ class GPIOObject(var jsonObj: JSONObject) {
     var onGPIORefreshListener: OnGPIORefreshListener? = null
     var parent: GPIOConfig? = null
     val deviceProperties: DeviceProperties
-        get(){
-            for(prop in ESPUtilsApp.devicePropList)
-                if(prop.macAddress == macAddr)
-                    return prop
+        get() {
+            for (prop in ESPUtilsApp.devicePropList) if (prop.macAddress == macAddress) return prop
             return DeviceProperties()
         }
 
@@ -20,27 +18,27 @@ class GPIOObject(var jsonObj: JSONObject) {
         get() {
             return jsonObj.optString(Strings.gpioObjTitle, "")
         }
-        set(value){
+        set(value) {
             field = value
             jsonObj.put(Strings.gpioObjTitle, value)
             parent?.update()
         }
 
     var subTitle: String = jsonObj.optString(Strings.gpioObjSubtitle, "")
-        get(){
+        get() {
             return jsonObj.optString(Strings.gpioObjSubtitle, "")
         }
-        set(value){
+        set(value) {
             field = value
             jsonObj.put(Strings.gpioObjSubtitle, value)
             parent?.update()
         }
 
-    var macAddr: String = jsonObj.optString(Strings.gpioObjMACAddress, "")
+    var macAddress: String = jsonObj.optString(Strings.gpioObjMACAddress, "")
         get() {
             return jsonObj.optString(Strings.gpioObjMACAddress, "")
         }
-        set(value){
+        set(value) {
             field = value
             jsonObj.put(Strings.gpioObjMACAddress, value)
             parent?.update()
@@ -50,7 +48,7 @@ class GPIOObject(var jsonObj: JSONObject) {
         get() {
             return jsonObj.optInt(Strings.gpioObjPinNumber, 0)
         }
-        set(value){
+        set(value) {
             field = value
             jsonObj.put(Strings.gpioObjPinNumber, value)
             parent?.update()
@@ -61,7 +59,7 @@ class GPIOObject(var jsonObj: JSONObject) {
     constructor(json: JSONObject, parent: GPIOConfig) : this(json) {
         this.parent = parent
         val curProp = jsonObj
-        jsonObj = parent.addGPIO(jsonObj)?: jsonObj
+        jsonObj = parent.addGPIO(jsonObj) ?: jsonObj
         curProp.keys().forEach {
             jsonObj.put(it, curProp.get(it))
         }
@@ -69,7 +67,7 @@ class GPIOObject(var jsonObj: JSONObject) {
         deviceProperties.pinConfig.add(this)
     }
 
-    fun delete(): Boolean{
-        return parent?.removeGPIO(jsonObj)?: false
+    fun delete(): Boolean {
+        return parent?.removeGPIO(jsonObj) ?: false
     }
 }

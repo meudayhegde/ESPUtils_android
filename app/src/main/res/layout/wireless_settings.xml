@@ -1,81 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/layout_wireless"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="@dimen/margin_max"
-        android:layout_marginStart="@dimen/margin_high"
-        android:layout_marginEnd="@dimen/margin_high"
-        android:orientation="vertical" >
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layout_wireless"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentStart="true"
+    android:layout_alignParentTop="true"
+    android:layout_marginStart="@dimen/margin_high"
+    android:layout_marginTop="@dimen/margin_max"
+    android:layout_marginEnd="@dimen/margin_high"
+    android:orientation="vertical">
 
-    <ProgressBar android:id="@+id/get_wireless_loading" style="?android:attr/progressBarStyleHorizontal" android:layout_marginTop="@dimen/margin_low"
-            android:layout_width="match_parent" android:layout_height="@dimen/height_progress_bar_linear" android:indeterminate="true"/>
+    <ProgressBar
+        android:id="@+id/get_wireless_loading"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_progress_bar_linear"
+        android:layout_marginTop="@dimen/margin_low"
+        android:indeterminate="true" />
 
     <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_max"
-            android:gravity="center_vertical"
-            android:layout_marginStart="@dimen/margin_high"
-            android:layout_marginEnd="@dimen/margin_high"
-            android:orientation="horizontal">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_high"
+        android:layout_marginTop="@dimen/margin_max"
+        android:layout_marginEnd="@dimen/margin_high"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
         <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="?attr/colorOnBackground"
-                android:text="@string/wireless_mode"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/wireless_mode"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="?attr/colorOnBackground" />
 
         <Spinner
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin_max"
-                android:id="@+id/spinner_wireless_mode"
-                android:layout_marginEnd="@dimen/margin_max"
-                android:background="@drawable/spinner_background" />
+            android:id="@+id/spinner_wireless_mode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_max"
+            android:layout_marginEnd="@dimen/margin_max"
+            android:background="@drawable/spinner_background" />
 
     </LinearLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_max"
-            android:layout_marginEnd="@dimen/margin_high"
-            android:layout_marginStart="@dimen/margin_high"
-            app:hintTextColor="?attr/colorOnBackground"
-            style="@style/TextInputLayoutStyle"
-            android:hint="@string/wifi_name">
+        style="@style/TextInputLayoutStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_high"
+        android:layout_marginTop="@dimen/margin_max"
+        android:layout_marginEnd="@dimen/margin_high"
+        android:hint="@string/wifi_name"
+        app:hintTextColor="?attr/colorOnBackground">
 
         <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/til_wifi_name"
-                android:inputType="text"
-                android:singleLine="true" />
+            android:id="@+id/til_wifi_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:singleLine="true" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_low"
-            android:layout_marginEnd="@dimen/margin_high"
-            app:passwordToggleEnabled="true"
-            android:layout_marginStart="@dimen/margin_high"
-            app:hintTextColor="?attr/colorOnBackground"
-            style="@style/TextInputLayoutStyle"
-            android:hint="@string/wifi_password">
+        style="@style/TextInputLayoutStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_high"
+        android:layout_marginTop="@dimen/margin_low"
+        android:layout_marginEnd="@dimen/margin_high"
+        android:hint="@string/wifi_password"
+        app:hintTextColor="?attr/colorOnBackground"
+        app:passwordToggleEnabled="true">
 
         <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/til_wifi_passwd"
-                android:inputType="textPassword"
-                android:singleLine="true" />
+            android:id="@+id/til_wifi_passwd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:singleLine="true" />
 
     </com.google.android.material.textfield.TextInputLayout>
 

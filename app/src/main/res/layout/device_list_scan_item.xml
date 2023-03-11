@@ -1,37 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:orientation="vertical" android:layout_width="match_parent"
-        android:layout_height="wrap_content" app:cardUseCompatPadding="true"
-        app:cardElevation="@dimen/card_elevation" app:cardCornerRadius="@dimen/list_item_card_radius"
-        android:descendantFocusability="blocksDescendants">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:descendantFocusability="blocksDescendants"
+    android:orientation="vertical"
+    app:cardCornerRadius="@dimen/list_item_card_radius"
+    app:cardElevation="@dimen/card_elevation"
+    app:cardUseCompatPadding="true">
 
     <RelativeLayout
-            android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:foreground="?android:attr/selectableItemBackground"
-            android:background="@drawable/layout_border_round_corner"
-            android:orientation="vertical" tools:ignore="UnusedAttribute">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/layout_border_round_corner"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:orientation="vertical"
+        tools:ignore="UnusedAttribute">
 
-        <ImageView android:layout_width="@dimen/list_item_icon_size_small"
-                android:layout_height="@dimen/list_item_icon_size_small"
-                android:src="@drawable/icon_esp_devices" android:layout_marginStart="@dimen/margin_low"
-                android:layout_centerVertical="true" app:tint="?attr/colorOnBackground"
-                android:contentDescription="@string/esp_devices" android:id="@+id/esp_icon"/>
+        <ImageView
+            android:id="@+id/esp_icon"
+            android:layout_width="@dimen/list_item_icon_size_small"
+            android:layout_height="@dimen/list_item_icon_size_small"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/margin_low"
+            android:contentDescription="@string/esp_devices"
+            android:src="@drawable/icon_esp_devices"
+            app:tint="?attr/colorOnBackground" />
 
         <TextView
-                android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:layout_toEndOf="@id/esp_icon" android:textColor="?attr/colorOnBackground"
-                android:id="@+id/device_ip_address" android:text="@string/ip_address"
-                android:textSize="@dimen/text_size_title" android:layout_marginTop="@dimen/margin_medium"
-                android:layout_marginStart="@dimen/margin_low" android:layout_marginEnd="@dimen/margin_low"/>
+            android:id="@+id/device_ip_address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_low"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:layout_marginEnd="@dimen/margin_low"
+            android:layout_toEndOf="@id/esp_icon"
+            android:text="@string/ip_address"
+            android:textColor="?attr/colorOnBackground"
+            android:textSize="@dimen/text_size_title" />
 
         <TextView
-                android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:textSize="@dimen/text_size_subtitle" android:layout_marginTop="@dimen/margin_min" android:textColor="?attr/colorOnBackground"
-                android:layout_below="@id/device_ip_address" android:layout_toEndOf="@id/esp_icon"
-                android:id="@+id/device_mac_address" android:text="@string/mac_address"
-                android:layout_marginStart="@dimen/margin_low" android:layout_marginEnd="@dimen/margin_low"
-                android:layout_marginBottom="@dimen/margin_low"/>
+            android:id="@+id/device_mac_address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/device_ip_address"
+            android:layout_marginStart="@dimen/margin_low"
+            android:layout_marginTop="@dimen/margin_min"
+            android:layout_marginEnd="@dimen/margin_low"
+            android:layout_marginBottom="@dimen/margin_low"
+            android:layout_toEndOf="@id/esp_icon"
+            android:text="@string/mac_address"
+            android:textColor="?attr/colorOnBackground"
+            android:textSize="@dimen/text_size_subtitle" />
     </RelativeLayout>
 </androidx.cardview.widget.CardView>

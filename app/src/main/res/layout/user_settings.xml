@@ -1,111 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentStart="true"
+    android:layout_marginStart="@dimen/margin_high"
+    android:layout_marginTop="@dimen/margin_max"
+    android:layout_marginEnd="@dimen/margin_high"
+    android:orientation="vertical">
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/TextInputLayoutStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_high"
+        android:layout_marginTop="@dimen/margin_max"
+        android:layout_marginEnd="@dimen/margin_high"
+        android:hint="@string/current_username"
+        app:hintTextColor="?attr/colorOnBackground">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/cur_user_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_marginTop="@dimen/margin_max"
-            android:layout_marginStart="@dimen/margin_high"
-            android:layout_marginEnd="@dimen/margin_high"
-            android:orientation="vertical" >
+            android:inputType="text"
+            android:singleLine="true" />
 
-        <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_max"
-                android:layout_marginEnd="@dimen/margin_high"
-                android:layout_marginStart="@dimen/margin_high"
-                app:hintTextColor="?attr/colorOnBackground"
-                style="@style/TextInputLayoutStyle"
-                android:hint="@string/current_username">
+    </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/cur_user_name"
-                    android:inputType="text"
-                    android:singleLine="true" />
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/TextInputLayoutStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_high"
+        android:layout_marginTop="@dimen/margin_low"
+        android:layout_marginEnd="@dimen/margin_high"
+        android:hint="@string/current_password"
+        app:hintTextColor="?attr/colorOnBackground"
+        app:passwordToggleEnabled="true">
 
-        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/cur_user_passwd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:singleLine="true" />
 
-        <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_low"
-                android:layout_marginEnd="@dimen/margin_high"
-                android:layout_marginStart="@dimen/margin_high"
-                app:passwordToggleEnabled="true"
-                app:hintTextColor="?attr/colorOnBackground"
-                style="@style/TextInputLayoutStyle"
-                android:hint="@string/current_password">
+    </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textPassword"
-                    android:id="@+id/cur_user_passwd"
-                    android:singleLine="true" />
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/TextInputLayoutStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_high"
+        android:layout_marginTop="@dimen/margin_max"
+        android:layout_marginEnd="@dimen/margin_high"
+        android:hint="@string/new_user_name"
+        app:hintTextColor="?attr/colorOnBackground">
 
-        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/til_user_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:singleLine="true" />
 
-        <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_max"
-                android:layout_marginEnd="@dimen/margin_high"
-                android:layout_marginStart="@dimen/margin_high"
-                app:hintTextColor="?attr/colorOnBackground"
-                style="@style/TextInputLayoutStyle"
-                android:hint="@string/new_user_name">
+    </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/til_user_name"
-                    android:inputType="text"
-                    android:singleLine="true" />
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/TextInputLayoutStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_high"
+        android:layout_marginTop="@dimen/margin_low"
+        android:layout_marginEnd="@dimen/margin_high"
+        android:hint="@string/new_password"
+        app:hintTextColor="?attr/colorOnBackground"
+        app:passwordToggleEnabled="true">
 
-        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/til_user_passwd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:singleLine="true" />
 
-        <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_low"
-                android:layout_marginEnd="@dimen/margin_high"
-                android:layout_marginStart="@dimen/margin_high"
-                app:passwordToggleEnabled="true"
-                app:hintTextColor="?attr/colorOnBackground"
-                style="@style/TextInputLayoutStyle"
-                android:hint="@string/new_password">
+    </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/til_user_passwd"
-                    android:inputType="textPassword"
-                    android:singleLine="true" />
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/TextInputLayoutStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_high"
+        android:layout_marginTop="@dimen/margin_low"
+        android:layout_marginEnd="@dimen/margin_high"
+        android:hint="@string/confirm_password"
+        app:hintTextColor="?attr/colorOnBackground"
+        app:passwordToggleEnabled="true">
 
-        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/til_user_confirm_passwd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:singleLine="true" />
 
-        <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_low"
-                android:layout_marginEnd="@dimen/margin_high"
-                app:passwordToggleEnabled="true"
-                android:layout_marginStart="@dimen/margin_high"
-                app:hintTextColor="?attr/colorOnBackground"
-                style="@style/TextInputLayoutStyle"
-                android:hint="@string/confirm_password">
-
-            <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/til_user_confirm_passwd"
-                    android:inputType="textPassword"
-                    android:singleLine="true" />
-
-        </com.google.android.material.textfield.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
 
-    </LinearLayout>
+</LinearLayout>

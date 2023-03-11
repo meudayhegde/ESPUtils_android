@@ -38,26 +38,33 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
     private var _binding: FragmentManageRemoteBinding? = null
     private lateinit var fragmentBinding: FragmentManageRemoteBinding
 
-    private val configChooser = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if(result.resultCode == Activity.RESULT_OK) {
-            val uri = result?.data?.data
-            try {
-                val mIntent = Intent(Intent.ACTION_VIEW)
-                mIntent.setDataAndType(uri, Strings.intentTypeJson)
-                mIntent.setPackage(context?.packageName)
-                startActivity(Intent.createChooser(mIntent, getString(R.string.title_file_chooser_remote_conf)))
-            } catch (ex: Exception) {
-                Log.e(javaClass.simpleName, "${ ex.message }")
+    private val configChooser =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val uri = result?.data?.data
+                try {
+                    val mIntent = Intent(Intent.ACTION_VIEW)
+                    mIntent.setDataAndType(uri, Strings.intentTypeJson)
+                    mIntent.setPackage(context?.packageName)
+                    startActivity(
+                        Intent.createChooser(
+                            mIntent, getString(R.string.title_file_chooser_remote_conf)
+                        )
+                    )
+                } catch (ex: Exception) {
+                    Log.e(javaClass.simpleName, "${ex.message}")
+                }
             }
         }
-    }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        if(_binding == null){
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View {
+        if (_binding == null) {
             _binding = FragmentManageRemoteBinding.inflate(inflater, container, false)
             fragmentBinding = _binding!!
             viewManager = LinearLayoutManager(context)
-            viewAdapter = RemoteListAdapter(ESPUtilsApp.remotePropList,0)
+            viewAdapter = RemoteListAdapter(ESPUtilsApp.remotePropList, 0)
             fragmentBinding.refreshLayout.refreshLayoutRecyclerView.apply {
                 setHasFixedSize(true)
                 layoutManager = viewManager
@@ -70,24 +77,33 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
                 intent.addCategory(Intent.CATEGORY_OPENABLE)
 
                 try {
-                    configChooser.launch(Intent.createChooser(intent, getString(R.string.title_file_chooser_remote_conf)))
+                    configChooser.launch(
+                        Intent.createChooser(
+                            intent, getString(R.string.title_file_chooser_remote_conf)
+                        )
+                    )
                 } catch (ex: ActivityNotFoundException) {
-                    Toast.makeText(context, R.string.message_install_file_manager, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context, R.string.message_install_file_manager, Toast.LENGTH_SHORT
+                    ).show()
                 }
                 fragmentBinding.famManageRemotes.close(true)
             }
 
             fragmentBinding.refreshLayout.refreshLayout.setOnRefreshListener {
                 fragmentBinding.refreshLayout.refreshLayout.isRefreshing = true
-                ThreadHandler.runOnFreeThread{
+                ThreadHandler.runOnFreeThread {
                     ESPUtilsApp.remotePropList.clear()
-                    val files = ESPUtilsApp.getPrivateFile(Strings.nameDirRemoteConfig).listFiles { pathname ->
-                        pathname!!.isFile and (pathname.name.endsWith(Strings.extensionJson, true)) and pathname.canWrite()
-                    }
+                    val files = ESPUtilsApp.getPrivateFile(Strings.nameDirRemoteConfig)
+                        .listFiles { pathname ->
+                            pathname!!.isFile and (pathname.name.endsWith(
+                                Strings.extensionJson, true
+                            )) and pathname.canWrite()
+                        }
                     files!!.forEach {
                         ESPUtilsApp.remotePropList.add(RemoteProperties(it, null))
                     }
-                    Handler(Looper.getMainLooper()).post{
+                    Handler(Looper.getMainLooper()).post {
                         viewAdapter?.notifyDataSetChanged()
                         fragmentBinding.refreshLayout.refreshLayout.isRefreshing = false
                     }
@@ -96,14 +112,19 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
 
             fragmentBinding.famManageRemotes.setOnClickListener(this)
         }
-        if(!fragmentBinding.famManageRemotes.isOpened)
-            fragmentBinding.famManageRemotes.hideMenuButton(false)
+        if (!fragmentBinding.famManageRemotes.isOpened) fragmentBinding.famManageRemotes.hideMenuButton(
+            false
+        )
 
         Handler(Looper.getMainLooper()).postDelayed({
-            if(fragmentBinding.famManageRemotes.isMenuButtonHidden)
-                fragmentBinding.famManageRemotes.showMenuButton(true)
-            if(ESPUtilsApp.remotePropList.isEmpty())
-                Handler(Looper.getMainLooper()).postDelayed({fragmentBinding.famManageRemotes.showMenu(true)}, 400)
+            if (fragmentBinding.famManageRemotes.isMenuButtonHidden) fragmentBinding.famManageRemotes.showMenuButton(
+                true
+            )
+            if (ESPUtilsApp.remotePropList.isEmpty()) Handler(Looper.getMainLooper()).postDelayed({
+                fragmentBinding.famManageRemotes.showMenu(
+                    true
+                )
+            }, 400)
         }, 400)
         return fragmentBinding.root
     }
@@ -122,44 +143,53 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
         listener = null
     }
 
-    fun notifyDataChanged(){
+    fun notifyDataChanged() {
         viewAdapter?.notifyDataSetChanged()
     }
 
     override fun onClick(v: View?) {
         val contentBinding = NewRemoteConfirmBinding.inflate(layoutInflater)
         val newRemoteDialog = AlertDialog.Builder(requireContext(), R.style.AppTheme_AlertDialog)
-            .setTitle(R.string.enter_remote_details)
-            .setView(contentBinding.root)
-            .setIcon(R.drawable.icon_ir_remote)
-            .setPositiveButton(R.string.done){ _, _ -> }
-            .setNegativeButton(R.string.cancel){ _, _ -> }
-            .create()
+            .setTitle(R.string.enter_remote_details).setView(contentBinding.root)
+            .setIcon(R.drawable.icon_ir_remote).setPositiveButton(R.string.done) { _, _ -> }
+            .setNegativeButton(R.string.cancel) { _, _ -> }.create()
 
         newRemoteDialog.setOnShowListener {
             val devicePropList = arrayListOf<Any>(getString(R.string.select_device))
             devicePropList.addAll(ESPUtilsApp.devicePropList)
-            contentBinding.deviceSelector.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, devicePropList)
+            contentBinding.deviceSelector.adapter =
+                ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, devicePropList)
 
             val btnDone = newRemoteDialog.getButton(DialogInterface.BUTTON_POSITIVE)
 
             btnDone.setOnClickListener {
-                if(contentBinding.deviceSelector.selectedItemPosition == 0){
-                    Toast.makeText(requireContext(), getString(R.string.message_device_not_selected_note), Toast.LENGTH_LONG).show()
+                if (contentBinding.deviceSelector.selectedItemPosition == 0) {
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.message_device_not_selected_note),
+                        Toast.LENGTH_LONG
+                    ).show()
                     return@setOnClickListener
                 }
-                val selectedDevice = ESPUtilsApp.devicePropList[contentBinding.deviceSelector.selectedItemPosition - 1]
+                val selectedDevice =
+                    ESPUtilsApp.devicePropList[contentBinding.deviceSelector.selectedItemPosition - 1]
 
-                var id = ("${contentBinding.vendorName.text.toString()} ${contentBinding.modelName.text.toString()}").lowercase(Locale.getDefault())
-                    .replace(" ", "_").replace("\n", "").replace("/", "_")
+                var id =
+                    ("${contentBinding.vendorName.text.toString()} ${contentBinding.modelName.text.toString()}").lowercase(
+                        Locale.getDefault()
+                    ).replace(" ", "_").replace("\n", "").replace("/", "_")
 
-                var configFile = ESPUtilsApp.getPrivateFile(Strings.nameDirRemoteConfig, id + Strings.extensionJson)
+                var configFile = ESPUtilsApp.getPrivateFile(
+                    Strings.nameDirRemoteConfig, id + Strings.extensionJson
+                )
                 var incr = 1
-                while(configFile.exists()) {
-                    configFile = ESPUtilsApp.getPrivateFile(Strings.nameDirRemoteConfig, id + "_" + incr + Strings.extensionJson)
+                while (configFile.exists()) {
+                    configFile = ESPUtilsApp.getPrivateFile(
+                        Strings.nameDirRemoteConfig, id + "_" + incr + Strings.extensionJson
+                    )
                     incr++
                 }
-                if(incr > 1) id += "_" + (incr - 1)
+                if (incr > 1) id += "_" + (incr - 1)
                 if (!configFile.exists()) configFile.createNewFile()
                 val remoteProperties = RemoteProperties(configFile, null)
 

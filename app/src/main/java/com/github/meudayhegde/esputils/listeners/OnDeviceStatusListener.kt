@@ -1,6 +1,6 @@
 package com.github.meudayhegde.esputils.listeners
 
-interface OnDeviceStatusListener{
+interface OnDeviceStatusListener {
     fun onBeginRefresh()
     fun onStatusUpdate(connected: Boolean)
 }

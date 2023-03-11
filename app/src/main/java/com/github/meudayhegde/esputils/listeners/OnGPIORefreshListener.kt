@@ -1,6 +1,6 @@
 package com.github.meudayhegde.esputils.listeners
 
-interface OnGPIORefreshListener{
+interface OnGPIORefreshListener {
     fun onRefreshBegin()
     fun onRefresh(pinValue: Int)
 }

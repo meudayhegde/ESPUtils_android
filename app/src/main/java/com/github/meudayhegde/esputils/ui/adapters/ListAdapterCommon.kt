@@ -6,14 +6,18 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.meudayhegde.esputils.databinding.CommonListItemBinding
 import com.github.meudayhegde.esputils.holders.ListItemCommon
 
-class ListAdapterCommon(private val itemList: ArrayList<ListItemCommon>) : RecyclerView.Adapter<ListAdapterCommon.CommonListViewHolder>(){
+class ListAdapterCommon(private val itemList: ArrayList<ListItemCommon>) :
+    RecyclerView.Adapter<ListAdapterCommon.CommonListViewHolder>() {
 
-    class CommonListViewHolder(val viewBinding: CommonListItemBinding) : RecyclerView.ViewHolder(viewBinding.root)
+    class CommonListViewHolder(val viewBinding: CommonListItemBinding) :
+        RecyclerView.ViewHolder(viewBinding.root)
 
-    private var onItemClickListener: ((viewHolder: CommonListViewHolder, item: ListItemCommon) -> Unit)? = null
+    private var onItemClickListener: ((viewHolder: CommonListViewHolder, item: ListItemCommon) -> Unit)? =
+        null
 
-    override fun onCreateViewHolder(parent: ViewGroup,
-                                    viewType: Int): CommonListViewHolder {
+    override fun onCreateViewHolder(
+        parent: ViewGroup, viewType: Int
+    ): CommonListViewHolder {
         return CommonListViewHolder(
             CommonListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         )
@@ -40,7 +44,7 @@ class ListAdapterCommon(private val itemList: ArrayList<ListItemCommon>) : Recyc
      * @param listener invokes this object with arguments [CommonListViewHolder] and [ListItemCommon]
      * with this view of the recycler view item can be completely handled
      */
-    fun setOnItemClickListener(listener: ((viewHolder: CommonListViewHolder, item: ListItemCommon) -> Unit)): ListAdapterCommon{
+    fun setOnItemClickListener(listener: ((viewHolder: CommonListViewHolder, item: ListItemCommon) -> Unit)): ListAdapterCommon {
         onItemClickListener = listener
         return this
     }

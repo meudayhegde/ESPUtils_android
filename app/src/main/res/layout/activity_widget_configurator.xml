@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        tools:context="com.github.meudayhegde.esputils.RemoteBtnWidgetConfActivity">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:context="com.github.meudayhegde.esputils.RemoteBtnWidgetConfActivity">
 
-    <include layout="@layout/recycler_refresh_layout"
-            android:id="@+id/remote_refresh_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+    <include
+        android:id="@+id/remote_refresh_layout"
+        layout="@layout/recycler_refresh_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </LinearLayout>

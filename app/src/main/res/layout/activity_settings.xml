@@ -1,41 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        tools:context=".SettingsActivity">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SettingsActivity">
 
     <com.google.android.material.appbar.AppBarLayout
-            android:layout_height="?attr/actionBarSize"
-            android:id="@+id/appbar_settings"
-            android:layout_width="match_parent">
+        android:id="@+id/appbar_settings"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize">
 
         <androidx.appcompat.widget.Toolbar
-                app:navigationIcon="@drawable/ic_arrow_back"
-                android:id="@+id/toolbar_settings"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                app:titleTextColor="@color/white"
-                app:titleTextAppearance="@style/TextAppearance.MaterialComponents.Headline5"
-                app:title="@string/settings"
-                android:background="@mipmap/background_circuit_toolbar">
+            android:id="@+id/toolbar_settings"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@mipmap/background_circuit_toolbar"
+            app:navigationIcon="@drawable/ic_arrow_back"
+            app:title="@string/settings"
+            app:titleTextAppearance="@style/TextAppearance.MaterialComponents.Headline5"
+            app:titleTextColor="@color/white">
 
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:layout_width="match_parent"
-            android:id="@+id/settings_refresh_layout"
-            android:layout_height="match_parent"
-            android:layout_below="@id/appbar_settings"
-            android:layout_margin="@dimen/margin_high">
+        android:id="@+id/settings_refresh_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/appbar_settings"
+        android:layout_margin="@dimen/margin_high">
 
         <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/settings_list"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scrollbars="vertical" />
+            android:id="@+id/settings_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </RelativeLayout>

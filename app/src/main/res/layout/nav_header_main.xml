@@ -1,20 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:background="@mipmap/background_circuit_square" android:orientation="vertical"
-        android:gravity="center">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@mipmap/background_circuit_square"
+    android:gravity="center"
+    android:orientation="vertical">
 
-    <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:paddingTop="@dimen/margin_low"
-               android:src="@drawable/circuit_light" android:contentDescription="@string/nav_header_desc"
-            android:id="@+id/app_icon" />
+    <ImageView
+        android:id="@+id/app_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/nav_header_desc"
+        android:paddingTop="@dimen/margin_low"
+        android:src="@drawable/circuit_light" />
 
-    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-              android:paddingTop="@dimen/margin_low" android:textStyle="bold" android:textSize="@dimen/text_size_title"
-              android:text="@string/app_name" android:id="@+id/app_name"
-              android:gravity="center_horizontal" android:textColor="@color/white"/>
+    <TextView
+        android:id="@+id/app_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:paddingTop="@dimen/margin_low"
+        android:text="@string/app_name"
+        android:textColor="@color/white"
+        android:textSize="@dimen/text_size_title"
+        android:textStyle="bold" />
 
-    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="@dimen/text_size_subtitle_large"
-              android:text="@string/nav_header_subtitle" android:layout_marginStart="@dimen/margin_low" android:layout_marginEnd="@dimen/margin_low"
-              android:id="@+id/app_description" android:gravity="center_horizontal"
-              android:layout_marginBottom="@dimen/margin_low" android:textColor="@color/white" android:textStyle="bold"/>
+    <TextView
+        android:id="@+id/app_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_low"
+        android:layout_marginEnd="@dimen/margin_low"
+        android:layout_marginBottom="@dimen/margin_low"
+        android:gravity="center_horizontal"
+        android:text="@string/nav_header_subtitle"
+        android:textColor="@color/white"
+        android:textSize="@dimen/text_size_subtitle_large"
+        android:textStyle="bold" />
 
 </LinearLayout>

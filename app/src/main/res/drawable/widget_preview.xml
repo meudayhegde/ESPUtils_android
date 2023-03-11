@@ -3,29 +3,36 @@
     <item>
         <shape android:shape="rectangle">
             <corners android:radius="100sp" />
-            <gradient android:startColor="#0033FF"
-                    android:centerColor="#EA00FF"
-                    android:endColor="#FF0000"
-                    android:angle="45"/>
-            <size android:height="48sp"
-                    android:width="96sp"/>
+            <gradient
+                android:startColor="#0033FF"
+                android:centerColor="#EA00FF"
+                android:endColor="#FF0000"
+                android:angle="45" />
+            <size
+                android:height="48sp"
+                android:width="96sp" />
         </shape>
     </item>
-    <item android:left = "2sp" android:right = "2sp"
-            android:top = "2sp" android:bottom = "2sp">
+    <item
+        android:left="2sp"
+        android:right="2sp"
+        android:top="2sp"
+        android:bottom="2sp">
         <shape android:shape="rectangle">
             <corners android:radius="100sp" />
-            <gradient android:centerColor="#000000"
-                    android:startColor="#585858"
-                    android:endColor="#585858"
-                    android:angle="270"
-                    android:centerX="35%"
-                    android:type="linear"/>
-            <stroke android:color="#383838"
-                    android:width="3sp">
-            </stroke>
-            <size android:height="48sp"
-                android:width="96sp"/>
+            <gradient
+                android:centerColor="#000000"
+                android:startColor="#585858"
+                android:endColor="#585858"
+                android:angle="270"
+                android:centerX="35%"
+                android:type="linear" />
+            <stroke
+                android:color="#383838"
+                android:width="3sp"/>
+            <size
+                android:height="48sp"
+                android:width="96sp" />
         </shape>
     </item>
 </layer-list>

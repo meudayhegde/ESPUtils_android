@@ -11,49 +11,46 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.RelativeLayout
-import android.widget.Spinner
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.github.clans.fab.FloatingActionButton
-import com.github.clans.fab.FloatingActionMenu
-import com.google.android.material.textfield.TextInputEditText
-import com.google.android.material.textfield.TextInputLayout
 import com.github.meudayhegde.ThreadHandler
 import com.github.meudayhegde.esputils.ESPUtilsApp
 import com.github.meudayhegde.esputils.MainActivity
 import com.github.meudayhegde.esputils.R
+import com.github.meudayhegde.esputils.databinding.FragmentGpioControllerBinding
+import com.github.meudayhegde.esputils.databinding.LayoutNewGpioSwitchBinding
 import com.github.meudayhegde.esputils.holders.GPIOItem
 import com.github.meudayhegde.esputils.holders.GPIOObject
 import com.github.meudayhegde.esputils.listeners.OnFragmentInteractionListener
 import com.github.meudayhegde.esputils.ui.adapters.GPIOListAdapter
+import com.google.android.material.textfield.TextInputLayout
 import org.json.JSONObject
 
 class GPIOControllerFragment : androidx.fragment.app.Fragment()  {
     private var listener: OnFragmentInteractionListener? = null
-    private var recyclerView: RecyclerView? = null
     private var viewAdapter: GPIOListAdapter? = null
     private var viewManager: RecyclerView.LayoutManager? = null
-    private var rootView: RelativeLayout? = null
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        if(rootView == null ){
-            rootView = inflater.inflate(R.layout.fragment_gpio_controller, container, false) as RelativeLayout
+    private lateinit var fragmentBinding: FragmentGpioControllerBinding
+    private var _binding: FragmentGpioControllerBinding? = null
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        if(_binding == null ){
+            fragmentBinding = FragmentGpioControllerBinding.inflate(inflater, container, false)
+            _binding = fragmentBinding
             viewManager = LinearLayoutManager(context)
             viewAdapter = GPIOListAdapter(ESPUtilsApp.gpioObjectList, this)
-            recyclerView = rootView!!.findViewById<RecyclerView>(R.id.refresh_layout_recycler_view).apply {
+            fragmentBinding.refreshLayout.refreshLayoutRecyclerView.apply {
                 setHasFixedSize(true)
                 layoutManager = viewManager
                 adapter = viewAdapter
             }
-            rootView!!.findViewById<FloatingActionMenu>(R.id.fam_manage_gpio).setClosedOnTouchOutside(true)
+            fragmentBinding.famManageGpio.setClosedOnTouchOutside(true)
 
-            val refreshLayout = rootView!!.findViewById<SwipeRefreshLayout>(R.id.refresh_layout)
-            refreshLayout.setOnRefreshListener {
-                refreshLayout.isRefreshing = true
+            fragmentBinding.refreshLayout.refreshLayout.setOnRefreshListener {
+                fragmentBinding.refreshLayout.refreshLayout.isRefreshing = true
                 ESPUtilsApp.devicePropList.filter {
                     it.pinConfig.size > 0
                 }.forEach {
@@ -62,65 +59,61 @@ class GPIOControllerFragment : androidx.fragment.app.Fragment()  {
                 ThreadHandler.runOnFreeThread{
                     Thread.sleep(100)
                     ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE) {
-                        refreshLayout.isRefreshing = false
+                        fragmentBinding.refreshLayout.refreshLayout.isRefreshing = false
                     }
                 }
             }
-            rootView!!.findViewById<FloatingActionButton>(R.id.fab_new_switch).setOnClickListener { gpioDialog() }
+            fragmentBinding.fabNewSwitch.setOnClickListener { gpioDialog() }
         }
-        val manageMenu = rootView!!.findViewById<FloatingActionMenu>(R.id.fam_manage_gpio)
-        if(!manageMenu.isOpened)
-            manageMenu.hideMenuButton(false)
+        if(!fragmentBinding.famManageGpio.isOpened)
+            fragmentBinding.famManageGpio.hideMenuButton(false)
         Handler(Looper.getMainLooper()).postDelayed({
-            if(manageMenu.isMenuButtonHidden)
-                manageMenu.showMenuButton(true)
+            if(fragmentBinding.famManageGpio.isMenuButtonHidden)
+                fragmentBinding.famManageGpio.showMenuButton(true)
             if(ESPUtilsApp.remotePropList.isEmpty())
-                Handler(Looper.getMainLooper()).postDelayed({manageMenu.showMenu(true)},400)
-        },400)
-        return rootView
+                Handler(Looper.getMainLooper()).postDelayed({fragmentBinding.famManageGpio.showMenu(true)}, 400)
+        }, 400)
+        return fragmentBinding.root
     }
 
     fun gpioDialog(gpioObject: GPIOObject? = null){
+        val contentBinding = LayoutNewGpioSwitchBinding.inflate(layoutInflater)
         val gpioDialog = AlertDialog.Builder(requireContext(), R.style.AppTheme_AlertDialog)
             .setIcon(R.drawable.icon_lamp)
             .setTitle(resources.getString(R.string.add_new_gpio_switch))
             .setNegativeButton(R.string.cancel) { p0, _ -> p0.dismiss() }
             .setNeutralButton(R.string.delete){ _, _ -> }
             .setPositiveButton(R.string.confirm) {_, _ -> }
-            .setView(R.layout.layout_new_gpio_switch)
+            .setView(contentBinding.root)
             .create()
         gpioDialog.setOnDismissListener {
             ESPUtilsApp.showAd(context as MainActivity)
         }
         gpioDialog.setOnShowListener {
-            val devicesSpinner = gpioDialog.findViewById<Spinner>(R.id.select_device)!!
-            val gpioSpinner = gpioDialog.findViewById<Spinner>(R.id.pin_number)!!
             val btnPositive = gpioDialog.getButton(DialogInterface.BUTTON_POSITIVE)
             val btnNeutral = gpioDialog.getButton(DialogInterface.BUTTON_NEUTRAL)
             btnNeutral.visibility = View.GONE
 
             val gpioList = arrayListOf(GPIOItem(getString(R.string.pin)))
             requireContext().resources.getStringArray(R.array.esp_gpio).forEach { gpioList.add(GPIOItem(it)) }
-            gpioSpinner.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, gpioList)
+            contentBinding.gpioSpinner.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, gpioList)
 
             val devicePropList = arrayListOf<Any>(getString(R.string.select_device))
             devicePropList.addAll(ESPUtilsApp.devicePropList)
 
-            devicesSpinner.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, devicePropList)
-            val nameText = gpioDialog.findViewById<TextInputEditText>(R.id.edit_text_switch_name)!!
-            val description = gpioDialog.findViewById<TextInputEditText>(R.id.switch_desc)!!
+            contentBinding.deviceSpinner.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, devicePropList)
 
             gpioObject?.let{gpio ->
-                nameText.setText(gpio.title)
-                description.setText(gpio.subTitle)
+                contentBinding.nameText.setText(gpio.title)
+                contentBinding.switchDesc.setText(gpio.subTitle)
 
                 gpioDialog.setTitle(R.string.edit_gpio_switch)
                 btnPositive.setText(R.string.save)
-                devicesSpinner.setSelection(ESPUtilsApp.devicePropList.indexOf(ESPUtilsApp.devicePropList.find { it.macAddress == gpio.macAddr }) + 1)
-                gpioSpinner.setSelection(gpioList.indexOf(gpioList.find { it.pinNumber == gpio.gpioNumber }))
+                contentBinding.deviceSpinner.setSelection(ESPUtilsApp.devicePropList.indexOf(ESPUtilsApp.devicePropList.find { it.macAddress == gpio.macAddr }) + 1)
+                contentBinding.gpioSpinner.setSelection(gpioList.indexOf(gpioList.find { it.pinNumber == gpio.gpioNumber }))
 
-                gpioSpinner.isEnabled = false
-                devicesSpinner.isEnabled = false
+                contentBinding.gpioSpinner.isEnabled = false
+                contentBinding.deviceSpinner.isEnabled = false
 
                 btnNeutral.visibility = View.VISIBLE
                 btnNeutral.setOnClickListener {
@@ -139,36 +132,36 @@ class GPIOControllerFragment : androidx.fragment.app.Fragment()  {
                 }
             }
 
-            nameText.addTextChangedListener(object : TextWatcher {
+            contentBinding.nameText.addTextChangedListener(object : TextWatcher {
                 override fun afterTextChanged(s: Editable?) {}
                 override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                    (nameText.parent.parent as TextInputLayout).error = null
+                    (contentBinding.nameText.parent.parent as TextInputLayout).error = null
                 }
             })
 
             btnPositive.setOnClickListener {
-                if(nameText.text?.isEmpty() != false){
-                    (nameText.parent.parent as TextInputLayout).error =
+                if(contentBinding.nameText.text?.isEmpty() != false){
+                    (contentBinding.nameText.parent.parent as TextInputLayout).error =
                         context?.getString(R.string.message_name_field_empty)
                 }
                 when {
-                    devicesSpinner.selectedItemPosition == 0 -> {
+                    contentBinding.deviceSpinner.selectedItemPosition == 0 -> {
                         Toast.makeText(requireContext(), R.string.message_gpio_device_no_selection, Toast.LENGTH_SHORT).show()
                     }
-                    gpioSpinner.selectedItemPosition == 0 -> {
+                    contentBinding.gpioSpinner.selectedItemPosition == 0 -> {
                         Toast.makeText(requireContext(), R.string.message_gpio_pin_no_selection, Toast.LENGTH_SHORT).show()
                     }
-                    nameText.text?.isEmpty()?: false -> {
+                    contentBinding.nameText.text?.isEmpty()?: false -> {
                         Toast.makeText(context, R.string.message_name_field_empty, Toast.LENGTH_SHORT).show()
                     }
                     else -> {
                         val gpioObj = gpioObject?: GPIOObject(JSONObject(), ESPUtilsApp.gpioConfig!!)
-                        gpioObj.macAddr = ESPUtilsApp.devicePropList[devicesSpinner.selectedItemPosition - 1].macAddress
-                        gpioObj.title = nameText.text.toString()
-                        gpioObj.subTitle = description.text.toString()
-                        gpioObj.subTitle = description.text.toString()
-                        gpioObj.gpioNumber = gpioList[gpioSpinner.selectedItemPosition].pinNumber
+                        gpioObj.macAddr = ESPUtilsApp.devicePropList[contentBinding.deviceSpinner.selectedItemPosition - 1].macAddress
+                        gpioObj.title = contentBinding.nameText.text.toString()
+                        gpioObj.subTitle = contentBinding.switchDesc.text.toString()
+                        gpioObj.subTitle = contentBinding.switchDesc.text.toString()
+                        gpioObj.gpioNumber = gpioList[contentBinding.gpioSpinner.selectedItemPosition].pinNumber
 
                         if(gpioObject == null ){
                             ESPUtilsApp.gpioObjectList.add(gpioObj)

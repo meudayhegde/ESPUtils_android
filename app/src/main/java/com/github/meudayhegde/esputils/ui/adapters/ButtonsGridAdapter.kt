@@ -17,22 +17,21 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.github.meudayhegde.esputils.RemoteButtonWidget
 import com.github.meudayhegde.esputils.R
-import com.github.meudayhegde.esputils.Strings
 import com.github.meudayhegde.esputils.RemoteBtnWidgetConfActivity
+import com.github.meudayhegde.esputils.RemoteButtonWidget
+import com.github.meudayhegde.esputils.Strings
 import com.github.meudayhegde.esputils.holders.ButtonProperties
 import com.github.meudayhegde.esputils.net.SocketClient
 import com.github.meudayhegde.esputils.ui.buttons.RemoteButton
 import com.github.meudayhegde.esputils.ui.dialogs.RemoteDialog
-import kotlinx.android.synthetic.main.create_remote_layout.*
 import org.json.JSONException
 import org.json.JSONObject
 
 
-class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>, private val remoteDialog:RemoteDialog, private val address: String,
-                         private  val userName: String, private val password: String) :RecyclerView.Adapter<ButtonsGridAdapter.ButtonGridViewHolder>(),
-    View.OnDragListener,View.OnLongClickListener{
+class ButtonsGridAdapter(private var arrayList: ArrayList<ButtonProperties?>, private val remoteDialog: RemoteDialog, private val address: String,
+                         private  val userName: String, private val password: String): RecyclerView.Adapter<ButtonsGridAdapter.ButtonGridViewHolder>(),
+    View.OnDragListener, View.OnLongClickListener{
 
     class ButtonGridViewHolder(var container: LinearLayout, var button: RemoteButton): RecyclerView.ViewHolder(container)
     private val vibe = remoteDialog.context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
@@ -43,7 +42,7 @@ class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>, pri
         val context = parent.context
         val container = LinearLayout(context)
         container.gravity = Gravity.CENTER
-        container.layoutParams = LinearLayout.LayoutParams(RemoteButton.BTN_WIDTH+20, LinearLayout.LayoutParams.WRAP_CONTENT)
+        container.layoutParams = LinearLayout.LayoutParams(RemoteButton.BTN_WIDTH + 20, LinearLayout.LayoutParams.WRAP_CONTENT)
         container.minimumHeight = RemoteButton.MIN_HEIGHT
         container.id = 0
         val btn = RemoteButton(context)
@@ -56,7 +55,6 @@ class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>, pri
                     vibe.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE))
                 }else{
                     with(vibe) {
-                        @Suppress("DEPRECATION")
                         vibrate(50)
                     }
                 }
@@ -89,18 +87,18 @@ class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>, pri
         holder.button.initialize(buttonProp)
         if(arrayList[position] == null) return
 
-        container.layoutParams = LinearLayout.LayoutParams(RemoteButton.BTN_WIDTH+20, LinearLayout.LayoutParams.WRAP_CONTENT)
+        container.layoutParams = LinearLayout.LayoutParams(RemoteButton.BTN_WIDTH + 20, LinearLayout.LayoutParams.WRAP_CONTENT)
         if (buttonProp!!.buttonShowAnimation)
             holder.button.startAnimation(anim)
         else buttonProp.buttonShowAnimation = true
         if(remoteDialog.mode == RemoteDialog.MODE_SELECT_BUTTON){
             holder.button.setOnClickListener {
-                associateWidget(context,buttonProp)
+                associateWidget(context, buttonProp)
             }
         }
     }
 
-    private fun associateWidget(context: Context, buttonProp:ButtonProperties){
+    private fun associateWidget(context: Context, buttonProp: ButtonProperties){
         val pref = context.getSharedPreferences(Strings.sharedPrefNameWidgetAssociations, Context.MODE_PRIVATE)
         val editor = pref.edit()
         editor.putString(RemoteBtnWidgetConfActivity.activity?.widgetId.toString(), buttonProp.parent?.remoteConfigFile?.name + "," + buttonProp.buttonId)
@@ -108,7 +106,7 @@ class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>, pri
         updateWidgets()
         Handler(Looper.getMainLooper()).postDelayed({
             RemoteBtnWidgetConfActivity.activity?.finish()
-        },20)
+        }, 20)
     }
 
     fun getEmptyPosition():Int{
@@ -152,15 +150,15 @@ class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>, pri
                 val view = event.localState as RemoteButton?
                 notifyItemChanged(view?.getProperties()?.btnPosition?:0,false)
                 lin.background = null
-                remoteDialog.image_view_delete.visibility = View.INVISIBLE
-                remoteDialog.image_view_home.visibility = View.INVISIBLE
-                remoteDialog.image_view_btn_settings.visibility = View.INVISIBLE
-                remoteDialog.create_remote_info_layout.visibility = View.VISIBLE
+                remoteDialog.dialogBinding.imageViewDelete.visibility = View.INVISIBLE
+                remoteDialog.dialogBinding.imageViewHome.visibility = View.INVISIBLE
+                remoteDialog.dialogBinding.imageViewBtnSettings.visibility = View.INVISIBLE
+                remoteDialog.dialogBinding.createRemoteInfoLayout.visibility = View.VISIBLE
             }
 
             DragEvent.ACTION_DRAG_ENTERED ->{
-                lin.background = when{
-                    lin.getChildAt(0)?.visibility == View.VISIBLE -> null
+                lin.background = when (lin.getChildAt(0)?.visibility) {
+                    View.VISIBLE -> null
                     else -> ContextCompat.getDrawable(
                         lin.context,
                         R.drawable.layout_border_round_corner
@@ -185,10 +183,10 @@ class ButtonsGridAdapter(private var arrayList:ArrayList<ButtonProperties?>, pri
             view?.startDrag(data, shadowBuilder, view, 0)
         }
         view?.visibility = View.INVISIBLE
-        remoteDialog.image_view_delete.visibility = View.VISIBLE
-        remoteDialog.image_view_home.visibility = View.VISIBLE
-        remoteDialog.image_view_btn_settings.visibility = View.VISIBLE
-        remoteDialog.create_remote_info_layout.visibility = View.INVISIBLE
+        remoteDialog.dialogBinding.imageViewDelete.visibility = View.VISIBLE
+        remoteDialog.dialogBinding.imageViewHome.visibility = View.VISIBLE
+        remoteDialog.dialogBinding.imageViewBtnSettings.visibility = View.VISIBLE
+        remoteDialog.dialogBinding.createRemoteInfoLayout.visibility = View.INVISIBLE
         return true
     }
 

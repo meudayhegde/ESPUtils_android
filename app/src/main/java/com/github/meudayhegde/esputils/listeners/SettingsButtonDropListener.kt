@@ -9,7 +9,6 @@ import com.github.meudayhegde.esputils.R
 import com.github.meudayhegde.esputils.ui.buttons.RemoteButton
 import com.github.meudayhegde.esputils.ui.dialogs.ButtonPropertiesDialog
 import com.github.meudayhegde.esputils.ui.dialogs.RemoteDialog
-import kotlinx.android.synthetic.main.create_remote_layout.*
 import org.json.JSONObject
 
 class SettingsButtonDropListener(private val remoteDialog: RemoteDialog): View.OnDragListener{
@@ -27,17 +26,17 @@ class SettingsButtonDropListener(private val remoteDialog: RemoteDialog): View.O
                 dialog.onIrRead(JSONObject(btnProp.jsonObj.toString()))
             }
             DragEvent.ACTION_DRAG_ENDED ->{
-                remoteDialog.image_view_btn_settings.visibility = View.INVISIBLE
-                DrawableCompat.setTint(remoteDialog.image_view_btn_settings.drawable, MainActivity.colorOnBackground)
-                remoteDialog.create_remote_info_layout.visibility = View.VISIBLE
+                remoteDialog.dialogBinding.imageViewBtnSettings.visibility = View.INVISIBLE
+                DrawableCompat.setTint(remoteDialog.dialogBinding.imageViewBtnSettings.drawable, MainActivity.colorOnBackground)
+                remoteDialog.dialogBinding.createRemoteInfoLayout.visibility = View.VISIBLE
             }
             DragEvent.ACTION_DRAG_ENTERED ->{
 
-                DrawableCompat.setTint(remoteDialog.image_view_btn_settings.drawable, if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) { remoteDialog.context.getColor(
+                DrawableCompat.setTint(remoteDialog.dialogBinding.imageViewBtnSettings.drawable, if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) { remoteDialog.context.getColor(
                     R.color.sky_blue)} else remoteDialog.context.resources.getColor(R.color.sky_blue))
             }
             DragEvent.ACTION_DRAG_EXITED -> {
-                DrawableCompat.setTint(remoteDialog.image_view_btn_settings.drawable, MainActivity.colorOnBackground)
+                DrawableCompat.setTint(remoteDialog.dialogBinding.imageViewBtnSettings.drawable, MainActivity.colorOnBackground)
             }
         }
         return true

@@ -28,7 +28,7 @@ class RemoteButton : LinearLayout {
 
     constructor(context:Context):super(context){ visibility = View.GONE }
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs){ visibility = View.GONE }
-    constructor(context: Context, attrs: AttributeSet?, int:Int) : super(context, attrs,int){visibility = View.GONE}
+    constructor(context: Context, attrs: AttributeSet?, int:Int) : super(context, attrs, int){visibility = View.GONE}
 
     private var icon: ImageView = ImageView(context)
     private var textView: TextView = TextView(context)
@@ -38,7 +38,7 @@ class RemoteButton : LinearLayout {
         textView.text = value
         textView.visibility = if(value.isNullOrEmpty()) View.GONE else View.VISIBLE
     }
-    get(){ return textView.text}
+    get(){ return textView.text }
 
     init{
         orientation = HORIZONTAL
@@ -47,8 +47,8 @@ class RemoteButton : LinearLayout {
         addView(textView)
     }
 
-    fun initialize(properties:ButtonProperties?){
-        this.properties=properties
+    fun initialize(properties: ButtonProperties?){
+        this.properties = properties
         if(properties == null) {
             visibility = View.GONE
             return
@@ -71,7 +71,6 @@ class RemoteButton : LinearLayout {
 
             override fun onIconModified() {
                 setIcon(ESPUtilsApp.iconDrawableList[properties.icon])
-
             }
 
             override fun onTextModified() {
@@ -87,19 +86,21 @@ class RemoteButton : LinearLayout {
         })
     }
 
-    private fun setButtonProperties(btnProperties:ButtonProperties){
+    private fun setButtonProperties(btnProperties: ButtonProperties){
         properties = btnProperties
-        if(parent is RelativeLayout) setType(btnProperties.iconType,RelativeLayout.CENTER_IN_PARENT)
+        if(parent is RelativeLayout) setType(btnProperties.iconType, RelativeLayout.CENTER_IN_PARENT)
         else setType(btnProperties.iconType)
         text = btnProperties.text
         textView.setTextSize(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) Button.AUTO_SIZE_TEXT_TYPE_UNIFORM else 1, 12F)
 
-        gd.cornerRadius = 100F;gd.orientation = GradientDrawable.Orientation.BOTTOM_TOP
-        gdPressed.cornerRadius = 100F;gdPressed.orientation = GradientDrawable.Orientation.BOTTOM_TOP
+        gd.cornerRadius = 100F
+        gd.orientation = GradientDrawable.Orientation.BOTTOM_TOP
+        gdPressed.cornerRadius = 100F
+        gdPressed.orientation = GradientDrawable.Orientation.BOTTOM_TOP
         setBackgroundColor(btnProperties.color)
 
-        stateDrawable.addState(intArrayOf(android.R.attr.state_pressed),gdPressed)
-        stateDrawable.addState(intArrayOf(),gd)
+        stateDrawable.addState(intArrayOf(android.R.attr.state_pressed), gdPressed)
+        stateDrawable.addState(intArrayOf(), gd)
 
         background = stateDrawable
 
@@ -108,19 +109,19 @@ class RemoteButton : LinearLayout {
     }
 
     override fun setBackgroundColor(color: Int) {
-        setButtonDrawableColor(gd,gdPressed,properties!!.color)
+        setButtonDrawableColor(gd, gdPressed, properties!!.color)
     }
 
-    fun getProperties():ButtonProperties{
+    fun getProperties(): ButtonProperties{
         return properties!!
     }
 
 
-    fun setIcon(drawable_resid:Int){
-        if(drawable_resid != ESPUtilsApp.iconDrawableList[0]){
-            var drawable = ContextCompat.getDrawable(context, drawable_resid)
+    fun setIcon(resId: Int){
+        if(resId != ESPUtilsApp.iconDrawableList[0]){
+            var drawable = ContextCompat.getDrawable(context, resId)
             drawable = drawable?.mutate()
-            DrawableCompat.setTint(drawable!!,properties!!.textColor)
+            DrawableCompat.setTint(drawable!!, properties!!.textColor)
             icon.setImageDrawable(drawable)
             orientation = if(properties!!.iconType == TYPE_RECT_HOR) HORIZONTAL else VERTICAL
         }else{
@@ -129,29 +130,29 @@ class RemoteButton : LinearLayout {
 
     }
 
-    fun setType(type:Int,vararg params:Int){
+    fun setType(type: Int, vararg params: Int){
         orientation = if(type == TYPE_RECT_HOR) HORIZONTAL else VERTICAL
         layoutParams = Class.forName(parent.javaClass.name).classes[0].getConstructor(Int::class.java, Int::class.java).newInstance(
             when(type){TYPE_RECT_HOR, TYPE_ROUND_MEDIUM -> BTN_WIDTH else -> MIN_HEIGHT},
             when(type){TYPE_RECT_HOR, TYPE_ROUND_MINI -> MIN_HEIGHT else -> BTN_WIDTH}
         ) as ViewGroup.LayoutParams?
-        layoutParams.javaClass.getMethod("setMargins", Int::class.java, Int::class.java, Int::class.java, Int::class.java).invoke(layoutParams,12, 12, 12, 12)
+        layoutParams.javaClass.getMethod("setMargins", Int::class.java, Int::class.java, Int::class.java, Int::class.java).invoke(layoutParams, 12, 12, 12, 12)
         params.forEach { layoutParams.javaClass.getMethod("addRule", Int::class.java).invoke(layoutParams, it) }
     }
 
     companion object{
+        const val TYPE_ROUND_MINI = 0
+        const val TYPE_RECT_HOR = 1
+        const val TYPE_RECT_VER = 2
+        const val TYPE_ROUND_MEDIUM = 3
 
-        const val TYPE_ROUND_MINI=0
-        const val TYPE_RECT_HOR=1
-        const val TYPE_RECT_VER=2
-        const val TYPE_ROUND_MEDIUM=3
-
-        var BTN_WIDTH=160
-        var MIN_HEIGHT=80
+        var BTN_WIDTH = 160
+        var MIN_HEIGHT = 80
 
         fun onConfigChanged(){
             val x = min(MainActivity.layoutParams.width, MainActivity.layoutParams.height)
-            BTN_WIDTH = ((x-x/(1.3 * MainActivity.NUM_COLUMNS)) / MainActivity.NUM_COLUMNS).toInt()
+            val c = MainActivity.NUM_COLUMNS
+            BTN_WIDTH = ((x / c) * (1 - (1 / (1.3 * c)))).toInt()
             MIN_HEIGHT = BTN_WIDTH / 2
         }
 
@@ -163,22 +164,22 @@ class RemoteButton : LinearLayout {
             val green = Color.green(colorInt)
             val blue = Color.blue(colorInt)
             val newColorInt = Color.argb(0xFF,
-                when{red>0x80->red-0x30;else -> red+0x30},
-                when{green>0x80->green-0x30;else -> green+0x30},
-                when{blue>0x80->blue-0x30;else -> blue+0x30})
-            drawableNormal.colors = intArrayOf(colorInt,newColorInt)
-            drawableNormal.setStroke(8,newColorInt)
+                when{ red > 0x80 -> red - 0x30 else -> red + 0x30 },
+                when{ green > 0x80 -> green - 0x30 else -> green + 0x30 },
+                when{ blue > 0x80 -> blue - 0x30 else -> blue + 0x30 })
+            drawableNormal.colors = intArrayOf(colorInt, newColorInt)
+            drawableNormal.setStroke(8, newColorInt)
 
             val pressedColorInt = Color.argb(0xFF,
-                when{red>0x80->red-0x20;else -> red+0x20},
-                when{green>0x80->green-0x20;else -> green+0x20},
-                when{blue>0x80->blue-0x20;else -> blue+0x20})
+                when{ red > 0x80 -> red - 0x20 else -> red + 0x20 },
+                when{ green > 0x80 -> green - 0x20 else -> green + 0x20 },
+                when{ blue > 0x80 -> blue - 0x20 else -> blue + 0x20})
             val pressedColorGradientInt = Color.argb(0xFF,
-                when{red>0x80->red-0x50;else -> red+0x50},
-                when{green>0x80->green-0x50;else -> green+0x50},
-                when{blue>0x80->blue-0x50;else -> blue+0x50})
-            drawablePressed.colors = intArrayOf(pressedColorInt,pressedColorGradientInt)
-            drawablePressed.setStroke(8,pressedColorGradientInt)
+                when{ red > 0x80 -> red - 0x50 else -> red + 0x50 },
+                when{ green > 0x80 -> green - 0x50 else -> green + 0x50 },
+                when{ blue > 0x80 -> blue - 0x50 else -> blue + 0x50})
+            drawablePressed.colors = intArrayOf(pressedColorInt, pressedColorGradientInt)
+            drawablePressed.setStroke(8, pressedColorGradientInt)
         }
     }
 }

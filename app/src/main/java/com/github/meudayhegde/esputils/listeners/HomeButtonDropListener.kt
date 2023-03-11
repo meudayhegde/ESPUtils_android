@@ -9,11 +9,13 @@ import android.view.DragEvent
 import android.view.View
 import android.widget.Toast
 import androidx.core.graphics.drawable.DrawableCompat
-import com.github.meudayhegde.esputils.*
+import com.github.meudayhegde.esputils.MainActivity
+import com.github.meudayhegde.esputils.R
+import com.github.meudayhegde.esputils.RemoteButtonWidget
+import com.github.meudayhegde.esputils.Strings
 import com.github.meudayhegde.esputils.holders.ButtonProperties
 import com.github.meudayhegde.esputils.ui.buttons.RemoteButton
 import com.github.meudayhegde.esputils.ui.dialogs.RemoteDialog
-import kotlinx.android.synthetic.main.create_remote_layout.*
 
 class HomeButtonDropListener(private val remoteDialog: RemoteDialog): View.OnDragListener{
     override fun onDrag(v: View?, event: DragEvent?): Boolean {
@@ -25,15 +27,15 @@ class HomeButtonDropListener(private val remoteDialog: RemoteDialog): View.OnDra
                 requestPinWidget(btnProp)
             }
             DragEvent.ACTION_DRAG_ENDED ->{
-                remoteDialog.image_view_home.visibility = View.INVISIBLE
-                DrawableCompat.setTint(remoteDialog.image_view_home.drawable, MainActivity.colorOnBackground)
-                remoteDialog.create_remote_info_layout.visibility = View.VISIBLE
+                remoteDialog.dialogBinding.imageViewHome.visibility = View.INVISIBLE
+                DrawableCompat.setTint(remoteDialog.dialogBinding.imageViewHome.drawable, MainActivity.colorOnBackground)
+                remoteDialog.dialogBinding.createRemoteInfoLayout.visibility = View.VISIBLE
             }
             DragEvent.ACTION_DRAG_ENTERED ->{
-                DrawableCompat.setTint(remoteDialog.image_view_home.drawable, Color.GREEN)
+                DrawableCompat.setTint(remoteDialog.dialogBinding.imageViewHome.drawable, Color.GREEN)
             }
             DragEvent.ACTION_DRAG_EXITED -> {
-                DrawableCompat.setTint(remoteDialog.image_view_home.drawable, MainActivity.colorOnBackground)
+                DrawableCompat.setTint(remoteDialog.dialogBinding.imageViewHome.drawable, MainActivity.colorOnBackground)
             }
         }
         return true
@@ -41,8 +43,8 @@ class HomeButtonDropListener(private val remoteDialog: RemoteDialog): View.OnDra
 
     private fun requestPinWidget(properties: ButtonProperties){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val appWidgetManager: AppWidgetManager = remoteDialog.context.getSystemService(
-                AppWidgetManager::class.java)
+            val appWidgetManager: AppWidgetManager =
+                remoteDialog.context.getSystemService(AppWidgetManager::class.java)
             val myProvider = ComponentName(remoteDialog.context, RemoteButtonWidget::class.java)
 
             val pref = remoteDialog.context.getSharedPreferences(Strings.sharedPrefNameWidgetAssociations, Context.MODE_PRIVATE)

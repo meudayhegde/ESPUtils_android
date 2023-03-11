@@ -1,6 +1,5 @@
 package com.github.meudayhegde.esputils.ui.adapters
 
-import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.DialogInterface
@@ -9,25 +8,25 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.google.android.material.textfield.TextInputEditText
-import com.google.android.material.textfield.TextInputLayout
 import com.github.meudayhegde.ThreadHandler
 import com.github.meudayhegde.Utils
 import com.github.meudayhegde.esputils.ESPUtilsApp
-import com.github.meudayhegde.esputils.Strings
 import com.github.meudayhegde.esputils.MainActivity
 import com.github.meudayhegde.esputils.R
+import com.github.meudayhegde.esputils.Strings
+import com.github.meudayhegde.esputils.databinding.DeviceListItemBinding
+import com.github.meudayhegde.esputils.databinding.EspOtaLayoutBinding
+import com.github.meudayhegde.esputils.databinding.RecyclerRefreshLayoutBinding
+import com.github.meudayhegde.esputils.databinding.UserSettingsBinding
+import com.github.meudayhegde.esputils.databinding.WirelessSettingsBinding
 import com.github.meudayhegde.esputils.holders.DeviceProperties
 import com.github.meudayhegde.esputils.holders.SettingsItem
 import com.github.meudayhegde.esputils.listeners.OnDeviceStatusListener
@@ -35,6 +34,7 @@ import com.github.meudayhegde.esputils.listeners.OnOTAIntermediateListener
 import com.github.meudayhegde.esputils.net.EspOta
 import com.github.meudayhegde.esputils.net.SocketClient
 import com.github.meudayhegde.esputils.ui.fragments.DevicesFragment
+import com.google.android.material.textfield.TextInputLayout
 import org.json.JSONObject
 import java.io.File
 import java.util.*
@@ -45,21 +45,23 @@ import java.util.zip.ZipFile
 class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                         private val devicesFragment: DevicesFragment): RecyclerView.Adapter<DeviceListAdapter.DeviceListViewHolder>(){
     
-    class DeviceListViewHolder(val cardView: CardView) : RecyclerView.ViewHolder(cardView){
-        val deviceNameView: TextView = cardView.findViewById(R.id.name_device)
-        val deviceMacAddrView: TextView = cardView.findViewById(R.id.mac_addr)
-        val deviceDescView: TextView = cardView.findViewById(R.id.device_desc)
-        val icOnline: ImageView = cardView.findViewById(R.id.img_online)
-        val icOffline: ImageView = cardView.findViewById(R.id.img_offline)
-        val refresh: ProgressBar = cardView.findViewById(R.id.progress_status)
-        val status: TextView = cardView.findViewById(R.id.status_text)
-        val ipText: TextView = cardView.findViewById(R.id.ip_addr)
+    class DeviceListViewHolder(val binding: DeviceListItemBinding) : RecyclerView.ViewHolder(binding.root){
+        val context: Context = binding.root.context
+        val deviceNameView = binding.nameDevice
+        val macAddressView = binding.macAddr
+        val deviceDescView = binding.deviceDesc
+        val icOnline = binding.imgOnline
+        val icOffline = binding.imgOffline
+        val refresh = binding.progressStatus
+        val status = binding.statusText
+        val ipText = binding.ipAddr
     }
 
     val context = devicesFragment.requireContext()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DeviceListViewHolder {
-        val cardView = LayoutInflater.from(parent.context).inflate(R.layout.device_list_item, parent, false) as CardView
-        return DeviceListViewHolder(cardView)
+        return DeviceListViewHolder(
+            DeviceListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        )
     }
 
     override fun onBindViewHolder(holder: DeviceListViewHolder, position: Int) {
@@ -67,42 +69,42 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
         setViewProps(holder, prop)
     }
 
-    private fun setStateAll(holder:DeviceListViewHolder, prop: DeviceProperties){
+    private fun setStateAll(holder: DeviceListViewHolder, prop: DeviceProperties){
         holder.deviceNameView.text = prop.nickName
-        holder.deviceMacAddrView.text = context.getString(R.string.parentheses, prop.macAddress)
+        holder.macAddressView.text = context.getString(R.string.parentheses, prop.macAddress)
         holder.deviceDescView.text = prop.description
     }
 
-    private fun setStateRefreshing(holder:DeviceListViewHolder, prop: DeviceProperties){
+    private fun setStateRefreshing(holder: DeviceListViewHolder, prop: DeviceProperties){
         setStateAll(holder, prop)
         holder.refresh.visibility = View.VISIBLE
         holder.icOnline.visibility = View.GONE
         holder.icOffline.visibility = View.GONE
         holder.status.text = context.getString(R.string.connecting)
-        holder.cardView.getChildAt(0).background =
+        holder.binding.container.background =
             AppCompatResources.getDrawable(context, R.drawable.layout_border_round_corner)
         holder.ipText.text = ""
     }
 
-    private fun setStateOnline(holder:DeviceListViewHolder, prop: DeviceProperties){
+    private fun setStateOnline(holder: DeviceListViewHolder, prop: DeviceProperties){
         setStateAll(holder, prop)
         holder.refresh.visibility = View.GONE
         holder.icOnline.visibility = View.VISIBLE
         holder.icOffline.visibility = View.GONE
         holder.status.text = context.resources.getString(R.string.online)
         holder.ipText.text = prop.ipAddress
-        holder.cardView.getChildAt(0).background =
+        holder.binding.container.background =
             AppCompatResources.getDrawable(context, R.drawable.round_corner_success)
     }
 
-    private fun setStateOffline(holder:DeviceListViewHolder, prop: DeviceProperties){
+    private fun setStateOffline(holder: DeviceListViewHolder, prop: DeviceProperties){
         setStateAll(holder, prop)
         holder.refresh.visibility = View.GONE
         holder.icOnline.visibility = View.GONE
         holder.icOffline.visibility = View.VISIBLE
         holder.status.text = context.resources.getString(R.string.offline)
         holder.ipText.text = prop.ipAddress
-        holder.cardView.getChildAt(0).background =
+        holder.binding.container.background =
             AppCompatResources.getDrawable(context, R.drawable.round_corner_error)
     }
 
@@ -119,11 +121,12 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
         }
         if(prop.isConnected) setStateOnline(holder, prop) else setStateOffline(holder, prop)
 
-        holder.cardView.setOnClickListener {
+        holder.binding.root.setOnClickListener {
+            val dialogBinding = RecyclerRefreshLayoutBinding.inflate(LayoutInflater.from(holder.context))
             val settingsDialog = AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
                 .setPositiveButton(context.resources.getString(R.string.done)) { p0, _ -> p0.dismiss() }
                 .setTitle(context.getString(R.string.settings_dialog_subtitle, prop.nickName))
-                .setView(R.layout.recycler_refresh_layout)
+                .setView(dialogBinding.root)
                 .setIcon(R.drawable.ic_settings)
                 .create()
             settingsDialog.setOnShowListener {
@@ -153,8 +156,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                 )
                 val viewManager = LinearLayoutManager(context)
                 val viewAdapter = SettingsAdapter(settingsList)
-                val refreshLayout = settingsDialog.findViewById<SwipeRefreshLayout>(R.id.refresh_layout)
-                refreshLayout?.setOnRefreshListener {
+                dialogBinding.refreshLayout.setOnRefreshListener {
                     prop.getIpAddress{
                         Handler(Looper.getMainLooper()).post{
                             for(ind in 0 until settingsList.size){
@@ -165,13 +167,13 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                             ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE){
                                 Thread.sleep(100)
                                 Handler(Looper.getMainLooper()).post{
-                                    refreshLayout.isRefreshing = false
+                                    dialogBinding.refreshLayout.isRefreshing = false
                                 }
                             }
                         }
                     }
                 }
-                settingsDialog.findViewById<RecyclerView>(R.id.refresh_layout_recycler_view)?.apply {
+                dialogBinding.refreshLayoutRecyclerView.apply {
                     setHasFixedSize(true)
                     layoutManager = viewManager
                     adapter = viewAdapter
@@ -315,14 +317,14 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
         return null
     }
 
-    @SuppressLint("InflateParams")
     private fun updateClickAction(context: Context, prop: DeviceProperties): Runnable{
         return Runnable{
             if(prop.isConnected) {
+                val dialogBiding = EspOtaLayoutBinding.inflate(LayoutInflater.from(context))
                 devicesFragment.updateSelectedListener = { updateFile ->
                     val updateDialog = AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
                         .setTitle(R.string.esp_ota_update)
-                        .setView(R.layout.esp_ota_layout)
+                        .setView(dialogBiding.root)
                         .setIcon(R.drawable.ic_system_update)
                         .setNegativeButton(R.string.cancel) { _, _ -> }
                         .setPositiveButton(R.string.update) { _, _ -> }
@@ -332,31 +334,26 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                         ESPUtilsApp.showAd(context as MainActivity)
                     }
                     updateDialog.setOnShowListener {
-
                         val positiveButton = updateDialog.getButton(DialogInterface.BUTTON_POSITIVE)
                         val negativeButton = updateDialog.getButton(DialogInterface.BUTTON_NEGATIVE)
 
-                        val messageView = updateDialog.findViewById<TextView>(R.id.progress_title)
-                        val progressBar =
-                            updateDialog.findViewById<ProgressBar>(R.id.update_progress_bar)
-                        val progressLayout =
-                            updateDialog.findViewById<LinearLayout>(R.id.ota_progress_layout)
-
-                        val percentText = updateDialog.findViewById<TextView>(R.id.ota_percentage)
-                        val progressText = updateDialog.findViewById<TextView>(R.id.ota_content_progress)
-
-                        val errorView = updateDialog.findViewById<TextView>(R.id.error_content)
+                        val messageView = dialogBiding.progressTitle
+                        val progressBar = dialogBiding.updateProgressBar
+                        val progressLayout = dialogBiding.otaProgressLayout
+                        val percentText = dialogBiding.otaPercentage
+                        val progressText = dialogBiding.otaContentProgress
+                        val errorView = dialogBiding.errorContent
 
                         val updateIntermediateListener = object : OnOTAIntermediateListener {
                             override fun onStatusUpdate(status: String, progress: Boolean) {
                                 Handler(Looper.getMainLooper()).post {
                                     if (progress) {
-                                        progressLayout?.visibility = View.VISIBLE
-                                        progressBar?.isIndeterminate = true
+                                        progressLayout.visibility = View.VISIBLE
+                                        progressBar.isIndeterminate = true
                                         negativeButton?.isEnabled = false
                                         positiveButton?.isEnabled = false
-                                    } else progressLayout?.visibility = View.GONE
-                                    messageView?.text = status
+                                    } else progressLayout.visibility = View.GONE
+                                    messageView.text = status
                                     if (status.lowercase(Locale.ROOT).contains(Strings.espResponseSuccess)) {
                                         positiveButton?.isEnabled = true
                                         positiveButton?.setOnClickListener {
@@ -370,28 +367,28 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                                 Handler(Looper.getMainLooper()).post  {
                                     negativeButton?.isEnabled = false
                                     positiveButton?.isEnabled = false
-                                    errorView?.visibility = View.GONE
 
-                                    progressLayout?.visibility = View.VISIBLE
-                                    progressBar?.isIndeterminate = false
+                                    errorView.visibility = View.GONE
+                                    progressLayout.visibility = View.VISIBLE
 
-                                    percentText?.text = context.getString(
+                                    progressBar.isIndeterminate = false
+
+                                    percentText.text = context.getString(
                                         R.string.ota_percent_progress, (offset * 100 / fileLength).toInt()
                                     )
 
                                     if(offset < fileLength)
-                                        progressText?.text = context.getString(
+                                        progressText.text = context.getString(
                                             R.string.ota_content_progress,
                                             Utils.getConventionalSize(offset),
                                             Utils.getConventionalSize(fileLength)
                                         )
-                                    else progressText?.text = Utils.getConventionalSize(fileLength)
+                                    else progressText.text = Utils.getConventionalSize(fileLength)
 
                                     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                                        progressBar?.setProgress((offset * 100 / fileLength).toInt(), true)
+                                        progressBar.setProgress((offset * 100 / fileLength).toInt(), true)
                                     } else {
-                                        progressBar?.progress = (offset * 100 / fileLength).toInt()
-
+                                        progressBar.progress = (offset * 100 / fileLength).toInt()
                                     }
                                 }
                             }
@@ -399,20 +396,22 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                             override fun onError(message: String) {
                                 Handler(Looper.getMainLooper()).post  {
                                     negativeButton?.isEnabled = true
-                                    negativeButton?.text = context.getString(R.string.close)
                                     positiveButton?.isEnabled = false
-                                    errorView?.visibility = View.VISIBLE
 
-                                    messageView?.visibility = View.GONE
-                                    progressLayout?.visibility = View.GONE
-                                    errorView?.text = message
+                                    negativeButton?.text = context.getString(R.string.close)
+                                    errorView.text = message
+
+                                    errorView.visibility = View.VISIBLE
+                                    messageView.visibility = View.GONE
+                                    progressLayout.visibility = View.GONE
                                 }
                             }
                         }
                         positiveButton?.setOnClickListener {
                             positiveButton.isEnabled = false
-                            positiveButton.text = context.resources.getString(R.string.done)
                             negativeButton?.isEnabled = false
+
+                            positiveButton.text = context.resources.getString(R.string.done)
                             ThreadHandler.runOnFreeThread {
                                 val updateDir =
                                     extractUpdate(updateFile, updateIntermediateListener)
@@ -432,16 +431,15 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                                         return@runOnFreeThread
                                     }
 
-                                    val spiffs =
-                                        updateDir.listFiles { _, name -> name.endsWith(Strings.extensionBin) }
-                                            ?.find {
-                                                it.name.lowercase(Locale.ROOT).startsWith(context.getString(R.string.update_file_spiffs))
-                                            }
+                                    val spiffs = updateDir.listFiles { _, name ->
+                                        name.endsWith(Strings.extensionBin)
+                                    }?.find {
+                                        it.name.lowercase(Locale.ROOT).startsWith(context.getString(R.string.update_file_spiffs))
+                                    }
                                     spiffs?.let {
                                         espOta.installUpdate(it, EspOta.SPIFFS, updateIntermediateListener)
                                         return@runOnFreeThread
                                     }
-
                                 }
                             }
                         }
@@ -452,29 +450,25 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                 intent.type = Strings.intentTypeZip
                 intent.addCategory(Intent.CATEGORY_OPENABLE)
                 try {
-
                     devicesFragment.espOtaChooser.launch(
                         Intent.createChooser(
                             intent,
-                            "Select Update zip file containing firmware files."
+                            context.getString(R.string.message_ota_chooser)
                         )
                     )
                 } catch (ex: ActivityNotFoundException) {
-                    Toast.makeText(
-                        context, "Please install a File Manager.",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(context, R.string.message_install_file_manager, Toast.LENGTH_SHORT).show()
                 }
             }
-            else Toast.makeText(context, context.resources.getString(R.string.message_device_offline), Toast.LENGTH_SHORT).show()
+            else Toast.makeText(context, R.string.message_device_offline, Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun verifyUpdate(updateDir: File, updateIntermediateListener: OnOTAIntermediateListener?): Boolean{
-        updateIntermediateListener?.onStatusUpdate("Verifying update file.", true)
+        updateIntermediateListener?.onStatusUpdate(context.getString(R.string.message_verify_update), true)
         val hashFile = File(updateDir.absolutePath, Strings.extensionHash)
         if(!hashFile.exists()){
-            updateIntermediateListener?.onError("Hash does not exist, Update aborted.")
+            updateIntermediateListener?.onError(context.getString(R.string.message_err_update_hash))
             return false
         }
 
@@ -483,30 +477,29 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
         updateDir.listFiles{ _, name -> name.endsWith(Strings.extensionBin)}?.sortedArray()?.forEach {
             hash += Utils.md5(it) + Utils.md5(it.name)
         }
-        val verified = Utils.md5(hash) == hashOrigin
-        if(!verified) updateIntermediateListener?.onError("Verification failed, Please select a valid update for the selected device")
-        Log.d(javaClass.simpleName, " Verified")
-        return verified
+
+        if(Utils.md5(hash) != hashOrigin) updateIntermediateListener?.onError(context.getString(R.string.message_err_verify_update_failed))
+        return Utils.md5(hash) == hashOrigin
     }
 
     private fun userSettingsClickAction(context: Context, prop: DeviceProperties): Runnable{
         return Runnable{
             if(prop.isConnected) {
+                val dialogBinding = UserSettingsBinding.inflate(LayoutInflater.from(context))
                 val userDialog = AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
                     .setTitle(R.string.title_user_settings)
-                    .setView(R.layout.user_settings)
+                    .setView(dialogBinding.root)
                     .setIcon(R.drawable.ic_user)
                     .setNegativeButton(R.string.cancel) { dialog, _ -> dialog.dismiss() }
                     .setPositiveButton(context.getString(R.string.apply)) { _, _ -> }
                     .create()
 
                 userDialog.setOnShowListener {
-                    val cUname = userDialog.findViewById<TextInputEditText>(R.id.cur_user_name)!!
-                    val cPass = userDialog.findViewById<TextInputEditText>(R.id.cur_user_passwd)!!
-                    val nUname = userDialog.findViewById<TextInputEditText>(R.id.til_user_name)!!
-                    val nPass = userDialog.findViewById<TextInputEditText>(R.id.til_user_passwd)!!
-                    val nPassCon =
-                        userDialog.findViewById<TextInputEditText>(R.id.til_user_confirm_passwd)!!
+                    val cUname = dialogBinding.curUserName
+                    val cPass = dialogBinding.curUserPasswd
+                    val nUname = dialogBinding.tilUserName
+                    val nPass = dialogBinding.tilUserPasswd
+                    val nPassCon = dialogBinding.tilUserConfirmPasswd
 
                     for (item in listOf(cUname, cPass, nUname, nPass, nPassCon)) {
                         item.addTextChangedListener(object : TextWatcher {
@@ -521,9 +514,9 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                     val positiveButton = userDialog.getButton(DialogInterface.BUTTON_POSITIVE)
                     positiveButton.setOnClickListener {
                         var hasError = false
-                        for (tiet in listOf(cUname, cPass, nUname, nPass, nPassCon)) {
-                            if (tiet.text.isNullOrEmpty()) {
-                                (tiet.parent.parent as TextInputLayout).error =
+                        for (txtInputEdtTxt in listOf(cUname, cPass, nUname, nPass, nPassCon)) {
+                            if (txtInputEdtTxt.text.isNullOrEmpty()) {
+                                (txtInputEdtTxt.parent.parent as TextInputLayout).error =
                                     context.getString(R.string.message_empty_field)
                                 hasError = true
                             }
@@ -536,10 +529,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                         if (!hasError) {
                             AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
                                 .setTitle(R.string.confirm)
-                                .setMessage(
-                                    "Wrong settings may result in inaccessibility of iRWaRE device (full reset will be required to recover))."
-                                            + "Make Sure UserName and password are correct"
-                                )
+                                .setMessage(R.string.message_err_user_settings)
                                 .setNegativeButton(R.string.cancel) { dg, _ -> dg.dismiss() }
                                 .setPositiveButton(R.string.confirm) { _, _ ->
                                     userDialog.dismiss()
@@ -564,7 +554,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                                                                     Strings.espResponseSuccess,
                                                                     true
                                                                 )
-                                                        ) "Success" else "Failed"
+                                                        ) R.string.title_success else R.string.title_failure
                                                     )
                                                     .setMessage(resultObj.getString(Strings.espResponse))
                                                     .setPositiveButton(R.string.done) { dg, _ -> dg.dismiss() }
@@ -577,8 +567,8 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                                         } catch (ex: Exception) {
                                             Handler(Looper.getMainLooper()).post {
                                                 AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
-                                                    .setTitle("Failed")
-                                                    .setMessage("Failed to apply user settings\n$ex")
+                                                    .setTitle(R.string.title_failure)
+                                                    .setMessage(R.string.message_fail_user_settings)
                                                     .setPositiveButton(R.string.close) { dg, _ -> dg.dismiss() }
                                                     .show()
                                             }
@@ -591,46 +581,43 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                 }
                 userDialog.show()
             }
-            else Toast.makeText(context, context.resources.getString(R.string.message_device_offline), Toast.LENGTH_SHORT).show()
+            else Toast.makeText(context, R.string.message_device_offline, Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun wirelessSettingsClickAction(context: Context, prop: DeviceProperties): Runnable{
         return Runnable {
             if(prop.isConnected) {
+                val dialogBinding = WirelessSettingsBinding.inflate(LayoutInflater.from(context))
                 val dialog = AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
                     .setTitle(R.string.title_wireless_settings)
-                    .setView(R.layout.wireless_settings)
+                    .setView(dialogBinding.root)
                     .setNegativeButton(R.string.cancel) { dialog, _ -> dialog.dismiss() }
                     .setPositiveButton(context.getString(R.string.apply)) { _, _ -> }
                     .setIcon(R.drawable.icon_wifi)
                     .create()
                 dialog.setOnShowListener {
-                    val ssid = dialog.findViewById<TextInputEditText>(R.id.til_wifi_name)!!
-                    val pass = dialog.findViewById<TextInputEditText>(R.id.til_wifi_passwd)!!
-                    val progressBar = dialog.findViewById<ProgressBar>(R.id.get_wireless_loading)!!
-                    val spinner = dialog.findViewById<Spinner>(R.id.spinner_wireless_mode)!!
+                    val ssid = dialogBinding.tilWifiName
+                    val pass = dialogBinding.tilWifiPasswd
+                    val progressBar = dialogBinding.getWirelessLoading
+                    val spinner = dialogBinding.spinnerWirelessMode
+
                     var wirelessData: JSONObject? = null
+
                     spinner.adapter = ArrayAdapter(
-                        context, android.R.layout.simple_list_item_1, arrayListOf(
-                            "Station (WiFi)",
-                            "Access Point (Hotspot)"
-                        )
+                        context, android.R.layout.simple_list_item_1,
+                        context.resources.getStringArray(R.array.esp_wireless_mode)
                     )
-                    var mode = if (spinner.selectedItemPosition == 0) "WIFI" else "AP"
+                    var mode = if (spinner.selectedItemPosition == 0) Strings.espWirelessStation else Strings.espWirelessAp
                     spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                         override fun onNothingSelected(parent: AdapterView<*>?) {}
-                        override fun onItemSelected(
-                            parent: AdapterView<*>?,
-                            view: View?,
-                            position: Int,
-                            id: Long
-                        ) {
-                            mode = if (position == 0) "WIFI" else "AP"
+                        override fun onItemSelected(parent: AdapterView<*>?, view: View?,
+                            position: Int, id: Long) {
+                            mode = if (position == 0) Strings.espWirelessStation else Strings.espWirelessAp
                             ssid.setText(
                                 wirelessData?.optString(
                                     when (mode) {
-                                        "WIFI" -> "station"
+                                        Strings.espWirelessStation -> "station"
                                         else -> "ap"
                                     } + "_ssid"
                                 )
@@ -638,7 +625,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                             pass.setText(
                                 wirelessData?.optString(
                                     when (mode) {
-                                        "WIFI" -> "station"
+                                        Strings.espWirelessStation -> "station"
                                         else -> "ap"
                                     } + "_psk"
                                 )
@@ -652,16 +639,16 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                         item.addTextChangedListener(object : TextWatcher {
                             override fun afterTextChanged(s: Editable?) {}
                             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-                            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                            override fun onTextChanged(charSeq: CharSequence?, start: Int, before: Int, count: Int) {
                                 (item.parent.parent as TextInputLayout).error = null
                                 wirelessData?.put(
                                     when (mode) {
-                                        "WIFI" -> "station"
+                                        Strings.espWirelessStation -> "station"
                                         else -> "ap"
                                     } + "_" + when (item.id) {
                                         R.id.til_wifi_name -> "ssid"
                                         else -> "psk"
-                                    }, s
+                                    }, charSeq
                                 )
                             }
                         })
@@ -670,20 +657,20 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                     progressBar.visibility = View.VISIBLE
                     getWirelessSettings(prop.ipAddress, prop.userName, prop.password) { data ->
                         progressBar.visibility = View.GONE
-                        val wirelessMode = data.optString("wireless_mode")
+                        val wirelessMode = data.optString(Strings.espWirelessMode)
                         if (!wirelessMode.isNullOrEmpty()) {
                             wirelessData = data
                             mode = wirelessMode
                             spinner.setSelection(
                                 when (mode) {
-                                    "WIFI" -> 0
+                                    Strings.espWirelessStation -> 0
                                     else -> 1
                                 }, true
                             )
                             ssid.setText(
                                 wirelessData?.optString(
                                     when (mode) {
-                                        "WIFI" -> "station"
+                                        Strings.espWirelessStation -> "station"
                                         else -> "ap"
                                     } + "_ssid"
                                 )
@@ -691,7 +678,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                             pass.setText(
                                 wirelessData?.optString(
                                     when (mode) {
-                                        "WIFI" -> "station"
+                                        Strings.espWirelessStation -> "station"
                                         else -> "ap"
                                     } + "_psk"
                                 )
@@ -710,10 +697,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                         if (ssid.text!!.isNotEmpty() and ((pass.text?.length ?: 0) >= 8)) {
                             AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
                                 .setTitle(R.string.confirm)
-                                .setMessage(
-                                    "Wrong settings may result in inaccessibility of iRWaRE device (full reset will be required to recover))."
-                                            + "\nMake Sure SSID and password are correct"
-                                )
+                                .setMessage(R.string.message_err_user_settings)
                                 .setNegativeButton(R.string.cancel) { dg, _ -> dg.dismiss() }
                                 .setPositiveButton(R.string.confirm) { _, _ ->
                                     dialog.dismiss()
@@ -735,7 +719,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                                                                     Strings.espResponseSuccess,
                                                                     true
                                                                 )
-                                                        ) "Success" else "Failed"
+                                                        ) R.string.title_success else R.string.title_failure
                                                     )
                                                     .setMessage(resultObj.getString(Strings.espResponse))
                                                     .setPositiveButton(R.string.done) { dg, _ -> dg.dismiss() }
@@ -748,8 +732,8 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                                         } catch (ex: Exception) {
                                             Handler(Looper.getMainLooper()).post {
                                                 AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
-                                                    .setTitle("Failed")
-                                                    .setMessage("Failed to apply wireless settings\n$ex")
+                                                    .setTitle(R.string.title_failure)
+                                                    .setMessage(R.string.message_fail_wireless_settings)
                                                     .setPositiveButton(R.string.close) { dg, _ -> dg.dismiss() }
                                                     .show()
                                             }
@@ -764,7 +748,7 @@ class DeviceListAdapter(private val propList: ArrayList<DeviceProperties>,
                 }
                 dialog.show()
             }
-            else Toast.makeText(context, context.resources.getString(R.string.message_device_offline), Toast.LENGTH_SHORT).show()
+            else Toast.makeText(context, R.string.message_device_offline, Toast.LENGTH_SHORT).show()
         }
     }
 

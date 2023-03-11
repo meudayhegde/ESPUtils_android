@@ -16,6 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:id="@+id/container"
             android:background="@drawable/layout_border_round_corner"
             android:foreground="?android:attr/selectableItemBackground"
             android:orientation="vertical"
@@ -151,7 +152,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/scanning"
-                    android:textSize="@dimen/margin_medium"
+                    android:textSize="@dimen/text_size_micro"
                     tools:ignore="SmallSp" />
         </LinearLayout>
 

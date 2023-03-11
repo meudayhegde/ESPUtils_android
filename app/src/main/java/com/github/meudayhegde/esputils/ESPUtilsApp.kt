@@ -26,7 +26,6 @@ class ESPUtilsApp: Application() {
     override fun onCreate() {
         super.onCreate()
         contextRef = WeakReference(this)
-
         ESPTable.getInstance(this)
 
         when(getSharedPreferences(

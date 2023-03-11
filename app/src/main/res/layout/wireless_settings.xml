@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/layout_wireless"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -47,7 +46,6 @@
             android:layout_marginTop="@dimen/margin_max"
             android:layout_marginEnd="@dimen/margin_high"
             android:layout_marginStart="@dimen/margin_high"
-            android:id="@+id/til_wifi_name_"
             app:hintTextColor="?attr/colorOnBackground"
             style="@style/TextInputLayoutStyle"
             android:hint="@string/wifi_name">
@@ -69,7 +67,6 @@
             app:passwordToggleEnabled="true"
             android:layout_marginStart="@dimen/margin_high"
             app:hintTextColor="?attr/colorOnBackground"
-            android:id="@+id/til_wifi_passwd_"
             style="@style/TextInputLayoutStyle"
             android:hint="@string/wifi_password">
 

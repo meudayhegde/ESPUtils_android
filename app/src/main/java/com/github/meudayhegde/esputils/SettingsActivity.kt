@@ -14,10 +14,10 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.github.meudayhegde.esputils.databinding.ActivitySettingsBinding
 import com.google.android.material.radiobutton.MaterialRadioButton
 import com.github.meudayhegde.esputils.holders.SettingsItem
 import com.github.meudayhegde.esputils.ui.adapters.SettingsAdapter
-import kotlinx.android.synthetic.main.activity_settings.*
 
 
 class SettingsActivity : AppCompatActivity() {
@@ -26,9 +26,11 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
 
-    @SuppressLint("UseCompatLoadingForDrawables", "RestrictedApi")
+    @SuppressLint("RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val mainBinding = ActivitySettingsBinding.inflate(layoutInflater)
+        setContentView(mainBinding.root)
 
         when(getSharedPreferences(
             Strings.sharedPrefNameSettings, Context.MODE_PRIVATE).getInt(
@@ -37,9 +39,8 @@ class SettingsActivity : AppCompatActivity() {
             1-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
             2-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         }
-        setContentView(R.layout.activity_settings)
 
-        toolbar_settings.setNavigationOnClickListener {
+        mainBinding.toolbarSettings.setNavigationOnClickListener {
             finish()
         }
 
@@ -55,9 +56,7 @@ class SettingsActivity : AppCompatActivity() {
         for(i in 0..1) if(fragmentList.size != 0 ) fragmentList.removeAt(fragmentList.size - 1)
 
         viewAdapter = SettingsAdapter(arrayListOf(
-            SettingsItem(
-                getString(R.string.title_application_theme),
-                getString(R.string.title_sub_application_theme),
+            SettingsItem(getString(R.string.title_application_theme), getString(R.string.title_sub_application_theme),
                 selectionDialog(getString(R.string.title_application_theme), R.drawable.icon_theme, Strings.sharedPrefItemApplicationTheme,
                     resources.getStringArray(R.array.settings_theme_list).asList()) {
                         themeChanged = true
@@ -71,10 +70,13 @@ class SettingsActivity : AppCompatActivity() {
                     },
                 R.drawable.icon_theme
             ),
-            SettingsItem(getString(R.string.title_home_fragment),getString(R.string.title_sub_home_fragment), selectionDialog(getString(R.string.title_home_fragment), R.drawable.icon_home, Strings.sharedPrefItemHomeFragment, fragmentList, null), R.drawable.icon_home)
+            SettingsItem(getString(R.string.title_home_fragment), getString(R.string.title_sub_home_fragment),
+                selectionDialog(getString(R.string.title_home_fragment), R.drawable.icon_home, Strings.sharedPrefItemHomeFragment, fragmentList, null),
+                R.drawable.icon_home
+            )
         ))
 
-        recyclerView = findViewById<RecyclerView>(R.id.settings_list).apply {
+        recyclerView = mainBinding.settingsList.apply {
             setHasFixedSize(true)
             layoutManager = viewManager
             adapter = viewAdapter
@@ -95,7 +97,7 @@ class SettingsActivity : AppCompatActivity() {
         val editor = pref.edit()
 
         val content = RadioGroup(this)
-        content.setPaddingRelative(24, 0,0,0)
+        content.setPaddingRelative(24, 0, 0, 0)
         optList.forEach {
             val radioButton = MaterialRadioButton(this)
             radioButton.text = it

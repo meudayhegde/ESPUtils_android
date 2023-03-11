@@ -2,23 +2,19 @@ package com.github.meudayhegde.esputils.ui.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.TextView
-import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.github.meudayhegde.esputils.R
+import com.github.meudayhegde.esputils.databinding.DeviceListScanItemBinding
 import com.github.meudayhegde.esputils.holders.ARPItem
 
 class ScanDeviceListAdapter(private val arpItemList: ArrayList<ARPItem>) : RecyclerView.Adapter<ScanDeviceListAdapter.DeviceScanListViewHolder>() {
 
-    class DeviceScanListViewHolder(val cardView: CardView) : RecyclerView.ViewHolder(cardView){
-        val ipAddressView: TextView = cardView.findViewById(R.id.device_ip_address)
-        val macAddressView: TextView = cardView.findViewById(R.id.device_mac_address)
-    }
+    class DeviceScanListViewHolder(val viewBinding: DeviceListScanItemBinding) : RecyclerView.ViewHolder(viewBinding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DeviceScanListViewHolder {
-        val cardView = LayoutInflater.from(parent.context)
-            .inflate(R.layout.device_list_scan_item, parent, false) as CardView
-        return DeviceScanListViewHolder(cardView)
+        return DeviceScanListViewHolder(
+            DeviceListScanItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        )
     }
 
     private var onARPItemSelectedListener: ((arpItem: ARPItem) -> Unit)? = null
@@ -28,12 +24,12 @@ class ScanDeviceListAdapter(private val arpItemList: ArrayList<ARPItem>) : Recyc
 
     override fun onBindViewHolder(holder: DeviceScanListViewHolder, position: Int) {
         val item = arpItemList[position]
-        holder.ipAddressView.text = item.ipAddress
+        holder.viewBinding.deviceIpAddress.text = item.ipAddress
         item.devNickName?.let {
-            holder.ipAddressView.text = holder.cardView.context.getString(R.string.scan_list_item_ip_text, item.ipAddress, it)
+            holder.viewBinding.deviceIpAddress.text = holder.viewBinding.root.context.getString(R.string.scan_list_item_ip_text, item.ipAddress, it)
         }
-        holder.macAddressView.text = item.macAddress
-        holder.cardView.setOnClickListener { onARPItemSelectedListener?.invoke(item) }
+        holder.viewBinding.deviceMacAddress.text = item.macAddress
+        holder.viewBinding.root.setOnClickListener { onARPItemSelectedListener?.invoke(item) }
     }
 
     override fun getItemCount() = arpItemList.size

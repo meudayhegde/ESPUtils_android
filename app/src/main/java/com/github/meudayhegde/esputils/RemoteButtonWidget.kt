@@ -76,7 +76,7 @@ class RemoteButtonWidget: AppWidgetProvider() {
 
                     if (address  == null){
                         handler.post {
-                            Toast.makeText(context, "Err: Device not reachable", Toast.LENGTH_LONG).show()
+                            Toast.makeText(context, R.string.message_device_offline, Toast.LENGTH_LONG).show()
                             manager.updateAppWidget(watchWidget, remoteViews)
                         }
                         return@getIpAddress
@@ -109,7 +109,7 @@ class RemoteButtonWidget: AppWidgetProvider() {
     private fun getJSONObject(context: Context, widgetID: Int, views: RemoteViews): ArrayList<Any>{
         val pref = context.getSharedPreferences(Strings.sharedPrefNameWidgetAssociations, Context.MODE_PRIVATE)
         val editor = pref.edit()
-        var buttonInfo = pref.getString(widgetID.toString(),"")
+        var buttonInfo = pref.getString(widgetID.toString(), "")
         if(buttonInfo.isNullOrEmpty()){
             val queuedButton = pref.getString(Strings.sharedPrefItemQueuedButton,"")
             Toast.makeText(context, queuedButton, Toast.LENGTH_LONG).show()
@@ -119,7 +119,7 @@ class RemoteButtonWidget: AppWidgetProvider() {
                 editor.apply()
                 buttonInfo = pref.getString(widgetID.toString(),"")
             }else{
-                Toast.makeText(context,"Button Not configured, Click to configure",Toast.LENGTH_LONG).show()
+                Toast.makeText(context,R.string.message_remote_btn_not_configured, Toast.LENGTH_LONG).show()
                 setConfigureOnClick(context, widgetID, views)
                 return ArrayList()
             }
@@ -136,22 +136,22 @@ class RemoteButtonWidget: AppWidgetProvider() {
                 }
             }
         }catch(ex: FileNotFoundException){
-            Toast.makeText(context,"Remote Configuration Deleted, click button to configure. $ex", Toast.LENGTH_LONG).show()
+            Toast.makeText(context,R.string.message_remote_conf_deleted, Toast.LENGTH_LONG).show()
             setConfigureOnClick(context, widgetID, views)
             return ArrayList()
         }
-        Toast.makeText(context, "Button is deleted from Remote Configuration, click widget to configure.", Toast.LENGTH_LONG).show()
+        Toast.makeText(context, R.string.message_remote_btn_deleted, Toast.LENGTH_LONG).show()
         setConfigureOnClick(context, widgetID, views)
         return ArrayList()
     }
 
-    private fun setConfigureOnClick(context:Context,widgetID: Int,views: RemoteViews){
+    private fun setConfigureOnClick(context:Context, widgetID: Int, views: RemoteViews){
         val intent = Intent(context, RemoteBtnWidgetConfActivity::class.java)
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetID)
         val pendingIntent = PendingIntent.getActivity(context, widgetID, intent,
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE
             else 0
         )
-        views.setOnClickPendingIntent(R.id.widget_button,pendingIntent)
+        views.setOnClickPendingIntent(R.id.widget_button, pendingIntent)
     }
 }

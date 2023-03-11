@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.view.WindowManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.github.meudayhegde.esputils.databinding.RecyclerRefreshLayoutBinding
 import com.github.meudayhegde.esputils.holders.GPIOConfig
 import com.github.meudayhegde.esputils.holders.GPIOObject
 import com.github.meudayhegde.esputils.holders.ListItemCommon
@@ -22,7 +23,8 @@ class GPIOBtnWidgetConfActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.recycler_refresh_layout)
+        val mainBinding = RecyclerRefreshLayoutBinding.inflate(layoutInflater)
+        setContentView(mainBinding.root)
 
         widgetId = intent?.extras?.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)?: AppWidgetManager.INVALID_APPWIDGET_ID
 

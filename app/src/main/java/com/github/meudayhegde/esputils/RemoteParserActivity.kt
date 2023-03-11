@@ -21,9 +21,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
+import com.github.meudayhegde.esputils.databinding.ImportRemoteActivityBinding
 import com.github.meudayhegde.esputils.holders.DeviceProperties
 import com.github.meudayhegde.esputils.holders.RemoteProperties
-import kotlinx.android.synthetic.main.import_remote_activity.*
 import org.json.JSONObject
 import java.io.File
 import java.io.InputStream
@@ -33,9 +33,12 @@ import java.io.OutputStreamWriter
 
 class RemoteParserActivity : AppCompatActivity() {
 
-    private var configFile :File? = null
+    private var configFile: File? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val mainBinding = ImportRemoteActivityBinding.inflate(layoutInflater)
+        setContentView(mainBinding.root)
+
         when(getSharedPreferences(
             Strings.sharedPrefNameSettings, Context.MODE_PRIVATE).getInt(
             Strings.sharedPrefItemApplicationTheme, if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
@@ -44,7 +47,6 @@ class RemoteParserActivity : AppCompatActivity() {
             1-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
             2-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         }
-        setContentView(R.layout.import_remote_activity)
         setFinishOnTouchOutside(false)
 
         window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -56,16 +58,6 @@ class RemoteParserActivity : AppCompatActivity() {
         lWindowParams.width = MainActivity.layoutParams.width * 7 / 8
         window?.attributes = lWindowParams
 
-        val msg = findViewById<TextView>(R.id.message_text)
-        val progress = findViewById<ProgressBar>(R.id.progress_status)
-
-        val imV =findViewById<ImageView>(R.id.imv_status)
-
-        val cancel = findViewById<Button>(R.id.button_cancel)
-        val import = findViewById<Button>(R.id.button_import)
-
-        val spinner = findViewById<Spinner>(R.id.select_device)
-
         if(ESPUtilsApp.devicePropList.isEmpty()){
             val deviceConfigDir = ESPUtilsApp.getPrivateFile(Strings.nameDirDeviceConfig)
             deviceConfigDir.exists() or deviceConfigDir.mkdirs()
@@ -76,7 +68,7 @@ class RemoteParserActivity : AppCompatActivity() {
 
         val devicePropList = arrayListOf<Any>(getString(R.string.select_device))
         devicePropList.addAll(ESPUtilsApp.devicePropList)
-        spinner.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, devicePropList)
+        mainBinding.selectDevice.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, devicePropList)
 
         val action = intent.action
 
@@ -86,7 +78,6 @@ class RemoteParserActivity : AppCompatActivity() {
             val resolver = contentResolver
 
             try {
-
                 when {
                     scheme!!.compareTo(ContentResolver.SCHEME_CONTENT) == 0 -> {
                         val uri = intent.data!!
@@ -118,25 +109,27 @@ class RemoteParserActivity : AppCompatActivity() {
                 }
 
             }catch(ex:Exception){
-                progress.visibility = View.GONE;imV.visibility = View.VISIBLE
+                mainBinding.progressStatus.visibility = View.GONE
+                mainBinding.imvStatus.visibility = View.VISIBLE
                 val drawable = ContextCompat.getDrawable(this, R.drawable.icon_cancel)
-                DrawableCompat.setTint(drawable!!,Color.RED)
-                imV.setImageDrawable(drawable)
-                msg.visibility = View.VISIBLE
-                msg.text = getString(R.string.message_import_error)
+                DrawableCompat.setTint(drawable!!, Color.RED)
+                mainBinding.imvStatus.setImageDrawable(drawable)
+                mainBinding.messageText.visibility = View.VISIBLE
+                mainBinding.messageText.text = getString(R.string.message_import_error)
             }
         }
 
-        cancel.setOnClickListener { finish() }
-        import.setOnClickListener {
-            if(spinner.selectedItemPosition == 0){
+        mainBinding.buttonCancel.setOnClickListener { finish() }
+        mainBinding.buttonImport.setOnClickListener {
+            if(mainBinding.selectDevice.selectedItemPosition == 0){
                 Toast.makeText(this, getString(R.string.message_device_not_selected_note), Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             }
-            val selectedDevice = ESPUtilsApp.devicePropList[spinner.selectedItemPosition - 1]
+            val selectedDevice = ESPUtilsApp.devicePropList[mainBinding.selectDevice.selectedItemPosition - 1]
             jsonObject.put(Strings.remotePropDevPropFileName, selectedDevice.deviceConfigFile.name)
 
-            msg.visibility = View.GONE; progress.visibility = View.VISIBLE
+            mainBinding.messageText.visibility = View.GONE
+            mainBinding.progressStatus.visibility = View.VISIBLE
             try{
                 val fileName= jsonObject.getString(Strings.remotePropFileName)
                 var outFile = ESPUtilsApp.getPrivateFile(Strings.nameDirRemoteConfig, fileName)
@@ -159,15 +152,15 @@ class RemoteParserActivity : AppCompatActivity() {
                             jsonObject.put(Strings.remotePropName, outFile.name)
                             writeFile(outFile, jsonObject)
                             configFile = outFile
-                            onSuccess(progress, imV, msg, import)
+                            onSuccess(mainBinding)
                             dialog.dismiss()
                         }
                         .setPositiveButton(R.string.btn_text_overwrite){ dialog, _ ->
                             outFile.delete()
                             outFile.createNewFile()
-                            writeFile(outFile,jsonObject)
+                            writeFile(outFile, jsonObject)
                             configFile = outFile
-                            onSuccess(progress,imV,msg,import)
+                            onSuccess(mainBinding)
                             dialog.dismiss()
                         }
                         .setCancelable(false)
@@ -176,45 +169,46 @@ class RemoteParserActivity : AppCompatActivity() {
                     outFile.createNewFile()
                     writeFile(outFile, jsonObject)
                     configFile = outFile
-                    onSuccess(progress,imV,msg,import)
+                    onSuccess(mainBinding)
                 }
 
             }catch(ex:Exception){
-                progress.visibility = View.GONE;imV.visibility = View.VISIBLE
+                mainBinding.progressStatus.visibility = View.GONE
+                mainBinding.imvStatus.visibility = View.VISIBLE
                 val drawable = ContextCompat.getDrawable(this, R.drawable.icon_cancel)
-                DrawableCompat.setTint(drawable!!,Color.RED)
-                imV.setImageDrawable(drawable)
-                msg.visibility = View.VISIBLE
-                msg.text = getString(R.string.message_import_error)
+                DrawableCompat.setTint(drawable!!, Color.RED)
+                mainBinding.imvStatus.setImageDrawable(drawable)
+                mainBinding.messageText.visibility = View.VISIBLE
+                mainBinding.messageText.text = getString(R.string.message_import_error)
             }
         }
 
     }
 
-    private fun onSuccess(progress:ProgressBar, imV:ImageView, msg:TextView, btn:Button){
+    private fun onSuccess(binding: ImportRemoteActivityBinding){
         ESPUtilsApp.showAd(this)
-        progress.visibility = View.GONE
-        imV.visibility = View.VISIBLE
+        binding.progressStatus.visibility = View.GONE
+        binding.imvStatus.visibility = View.VISIBLE
         val drawable =ContextCompat.getDrawable(this, R.drawable.icon_check_circle)
         DrawableCompat.setTint(drawable!!, Color.GREEN)
-        imV.setImageDrawable(drawable)
+        binding.imvStatus.setImageDrawable(drawable)
 
-        msg.text = getString(R.string.message_import_success)
+        binding.messageText.text = getString(R.string.message_import_success)
 
         if(MainActivity.activity != null && !MainActivity.activity!!.isDestroyed){
             if(configFile!=null){
                 ESPUtilsApp.remotePropList.add(RemoteProperties(configFile!!,null))
                 MainActivity.activity?.irFragment?.notifyDataChanged()
             }
-            btn.text = getString(R.string.done)
-            button_cancel.visibility = View.GONE
-            btn.setOnClickListener {
+            binding.buttonImport.text = getString(R.string.done)
+            binding.buttonCancel.visibility = View.GONE
+            binding.buttonImport.setOnClickListener {
                 finish()
             }
         }else {
-            btn.text = getString(R.string.start_app)
-            button_cancel.text = getString(R.string.done)
-            btn.setOnClickListener {
+            binding.buttonImport.text = getString(R.string.start_app)
+            binding.buttonCancel.text = getString(R.string.done)
+            binding.buttonImport.setOnClickListener {
                 val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
                 finish()

@@ -14,10 +14,11 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
-import com.github.meudayhegde.esputils.Strings
 import com.github.meudayhegde.esputils.ESPUtilsApp
 import com.github.meudayhegde.esputils.MainActivity
 import com.github.meudayhegde.esputils.R
+import com.github.meudayhegde.esputils.Strings
+import com.github.meudayhegde.esputils.databinding.CreateButtonDialogLayoutBinding
 import com.github.meudayhegde.esputils.holders.ButtonProperties
 import com.github.meudayhegde.esputils.listeners.IrCodeListener
 import com.github.meudayhegde.esputils.listeners.OnRemoteButtonSelectedListener
@@ -27,7 +28,6 @@ import com.madrapps.pikolo.ColorPicker
 import com.madrapps.pikolo.HSLColorPicker
 import com.madrapps.pikolo.RGBColorPicker
 import com.madrapps.pikolo.listeners.SimpleColorSelectionListener
-import kotlinx.android.synthetic.main.create_button_dialog_layout.*
 import org.json.JSONException
 import org.json.JSONObject
 import kotlin.math.min
@@ -45,35 +45,38 @@ class ButtonPropertiesDialog(context: Context, private var listener: OnRemoteBut
     private var colorPicker : HSLColorPicker
     private val clrPkr: ColorPicker
     private var capturedCount = 0
-    private var buttonProperties:ButtonProperties? = null
+    private var buttonProperties: ButtonProperties? = null
     private val handler = Handler(Looper.getMainLooper())
+
+    private val dialogBinding: CreateButtonDialogLayoutBinding
 
     init{
         parentDialog = this
-        setView(layoutInflater.inflate(R.layout.create_button_dialog_layout, window?.decorView as ViewGroup, false))
+        dialogBinding = CreateButtonDialogLayoutBinding.inflate(layoutInflater, window?.decorView as ViewGroup, false)
+
         setButton(DialogInterface.BUTTON_NEUTRAL, context.getString(R.string.dialog_btn_prop_button_recapture)) { dialog, _ -> dialog!!.dismiss() }
         setButton(DialogInterface.BUTTON_NEGATIVE, context.getString(R.string.cancel)) { dialog, _ -> dialog!!.dismiss() }
         setButton(DialogInterface.BUTTON_POSITIVE, context.getString(R.string.add)){ _, _ -> }
+
         show()
         setCanceledOnTouchOutside(false)
         setTitle(R.string.dialog_title_ir_capture)
-        buttonPositive=getButton(DialogInterface.BUTTON_POSITIVE)
-        buttonNegative=getButton(DialogInterface.BUTTON_NEGATIVE)
+        buttonPositive = getButton(DialogInterface.BUTTON_POSITIVE)
+        buttonNegative = getButton(DialogInterface.BUTTON_NEGATIVE)
         buttonNeutral = getButton(DialogInterface.BUTTON_NEUTRAL)
 
-        val colorPickerLayout = findViewById<RelativeLayout>(R.id.layout_color_picker)!!
         val width = min(MainActivity.layoutParams.width, MainActivity.layoutParams.height)
         window?.setLayout((width * 0.86).toInt(), WindowManager.LayoutParams.WRAP_CONTENT)
 
         colorPicker = HSLColorPicker(context)
-        colorPickerLayout.addView(colorPicker)
+        dialogBinding.layoutColorPicker.addView(colorPicker)
 
         val layoutParam = RelativeLayout.LayoutParams((width * 0.8F).roundToInt(), (width * 0.8F).roundToInt())
         layoutParam.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE)
         colorPicker.layoutParams = layoutParam
 
         clrPkr = RGBColorPicker(context)
-        colorPickerLayout.addView(clrPkr)
+        dialogBinding.layoutColorPicker.addView(clrPkr)
 
         val lparam = RelativeLayout.LayoutParams((width * 0.55F).roundToInt(), (width * 0.55F).roundToInt())
         lparam.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE)
@@ -87,21 +90,21 @@ class ButtonPropertiesDialog(context: Context, private var listener: OnRemoteBut
     }
 
     fun captureInit(jsonObj:JSONObject?){
-        time_remaining_text.visibility = View.VISIBLE
-        time_remaining_text.text = ""
-        button_prop_layout.visibility=View.GONE
-        ir_capture_layout.visibility =View.VISIBLE
-        ir_capture_success_logo.visibility = View.GONE
-        buttonPositive.visibility=View.GONE
+        dialogBinding.timeRemainingText.visibility = View.VISIBLE
+        dialogBinding.timeRemainingText.text = ""
+        dialogBinding.buttonPropLayout.visibility = View.GONE
+        dialogBinding.irCaptureLayout.visibility = View.VISIBLE
+        dialogBinding.irCaptureSuccessLogo.visibility = View.GONE
+        buttonPositive.visibility = View.GONE
         buttonNeutral.visibility = View.GONE
 
-        ir_capture_progress.visibility = View.VISIBLE
-        ir_capture_error_logo.visibility = View.GONE
+        dialogBinding.irCaptureProgress.visibility = View.VISIBLE
+        dialogBinding.irCaptureErrorLogo.visibility = View.GONE
 
-        ir_capture_status.text = context.getString(R.string.message_waiting_ir_code)
-        ir_capture_instruction.visibility = View.VISIBLE
+        dialogBinding.irCaptureStatus.text = context.getString(R.string.message_waiting_ir_code)
+        dialogBinding.irCaptureInstruction.visibility = View.VISIBLE
         if(mode == MODE_MULTI)
-            ir_capture_instruction.text = context.getString(R.string.message_ir_capture_instruction) +
+            dialogBinding.irCaptureInstruction.text = context.getString(R.string.message_ir_capture_instruction) +
                     "\n" + context.getString(R.string.message_multi_capture_hint)
         SocketClient.readIrCode(address, userName, password,this, jsonObj)
     }
@@ -109,8 +112,8 @@ class ButtonPropertiesDialog(context: Context, private var listener: OnRemoteBut
     override fun onIrRead(jsonObj:JSONObject) {
         handler.post {
             if(mode == MODE_SINGLE){
-                ir_capture_layout.visibility= View.GONE
-                button_prop_layout.visibility=View.VISIBLE
+                dialogBinding.irCaptureLayout.visibility= View.GONE
+                dialogBinding.buttonPropLayout.visibility=View.VISIBLE
                 buttonPositive.text = context.getString(R.string.apply)
                 manageButtonProperties(jsonObj)
             }else{
@@ -123,12 +126,12 @@ class ButtonPropertiesDialog(context: Context, private var listener: OnRemoteBut
 
     override fun onTimeout() {
         handler.post{
-            time_remaining_text.visibility = View.GONE
+            dialogBinding.timeRemainingText.visibility = View.GONE
             Toast.makeText(context, context.getString(R.string.timeout), Toast.LENGTH_LONG).show()
-            ir_capture_progress.visibility = View.GONE
-            ir_capture_error_logo.visibility = View.VISIBLE
-            ir_capture_status.text = context.getString(R.string.message_ir_cap_status_timeout)
-            ir_capture_instruction.visibility = View.GONE
+            dialogBinding.irCaptureProgress.visibility = View.GONE
+            dialogBinding.irCaptureErrorLogo.visibility = View.VISIBLE
+            dialogBinding.irCaptureStatus.text = context.getString(R.string.message_ir_cap_status_timeout)
+            dialogBinding.irCaptureInstruction.visibility = View.GONE
 
             buttonPositive.text = context.getString(R.string.retry)
             buttonPositive.visibility = View.VISIBLE
@@ -137,21 +140,21 @@ class ButtonPropertiesDialog(context: Context, private var listener: OnRemoteBut
             }
             textInt = 0
             if(mode == MODE_MULTI && capturedCount>0){
-                ir_capture_error_logo.visibility = View.GONE
-                ir_capture_success_logo.visibility = View.VISIBLE
-                ir_capture_status.text = context.getString(R.string.message_multi_capture_count, capturedCount)
+                dialogBinding.irCaptureErrorLogo.visibility = View.GONE
+                dialogBinding.irCaptureSuccessLogo.visibility = View.VISIBLE
+                dialogBinding.irCaptureStatus.text = context.getString(R.string.message_multi_capture_count, capturedCount)
             }
         }
     }
 
     override fun onDeny(err_info:String?) {
         handler.post {
-            time_remaining_text.visibility = View.GONE
+            dialogBinding.timeRemainingText.visibility = View.GONE
             Toast.makeText(context, err_info, Toast.LENGTH_LONG).show()
-            ir_capture_progress.visibility = View.GONE
-            ir_capture_error_logo.visibility = View.VISIBLE
-            ir_capture_instruction.visibility = View.GONE
-            ir_capture_status.text = err_info
+            dialogBinding.irCaptureProgress.visibility = View.GONE
+            dialogBinding.irCaptureErrorLogo.visibility = View.VISIBLE
+            dialogBinding.irCaptureInstruction.visibility = View.GONE
+            dialogBinding.irCaptureStatus.text = err_info
 
             buttonNegative.text = context.getString(R.string.exit)
             buttonNegative.setOnClickListener {
@@ -167,7 +170,7 @@ class ButtonPropertiesDialog(context: Context, private var listener: OnRemoteBut
     }
 
     override fun onProgress(value: Int) {
-        time_remaining_text.text = value.toString()
+        dialogBinding.timeRemainingText.text = value.toString()
     }
 
     private fun manageButtonProperties(jsonObj:JSONObject){
@@ -179,13 +182,13 @@ class ButtonPropertiesDialog(context: Context, private var listener: OnRemoteBut
         }
         ButtonPropertiesDialog.jsonObj = jsonObj
         buttonProperties = ButtonProperties(jsonObj)
-        remote_model_button.initialize(buttonProperties)
+        dialogBinding.remoteModelButton.initialize(buttonProperties)
         buttonNeutral.visibility = View.VISIBLE
         buttonNeutral.setOnClickListener {
             captureInit(jsonObj)
         }
 
-        btn_edit_text.setText(buttonProperties?.text)
+        dialogBinding.btnEditText.setText(buttonProperties?.text)
 
         buttonProperties?.color?.let { colorPicker.setColor(it) }
         colorPicker.setColorSelectionListener(object : SimpleColorSelectionListener() {
@@ -195,16 +198,16 @@ class ButtonPropertiesDialog(context: Context, private var listener: OnRemoteBut
         })
 
         val text = context.getString(R.string.length_of_captured_ir_signal, jsonObj.getString(Strings.btnPropLength).toLong(16).toString())
-        text_ir_size.text = text
-        text_ir_size.setOnLongClickListener{
+        dialogBinding.textIrSize.text = text
+        dialogBinding.textIrSize.setOnLongClickListener{
             Toast.makeText(context, "Protocol :" + jsonObj.getString(Strings.btnPropProtocol) +
                     " " + jsonObj.getString(Strings.btnPropIrcode)
                 .replace(" ", "").replace("\n", ""), Toast.LENGTH_LONG).show()
             true
         }
 
-        remote_model_button.setOnClickListener {
-            val popup = PopupMenu(context, remote_model_button)
+        dialogBinding.remoteModelButton.setOnClickListener {
+            val popup = PopupMenu(context, dialogBinding.remoteModelButton)
             popup.menuInflater.inflate(R.menu.btn_style_menu, popup.menu)
             popup.setOnMenuItemClickListener {
                 buttonProperties?.iconType = arrayOf(R.id.round_button_small, R.id.button_horizontal, R.id.button_vertical, R.id.round_button_large).indexOf(it.itemId)
@@ -216,7 +219,7 @@ class ButtonPropertiesDialog(context: Context, private var listener: OnRemoteBut
         buttonProperties?.textColor?.let { clrPkr.setColor(it) }
 
 
-        btn_icon.setOnClickListener {
+        dialogBinding.btnIcon.setOnClickListener {
             val iconAdapter = object: ArrayAdapter<Int>(context, R.layout.drawable_layout, ESPUtilsApp.iconDrawableList.toTypedArray()){
                 override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                     val drawable = ContextCompat.getDrawable(context, getItem(position)!!)
@@ -251,12 +254,12 @@ class ButtonPropertiesDialog(context: Context, private var listener: OnRemoteBut
             }
             iconDialog.show()
         }
-        
-        btn_edit_text.addTextChangedListener(object: TextWatcher{
+
+        dialogBinding.btnEditText.addTextChangedListener(object: TextWatcher{
             override fun afterTextChanged(s: Editable?) {}
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                remote_model_button.text = s
+                dialogBinding.remoteModelButton.text = s
                 buttonProperties?.text = s.toString()
             }
         })
@@ -268,11 +271,10 @@ class ButtonPropertiesDialog(context: Context, private var listener: OnRemoteBut
         }
     }
 
-
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         super.onBackPressed()
-        Toast.makeText(context,"Click on cancel to quit...",Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, R.string.message_cancel_to_quit, Toast.LENGTH_SHORT).show()
     }
 
     companion object{

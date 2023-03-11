@@ -15,7 +15,6 @@
                 android:layout_marginTop="@dimen/margin_max"
                 android:layout_marginEnd="@dimen/margin_high"
                 android:layout_marginStart="@dimen/margin_high"
-                android:id="@+id/cur_user_name_"
                 app:hintTextColor="?attr/colorOnBackground"
                 style="@style/TextInputLayoutStyle"
                 android:hint="@string/current_username">
@@ -37,7 +36,6 @@
                 android:layout_marginStart="@dimen/margin_high"
                 app:passwordToggleEnabled="true"
                 app:hintTextColor="?attr/colorOnBackground"
-                android:id="@+id/cur_user_passwd_"
                 style="@style/TextInputLayoutStyle"
                 android:hint="@string/current_password">
 
@@ -56,7 +54,6 @@
                 android:layout_marginTop="@dimen/margin_max"
                 android:layout_marginEnd="@dimen/margin_high"
                 android:layout_marginStart="@dimen/margin_high"
-                android:id="@+id/til_user_name_"
                 app:hintTextColor="?attr/colorOnBackground"
                 style="@style/TextInputLayoutStyle"
                 android:hint="@string/new_user_name">
@@ -78,7 +75,6 @@
                 android:layout_marginStart="@dimen/margin_high"
                 app:passwordToggleEnabled="true"
                 app:hintTextColor="?attr/colorOnBackground"
-                android:id="@+id/til_user_passwd_"
                 style="@style/TextInputLayoutStyle"
                 android:hint="@string/new_password">
 
@@ -99,7 +95,6 @@
                 app:passwordToggleEnabled="true"
                 android:layout_marginStart="@dimen/margin_high"
                 app:hintTextColor="?attr/colorOnBackground"
-                android:id="@+id/til_user_confirm_passwd_"
                 style="@style/TextInputLayoutStyle"
                 android:hint="@string/confirm_password">
 

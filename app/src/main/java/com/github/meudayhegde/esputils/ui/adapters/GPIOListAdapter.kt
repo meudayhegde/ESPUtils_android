@@ -1,6 +1,6 @@
 package com.github.meudayhegde.esputils.ui.adapters
 
-import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Build
@@ -9,16 +9,16 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
-import androidx.appcompat.widget.SwitchCompat
-import androidx.cardview.widget.CardView
+import android.widget.CompoundButton
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.github.meudayhegde.ThreadHandler
-import com.github.meudayhegde.esputils.Strings
 import com.github.meudayhegde.esputils.ESPUtilsApp
 import com.github.meudayhegde.esputils.MainActivity
 import com.github.meudayhegde.esputils.R
+import com.github.meudayhegde.esputils.Strings
+import com.github.meudayhegde.esputils.databinding.GpioListItemBinding
 import com.github.meudayhegde.esputils.holders.GPIOObject
 import com.github.meudayhegde.esputils.listeners.OnGPIORefreshListener
 import com.github.meudayhegde.esputils.net.SocketClient
@@ -26,32 +26,32 @@ import com.github.meudayhegde.esputils.ui.fragments.GPIOControllerFragment
 import org.json.JSONObject
 
 class GPIOListAdapter(private val gpioList: ArrayList<GPIOObject>,
-                      private val fragment: GPIOControllerFragment) : RecyclerView.Adapter<GPIOListAdapter.GPIOListViewHolder>(){
+                      private val fragment: GPIOControllerFragment): RecyclerView.Adapter<GPIOListAdapter.GPIOListViewHolder>(){
 
-    class GPIOListViewHolder(val cardView: CardView) : RecyclerView.ViewHolder(cardView){
-        val title: TextView = cardView.findViewById(R.id.gpio_name)
-        val subTitle: TextView = cardView.findViewById(R.id.gpio_description)
-        val gpioSwitch: SwitchCompat = cardView.findViewById(R.id.gpio_switch)
-        val statusLayout: LinearLayout = cardView.findViewById(R.id.gpio_intermediate)
-        val progressBar: ProgressBar = cardView.findViewById(R.id.progress_status)
-        val progressImg: ImageView = cardView.findViewById(R.id.img_offline)
-        val progressText: TextView = cardView.findViewById(R.id.status_text)
-        val iconDrawable = ContextCompat.getDrawable(cardView.context, R.drawable.icon_lamp)
+    class GPIOListViewHolder(val viewBinding: GpioListItemBinding): RecyclerView.ViewHolder(viewBinding.root){
+        val context: Context = viewBinding.root.context
+        val title = viewBinding.gpioName
+        val subTitle = viewBinding.gpioDescription
+        val gpioSwitch = viewBinding.gpioSwitch
+        val statusLayout = viewBinding.gpioIntermediate
+        val progressBar = viewBinding.progressStatus
+        val progressImg = viewBinding.imgOffline
+        val progressText = viewBinding.statusText
+        val iconDrawable = ContextCompat.getDrawable(context, R.drawable.icon_lamp)
 
         init{
-            cardView.findViewById<ImageView>(R.id.ic_gpio_list_item).setImageDrawable(iconDrawable)
+            viewBinding.icGpioListItem.setImageDrawable(iconDrawable)
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GPIOListViewHolder {
-        val cardView = LayoutInflater.from(parent.context).inflate(R.layout.gpio_list_item, parent, false) as CardView
-        return GPIOListViewHolder(cardView)
+        return GPIOListViewHolder(
+            GpioListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        )
     }
 
-    @SuppressLint("InflateParams")
     override fun onBindViewHolder(holder: GPIOListViewHolder, position: Int) {
-        val gpioObject = gpioList[position]
-        setViews(holder, gpioObject)
+        setViews(holder, gpioList[position])
     }
 
     private fun setViews(holder: GPIOListViewHolder, gpioObject: GPIOObject){
@@ -74,7 +74,7 @@ class GPIOListAdapter(private val gpioList: ArrayList<GPIOObject>,
             }
         })
 
-        holder.cardView.setOnLongClickListener {
+        holder.viewBinding.root.setOnLongClickListener {
             fragment.gpioDialog(gpioObject)
             true
         }
@@ -82,9 +82,9 @@ class GPIOListAdapter(private val gpioList: ArrayList<GPIOObject>,
 
     private fun itemStatusOnline(holder: GPIOListViewHolder, gpioObject: GPIOObject){
         itemStatusAll(holder, gpioObject)
-        holder.cardView.setOnClickListener { holder.gpioSwitch.toggle() }
-        holder.cardView.getChildAt(0).background =
-            ContextCompat.getDrawable(holder.cardView.context, R.drawable.round_corner_success)
+        holder.viewBinding.root.setOnClickListener { holder.gpioSwitch.toggle() }
+        holder.viewBinding.container.background =
+            ContextCompat.getDrawable(holder.context, R.drawable.round_corner_success)
         holder.gpioSwitch.visibility = View.VISIBLE
         holder.statusLayout.visibility = View.GONE
         if(gpioObject.pinValue == 1){
@@ -105,12 +105,13 @@ class GPIOListAdapter(private val gpioList: ArrayList<GPIOObject>,
         holder.statusLayout.visibility = View.VISIBLE
         holder.gpioSwitch.visibility = View.GONE
 
-        holder.cardView.getChildAt(0).background = ContextCompat.getDrawable(holder.cardView.context, R.drawable.round_corner_error)
+        holder.viewBinding.container.background =
+            ContextCompat.getDrawable(holder.context, R.drawable.round_corner_error)
         holder.progressBar.visibility = View.GONE
         holder.progressImg.visibility = View.VISIBLE
-        holder.progressText.text = holder.cardView.context.getString(R.string.offline)
-        holder.cardView.setOnClickListener {
-            Toast.makeText(holder.cardView.context, holder.cardView.context.getString(R.string.message_device_offline), Toast.LENGTH_SHORT).show()
+        holder.progressText.text = holder.context.getString(R.string.offline)
+        holder.viewBinding.root.setOnClickListener {
+            Toast.makeText(holder.context, R.string.message_device_offline, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -120,11 +121,11 @@ class GPIOListAdapter(private val gpioList: ArrayList<GPIOObject>,
         holder.statusLayout.visibility = View.VISIBLE
         holder.progressBar.visibility = View.VISIBLE
         holder.progressImg.visibility = View.GONE
-        holder.progressText.text = holder.cardView.context.getString(R.string.loading)
-        holder.cardView.getChildAt(0).background =
-            ContextCompat.getDrawable(holder.cardView.context, R.drawable.layout_border_round_corner)
-        holder.cardView.setOnClickListener {
-            Toast.makeText(holder.cardView.context, holder.cardView.context.getString(R.string.scanning), Toast.LENGTH_SHORT).show()
+        holder.progressText.text = holder.context.getString(R.string.loading)
+        holder.viewBinding.container.background =
+            ContextCompat.getDrawable(holder.context, R.drawable.layout_border_round_corner)
+        holder.viewBinding.root.setOnClickListener {
+            Toast.makeText(holder.context, R.string.scanning, Toast.LENGTH_SHORT).show()
         }
     }
     private fun itemStatusAll(holder: GPIOListViewHolder, gpioObject: GPIOObject){

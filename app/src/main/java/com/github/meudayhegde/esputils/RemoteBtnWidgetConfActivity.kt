@@ -14,12 +14,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.github.meudayhegde.ThreadHandler
+import com.github.meudayhegde.esputils.databinding.ActivityWidgetConfiguratorBinding
 import com.github.meudayhegde.esputils.holders.RemoteProperties
 import com.github.meudayhegde.esputils.ui.adapters.RemoteListAdapter
 import com.github.meudayhegde.esputils.ui.buttons.RemoteButton
 import com.github.meudayhegde.esputils.ui.dialogs.RemoteDialog
-import kotlinx.android.synthetic.main.activity_widget_configurator.*
-import kotlinx.android.synthetic.main.recycler_refresh_layout.*
 import kotlin.math.min
 
 class RemoteBtnWidgetConfActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
@@ -27,14 +26,16 @@ class RemoteBtnWidgetConfActivity : AppCompatActivity(), SwipeRefreshLayout.OnRe
     var widgetId = 0
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
+    private lateinit var mainBinding: ActivityWidgetConfiguratorBinding
     private val remotePropList = ArrayList<RemoteProperties>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        mainBinding = ActivityWidgetConfiguratorBinding.inflate(layoutInflater)
+        setContentView(mainBinding.root)
+
         activity = this
-
         widgetId = intent?.extras?.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID) ?: AppWidgetManager.INVALID_APPWIDGET_ID
-
         val pref = getSharedPreferences(Strings.sharedPrefNameWidgetAssociations, Context.MODE_PRIVATE)
 
         if(!pref.getString(widgetId.toString(), "").isNullOrEmpty()){
@@ -50,8 +51,6 @@ class RemoteBtnWidgetConfActivity : AppCompatActivity(), SwipeRefreshLayout.OnRe
             1-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
             2-> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         }
-
-        setContentView(R.layout.activity_widget_configurator)
 
         val lWindowParams = WindowManager.LayoutParams()
         lWindowParams.copyFrom(window?.attributes)
@@ -72,23 +71,23 @@ class RemoteBtnWidgetConfActivity : AppCompatActivity(), SwipeRefreshLayout.OnRe
         val arr = resources.obtainTypedArray(R.array.icons)
         ESPUtilsApp.iconDrawableList = IntArray(arr.length())
         for(i in 0 until arr.length())
-            ESPUtilsApp.iconDrawableList[i] = arr.getResourceId(i,0)
+            ESPUtilsApp.iconDrawableList[i] = arr.getResourceId(i, 0)
         arr.recycle()
 
         viewManager = LinearLayoutManager(this)
         viewAdapter = RemoteListAdapter(remotePropList,RemoteDialog.MODE_SELECT_BUTTON)
-        refresh_layout_recycler_view.apply {
+        mainBinding.remoteRefreshLayout.refreshLayoutRecyclerView.apply {
             setHasFixedSize(true)
             layoutManager = viewManager
             adapter = viewAdapter
         }
 
-        (remote_refresh_layout as SwipeRefreshLayout).setOnRefreshListener(this)
+        mainBinding.remoteRefreshLayout.refreshLayout.setOnRefreshListener(this)
         onRefresh()
     }
 
     override fun onRefresh() {
-        (remote_refresh_layout as SwipeRefreshLayout).isRefreshing = true
+        mainBinding.remoteRefreshLayout.refreshLayout.isRefreshing = true
         ThreadHandler.runOnFreeThread{
             remotePropList.clear()
             val files = ESPUtilsApp.getPrivateFile(Strings.nameDirRemoteConfig).listFiles { pathname ->
@@ -99,7 +98,7 @@ class RemoteBtnWidgetConfActivity : AppCompatActivity(), SwipeRefreshLayout.OnRe
             }
             runOnUiThread{
                 viewAdapter.notifyDataSetChanged()
-                (remote_refresh_layout as SwipeRefreshLayout).isRefreshing = false
+                mainBinding.remoteRefreshLayout.refreshLayout.isRefreshing = false
             }
         }
     }
@@ -119,6 +118,6 @@ class RemoteBtnWidgetConfActivity : AppCompatActivity(), SwipeRefreshLayout.OnRe
     }
 
     companion object{
-        var activity:RemoteBtnWidgetConfActivity? = null
+        var activity: RemoteBtnWidgetConfActivity? = null
     }
 }

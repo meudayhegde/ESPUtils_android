@@ -14,7 +14,7 @@
             android:padding="@dimen/margin_low" android:orientation="vertical" tools:ignore="UnusedAttribute">
 
         <ImageView
-                android:id="@+id/ic_settings" android:layout_width="@dimen/list_item_icon_size_small"
+                android:id="@+id/item_icon" android:layout_width="@dimen/list_item_icon_size_small"
                 android:layout_height="@dimen/list_item_icon_size_small"
                 android:layout_margin="@dimen/margin_low" android:src="@drawable/ic_settings"
                 android:layout_alignParentStart="true" android:layout_centerVertical="true"
@@ -22,15 +22,15 @@
                 android:contentDescription="@string/img_desc_icon_for_settings_list_item"/>
 
         <TextView
-                android:id="@+id/setting_title" android:layout_width="wrap_content"
+                android:id="@+id/item_title" android:layout_width="wrap_content"
                 android:layout_height="wrap_content" android:textSize="@dimen/text_size_title"
-                android:layout_toEndOf="@id/ic_settings" android:textColor="?attr/colorOnBackground"
+                android:layout_toEndOf="@id/item_icon" android:textColor="?attr/colorOnBackground"
                 android:layout_marginStart="@dimen/margin_low" android:text="@string/title" />
 
         <TextView
-                android:id="@+id/setting_subtitle" android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:layout_below="@id/setting_title"
-                android:layout_toEndOf="@id/ic_settings" android:layout_marginStart="@dimen/margin_low"
+                android:id="@+id/item_subtitle" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:layout_below="@id/item_title"
+                android:layout_toEndOf="@id/item_icon" android:layout_marginStart="@dimen/margin_low"
                 android:textSize="@dimen/text_size_subtitle" android:text="@string/subtitle" />
 
     </RelativeLayout>

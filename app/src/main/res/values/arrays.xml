@@ -42,6 +42,11 @@
         <item>GPIO16 (D0)</item>
     </string-array>
 
+    <string-array name="esp_wireless_mode">
+        <item>Station (WiFi)</item>
+        <item>Access Point (Hotspot)</item>
+    </string-array>
+
     <string-array name="settings_theme_list">
         <item>Follow System Theme</item>
         <item>Light Theme</item>

@@ -64,6 +64,7 @@ object Strings {
     }
 
     const val espResponse = "response"
+    const val espResponseAuthSuccess = "authenticated"
     const val espResponseMac = "MAC"
     const val espResponsePinNumber = "pinNumber"
     const val espResponsePinValue = "pinValue"
@@ -71,6 +72,10 @@ object Strings {
     const val espResponseSuccess = "success"
     const val espResponseTimeout = "timeout"
     const val espResponseValue = "value"
+
+    const val espWirelessStation = "WIFI"
+    const val espWirelessAp = "AP"
+    const val espWirelessMode = "wireless_mode"
 
     const val nameDirDeviceConfig = "devices"
     const val nameDirRemoteConfig = "remotes"
@@ -127,4 +132,6 @@ object Strings {
     const val widgetIntentActionClick = "automaticWidgetSyncButtonClick"
 
     const val espInterstitialAdID = "ca-app-pub-2858595319126158/1060562545"
+
+    const val urlLicenseApache = "http://www.apache.org/licenses/LICENSE-2.0"
 }

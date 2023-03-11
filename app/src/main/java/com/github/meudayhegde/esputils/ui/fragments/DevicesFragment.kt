@@ -10,21 +10,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
-import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.github.clans.fab.FloatingActionButton
-import com.github.clans.fab.FloatingActionMenu
-import com.google.android.material.textfield.TextInputEditText
 import com.github.meudayhegde.ThreadHandler
 import com.github.meudayhegde.esputils.ESPUtilsApp
 import com.github.meudayhegde.esputils.MainActivity
 import com.github.meudayhegde.esputils.R
 import com.github.meudayhegde.esputils.Strings
+import com.github.meudayhegde.esputils.databinding.AddNewDeviceBinding
+import com.github.meudayhegde.esputils.databinding.DevicePropertiesBinding
+import com.github.meudayhegde.esputils.databinding.FragmentDevicesBinding
 import com.github.meudayhegde.esputils.holders.ARPItem
 import com.github.meudayhegde.esputils.holders.DeviceProperties
 import com.github.meudayhegde.esputils.listeners.OnFragmentInteractionListener
@@ -32,16 +30,17 @@ import com.github.meudayhegde.esputils.net.ESPTable
 import com.github.meudayhegde.esputils.net.SocketClient
 import com.github.meudayhegde.esputils.ui.adapters.DeviceListAdapter
 import com.github.meudayhegde.esputils.ui.adapters.ScanDeviceListAdapter
+import com.google.android.material.textfield.TextInputEditText
 import org.json.JSONObject
 import java.io.File
 
 class DevicesFragment : androidx.fragment.app.Fragment()  {
     private var listener: OnFragmentInteractionListener? = null
-    private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
-    private var rootView: RelativeLayout? = null
-    private lateinit var manageMenu: FloatingActionMenu
+
+    private lateinit var fragmentBinding: FragmentDevicesBinding
+    private var _binding: FragmentDevicesBinding? = null
 
     var updateSelectedListener: ((File) -> Unit)? = null
     val espOtaChooser = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -66,23 +65,22 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        if(rootView == null ){
-            rootView = inflater.inflate(R.layout.fragment_devices, container, false) as RelativeLayout
-            manageMenu = rootView!!.findViewById(R.id.fam_manage_gpio)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        if(_binding == null ){
+            fragmentBinding = FragmentDevicesBinding.inflate(inflater, container, false)
+            _binding = fragmentBinding
             viewManager = LinearLayoutManager(context)
             viewAdapter = DeviceListAdapter(ESPUtilsApp.devicePropList, this)
-            recyclerView = rootView!!.findViewById<RecyclerView>(R.id.refresh_layout_recycler_view).apply {
+            fragmentBinding.refreshLayout.refreshLayoutRecyclerView.apply {
                 setHasFixedSize(true)
                 layoutManager = viewManager
                 adapter = viewAdapter
             }
 
-            manageMenu.setClosedOnTouchOutside(true)
+            fragmentBinding.famManageGpio.setClosedOnTouchOutside(true)
 
-            val refreshLayout = rootView!!.findViewById<SwipeRefreshLayout>(R.id.refresh_layout)
-            refreshLayout.setOnRefreshListener {
-                refreshLayout.isRefreshing = true
+            fragmentBinding.refreshLayout.refreshLayout.setOnRefreshListener {
+                fragmentBinding.refreshLayout.refreshLayout.isRefreshing = true
 
                 ESPTable.getInstance(context).refreshDevicesStatus(mutableMapOf<String, DeviceProperties>().apply {
                     for(prop in ESPUtilsApp.devicePropList) this[prop.macAddress] = prop
@@ -91,15 +89,12 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
                 ThreadHandler.runOnFreeThread{
                     Thread.sleep(100)
                     ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE) {
-                        refreshLayout.isRefreshing = false
+                        fragmentBinding.refreshLayout.refreshLayout.isRefreshing = false
                     }
                 }
             }
 
-            val fabScan = rootView!!.findViewById<FloatingActionButton>(R.id.fab_scan_device)
-            val fabEnterAddress = rootView!!.findViewById<FloatingActionButton>(R.id.fab_enter_address)
-
-            fabScan.setOnClickListener {
+            fragmentBinding.fabScanDevice.setOnClickListener {
                 val deviceDialog = AlertDialog.Builder(requireContext(), R.style.AppTheme_AlertDialog)
                     .setIcon(R.drawable.ic_refresh)
                     .setNegativeButton(R.string.cancel){ _, _ -> }
@@ -142,24 +137,25 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
 
                 deviceDialog.show()
 
-                manageMenu.close(true)
+                fragmentBinding.famManageGpio.close(true)
             }
-            fabEnterAddress.setOnClickListener { newDeviceEnterAddress() }
+            fragmentBinding.fabEnterAddress.setOnClickListener { newDeviceEnterAddress() }
         }
-        if(!manageMenu.isOpened)
-            manageMenu.hideMenuButton(false)
+        if(!fragmentBinding.famManageGpio.isOpened)
+            fragmentBinding.famManageGpio.hideMenuButton(false)
         Handler(Looper.getMainLooper()).postDelayed({
-            if(manageMenu.isMenuButtonHidden)
-                manageMenu.showMenuButton(true)
+            if(fragmentBinding.famManageGpio.isMenuButtonHidden)
+                fragmentBinding.famManageGpio.showMenuButton(true)
             if(ESPUtilsApp.remotePropList.isEmpty())
-                Handler(Looper.getMainLooper()).postDelayed({manageMenu.showMenu(true)},400)
+                Handler(Looper.getMainLooper()).postDelayed({fragmentBinding.famManageGpio.showMenu(true)},400)
         },400)
-        return rootView
+        return fragmentBinding.root
     }
 
     private fun newDeviceEnterAddress(){
+        val contentBinding = AddNewDeviceBinding.inflate(layoutInflater)
         val newDevDialog = AlertDialog.Builder(requireContext(), R.style.AppTheme_AlertDialog)
-            .setView(R.layout.add_new_device)
+            .setView(contentBinding.root)
             .setTitle(R.string.add_new_device)
             .setIcon(R.drawable.ic_refresh)
             .setNegativeButton(R.string.cancel){_, _ ->}
@@ -167,9 +163,8 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
             .create()
         newDevDialog.setOnShowListener {
             val btnNext = newDevDialog.getButton(DialogInterface.BUTTON_POSITIVE)
-            val devAddress = newDevDialog.findViewById<TextInputEditText>(R.id.device_address)
             btnNext.setOnClickListener {
-                val address = devAddress?.text.toString()
+                val address = contentBinding.deviceAddress.text.toString()
                 ThreadHandler.runOnThread(ThreadHandler.ESP_MESSAGE){
                     try {
                         val connector = SocketClient.Connector(address)
@@ -189,12 +184,13 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
             }
         }
         newDevDialog.show()
-        manageMenu.close(true)
+        fragmentBinding.famManageGpio.close(true)
     }
 
     fun onAddressVerified(context: Context, address: String, macAddress: String){
+        val contentBinding = DevicePropertiesBinding.inflate(layoutInflater)
         val dialog = AlertDialog.Builder(context, R.style.AppTheme_AlertDialog)
-            .setView(R.layout.device_properties)
+            .setView(contentBinding.root)
             .setIcon(R.drawable.icon_edit)
             .setTitle(context.resources.getString(R.string.set_dev_props))
             .setNegativeButton(context.resources.getString(R.string.cancel)){ dialog, _ -> dialog.dismiss()}
@@ -203,8 +199,6 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
         dialog.setOnShowListener {
             val btnAdd = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
 
-            val userName = dialog.findViewById<TextInputEditText>(R.id.device_user_name)!!
-            val password = dialog.findViewById<TextInputEditText>(R.id.device_password)!!
             val devName = dialog.findViewById<TextInputEditText>(R.id.device_name)!!
             val devDescription = dialog.findViewById<TextInputEditText>(R.id.device_desc)!!
 
@@ -215,9 +209,8 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
             }
 
             val pref = context.getSharedPreferences(Strings.sharedPrefNameLogin, 0)
-            userName.setText(devProp?.userName?: pref?.getString(Strings.sharedPrefItemUsername, ""))
-            password.setText(devProp?.password?: pref?.getString(Strings.sharedPrefItemPassword, ""))
-
+            contentBinding.deviceUserName.setText(devProp?.userName?: pref?.getString(Strings.sharedPrefItemUsername, ""))
+            contentBinding.devicePassword.setText(devProp?.password?: pref?.getString(Strings.sharedPrefItemPassword, ""))
 
             devName.setText(devProp?.nickName?: macAddress.replace(":", "_"))
             devDescription.setText(devProp?.description?: "")
@@ -227,12 +220,12 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
                     try{
                         val connector = SocketClient.Connector(address)
                         connector.sendLine(Strings.espCommandAuth(
-                            userName.text.toString(),
-                            password.text.toString()
+                            contentBinding.deviceUserName.text.toString(),
+                            contentBinding.devicePassword.text.toString()
                         ))
                         val response = connector.readLine()
 
-                        if(JSONObject(response)[Strings.espResponse] != "authenticated") throw Exception()
+                        if(JSONObject(response)[Strings.espResponse] != Strings.espResponseAuthSuccess) throw Exception()
 
                         if (!devExist) {
                             val devConfigFile = ESPUtilsApp.getPrivateFile(
@@ -246,24 +239,24 @@ class DevicesFragment : androidx.fragment.app.Fragment()  {
                         devProp!!.nickName = devName.text.toString()
                         devProp!!.macAddress = macAddress
                         devProp!!.description = devDescription.text.toString()
-                        devProp!!.userName = userName.text.toString()
-                        devProp!!.password = password.text.toString()
+                        devProp!!.userName = contentBinding.deviceUserName.text.toString()
+                        devProp!!.password = contentBinding.devicePassword.text.toString()
 
                         Handler(Looper.getMainLooper()).post{
                             if(devExist){
                                 viewAdapter.notifyItemChanged(ESPUtilsApp.devicePropList.indexOf(devProp!!))
-                                Toast.makeText(context, "Device Preferences Updated", Toast.LENGTH_LONG).show()
+                                Toast.makeText(context, R.string.message_dev_prop_updated, Toast.LENGTH_LONG).show()
                             }else{
                                 ESPUtilsApp.devicePropList.add(devProp!!)
                                 viewAdapter.notifyItemInserted(ESPUtilsApp.devicePropList.indexOf(devProp!!))
-                                Toast.makeText(context, "Device successfully Added", Toast.LENGTH_LONG).show()
+                                Toast.makeText(context, R.string.message_dev_prop_added, Toast.LENGTH_LONG).show()
                             }
                             dialog.dismiss()
                             ESPUtilsApp.showAd(context as MainActivity)
                         }
                     }catch(ex: Exception){
                         Handler(Looper.getMainLooper()).post{
-                            Toast.makeText(context, "Err: Authentication Failed", Toast.LENGTH_LONG).show()
+                            Toast.makeText(context, R.string.message_auth_failed, Toast.LENGTH_LONG).show()
                         }
                     }
                 }

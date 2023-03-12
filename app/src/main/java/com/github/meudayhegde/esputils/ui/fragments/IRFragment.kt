@@ -110,7 +110,7 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
                 }
             }
 
-            fragmentBinding.famManageRemotes.setOnClickListener(this)
+            fragmentBinding.fabNewRemote.setOnClickListener(this)
         }
         if (!fragmentBinding.famManageRemotes.isOpened) fragmentBinding.famManageRemotes.hideMenuButton(
             false

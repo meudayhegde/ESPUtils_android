@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".ui.fragments.IRFragment">
 
-
     <TextView
         android:id="@+id/info_layout"
         android:layout_width="match_parent"
@@ -35,7 +34,7 @@
         android:layout_margin="@dimen/margin_high" />
 
 
-    <com.github.clans.fab.FloatingActionMenu
+    <com.github.meudayhegde.fab.FloatingActionMenu
         android:id="@+id/fam_manage_remotes"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -46,37 +45,37 @@
         android:paddingBottom="30dp"
         fab:menu_backgroundColor="#44000000"
         fab:menu_buttonSpacing="5dp"
-        fab:menu_colorNormal="?attr/colorPrimary"
-        fab:menu_colorPressed="?attr/colorAccent"
-        fab:menu_colorRipple="?attr/colorAccent"
+        fab:menu_colorNormal="@color/sky_blue"
+        fab:menu_colorPressed="@color/sky_blue_dark"
+        fab:menu_colorRipple="@color/sky_blue_dark"
         fab:menu_fab_label="Actions "
         fab:menu_labels_hideAnimation="@anim/fab_slide_out_to_right"
         fab:menu_labels_showAnimation="@anim/fab_slide_in_from_right"
         fab:menu_shadowColor="#444">
 
-        <com.github.clans.fab.FloatingActionButton
+        <com.github.meudayhegde.fab.FloatingActionButton
             android:id="@+id/fab_new_remote"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/fab_add"
-            fab:fab_colorNormal="?attr/colorPrimary"
-            fab:fab_colorPressed="?attr/colorPrimaryDark"
-            fab:fab_colorRipple="?attr/colorPrimaryDark"
+            android:src="@drawable/icon_add"
+            fab:fab_colorNormal="@color/yellow"
+            fab:fab_colorPressed="@color/yellow_dark"
+            fab:fab_colorRipple="@color/yellow_dark"
             fab:fab_label="Create Remote"
             fab:fab_size="mini" />
 
-        <com.github.clans.fab.FloatingActionButton
+        <com.github.meudayhegde.fab.FloatingActionButton
             android:id="@+id/fab_import_remote"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_fab_import"
-            fab:fab_colorNormal="?attr/colorPrimary"
-            fab:fab_colorPressed="?attr/colorPrimaryDark"
-            fab:fab_colorRipple="?attr/colorPrimaryDark"
+            fab:fab_colorNormal="@color/green"
+            fab:fab_colorPressed="@color/green_dark"
+            fab:fab_colorRipple="@color/green_dark"
             fab:fab_label="Import Remote"
             fab:fab_size="mini"
             tools:ignore="VectorDrawableCompat" />
 
-    </com.github.clans.fab.FloatingActionMenu>
+    </com.github.meudayhegde.fab.FloatingActionMenu>
 
 </RelativeLayout>

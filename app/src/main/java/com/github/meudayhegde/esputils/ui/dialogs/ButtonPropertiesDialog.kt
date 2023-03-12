@@ -70,6 +70,8 @@ class ButtonPropertiesDialog(
         ) { dialog, _ -> dialog!!.dismiss() }
         setButton(DialogInterface.BUTTON_POSITIVE, context.getString(R.string.add)) { _, _ -> }
 
+        setView(dialogBinding.root)
+
         show()
         setCanceledOnTouchOutside(false)
         setTitle(R.string.dialog_title_ir_capture)

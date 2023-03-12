@@ -33,7 +33,7 @@ open class FloatingActionButton @JvmOverloads constructor(
     var mFabSize = 0
     var mShowShadow = false
     var mShadowColor = 0
-    var mShadowRadius: Int = Util.dpToPx(context, 4f)
+    var mShadowRadius: Int = Util.dpToPx(context, 8f)
     var mShadowXOffset: Int = Util.dpToPx(context, 1f)
     var mShadowYOffset: Int = Util.dpToPx(context, 3f)
     private var mColorNormal = 0

@@ -54,7 +54,7 @@ class FloatingActionMenu @JvmOverloads constructor(
     private var mLabelsPaddingLeft: Int = Util.dpToPx(getContext(), 8f)
     private var mLabelsTextColor: ColorStateList? = null
     private var mLabelsTextSize = 0f
-    private var mLabelsCornerRadius: Int = Util.dpToPx(getContext(), 3f)
+    private var mLabelsCornerRadius: Int = Util.dpToPx(getContext(), 6f)
     private var mLabelsShowShadow = false
     private var mLabelsColorNormal = 0
     private var mLabelsColorPressed = 0

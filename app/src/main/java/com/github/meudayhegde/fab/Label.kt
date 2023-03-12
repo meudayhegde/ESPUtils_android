@@ -36,9 +36,7 @@ class Label : androidx.appcompat.widget.AppCompatTextView {
     constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
-        context,
-        attrs,
-        defStyleAttr
+        context, attrs, defStyleAttr
     )
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -73,8 +71,7 @@ class Label : androidx.appcompat.widget.AppCompatTextView {
         if (mShowShadow) {
             layerDrawable = LayerDrawable(
                 arrayOf(
-                    Shadow(),
-                    createFillDrawable()
+                    Shadow(), createFillDrawable()
                 )
             )
             val leftInset = mShadowRadius + abs(mShadowXOffset)
@@ -82,11 +79,7 @@ class Label : androidx.appcompat.widget.AppCompatTextView {
             val rightInset = mShadowRadius + abs(mShadowXOffset)
             val bottomInset = mShadowRadius + abs(mShadowYOffset)
             layerDrawable.setLayerInset(
-                1,
-                leftInset,
-                topInset,
-                rightInset,
-                bottomInset
+                1, leftInset, topInset, rightInset, bottomInset
             )
         } else {
             layerDrawable = LayerDrawable(
@@ -100,19 +93,19 @@ class Label : androidx.appcompat.widget.AppCompatTextView {
 
     private fun createFillDrawable(): Drawable {
         val drawable = StateListDrawable()
-        drawable.addState(intArrayOf(android.R.attr.state_pressed), createRectDrawable(mColorPressed))
+        drawable.addState(
+            intArrayOf(android.R.attr.state_pressed), createRectDrawable(mColorPressed)
+        )
         drawable.addState(intArrayOf(), createRectDrawable(mColorNormal))
         val ripple = RippleDrawable(
-            ColorStateList(arrayOf(intArrayOf()), intArrayOf(mColorRipple)),
-            drawable,
-            null
+            ColorStateList(arrayOf(intArrayOf()), intArrayOf(mColorRipple)), drawable, null
         )
         outlineProvider = object : ViewOutlineProvider() {
             override fun getOutline(view: View, outline: Outline) {
                 outline.setOval(0, 0, view.width, view.height)
             }
         }
-        clipToOutline = true
+        clipToOutline = false
         mBackgroundDrawable = ripple
         return ripple
     }
@@ -127,11 +120,8 @@ class Label : androidx.appcompat.widget.AppCompatTextView {
                 mCornerRadius.toFloat(),
                 mCornerRadius.toFloat(),
                 mCornerRadius.toFloat(),
-                mCornerRadius
-                    .toFloat()
-            ),
-            null,
-            null
+                mCornerRadius.toFloat()
+            ), null, null
         )
         val shapeDrawable = ShapeDrawable(shape)
         shapeDrawable.paint.color = color
@@ -147,7 +137,7 @@ class Label : androidx.appcompat.widget.AppCompatTextView {
     }
 
     private fun setBackgroundCompat(drawable: Drawable) {
-            background = drawable
+        background = drawable
     }
 
     private fun playShowAnimation() {
@@ -310,32 +300,24 @@ class Label : androidx.appcompat.widget.AppCompatTextView {
 
         override fun draw(canvas: Canvas) {
             val shadowRect = RectF(
-                (
-                        mShadowRadius + abs(mShadowXOffset)).toFloat(),
-                (
-                        mShadowRadius + abs(mShadowYOffset)).toFloat(),
+                (mShadowRadius + abs(mShadowXOffset)).toFloat(),
+                (mShadowRadius + abs(mShadowYOffset)).toFloat(),
                 mRawWidth.toFloat(),
-                mRawHeight
-                    .toFloat()
+                mRawHeight.toFloat()
             )
             canvas.drawRoundRect(
-                shadowRect,
-                mCornerRadius.toFloat(),
-                mCornerRadius.toFloat(),
-                mPaint
+                shadowRect, mCornerRadius.toFloat(), mCornerRadius.toFloat(), mPaint
             )
             canvas.drawRoundRect(
-                shadowRect,
-                mCornerRadius.toFloat(),
-                mCornerRadius.toFloat(),
-                mErase
+                shadowRect, mCornerRadius.toFloat(), mCornerRadius.toFloat(), mErase
             )
         }
 
         override fun setAlpha(alpha: Int) {}
         override fun setColorFilter(cf: ColorFilter?) {}
-        @Deprecated("Deprecated in Java",
-            ReplaceWith("PixelFormat.UNKNOWN", "android.graphics.PixelFormat")
+
+        @Deprecated(
+            "Deprecated in Java", ReplaceWith("PixelFormat.UNKNOWN", "android.graphics.PixelFormat")
         )
         override fun getOpacity(): Int {
             return PixelFormat.UNKNOWN

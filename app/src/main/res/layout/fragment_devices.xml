@@ -27,7 +27,8 @@
         fab:menu_fab_label="New Device"
         fab:menu_labels_hideAnimation="@anim/fab_slide_out_to_right"
         fab:menu_labels_showAnimation="@anim/fab_slide_in_from_right"
-        fab:menu_shadowColor="#444">
+        fab:menu_shadowColor="#444"
+        fab:menu_fab_size="large">
 
         <com.github.meudayhegde.fab.FloatingActionButton
             android:id="@+id/fab_enter_address"
@@ -38,7 +39,7 @@
             fab:fab_colorPressed="@color/yellow_dark"
             fab:fab_colorRipple="@color/yellow_dark"
             fab:fab_label="Enter Address"
-            fab:fab_size="mini" />
+            fab:fab_size="normal" />
 
         <com.github.meudayhegde.fab.FloatingActionButton
             android:id="@+id/fab_scan_device"
@@ -49,7 +50,7 @@
             fab:fab_colorPressed="@color/green_dark"
             fab:fab_colorRipple="@color/green_dark"
             fab:fab_label="Scan Network"
-            fab:fab_size="mini" />
+            fab:fab_size="normal" />
 
     </com.github.meudayhegde.fab.FloatingActionMenu>
 

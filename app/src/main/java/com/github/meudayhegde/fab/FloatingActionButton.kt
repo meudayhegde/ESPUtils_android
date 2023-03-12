@@ -160,7 +160,12 @@ open class FloatingActionButton @JvmOverloads constructor(
     }
 
     private val circleSize: Int
-        get() = resources.getDimensionPixelSize(if (mFabSize == SIZE_NORMAL) R.dimen.fab_size_normal else R.dimen.fab_size_mini)
+        get() = resources.getDimensionPixelSize(
+            when (mFabSize) {
+                SIZE_NORMAL -> R.dimen.fab_size_normal
+                SIZE_MINI -> R.dimen.fab_size_mini
+                else -> R.dimen.fab_size_large
+            })
 
     private fun calculateMeasuredWidth(): Int {
         var width = circleSize + calculateShadowWidth()

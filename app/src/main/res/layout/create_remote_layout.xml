@@ -62,7 +62,8 @@
         fab:menu_fab_label="Actions "
         fab:menu_labels_hideAnimation="@anim/fab_slide_out_to_right"
         fab:menu_labels_showAnimation="@anim/fab_slide_in_from_right"
-        fab:menu_shadowColor="#444">
+        fab:menu_shadowColor="#444"
+        fab:menu_fab_size="large">
 
         <com.github.meudayhegde.fab.FloatingActionButton
             android:id="@+id/fab_new_button"
@@ -75,7 +76,7 @@
             fab:fab_colorPressed="@color/green_dark"
             fab:fab_colorRipple="@color/green_dark"
             fab:fab_label="New Button"
-            fab:fab_size="mini"
+            fab:fab_size="normal"
             tools:ignore="VectorDrawableCompat" />
 
         <com.github.meudayhegde.fab.FloatingActionButton
@@ -87,7 +88,7 @@
             fab:fab_colorPressed="@color/yellow_dark"
             fab:fab_colorRipple="@color/yellow_dark"
             fab:fab_label="Multi Capture"
-            fab:fab_size="mini"
+            fab:fab_size="normal"
             tools:ignore="VectorDrawableCompat" />
 
     </com.github.meudayhegde.fab.FloatingActionMenu>

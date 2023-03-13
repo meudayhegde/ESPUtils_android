@@ -24,8 +24,7 @@ import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.roundToInt
 
-
-open class FloatingActionButton @JvmOverloads constructor(
+class FloatingActionButton @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : androidx.appcompat.widget.AppCompatImageButton(
     context, attrs, defStyleAttr

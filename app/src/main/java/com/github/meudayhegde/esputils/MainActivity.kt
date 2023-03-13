@@ -151,8 +151,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         })
 
         if (pref.getString(
-                Strings.sharedPrefItemUsername,
-                ""
+                Strings.sharedPrefItemUsername, ""
             ) != "" && pref.getString(Strings.sharedPrefItemPassword, "") != ""
         ) authenticated = true
 
@@ -268,15 +267,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         val navHeader: LinearLayout = mainBinding.navView.getHeaderView(0) as LinearLayout
         navHeader.post {
-            navHeader.layoutParams = LinearLayout.LayoutParams(navHeader.width, navHeader.width)
-            navHeader.findViewById<ImageView>(R.id.app_icon).layoutParams =
-                LinearLayout.LayoutParams(
-                    (navHeader.width * 0.7).toInt(), (navHeader.width * 0.7).toInt()
-                )
-            navHeader.findViewById<TextView>(R.id.app_name).textSize =
-                (navHeader.width / 18).toFloat()
-            navHeader.findViewById<TextView>(R.id.app_description).textSize =
-                (navHeader.width / 26).toFloat()
+            val headerIcon = navHeader.findViewById<ImageView>(R.id.app_icon)
+            headerIcon.layoutParams = LinearLayout.LayoutParams(
+                (navHeader.width * 0.7).toInt(), (navHeader.width * 0.7).toInt()
+            )
+            val headerTitle = navHeader.findViewById<TextView>(R.id.app_name)
+            val headerSubtitle = navHeader.findViewById<TextView>(R.id.app_description)
+            headerTitle.post { headerSubtitle.post {
+                navHeader.layoutParams = LinearLayout.LayoutParams(navHeader.width, headerIcon.layoutParams.height + (headerTitle.height * 2) + headerSubtitle.height)
+            } }
         }
         toggle.syncState()
         mainBinding.navView.setNavigationItemSelectedListener(this)

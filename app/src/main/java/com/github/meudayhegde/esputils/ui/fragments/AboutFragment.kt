@@ -3,15 +3,17 @@ package com.github.meudayhegde.esputils.ui.fragments
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
-import android.text.TextUtils
+import android.text.Html
+import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.github.meudayhegde.esputils.R
 import com.github.meudayhegde.esputils.Strings
 import com.github.meudayhegde.esputils.databinding.FragmentAboutBinding
 import com.github.meudayhegde.esputils.listeners.OnFragmentInteractionListener
+import java.io.InputStreamReader
 
 class AboutFragment : androidx.fragment.app.Fragment() {
     private var listener: OnFragmentInteractionListener? = null
@@ -24,9 +26,13 @@ class AboutFragment : androidx.fragment.app.Fragment() {
         if (_binding == null) {
             fragmentBinding = FragmentAboutBinding.inflate(inflater, container, false)
             _binding = fragmentBinding
-            fragmentBinding.aboutApp.text = TextUtils.join(
-                " ", context?.resources?.getStringArray(R.array.about) ?: arrayOf(" ")
-            )
+            fragmentBinding.aboutApp.text =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) Html.fromHtml(
+                    InputStreamReader(requireContext().assets.open("about.html")).readText(),
+                    Html.FROM_HTML_MODE_LEGACY
+                )
+                else Html.fromHtml(InputStreamReader(requireContext().assets.open("about.html")).readText())
+            fragmentBinding.aboutApp.movementMethod = LinkMovementMethod.getInstance()
             val onClickListener = View.OnClickListener {
                 val browserIntent = Intent(
                     Intent.ACTION_VIEW, Uri.parse(Strings.urlLicenseApache)

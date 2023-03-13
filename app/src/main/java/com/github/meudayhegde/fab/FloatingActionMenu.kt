@@ -9,6 +9,7 @@ import android.content.res.TypedArray
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.text.TextUtils
@@ -24,13 +25,9 @@ import androidx.appcompat.content.res.AppCompatResources
 import com.github.meudayhegde.esputils.R
 import kotlin.math.abs
 
-
 class FloatingActionMenu @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
-) :
-    ViewGroup(context, attrs, defStyleAttr) {
+    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
+) : ViewGroup(context, attrs, defStyleAttr) {
     private val mOpenAnimatorSet = AnimatorSet()
     private val mCloseAnimatorSet = AnimatorSet()
     var iconToggleAnimatorSet: AnimatorSet? = null
@@ -109,12 +106,10 @@ class FloatingActionMenu @JvmOverloads constructor(
     private fun init(context: Context, attrs: AttributeSet?) {
         val attr = context.obtainStyledAttributes(attrs, R.styleable.FloatingActionMenu, 0, 0)
         mButtonSpacing = attr.getDimensionPixelSize(
-            R.styleable.FloatingActionMenu_menu_buttonSpacing,
-            mButtonSpacing
+            R.styleable.FloatingActionMenu_menu_buttonSpacing, mButtonSpacing
         )
         mLabelsMargin = attr.getDimensionPixelSize(
-            R.styleable.FloatingActionMenu_menu_labels_margin,
-            mLabelsMargin
+            R.styleable.FloatingActionMenu_menu_labels_margin, mLabelsMargin
         )
         mLabelsPosition =
             attr.getInt(R.styleable.FloatingActionMenu_menu_labels_position, LABELS_POSITION_LEFT)
@@ -127,20 +122,16 @@ class FloatingActionMenu @JvmOverloads constructor(
             if (mLabelsPosition == LABELS_POSITION_LEFT) R.anim.fab_slide_out_to_right else R.anim.fab_slide_out_to_left
         )
         mLabelsPaddingTop = attr.getDimensionPixelSize(
-            R.styleable.FloatingActionMenu_menu_labels_paddingTop,
-            mLabelsPaddingTop
+            R.styleable.FloatingActionMenu_menu_labels_paddingTop, mLabelsPaddingTop
         )
         mLabelsPaddingRight = attr.getDimensionPixelSize(
-            R.styleable.FloatingActionMenu_menu_labels_paddingRight,
-            mLabelsPaddingRight
+            R.styleable.FloatingActionMenu_menu_labels_paddingRight, mLabelsPaddingRight
         )
         mLabelsPaddingBottom = attr.getDimensionPixelSize(
-            R.styleable.FloatingActionMenu_menu_labels_paddingBottom,
-            mLabelsPaddingBottom
+            R.styleable.FloatingActionMenu_menu_labels_paddingBottom, mLabelsPaddingBottom
         )
         mLabelsPaddingLeft = attr.getDimensionPixelSize(
-            R.styleable.FloatingActionMenu_menu_labels_paddingLeft,
-            mLabelsPaddingLeft
+            R.styleable.FloatingActionMenu_menu_labels_paddingLeft, mLabelsPaddingLeft
         )
         mLabelsTextColor =
             attr.getColorStateList(R.styleable.FloatingActionMenu_menu_labels_textColor)
@@ -153,8 +144,7 @@ class FloatingActionMenu @JvmOverloads constructor(
             resources.getDimension(R.dimen.labels_text_size)
         )
         mLabelsCornerRadius = attr.getDimensionPixelSize(
-            R.styleable.FloatingActionMenu_menu_labels_cornerRadius,
-            mLabelsCornerRadius
+            R.styleable.FloatingActionMenu_menu_labels_cornerRadius, mLabelsCornerRadius
         )
         mLabelsShowShadow =
             attr.getBoolean(R.styleable.FloatingActionMenu_menu_labels_showShadow, true)
@@ -189,8 +179,7 @@ class FloatingActionMenu @JvmOverloads constructor(
         mLabelsEllipsize = attr.getInt(R.styleable.FloatingActionMenu_menu_labels_ellipsize, 0)
         mLabelsMaxLines = attr.getInt(R.styleable.FloatingActionMenu_menu_labels_maxLines, -1)
         mMenuFabSize = attr.getInt(
-            R.styleable.FloatingActionMenu_menu_fab_size,
-            FloatingActionButton.SIZE_NORMAL
+            R.styleable.FloatingActionMenu_menu_fab_size, FloatingActionButton.SIZE_NORMAL
         )
         mLabelsStyle = attr.getResourceId(R.styleable.FloatingActionMenu_menu_labels_style, 0)
         val customFont = attr.getString(R.styleable.FloatingActionMenu_menu_labels_customFont)
@@ -224,14 +213,12 @@ class FloatingActionMenu @JvmOverloads constructor(
 
     private fun initMenuButtonAnimations(attr: TypedArray) {
         val showResId = attr.getResourceId(
-            R.styleable.FloatingActionMenu_menu_fab_show_animation,
-            R.anim.fab_scale_up
+            R.styleable.FloatingActionMenu_menu_fab_show_animation, R.anim.fab_scale_up
         )
         setMenuButtonShowAnimation(AnimationUtils.loadAnimation(context, showResId))
         mImageToggleShowAnimation = AnimationUtils.loadAnimation(context, showResId)
         val hideResId = attr.getResourceId(
-            R.styleable.FloatingActionMenu_menu_fab_hide_animation,
-            R.anim.fab_scale_down
+            R.styleable.FloatingActionMenu_menu_fab_hide_animation, R.anim.fab_scale_down
         )
         setMenuButtonHideAnimation(AnimationUtils.loadAnimation(context, hideResId))
         mImageToggleHideAnimation = AnimationUtils.loadAnimation(context, hideResId)
@@ -271,10 +258,8 @@ class FloatingActionMenu @JvmOverloads constructor(
         mMenuButton?.mShowShadow = mMenuShowShadow
         if (mMenuShowShadow) {
             mMenuButton?.mShadowRadius = Util.dpToPx(context, mMenuShadowRadius)
-            mMenuButton?.mShadowXOffset =
-                Util.dpToPx(context, mMenuShadowXOffset)
-            mMenuButton?.mShadowYOffset =
-                Util.dpToPx(context, mMenuShadowYOffset)
+            mMenuButton?.mShadowXOffset = Util.dpToPx(context, mMenuShadowXOffset)
+            mMenuButton?.mShadowYOffset = Util.dpToPx(context, mMenuShadowYOffset)
         }
         mMenuButton?.setColors(mMenuColorNormal, mMenuColorPressed, mMenuColorRipple)
         mMenuButton?.mShadowColor = mMenuShadowColor
@@ -303,16 +288,10 @@ class FloatingActionMenu @JvmOverloads constructor(
                 if (mLabelsPosition == LABELS_POSITION_LEFT) OPENED_PLUS_ROTATION_RIGHT else OPENED_PLUS_ROTATION_LEFT
         }
         val collapseAnimator = ObjectAnimator.ofFloat(
-            menuIconView,
-            "rotation",
-            collapseAngle,
-            CLOSED_PLUS_ROTATION
+            menuIconView, "rotation", collapseAngle, CLOSED_PLUS_ROTATION
         )
         val expandAnimator = ObjectAnimator.ofFloat(
-            menuIconView,
-            "rotation",
-            CLOSED_PLUS_ROTATION,
-            expandAngle
+            menuIconView, "rotation", CLOSED_PLUS_ROTATION, expandAngle
         )
         mOpenAnimatorSet.play(expandAnimator)
         mCloseAnimatorSet.play(collapseAnimator)
@@ -347,11 +326,7 @@ class FloatingActionMenu @JvmOverloads constructor(
                 val labelUsedWidth: Int =
                     child.measuredWidth + label.calculateShadowWidth() + mLabelsMargin + labelOffset
                 measureChildWithMargins(
-                    label,
-                    widthMeasureSpec,
-                    labelUsedWidth,
-                    heightMeasureSpec,
-                    0
+                    label, widthMeasureSpec, labelUsedWidth, heightMeasureSpec, 0
                 )
                 usedWidth += label.measuredWidth
                 maxLabelWidth = maxLabelWidth.coerceAtLeast(usedWidth + labelOffset)
@@ -378,14 +353,18 @@ class FloatingActionMenu @JvmOverloads constructor(
             if (openUp) b - t - mMenuButton!!.measuredHeight - paddingBottom else paddingTop
         val menuButtonLeft: Int = buttonsHorizontalCenter - mMenuButton!!.measuredWidth / 2
         mMenuButton?.layout(
-            menuButtonLeft, menuButtonTop, menuButtonLeft + mMenuButton!!.measuredWidth,
+            menuButtonLeft,
+            menuButtonTop,
+            menuButtonLeft + mMenuButton!!.measuredWidth,
             menuButtonTop + mMenuButton!!.measuredHeight
         )
         val imageLeft = buttonsHorizontalCenter - menuIconView!!.measuredWidth / 2
         val imageTop: Int =
-            menuButtonTop + mMenuButton!!.getMeasuredHeight() / 2 - menuIconView!!.measuredHeight / 2
+            menuButtonTop + mMenuButton!!.measuredHeight / 2 - menuIconView!!.measuredHeight / 2
         menuIconView!!.layout(
-            imageLeft, imageTop, imageLeft + menuIconView!!.measuredWidth,
+            imageLeft,
+            imageTop,
+            imageLeft + menuIconView!!.measuredWidth,
             imageTop + menuIconView!!.measuredHeight
         )
         var nextY =
@@ -393,15 +372,13 @@ class FloatingActionMenu @JvmOverloads constructor(
         for (i in mButtonsCount - 1 downTo 0) {
             val child = getChildAt(i)
             if (child === menuIconView) continue
-            val fab: FloatingActionButton =
-                child as FloatingActionButton
+            val fab: FloatingActionButton = child as FloatingActionButton
             if (fab.visibility == GONE) continue
             val childX: Int = buttonsHorizontalCenter - fab.measuredWidth / 2
             val childY = if (openUp) nextY - fab.measuredHeight - mButtonSpacing else nextY
             if (fab !== mMenuButton) {
                 fab.layout(
-                    childX, childY, childX + fab.measuredWidth,
-                    childY + fab.measuredHeight
+                    childX, childY, childX + fab.measuredWidth, childY + fab.measuredHeight
                 )
                 if (!mIsMenuOpening) {
                     fab.hide(false)
@@ -419,8 +396,8 @@ class FloatingActionMenu @JvmOverloads constructor(
                     if (mLabelsPosition == LABELS_POSITION_LEFT) labelXAwayFromButton else labelXNearButton
                 val labelRight =
                     if (mLabelsPosition == LABELS_POSITION_LEFT) labelXNearButton else labelXAwayFromButton
-                val labelTop: Int = childY - mLabelsVerticalOffset + (fab.measuredHeight
-                        - label.measuredHeight) / 2
+                val labelTop: Int =
+                    childY - mLabelsVerticalOffset + (fab.measuredHeight - label.measuredHeight) / 2
                 label.layout(labelLeft, labelTop, labelRight, labelTop + label.measuredHeight)
                 if (!mIsMenuOpening) {
                     label.visibility = INVISIBLE
@@ -446,8 +423,7 @@ class FloatingActionMenu @JvmOverloads constructor(
     private fun createLabels() {
         for (i in 0 until mButtonsCount) {
             if (getChildAt(i) === menuIconView) continue
-            val fab: FloatingActionButton =
-                getChildAt(i) as FloatingActionButton
+            val fab: FloatingActionButton = getChildAt(i) as FloatingActionButton
             if (fab.getTag(R.id.fab_label) != null) continue
             addLabel(fab)
             if (fab === mMenuButton) {
@@ -465,7 +441,9 @@ class FloatingActionMenu @JvmOverloads constructor(
         label.setShowAnimation(AnimationUtils.loadAnimation(context, mLabelsShowAnimation))
         label.setHideAnimation(AnimationUtils.loadAnimation(context, mLabelsHideAnimation))
         if (mLabelsStyle > 0) {
-            label.setTextAppearance(context, mLabelsStyle)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                label.setTextAppearance(mLabelsStyle)
+            else label.setTextAppearance(context, mLabelsStyle)
             label.setShowShadow(false)
             label.setUsingStyle(true)
         } else {
@@ -486,10 +464,7 @@ class FloatingActionMenu @JvmOverloads constructor(
                 top += fab.shadowRadius + abs(fab.shadowYOffset)
             }
             label.setPadding(
-                left,
-                top,
-                mLabelsPaddingLeft,
-                mLabelsPaddingTop
+                left, top, mLabelsPaddingLeft, mLabelsPaddingTop
             )
             if (mLabelsMaxLines < 0 || mLabelsSingleLine) {
                 label.isSingleLine = mLabelsSingleLine
@@ -523,8 +498,7 @@ class FloatingActionMenu @JvmOverloads constructor(
 
     override fun generateDefaultLayoutParams(): MarginLayoutParams {
         return MarginLayoutParams(
-            MarginLayoutParams.WRAP_CONTENT,
-            MarginLayoutParams.WRAP_CONTENT
+            MarginLayoutParams.WRAP_CONTENT, MarginLayoutParams.WRAP_CONTENT
         )
     }
 

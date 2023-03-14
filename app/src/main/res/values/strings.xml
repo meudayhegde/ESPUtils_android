@@ -203,6 +203,8 @@
     <string name="title_failure">Failure</string>
     <string name="title_user_settings">User Settings</string>
     <string name="title_wireless_settings">Wireless Settings</string>
+    <string name="title_note_login">Default username/password for ESP devices</string>
+    <string name="title_sub_note_login">(can be changed for each ESP Device while adding)</string>
 
     <string name="update">Update</string>
     <string name="update_file_spiffs">spiffs</string>

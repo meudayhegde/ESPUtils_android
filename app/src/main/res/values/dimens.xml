@@ -5,12 +5,12 @@
     <dimen name="fab_size_mini">40dp</dimen>
     <dimen name="labels_text_size">16sp</dimen>
 
-    <dimen name="loginViewsMargin">20dp</dimen>
     <dimen name="margin_min">3dp</dimen>
     <dimen name="margin_low">6dp</dimen>
     <dimen name="margin_medium">8dp</dimen>
     <dimen name="margin_high">10dp</dimen>
     <dimen name="margin_max">14dp</dimen>
+    <dimen name="margin_extra_space">20dp</dimen>
 
     <dimen name="text_size_micro">10sp</dimen>
     <dimen name="text_size_subtitle">14sp</dimen>

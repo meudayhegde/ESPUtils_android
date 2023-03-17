@@ -8,8 +8,8 @@ android {
         applicationId "com.github.meudayhegde.esputils"
         minSdkVersion 21
         targetSdkVersion 33
-        versionCode 1024
-        versionName "1.0.24"
+        versionCode 1
+        versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         testApplicationId = 'com.github.meudayhegde.esputils.test'
@@ -28,6 +28,13 @@ android {
 
     buildFeatures {
         viewBinding = true
+    }
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+            minifyEnabled true
+            multiDexEnabled true
+        }
     }
 }
 

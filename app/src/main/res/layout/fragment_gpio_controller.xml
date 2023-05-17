@@ -34,7 +34,7 @@
         android:layout_below="@id/info_layout" />
 
     <com.github.meudayhegde.fab.FloatingActionMenu
-        android:id="@+id/fam_manage_gpio"
+        android:id="@+id/fam_menu_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentEnd="true"

@@ -14,8 +14,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.core.app.ActivityOptionsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.meudayhegde.ThreadHandler
@@ -38,7 +40,7 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
     private var _binding: FragmentManageRemoteBinding? = null
     private lateinit var fragmentBinding: FragmentManageRemoteBinding
 
-    private val configChooser =
+    private val configChooser: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 val uri = result?.data?.data
@@ -81,7 +83,7 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
                         Intent.createChooser(
                             intent, getString(R.string.title_file_chooser_remote_conf)
                         )
-                    )
+                    , ActivityOptionsCompat.makeBasic())
                 } catch (ex: ActivityNotFoundException) {
                     Toast.makeText(
                         context, R.string.message_install_file_manager, Toast.LENGTH_SHORT
@@ -121,10 +123,10 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
                 true
             )
             if (ESPUtilsApp.remotePropList.isEmpty()) Handler(Looper.getMainLooper()).postDelayed({
-                fragmentBinding.famManageRemotes.showMenu(
+                fragmentBinding.famManageRemotes.open(
                     true
                 )
-            }, 400)
+            }, 250)
         }, 400)
         return fragmentBinding.root
     }

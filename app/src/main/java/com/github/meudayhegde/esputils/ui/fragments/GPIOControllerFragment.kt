@@ -49,7 +49,7 @@ class GPIOControllerFragment : androidx.fragment.app.Fragment() {
                 layoutManager = viewManager
                 adapter = viewAdapter
             }
-            fragmentBinding.famManageGpio.setClosedOnTouchOutside(true)
+            fragmentBinding.famMenuMain.setClosedOnTouchOutside(true)
 
             fragmentBinding.refreshLayout.refreshLayout.setOnRefreshListener {
                 fragmentBinding.refreshLayout.refreshLayout.isRefreshing = true
@@ -67,18 +67,18 @@ class GPIOControllerFragment : androidx.fragment.app.Fragment() {
             }
             fragmentBinding.fabNewSwitch.setOnClickListener { gpioDialog() }
         }
-        if (!fragmentBinding.famManageGpio.isOpened) fragmentBinding.famManageGpio.hideMenuButton(
+        if (!fragmentBinding.famMenuMain.isOpened) fragmentBinding.famMenuMain.hideMenuButton(
             false
         )
         Handler(Looper.getMainLooper()).postDelayed({
-            if (fragmentBinding.famManageGpio.isMenuButtonHidden) fragmentBinding.famManageGpio.showMenuButton(
+            if (fragmentBinding.famMenuMain.isMenuButtonHidden) fragmentBinding.famMenuMain.showMenuButton(
                 true
             )
-            if (ESPUtilsApp.remotePropList.isEmpty()) Handler(Looper.getMainLooper()).postDelayed({
-                fragmentBinding.famManageGpio.showMenu(
+            if (ESPUtilsApp.gpioObjectList.isEmpty()) Handler(Looper.getMainLooper()).postDelayed({
+                fragmentBinding.famMenuMain.open(
                     true
                 )
-            }, 400)
+            }, 250)
         }, 400)
         return fragmentBinding.root
     }

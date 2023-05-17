@@ -85,7 +85,7 @@ class DevicesFragment : androidx.fragment.app.Fragment() {
                 adapter = viewAdapter
             }
 
-            fragmentBinding.famManageGpio.setClosedOnTouchOutside(true)
+            fragmentBinding.famMenuMain.setClosedOnTouchOutside(true)
 
             fragmentBinding.refreshLayout.refreshLayout.setOnRefreshListener {
                 fragmentBinding.refreshLayout.refreshLayout.isRefreshing = true
@@ -147,22 +147,22 @@ class DevicesFragment : androidx.fragment.app.Fragment() {
 
                 deviceDialog.show()
 
-                fragmentBinding.famManageGpio.close(true)
+                fragmentBinding.famMenuMain.close(true)
             }
             fragmentBinding.fabEnterAddress.setOnClickListener { newDeviceEnterAddress() }
         }
-        if (!fragmentBinding.famManageGpio.isOpened) fragmentBinding.famManageGpio.hideMenuButton(
+        if (!fragmentBinding.famMenuMain.isOpened) fragmentBinding.famMenuMain.hideMenuButton(
             false
         )
         Handler(Looper.getMainLooper()).postDelayed({
-            if (fragmentBinding.famManageGpio.isMenuButtonHidden) fragmentBinding.famManageGpio.showMenuButton(
+            if (fragmentBinding.famMenuMain.isMenuButtonHidden) fragmentBinding.famMenuMain.showMenuButton(
                 true
             )
-            if (ESPUtilsApp.remotePropList.isEmpty()) Handler(Looper.getMainLooper()).postDelayed({
-                fragmentBinding.famManageGpio.showMenu(
+            if (ESPUtilsApp.devicePropList.isEmpty()) Handler(Looper.getMainLooper()).postDelayed({
+                fragmentBinding.famMenuMain.open(
                     true
                 )
-            }, 400)
+            }, 250)
         }, 400)
         return fragmentBinding.root
     }
@@ -200,7 +200,7 @@ class DevicesFragment : androidx.fragment.app.Fragment() {
             }
         }
         newDevDialog.show()
-        fragmentBinding.famManageGpio.close(true)
+        fragmentBinding.famMenuMain.close(true)
     }
 
     fun onAddressVerified(context: Context, address: String, macAddress: String) {

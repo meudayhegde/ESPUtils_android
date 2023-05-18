@@ -147,11 +147,8 @@ class SettingsActivity : AppCompatActivity() {
                     editor.putInt(prefName, content.checkedRadioButtonId)
                     editor.apply()
                     action?.run()
+                    ESPUtilsApp.showAd(this)
                 }.create()
-
-        dialog.setOnDismissListener {
-            ESPUtilsApp.showAd(this)
-        }
 
         dialog.setOnShowListener {
             content.check(pref.getInt(prefName, 0))

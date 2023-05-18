@@ -90,10 +90,9 @@ class GPIOControllerFragment : androidx.fragment.app.Fragment() {
             .setTitle(resources.getString(R.string.add_new_gpio_switch))
             .setNegativeButton(R.string.cancel) { p0, _ -> p0.dismiss() }
             .setNeutralButton(R.string.delete) { _, _ -> }
-            .setPositiveButton(R.string.confirm) { _, _ -> }.setView(contentBinding.root).create()
-        gpioDialog.setOnDismissListener {
-            ESPUtilsApp.showAd(context as MainActivity)
-        }
+            .setPositiveButton(R.string.confirm) { _, _ -> }
+            .setView(contentBinding.root)
+            .create()
         gpioDialog.setOnShowListener {
             val btnPositive = gpioDialog.getButton(DialogInterface.BUTTON_POSITIVE)
             val btnNeutral = gpioDialog.getButton(DialogInterface.BUTTON_NEUTRAL)
@@ -137,6 +136,7 @@ class GPIOControllerFragment : androidx.fragment.app.Fragment() {
                             gpio.delete()
                             viewAdapter?.notifyItemRemoved(index)
                             gpioDialog.dismiss()
+                            ESPUtilsApp.showAd(context as MainActivity)
                         }.show()
                 }
             }
@@ -194,11 +194,10 @@ class GPIOControllerFragment : androidx.fragment.app.Fragment() {
                             viewAdapter?.notifyItemInserted(ESPUtilsApp.gpioObjectList.size - 1)
                         } else {
                             viewAdapter?.notifyItemChanged(
-                                ESPUtilsApp.gpioObjectList.indexOf(
-                                    gpioObj
-                                )
+                                ESPUtilsApp.gpioObjectList.indexOf(gpioObj)
                             )
                         }
+                        ESPUtilsApp.showAd(context as MainActivity)
                         gpioDialog.dismiss()
                     }
                 }

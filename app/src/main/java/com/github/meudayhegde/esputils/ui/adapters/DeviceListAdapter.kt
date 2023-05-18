@@ -393,9 +393,6 @@ class DeviceListAdapter(
                         .setNegativeButton(R.string.cancel) { _, _ -> }
                         .setPositiveButton(R.string.update) { _, _ -> }.create()
                     updateDialog.setCancelable(false)
-                    updateDialog.setOnDismissListener {
-                        ESPUtilsApp.showAd(context as MainActivity)
-                    }
                     updateDialog.setOnShowListener {
                         val positiveButton = updateDialog.getButton(DialogInterface.BUTTON_POSITIVE)
                         val negativeButton = updateDialog.getButton(DialogInterface.BUTTON_NEGATIVE)
@@ -421,6 +418,7 @@ class DeviceListAdapter(
                                             .contains(Strings.espResponseSuccess)
                                     ) {
                                         positiveButton?.isEnabled = true
+                                        ESPUtilsApp.showAd(context as MainActivity)
                                         positiveButton?.setOnClickListener {
                                             updateDialog.dismiss()
                                         }
@@ -631,7 +629,7 @@ class DeviceListAdapter(
                                             val result = connector.readLine()
                                             val resultObj = JSONObject(result)
                                             Handler(Looper.getMainLooper()).post {
-                                                val nDialog = AlertDialog.Builder(
+                                                AlertDialog.Builder(
                                                     context, R.style.AppTheme_AlertDialog
                                                 ).setTitle(
                                                     if (resultObj.getString(Strings.espResponse)
@@ -641,11 +639,11 @@ class DeviceListAdapter(
                                                     ) R.string.title_success else R.string.title_failure
                                                 )
                                                     .setMessage(resultObj.getString(Strings.espResponse))
-                                                    .setPositiveButton(R.string.done) { dg, _ -> dg.dismiss() }
+                                                    .setPositiveButton(R.string.done) { dg, _ ->
+                                                        dg.dismiss()
+                                                        ESPUtilsApp.showAd(context as MainActivity)
+                                                    }
                                                     .show()
-                                                nDialog.setOnDismissListener {
-                                                    ESPUtilsApp.showAd(context as MainActivity)
-                                                }
                                             }
                                             connector.close()
                                         } catch (ex: Exception) {
@@ -808,9 +806,8 @@ class DeviceListAdapter(
                                             val result = connector.readLine()
                                             val resultObj = JSONObject(result)
                                             Handler(Looper.getMainLooper()).post {
-                                                val nDialog = AlertDialog.Builder(
-                                                    context, R.style.AppTheme_AlertDialog
-                                                ).setTitle(
+                                                AlertDialog.Builder(
+                                                    context, R.style.AppTheme_AlertDialog).setTitle(
                                                     if (resultObj.getString(Strings.espResponse)
                                                             .contains(
                                                                 Strings.espResponseSuccess, true
@@ -818,11 +815,11 @@ class DeviceListAdapter(
                                                     ) R.string.title_success else R.string.title_failure
                                                 )
                                                     .setMessage(resultObj.getString(Strings.espResponse))
-                                                    .setPositiveButton(R.string.done) { dg, _ -> dg.dismiss() }
+                                                    .setPositiveButton(R.string.done) { dg, _ ->
+                                                        dg.dismiss()
+                                                        ESPUtilsApp.showAd(context as MainActivity)
+                                                    }
                                                     .show()
-                                                nDialog.setOnDismissListener {
-                                                    ESPUtilsApp.showAd(context as MainActivity)
-                                                }
                                             }
                                             connector.close()
                                         } catch (ex: Exception) {

@@ -129,9 +129,7 @@ class RemoteListAdapter(private val propList: ArrayList<RemoteProperties>, priva
             .setIcon(R.drawable.icon_ir_remote).setPositiveButton(R.string.done) { _, _ -> }
             .setNegativeButton(R.string.cancel) { _, _ -> }
             .setNeutralButton(R.string.delete_remote) { _, _ -> }.create()
-        remoteEditDialog.setOnDismissListener {
-            ESPUtilsApp.showAd(context as MainActivity)
-        }
+
         remoteEditDialog.setOnShowListener {
             dialogBinding.vendorName.setText(prop.remoteVendor)
             dialogBinding.modelName.setText(prop.remoteName)
@@ -162,6 +160,7 @@ class RemoteListAdapter(private val propList: ArrayList<RemoteProperties>, priva
                 prop.description = dialogBinding.remoteDesc.text.toString()
                 prop.deviceConfigFileName = selectedDevice.deviceConfigFile.name
                 setViewProps(itemBinding, prop)
+                ESPUtilsApp.showAd(context as MainActivity)
                 remoteEditDialog.dismiss()
             }
 
@@ -173,6 +172,7 @@ class RemoteListAdapter(private val propList: ArrayList<RemoteProperties>, priva
                         val index = propList.indexOf(prop)
                         propList.remove(prop)
                         notifyItemRemoved(index)
+                        ESPUtilsApp.showAd(context as MainActivity)
                         remoteEditDialog.dismiss()
                     }.setMessage(
                         ESPUtilsApp.getString(

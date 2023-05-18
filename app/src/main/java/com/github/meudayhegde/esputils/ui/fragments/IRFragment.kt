@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.meudayhegde.ThreadHandler
 import com.github.meudayhegde.esputils.ESPUtilsApp
+import com.github.meudayhegde.esputils.MainActivity
 import com.github.meudayhegde.esputils.R
 import com.github.meudayhegde.esputils.Strings
 import com.github.meudayhegde.esputils.databinding.FragmentManageRemoteBinding
@@ -59,9 +60,8 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
             }
         }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View {
         if (_binding == null) {
             _binding = FragmentManageRemoteBinding.inflate(inflater, container, false)
             fragmentBinding = _binding!!
@@ -114,18 +114,14 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
 
             fragmentBinding.fabNewRemote.setOnClickListener(this)
         }
-        if (!fragmentBinding.famManageRemotes.isOpened) fragmentBinding.famManageRemotes.hideMenuButton(
-            false
-        )
+        if (!fragmentBinding.famManageRemotes.isOpened)
+            fragmentBinding.famManageRemotes.hideMenuButton(false)
 
         Handler(Looper.getMainLooper()).postDelayed({
-            if (fragmentBinding.famManageRemotes.isMenuButtonHidden) fragmentBinding.famManageRemotes.showMenuButton(
-                true
-            )
+            if (fragmentBinding.famManageRemotes.isMenuButtonHidden)
+                fragmentBinding.famManageRemotes.showMenuButton(true)
             if (ESPUtilsApp.remotePropList.isEmpty()) Handler(Looper.getMainLooper()).postDelayed({
-                fragmentBinding.famManageRemotes.open(
-                    true
-                )
+                fragmentBinding.famManageRemotes.open(true)
             }, 250)
         }, 400)
         return fragmentBinding.root
@@ -173,8 +169,9 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
                     ).show()
                     return@setOnClickListener
                 }
-                val selectedDevice =
-                    ESPUtilsApp.devicePropList[contentBinding.deviceSelector.selectedItemPosition - 1]
+                val selectedDevice = ESPUtilsApp.devicePropList[
+                        contentBinding.deviceSelector.selectedItemPosition - 1
+                ]
 
                 var id =
                     ("${contentBinding.vendorName.text.toString()} ${contentBinding.modelName.text.toString()}").lowercase(
@@ -204,6 +201,7 @@ class IRFragment : androidx.fragment.app.Fragment(), View.OnClickListener {
                 ESPUtilsApp.remotePropList.add(remoteProperties)
                 viewAdapter?.notifyItemInserted(ESPUtilsApp.remotePropList.size - 1)
                 RemoteDialog(requireContext(), remoteProperties, RemoteDialog.MODE_VIEW_EDIT).show()
+                ESPUtilsApp.showAd(context as MainActivity)
                 newRemoteDialog.dismiss()
             }
         }
